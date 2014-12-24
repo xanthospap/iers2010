@@ -1,0 +1,60 @@
+* GENERAL
+=======================================
+This directory contains a number of functions implementing models defined in
+IERS Conventions (2010). The functions are available in FORTRAN from the IERS
+website at http://maia.usno.navy.mil/conv2010/software.html. Note that the
+software found at this website is routinely updated.
+
+The FORTRAN subroutines are translated to C++ (standard c++11) with (as much as
+possible) minor modifications.
+
+* COMPILATION
+=======================================
+Compilation should be trivial using any gcc version supporting the c++11 standard
+(option -std=c++11).
+
+* PREQUISITIES
+=======================================
+The functions make use of a number of constants (e.g. PI). These can be defined in
+each individual function or can be implemented in a seperate file (e.g. gencon.hpp).
+This option is controlled at compile time, where the user can use the switch
+-DUSE_EXTERNAL_CONSTS to define the constants in a seperate file. If this switch is
+not used, then each function will declare its own constants.
+
+* CLASIFICATION OF FUNCTIONS
+=======================================
+In general, Class 1, 2, and 3 models represent physical effects that
+act on geodetic parameters while canonical models provide lower-level
+representations or basic computations that are used by Class 1, 2, or
+3 models.
+Class 1 models are those recommended to be used a priori in the
+reduction of raw space geodetic data in order to determine
+geodetic parameter estimates.
+Class 2 models are those that eliminate an observational
+singularity and are purely conventional in nature.
+Class 3 models are those that are not required as either Class 1 or 2.
+Canonical models are accepted as is and cannot be classified as
+a Class 1, 2, or 3 model.
+
+* LIST OF AVAILABLE FUNCTIONS
+=======================================
+
+Subroutines for Chapter 4:
+GCONV2.F : This function is not provided. It is implemented in the Chaos Software package though.
+
+Subroutines for Chapter 5:
+PMSDNUT2.F : implemented as pmsdnut2
+
+* BUGS & TODO LIST
+=======================================
+FORTRAN subroutines use (a lot) the built-in function MOD(X,Y). What is the equivelent
+in c/c++ ? Currently, this is translated via the modf function. Is this ok in every occasion ?
+Another candidate could be remainder (http://www.cplusplus.com/reference/cmath/remainder/).
+According to https://www.nsc.liu.se/~boein/f77to90/a5.html#section2 the function MOD(X,Y) 
+calculates X - INT(X/Y)*Y. In addition, it can happen that in the same subroutine both
+MOD and DMOD are present.
+Affects: pmsdnut2,
+
+* LAST UPDATE
+=======================================
+DEC-2014
