@@ -26,3 +26,16 @@
 *.exe
 *.out
 *.app
+*.e
+
+# Fortran
+*.F
+*.f
+
+# Documents
+*.pdf
+*.ps
+
+# Html
+#*.html
+#*.htm
