@@ -36,6 +36,11 @@
 *.pdf
 *.ps
 
+# Folders
+inc/*
+lib/*
+obj/*
+
 # Html
 #*.html
 #*.htm

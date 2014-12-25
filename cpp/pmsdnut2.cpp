@@ -45,7 +45,7 @@
   #include "gencon.hpp"
 #endif
 
-int iers10::pmsdnut2 (const double& rmjd,double* pm) {
+int iers2010::pmsdnut2 (const double& rmjd,double* pm) {
   
   /*
    *         ----------------------------
@@ -141,7 +141,7 @@ int iers10::pmsdnut2 (const double& rmjd,double* pm) {
 
   //  Rate of secular polar motion, in microarcseconds per year
   //+ Source: IERS Conventions (2010), Table 5.1a
-  constexpr double xrate (-3.8e0), vrate (-4.3e0);
+  constexpr double xrate (-3.8e0), yrate (-4.3e0);
 
   //  Compute the periodical part of the model
   //+ Coordinates of the pole are set to zero first
@@ -160,7 +160,7 @@ int iers10::pmsdnut2 (const double& rmjd,double* pm) {
                 t*( -0.0000062 ))), 86400e0 );
 
   // Fundamental arguments
-  iers10::fundarg( t,arg[1],arg[2],arg[3],arg[4],arg[5] );
+  iers2010::fundarg( t,arg[1],arg[2],arg[3],arg[4],arg[5] );
   arg[0] = gmst / RAD2SEC + PI;
   arg[0] = fmod( arg[0],TWOPI );
 

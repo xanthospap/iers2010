@@ -49,7 +49,7 @@
   #include "gencon.hpp"
 #endif
 
-int iers10::fundarg (const double& t,double& l,double& lp,double& f,double& d,double& om) {
+int iers2010::fundarg (const double& t,double& l,double& lp,double& f,double& d,double& om) {
 
   // Set constants
   #ifdef USE_EXTERNAL_CONSTS

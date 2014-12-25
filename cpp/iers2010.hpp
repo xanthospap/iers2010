@@ -69,6 +69,10 @@
 
 namespace iers2010 {
   
+  #ifdef QUICK_EXIT
+    #define DATE_MAX_DIFF 1.0e-06
+  #endif
+  
   /** @brief Function to compute the diurnal lunisolar effect on polar motion.
    */
   int pmsdnut2 (const double&,double*);

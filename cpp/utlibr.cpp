@@ -49,7 +49,7 @@
   #include "gencon.hpp"
 #endif
 
-int iers10::utlibr (const double& rmjd,double& dut1,double& dlod) {
+int iers2010::utlibr (const double& rmjd,double& dut1,double& dlod) {
   
 /*
  *         ----------------------------
@@ -130,13 +130,14 @@ int iers10::utlibr (const double& rmjd,double& dut1,double& dlod) {
   double t = (rmjd-RMJD0) / 36525e0;
 
   // Compute GMST + pi
-  double GMST = fmod (   67310.54841e0 +
+  double gmst = fmod (   67310.54841e0 +
                 t*( (8640184.812866e0 + 3155760000e0) +
                 t*( 0.093104e0 +
                 t*( -0.0000062 ))), 86400e0 );
   
   // Fundamental arguments
-  iers10::fundarg( t,arg[1],arg[2],arg[3],arg[4],arg[5] );
+  double arg[6];
+  iers2010::fundarg( t,arg[1],arg[2],arg[3],arg[4],arg[5] );
   arg[0] = gmst / RAD2SEC + PI;
   arg[0] = fmod( arg[0],TWOPI );
 
