@@ -1,6 +1,4 @@
 /**
- * @brief Function to compute the diurnal lunisolar effect on polar motion.
- * 
  * @details This function evaluates the model of polar motion for
  *          a nonrigid Earth due to tidal gravitation. This polar motion
  *          is equivalent to the so-called "subdiurnal nutation." The model
@@ -13,6 +11,12 @@
  * @param[in]  rmjd Time expressed as modified Julian date
  * @param[out] pm   Array of size 2, containing the polar motion
  *                  coordinates (dx, dy) expressed in microarcseconds.
+ * @return          An integer value which can be either 0 (to denote
+ *                  that a new value for pm has been computed) or 1 
+ *                  (to denote quick return). The returned integer has
+ *                  nothing to do with the status of the function and
+ *                  has no meaning if the <b>QUICK_EXIT</b> compilation
+ *                  flag was not used.
  * 
  * @note    Status:  Class 1 model
  * 
@@ -41,7 +45,7 @@
   #include "gencon.hpp"
 #endif
 
-void iers10::pmsdnut2 (const double& rmjd,double* pm) {
+int iers10::pmsdnut2 (const double& rmjd,double* pm) {
   
   /*
    *         ----------------------------
@@ -69,25 +73,27 @@ void iers10::pmsdnut2 (const double& rmjd,double* pm) {
    * 
    */
   
-#ifdef QUICK_EXIT
-  static double rmjd_previous = .0e0;
-  static double pm_previous[] = { .0e0,.0e0 };
-  if ( fabs( rmjd_previous-rmjd ) < DATE_MAX_DIFF ) {
-    pm[0] = pm_previous[0];
-    pm[1] = pm_previous[1];
-    return;
-  }
-#endif
+  #ifdef QUICK_EXIT
+    static double rmjd_previous = .0e0;
+    static double pm_previous[] = { .0e0,.0e0 };
+    if ( fabs( rmjd_previous-rmjd ) < DATE_MAX_DIFF ) {
+      pm[0] = pm_previous[0];
+      pm[1] = pm_previous[1];
+      return 1;
+    }
+  #endif
   
   int iband (1), jstart;
   double arg[6];
 
   // Set constants
   #ifdef USE_EXTERNAL_CONSTS
-    constexpr double RMJD0   (DJM00);
-    constexpr double PI      (DPI);
-    constexpr double TWOPI   (D2PI);
-    constexpr double RAD2SEC (DRAD2SEC);
+    /*constexpr double DAS2R   (DAS2R);     // Arcseconds to radians*/
+    /*constexpr double TURNAS  (TURNAS);    // Arcseconds in a full circle*/
+    constexpr double RMJD0   (DJM00);     // Modified Julian date of J2000
+    constexpr double PI      (DPI);       // pi
+    constexpr double TWOPI   (D2PI);      // 2 * pi
+    constexpr double RAD2SEC (DRAD2SEC);  // Radians to seconds
   #else
     constexpr double DAS2R   ( 4.848136811095359935899141e-6 ); // Arcseconds to radians
     constexpr double TURNAS  ( 1296000e0 );                     // Arcseconds in a full circle
@@ -144,7 +150,7 @@ void iers10::pmsdnut2 (const double& rmjd,double* pm) {
   //  Evaluate the vector of the fundamental arguments
   //+ arg(1:6) = [ GMST+pi, el, elp, f, d, om ] at t = rmjd
 
-  //  Convert the input epoch to Julian centuries of TDB since J2000
+  // Convert the input epoch to Julian centuries of TDB since J2000
   double t = (rmjd-RMJD0) / 36525e0;
 
   // Compute GMST + pi
@@ -162,9 +168,9 @@ void iers10::pmsdnut2 (const double& rmjd,double* pm) {
   else jstart = 0;
 
   for (int j=jstart;j<25;j++) {
-  //  For the j-th term of the trigonometric expansion, compute the angular
-  //+ argument angle of sine and cosine functions as a linear integer
-  //+ combination of the 6 fundamental arguments
+    //  For the j-th term of the trigonometric expansion, compute the angular
+    //+ argument angle of sine and cosine functions as a linear integer
+    //+ combination of the 6 fundamental arguments
     double angle (.0e0);
     for (int i=0;i<6;i++) angle += ( double (x[j].iarg[i]) * arg[i] );
     angle = fmod( angle,TWOPI );
@@ -186,5 +192,5 @@ void iers10::pmsdnut2 (const double& rmjd,double* pm) {
     pm_previous[1] = pm[1];
   #endif
   
-  return;
+  return 0;
 }

@@ -44,6 +44,8 @@ GCONV2.F : This function is not provided. It is implemented in the Chaos Softwar
 
 Subroutines for Chapter 5:
 PMSDNUT2.F : implemented as pmsdnut2
+UTLIBR.F   : implemented as utlibr
+FUNDARG.F  : implemented as fundarg
 
 * BUGS & TODO LIST
 =======================================
