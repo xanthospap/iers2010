@@ -28,6 +28,7 @@
  *          is from Simon et al. (1994).  Arguments are in radians.
  *       -# L in this instance is the Mean Longitude of the Moon. OM is the 
  *          Mean longitude of the ascending node of the Moon.
+ *       -# Status: Canonical model
  * 
  *  Test case:
  *     given input: T = 0.07995893223819302 Julian centuries since J2000
@@ -49,7 +50,8 @@
   #include "gencon.hpp"
 #endif
 
-int iers2010::fundarg (const double& t,double& l,double& lp,double& f,double& d,double& om) {
+int iers2010::fundarg (const double& t,double& l,double& lp,double& f,double& d,double& om)
+{
 
   // Set constants
   #ifdef USE_EXTERNAL_CONSTS

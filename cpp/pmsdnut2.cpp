@@ -45,7 +45,8 @@
   #include "gencon.hpp"
 #endif
 
-int iers2010::pmsdnut2 (const double& rmjd,double* pm) {
+int iers2010::pmsdnut2 (const double& rmjd,double* pm) 
+{
   
   /*
    *         ----------------------------

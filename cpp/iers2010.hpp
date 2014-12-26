@@ -84,6 +84,10 @@ namespace iers2010 {
   /** @brief  Function to compute the lunisolar fundamental arguments from the model by Simon et al. (1994).
    */
   int fundarg (const double&,double&,double&,double&,double&,double&);
+  
+  /** @brief  Computes corrections to the coordinates of the CIP to account for Free Core Nutation.
+   */
+  int fcnnut (const double&,double&,double&,double&,double&);
 };
 
 #endif

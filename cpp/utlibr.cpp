@@ -49,7 +49,8 @@
   #include "gencon.hpp"
 #endif
 
-int iers2010::utlibr (const double& rmjd,double& dut1,double& dlod) {
+int iers2010::utlibr (const double& rmjd,double& dut1,double& dlod) 
+{
   
 /*
  *         ----------------------------
