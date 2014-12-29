@@ -49,6 +49,7 @@
  *            pmsdnut2    | has both MOD and MOD
  *            utlibr      | MOD
  *            fundarg     | MOD
+ *            step2diu    | MOD
  * 
  *        -#  Provide a test / driver program with differences from the official FORTRAN release,
  *            using the test cases in the modules.

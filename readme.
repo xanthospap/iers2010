@@ -47,6 +47,9 @@ PMSDNUT2.F : implemented as pmsdnut2
 UTLIBR.F   : implemented as utlibr
 FUNDARG.F  : implemented as fundarg
 
+Subroutines for Chapter 7:
+
+
 * BUGS & TODO LIST
 =======================================
 FORTRAN subroutines use (a lot) the built-in function MOD(X,Y). What is the equivelent
