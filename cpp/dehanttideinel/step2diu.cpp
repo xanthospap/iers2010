@@ -19,11 +19,7 @@
  *       -# All coordinates are expressed in meters.
  *       -# Status: Class 1
  *       -# This fucnction is part of the package dehanttideinel, see
- *          ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
- *
- * @warning The vector norms of the geocentric position of the Sun and Moon (see
- *          rmon2, rsun2) are pretty close to overflow. Maybe that should be dealt
- *          with (e.g. use a scaling factor?). 
+ *          ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ 
  * 
  *  Test case:
  *     given input: XSTA(1) = 4075578.385D0 meters
