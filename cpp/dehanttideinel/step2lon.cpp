@@ -141,7 +141,7 @@ void step2lon (const double* xsta,const double& t,double* xcorsta)
   // Finished.
   return;
 }
-
+/*
 #include <stdio.h>
 int main ()
 {
@@ -160,3 +160,4 @@ int main ()
   
   return 0;
 }
+*/
