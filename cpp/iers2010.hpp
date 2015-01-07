@@ -50,6 +50,7 @@
  *            utlibr      | MOD
  *            fundarg     | MOD
  *            step2diu    | MOD
+ *            arg2        | DMOD
  * 
  *        -#  Provide a test / driver program with differences from the official FORTRAN release,
  *            using the test cases in the modules.
@@ -89,6 +90,10 @@ namespace iers2010 {
   /** @brief  Computes corrections to the coordinates of the CIP to account for Free Core Nutation.
    */
   int fcnnut (const double&,double&,double&,double&,double&);
+  
+  /** @brief  Computes the angular argument which depends on time for 11 tidal argument calculations.
+  */
+  int arg2 (const int&,const double&,double*);
 };
 
 #endif

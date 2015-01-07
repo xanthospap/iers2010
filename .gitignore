@@ -29,8 +29,8 @@
 *.e
 
 # Fortran
-*.F
-*.f
+#*.F
+#*.f
 
 # Documents
 *.pdf

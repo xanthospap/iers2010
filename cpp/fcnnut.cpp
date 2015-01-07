@@ -10,7 +10,7 @@
  * @param[out] dx   Uncertainty of x component, in microas (Note 3)
  * @param[out] dy   Uncertainty of y component, in microas (Note 3) 
  * @return          An integer value which can be either 0 (to denote
- *                  that a new value for pm has been computed) or 1 
+ *                  that a new value has been computed) or 1 
  *                  (to denote quick return). The returned integer has
  *                  nothing to do with the status of the function and
  *                  has no meaning if the <b>QUICK_EXIT</b> compilation
