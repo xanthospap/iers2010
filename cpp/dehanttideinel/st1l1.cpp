@@ -56,17 +56,18 @@
  *       96, 8243-8257
  * 
  */
-void st1l1 (const double* xsta,const double* xsun,const double* xmon,const double& fac2sun,
+void iers2010::dtel::st1l1 (const double* xsta,const double* xsun,const double* xmon,const double& fac2sun,
               const double& fac2mon,double* xcorsta)
 {
-  const double dhi ( -0.0025e0 ), dli ( -0.0007e0 );
+  const double l1d ( 0.0012e0 ), l1sd ( 0.0024e0 );
 
   // Compute the normalized position vector of the IGS station.
   double rsta     = ::sqrt ( std::inner_product (xsta,xsta+3,xsta,.0e0) );
 
   double sinphi   = xsta[2] / rsta;
+  double sinphi2  = sinphi * sinphi;
   double cosphi   = sqrt (xsta[0]*xsta[0] + xsta[1]*xsta[1]) / rsta;
-  double cos2phi  = cosphi * cosphi - sinphi * sinphi;
+  double cosphi2  = cosphi * cosphi;
   double sinla    = xsta[1] / cosphi / rsta;
   double cosla    = xsta[0] / cosphi / rsta;
  
@@ -74,34 +75,49 @@ void st1l1 (const double* xsta,const double* xsun,const double* xmon,const doubl
   double rmon2   = /*::sqrt (*/ std::inner_product (xmon,xmon+3,xmon,.0e0) /*)*/;
 
   // Compute the normalized position vector of the Sun.
+  
   double rsun2   = /*::sqrt (*/ std::inner_product (xsun,xsun+3,xsun,.0e0) /*)*/;
-
-  double drsun   = -3e0*dhi*sinphi*cosphi*fac2sun*xsun[2]*(xsun[0]*
-                  sinla-xsun[1]*cosla)/rsun2;
-
-  double drmon   = -3e0*dhi*sinphi*cosphi*fac2mon*xmon[2]*(xmon[0]*
-                  sinla-xmon[1]*cosla)/rmon2;
-
-  double dnsun   = -3e0*dli*cos2phi*fac2sun*xsun[2]*(xsun[0]*sinla-
-                  xsun[1]*cosla)/rsun2;
-
-  double dnmon   = -3e0*dli*cos2phi*fac2mon*xmon[2]*(xmon[0]*sinla-
-                  xmon[1]*cosla)/rmon2;
-
-  double desun   = -3e0*dli*sinphi*fac2sun*xsun[2]*
-                  (xsun[0]*cosla+xsun[1]*sinla)/rsun2;
-
-  double demon   = -3e0*dli*sinphi*fac2mon*xmon[2]*
-                  (xmon[0]*cosla+xmon[1]*sinla)/rmon2;
-
-  double dr = drsun + drmon;
-  double dn = dnsun + dnmon;
-  double de = desun + demon;
-
-  //  Compute the corrections for the station.
-  xcorsta[0] = dr*cosla*cosphi-de*sinla-dn*sinphi*cosla;
-  xcorsta[1] = dr*sinla*cosphi+de*cosla-dn*sinphi*sinla;
-  xcorsta[2] = dr*sinphi+dn*cosphi;
+  
+  // Compute the station corrections for the diurnal band.
+  double l1 = l1d;  
+  double dnsun = -l1*sinphi2*fac2sun*xsun[2]*(xsun[0]*cosla+xsun[1]*sinla)/rsun2;
+  double dnmon = -l1*sinphi2*fac2mon*xmon[2]*(xmon[0]*cosla+xmon[1]*sinla)/rmon2;
+  double desun =  l1*sinphi*(cosphi2-sinphi2)*fac2sun*xsun[2]*
+                  (xsun[0]*sinla-xsun[1]*cosla)/rsun2;
+  double demon =  l1*sinphi*(cosphi2-sinphi2)*fac2mon*xmon[2]*
+                  (xmon[0]*sinla-xmon[1]*cosla)/rmon2;
+  
+  double de = 3e0*(desun+demon);
+  double dn = 3e0*(dnsun+dnmon);
+  
+  xcorsta[0] = -de*sinla-dn*sinphi*cosla;
+  xcorsta[1] =  de*cosla-dn*sinphi*sinla;
+  xcorsta[2] =  dn*cosphi;
+  
+  // Compute the station corrections for the semi-diurnal band.
+  
+  l1 = l1sd;  
+  double costwola = cosla*cosla-sinla*sinla;  
+  double sintwola = 2.e0*cosla*sinla; 
+  
+  dnsun = -l1/2e0*sinphi*cosphi*fac2sun*((pow(xsun[0],2)-pow(xsun[1],2))*
+          costwola+2e0*xsun[0]*xsun[1]*sintwola)/rsun2;
+  
+  dnmon = -l1/2e0*sinphi*cosphi*fac2mon*((pow(xmon[0],2)-pow(xmon[1],2))*
+          costwola+2e0*xmon[0]*xmon[1]*sintwola)/rmon2;
+  
+  desun = -l1/2e0*sinphi2*cosphi*fac2sun*((pow(xsun[0],2)-pow(xsun[1],2))*
+          sintwola-2e0*xsun[0]*xsun[1]*costwola)/rsun2;
+  
+  demon = -l1/2e0*sinphi2*cosphi*fac2mon*((pow(xmon[0],2)-pow(xmon[1],2))*
+          sintwola-2e0*xmon[0]*xmon[1]*costwola)/rmon2;
+  
+  de = 3e0*(desun+demon);
+  dn = 3e0*(dnsun+dnmon);
+  
+  xcorsta[0] += (-de*sinla-dn*sinphi*cosla);
+  xcorsta[1] += (de*cosla-dn*sinphi*sinla);
+  xcorsta[2] +=  dn*cosphi;
 
   // Finished
   return;
@@ -122,9 +138,9 @@ int main ()
 
   printf ("\nSubroutine ST1L1");
   printf ("\nDifferences in meters:");
-  printf ("\n\t|dx| = %15.12f",-0.2836337012840008001e-03 -xcorsta[0]);
-  printf ("\n\t|dy| = %15.12f",0.1125342324347507444e-03 -xcorsta[1]);
-  printf ("\n\t|dz| = %15.12f",-0.2471186224343683169e-03 -xcorsta[2]);
+  printf ("\n\t|dx| = %15.12f", 0.2367189532359759044e-03-xcorsta[0]);
+  printf ("\n\t|dy| = %15.12f", 0.5181609907284959182e-03-xcorsta[1]);
+  printf ("\n\t|dz| = %15.12f",-0.3014881422940427977e-03-xcorsta[2]);
   printf ("\n");
   
   return 0;

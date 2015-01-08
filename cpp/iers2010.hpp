@@ -98,6 +98,7 @@ namespace iers2010 {
   /** @brief Computes tidal corrections of station displacements caused by lunar and solar gravitational attraction.
    */
   int dehanttideinel (const double*,const double*,const double*,const double&,const double&,double*);
+  int dehanttideinel (const double*,const double*,const double*,const int&,const int&,const int&,const double&,double*);
 };
 
 #endif

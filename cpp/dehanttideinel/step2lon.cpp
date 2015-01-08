@@ -36,7 +36,7 @@
  *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
  * 
  */
-void step2lon (const double* xsta,const double& t,double* xcorsta)
+void iers2010::dtel::step2lon (const double* xsta,const double& t,double* xcorsta)
 {
   // Set constants
   #ifdef USE_EXTERNAL_CONSTS

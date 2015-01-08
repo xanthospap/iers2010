@@ -41,7 +41,7 @@
  *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
  * 
  */
-void step2diu (const double* xsta,const double& fhr,const double& t,double* xcorsta)
+void iers2010::dtel::step2diu (const double* xsta,const double& fhr,const double& t,double* xcorsta)
 {
 
   // Set constants

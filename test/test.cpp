@@ -120,7 +120,47 @@ int main ()
   double angle[11];
   iers2010::arg2 (iyear,day,angle);
   for (int i = 0;i<11;i++) printf ("\n\t|dangle(%02i)|  = %15.12f",i+1, fabs (angle[i]-iangle[i]));
- 
+  
+  // subroutine DEHANTTIDEINEL
+  printf ("\nFunction DEHANTTIDEINEL");
+  printf ("\n\tAbs. differences in meters :");
+  /*
+   * Test case:
+   *     given input: XSTA(1) = 4075578.385D0 meters
+   *                  XSTA(2) =  931852.890D0 meters
+   *                  XSTA(3) = 4801570.154D0 meters   
+   *                  XSUN(1) = 137859926952.015D0 meters
+   *                  XSUN(2) = 54228127881.4350D0 meters
+   *                  XSUN(3) = 23509422341.6960D0 meters
+   *                  XMON(1) = -179996231.920342D0 meters
+   *                  XMON(2) = -312468450.131567D0 meters
+   *                  XMON(3) = -169288918.592160D0 meters
+   *                  YR      = 2009
+   *                  MONTH   = 4
+   *                  DAY     = 13
+   *                  FHR     = 0.00D0 hour
+   *                  (T=0.092799473402287)
+   *                  
+   *     expected output:  DXTIDE(1) = 0.7700420357108125891D-01 meters
+   *                       DXTIDE(2) = 0.6304056321824967613D-01 meters
+   *                       DXTIDE(3) = 0.5516568152597246810D-01 meters
+   */
+  double xsta[] = {4075578.385e0,931852.890e0,4801570.154e0};
+  double xsun[] = {137859926952.015e0,54228127881.4350e0,23509422341.6960e0};
+  double xmon[] = {-179996231.920342e0,-312468450.131567e0,-169288918.592160e0};
+  double jc1    = 0.092799473402287e0,jc2 = .0e0;
+  double xcor[3];
+  iers2010::dehanttideinel (xsta,xsun,xmon,2009,4,13,.0e0,xcor);
+  printf ("\n\tVersion 1 (UTC input):");
+  printf ("\n\t|dx|  = %15.12f",0.7700420357108125891e-01-xcor[0]);
+  printf ("\n\t|dy|  = %15.12f",0.6304056321824967613e-01-xcor[1]);
+  printf ("\n\t|dz|  = %15.12f",0.5516568152597246810e-01-xcor[2]);
+  iers2010::dehanttideinel (xsta,xsun,xmon,0.092799473402287e0,.0e0,xcor);
+  printf ("\n\tVersion 2 (TT input):");
+  printf ("\n\t|dx|  = %15.12f",0.7700420357108125891e-01-xcor[0]);
+  printf ("\n\t|dy|  = %15.12f",0.6304056321824967613e-01-xcor[1]);
+  printf ("\n\t|dz|  = %15.12f",0.5516568152597246810e-01-xcor[2]);
+  
   printf ("\n");
   return 0;
 }

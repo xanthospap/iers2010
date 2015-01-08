@@ -52,7 +52,7 @@
  *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477
  * 
  */
-void st1idiu (const double* xsta,const double* xsun,const double* xmon,const double& fac2sun,
+void iers2010::dtel::st1idiu (const double* xsta,const double* xsun,const double* xmon,const double& fac2sun,
               const double& fac2mon,double* xcorsta)
 {
 

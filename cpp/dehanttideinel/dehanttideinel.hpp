@@ -55,6 +55,10 @@ namespace iers2010 {
     void step2diu (const double*,const double&,const double&,double*);
 
     void step2lon (const double*,const double&,double*);
+    
+    int cal2jd (const int&,const int&,const int&,double&,double&);
+    
+    int dat (const int&,const int&,const int&,const double&,double&);
 
     /**
     * @brief function to compute the scalar product of two vectors and their norms.

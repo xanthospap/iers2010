@@ -10,9 +10,8 @@ LFLAGS   = $(C11) -Wall $(OPT) $(USE_EXTERNAL_CONSTS) $(QUICK_EXIT)
 LIB      = ../lib/libiers2010.a
 #
 SRC      = fundarg.cpp  pmsdnut2.cpp  utlibr.cpp fcnnut.cpp arg2.cpp dehanttideinel.cpp \
-           dehanttideinel/st1idiu.cpp dehanttideinel/st1isem.cpp dehanttideinel/st1l1.cpp dehanttideinel/step2diu.cpp dehanttideinel/step2lon.cpp
+           st1idiu.cpp st1isem.cpp st1l1.cpp step2diu.cpp step2lon.cpp cal2jd.cpp dat.cpp
 #
-SRC     := $(SRC:%dehanttideinel/=)
 OBJ_    := $(SRC:%.cpp=%.o)
 OBJ      = $(addprefix ../obj/, $(OBJ_))
 #
@@ -20,24 +19,26 @@ HEAD     = iers2010.hpp
 #
 # --------------------------------------------------------------
 
-all: print mkdirs $(LIB) link clean donem
+all: print mkdirs $(LIB) link donem
 
 mkdirs:
-	-@mkdir ../lib
-	-@mkdir ../obj
-	-@mkdir ../inc
+	-@mkdir ../lib 2>/dev/null
+	-@mkdir ../obj 2>/dev/null
+	-@mkdir ../inc 2>/dev/null
 
 clean:
-	-rm $(OBJ)
+	-rm $(OBJ) 2>/dev/null
 
 delete:
-	-rm $(OBJ)
-	-rm $(LIB)
-	-rm $(CURDIR)/../inc/iers2010.hpp
+	-rm $(OBJ) 2>/dev/null
+	-rm $(LIB) 2>/dev/null
+	-rm $(CURDIR)/../inc/iers2010.hpp 2>/dev/null
+	-rm $(CURDIR)/../inc/dehanttideinel.hpp 2>/dev/null
 
 link:
 	@echo "... Linking header file(s) ..."
 	@/bin/ln -nsf $(CURDIR)/iers2010.hpp $(CURDIR)/../inc/iers2010.hpp
+	@/bin/ln -nsf $(CURDIR)/dehanttideinel/dehanttideinel.hpp $(CURDIR)/../inc/dehanttideinel.hpp
 
 print:
 	@echo ""
@@ -77,3 +78,7 @@ $(LIB): $(OBJ)
 	$(CXX) $(CFLAGS) -o ../obj/step2diu.o dehanttideinel/step2diu.cpp
 ../obj/step2lon.o: dehanttideinel/step2lon.cpp dehanttideinel/dehanttideinel.hpp
 	$(CXX) $(CFLAGS) -o ../obj/step2lon.o dehanttideinel/step2lon.cpp
+../obj/cal2jd.o: dehanttideinel/cal2jd.cpp dehanttideinel/dehanttideinel.hpp
+	$(CXX) $(CFLAGS) -o ../obj/cal2jd.o dehanttideinel/cal2jd.cpp
+../obj/dat.o: dehanttideinel/dat.cpp dehanttideinel/dehanttideinel.hpp
+	$(CXX) $(CFLAGS) -o ../obj/dat.o dehanttideinel/dat.cpp
