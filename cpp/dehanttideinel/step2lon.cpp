@@ -1,3 +1,5 @@
+#include "dehanttideinel.hpp"
+
 /**
  * @details This function gives the in-phase and out-of-phase corrections
  *          induced by mantle anelasticity in the long period band.
@@ -34,13 +36,6 @@
  *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
  * 
  */
-
-#include <numeric>
-#include <cmath>
-#ifdef USE_EXTERNAL_CONSTS
-  #include "gencon.hpp"
-#endif
-
 void step2lon (const double* xsta,const double& t,double* xcorsta)
 {
   // Set constants

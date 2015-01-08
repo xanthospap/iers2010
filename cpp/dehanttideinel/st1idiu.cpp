@@ -1,3 +1,5 @@
+#include "dehanttideinel.hpp"
+
 /**
  * @details This function gives the out-of-phase corrections induced by
  *          mantle anelasticity in the diurnal band. 
@@ -50,10 +52,6 @@
  *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477
  * 
  */
-
-#include <numeric>
-#include <cmath>
-
 void st1idiu (const double* xsta,const double* xsun,const double* xmon,const double& fac2sun,
               const double& fac2mon,double* xcorsta)
 {

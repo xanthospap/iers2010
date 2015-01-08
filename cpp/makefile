@@ -9,8 +9,10 @@ LFLAGS   = $(C11) -Wall $(OPT) $(USE_EXTERNAL_CONSTS) $(QUICK_EXIT)
 #
 LIB      = ../lib/libiers2010.a
 #
-SRC      = fundarg.cpp  pmsdnut2.cpp  utlibr.cpp fcnnut.cpp arg2.cpp
+SRC      = fundarg.cpp  pmsdnut2.cpp  utlibr.cpp fcnnut.cpp arg2.cpp dehanttideinel.cpp \
+           dehanttideinel/st1idiu.cpp dehanttideinel/st1isem.cpp dehanttideinel/st1l1.cpp dehanttideinel/step2diu.cpp dehanttideinel/step2lon.cpp
 #
+SRC     := $(SRC:%dehanttideinel/=)
 OBJ_    := $(SRC:%.cpp=%.o)
 OBJ      = $(addprefix ../obj/, $(OBJ_))
 #
@@ -63,3 +65,15 @@ $(LIB): $(OBJ)
 	$(CXX) $(CFLAGS) -o ../obj/fcnnut.o fcnnut.cpp
 ../obj/arg2.o: arg2.cpp $(HEAD)
 	$(CXX) $(CFLAGS) -o ../obj/arg2.o arg2.cpp
+../obj/dehanttideinel.o: dehanttideinel.cpp $(HEAD)
+	$(CXX) $(CFLAGS) -o ../obj/dehanttideinel.o dehanttideinel.cpp
+../obj/st1idiu.o: dehanttideinel/st1idiu.cpp dehanttideinel/dehanttideinel.hpp
+	$(CXX) $(CFLAGS) -o ../obj/st1idiu.o dehanttideinel/st1idiu.cpp
+../obj/st1isem.o: dehanttideinel/st1isem.cpp dehanttideinel/dehanttideinel.hpp
+	$(CXX) $(CFLAGS) -o ../obj/st1isem.o dehanttideinel/st1isem.cpp
+../obj/st1l1.o: dehanttideinel/st1l1.cpp dehanttideinel/dehanttideinel.hpp
+	$(CXX) $(CFLAGS) -o ../obj/st1l1.o dehanttideinel/st1l1.cpp
+../obj/step2diu.o: dehanttideinel/step2diu.cpp dehanttideinel/dehanttideinel.hpp
+	$(CXX) $(CFLAGS) -o ../obj/step2diu.o dehanttideinel/step2diu.cpp
+../obj/step2lon.o: dehanttideinel/step2lon.cpp dehanttideinel/dehanttideinel.hpp
+	$(CXX) $(CFLAGS) -o ../obj/step2lon.o dehanttideinel/step2lon.cpp

@@ -1,3 +1,5 @@
+#include "dehanttideinel.hpp"
+
 /**
  * @details This function gives the corrections induced by the latitude 
  *          dependence given by L^1 in Mathews et al. 1991 (See References).
@@ -54,10 +56,6 @@
  *       96, 8243-8257
  * 
  */
-
-#include <numeric>
-#include <cmath>
-
 void st1l1 (const double* xsta,const double* xsun,const double* xmon,const double& fac2sun,
               const double& fac2mon,double* xcorsta)
 {

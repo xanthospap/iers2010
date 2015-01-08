@@ -188,7 +188,6 @@ int iers2010::arg2 (const int& iyear,const double& day,double* angle)
                angfac[i][1]*s0 +
                angfac[i][2]*p0 +
                angfac[i][3]*TWOPI;
-    if (i == 0) printf ("\n%15.10f %15.10f %15.10f %15.10f", angfac[i][0], angfac[i][1], angfac[i][2], angfac[i][3]);
     angle[i] = fmod (angle[i],TWOPI);
     while (angle[i] < 0e0) angle[i] += TWOPI;
   }

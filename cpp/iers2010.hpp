@@ -94,6 +94,10 @@ namespace iers2010 {
   /** @brief  Computes the angular argument which depends on time for 11 tidal argument calculations.
   */
   int arg2 (const int&,const double&,double*);
+  
+  /** @brief Computes tidal corrections of station displacements caused by lunar and solar gravitational attraction.
+   */
+  int dehanttideinel (const double*,const double*,const double*,const double&,const double&,double*);
 };
 
 #endif
