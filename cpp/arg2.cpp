@@ -70,7 +70,7 @@
  *
  */
 #include "iers2010.hpp"
-#include <stdio.h>
+
 #ifdef USE_EXTERNAL_CONSTS
   #include "gencon.hpp"
 #endif
