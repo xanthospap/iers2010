@@ -35,9 +35,10 @@
  * </center></b>
  */ 
 
-# include <cmath>
+#include <cmath>
+#include <algorithm>
 
-# ifdef USE_EXTERNAL_CONSTS
+#ifdef USE_EXTERNAL_CONSTS
   #include "gencon.hpp"
 # endif
 

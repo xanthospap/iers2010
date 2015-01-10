@@ -1,5 +1,4 @@
 #include "hardisp.hpp"
-#include <algorithm>
 
 /**
  * @details This function sorts an array x, of length n, sorting upward,

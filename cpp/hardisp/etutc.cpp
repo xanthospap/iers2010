@@ -48,7 +48,7 @@
     
     //  si gives amount of step, at the times given in st
     //+ but all of them are 1.0
-    // const double si = 25e0*1e0;
+    // const double si [] = ... ;
     
     static const double st[] = {
       1972.5,1973.0,1974.0,1975.0,1976.0,1977.0,1978.0,

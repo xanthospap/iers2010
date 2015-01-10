@@ -1,5 +1,4 @@
 #include "hardisp.hpp"
-#include <algorithm>
 
 /**
  * @details This function performs cubic spline interpolation of a given function
