@@ -25,6 +25,10 @@
  *     3) Change date of latest leap second<br>
  *     <b>Latest leap second:  2012 June 30</b>
  * 
+ * @todo Check the case 'For 1820.5 to 1961.5, data is spaced at yearly intervals'. There
+ *       seems to be a mixup of integers and doubles ...
+ * 
+ * @verbatim
  * Test case:
  *     given input: year = 2007.0 
  *
@@ -33,7 +37,8 @@
  *     given input: year = 2013.0 
  *
  *     expected output: delta = 67.1840000000000 seconds
- *
+ * @endverbatim
+ * 
  * @version 2012 March 13
  * 
  */
@@ -41,8 +46,9 @@
   {
     const int nstep = 25;
     
-    // si gives amount of step, at the times given in st
-    const double si = 25e0*1e0;
+    //  si gives amount of step, at the times given in st
+    //+ but all of them are 1.0
+    // const double si = 25e0*1e0;
     
     static const double st[] = {
       1972.5,1973.0,1974.0,1975.0,1976.0,1977.0,1978.0,
@@ -89,6 +95,8 @@
       41.996e0  ,42.184e0   ,42.184e0
     };
     
+    double delta (.0e0);
+    
     // For the oldest epochs, use approximations
     if ( year < 1700 ) 
       return /*delta =*/ .0e0;
@@ -101,9 +109,9 @@
       
     // For 1820.5 to 1961.5, data is spaced at yearly intervals
     else if ( year < 1961.5 ) {
-      double n = year - 1819.5e0;
+      int n = year - 1819.5e0;
       double frac  = year - (1819.5e0 + n);
-      double delta = (d[n] - d[n-1])*frac + d[n-1];
+      delta = (d[n] - d[n-1])*frac + d[n-1];
       return delta;
     }
 
@@ -117,7 +125,7 @@
           delta = ty[i-1] + (ty[i]-ty[i-1])*
                   ((year-1900.0e0-tx[i-1])/(tx[i]-tx[i-1]));
           return delta;
-        }
+        } if (year >= st[i]) delta += /*si[i]*/1.0e0;
       }
     }
 
@@ -125,9 +133,9 @@
    *   after 1972 et-utc has only step offsets. st is the array of step times,*
    *   and si is the step sizes (an added second is +1.)                      *
    *--------------------------------------------------------------------------*/
-  double delta = 42.184e0;
+  delta = 42.184e0;
   for (int i=0;i<nstep;i++) {
-    if (year >= st[i]) delta += si[i];
+    if (year >= st[i]) delta += /*si[i]*/1.0e0;
     if (year < st[i]) return delta;
   }
   

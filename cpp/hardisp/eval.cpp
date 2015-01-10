@@ -1,4 +1,5 @@
 #include "hardisp.hpp"
+#include <algorithm>
 
 /**
  * @details This function performs cubic spline interpolation of a given function
@@ -11,7 +12,7 @@
  * @param[in]  s    Array containing the 2nd derivatives at the sample points (Note 3)
  * @param[in]  u    Array containing samples of a function at the coordinates 
  *                  x(1),x(2),...x(nn)
- * @param[out] eval The interpolated value of the function at y
+ * @param[out] val  The interpolated value of the function at y
  * @return          Zero on success; else 1.
  *
  * @note
@@ -24,27 +25,41 @@
  * @version 2009 August 19
  * 
  */
-int iers2010::hisp::eval (const double& y, const int& nn, const double* x, const double* s, const double* u, double& eval)
+int iers2010::hisp::eval (const double& y, const int& nn, const double* x, const double* s, const double* u, 
+                          double& val)
 {
   if (nn < 0) return 1;
-    
-  // If y is out of range, substitute endpoint values
-  if (y <= x[0]) {
-    eval = x[0];
+  
+  // find index k, such that x[k-1] < y <= x[k]
+  int k = std::distance ( x, std::lower_bound (x,x+nn,y) );
+  
+  int k2 = k;
+  int k1 = k-1;
+  
+  // handle out of bounds; substitute endpoint values
+  if (k >= nn) {double dk = x[k2] - x[k1];
+    val = x[nn-1];
     return 0;
-  }
-  if (y >= x[nn-1]) {
-    eval = u[nn-1];
+  } 
+  else if (k == 0) {
+    val = x[0];
     return 0;
   }
   
-  //  Locate interval (x(k1),x(k2)) which contains y
-  //+ Keep it simple; use the std algorithm (binary search)
-  //+ since the array is already sorted in ascending order.
-  DO 100 K=2,NN
-  IF(X(K-1).LT.Y.AND.X(K).GE.Y) THEN
-  K1=K-1
-  K2=K
-  ENDIF
-  100   CONTINUE
+  //  Evaluate and then interpolate.
+  //+ Note that this can fail if dk is ~0
+  double dy = x[k2] - y;
+  double dy1 = y - x[k1];
+  double dk = x[k2] - x[k1];
+  if (dk < 1e-15) return 1;
+  double deli = 1.0e0 / (6.0e0 * dk);
+  double ff1 = s[k1]*dy*dy*dy;
+  double ff2 = s[k2]*dy1*dy1*dy1;
+  double f1  = (ff1+ff2) * deli;
+  double f2 = dy1*((u[k2]/dk)-(s[k2]*dk)/6.0e0);
+  double f3 = dy*((u[k1]/dk)-(s[k1]*dk)/6.0e0);
+  val = f1 + f2 + f3;
+  
+  // Finished
+  return 0;
 }

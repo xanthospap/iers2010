@@ -51,6 +51,12 @@ namespace hisp {
   
   double etutc (const double&);
   
+  int eval (const double&,const int&,const double*,const double*,const double*,double&);
+  
+  int recurs (double*,const int&,const double*,const int&,const double*,double*);
+  
+  int shells (double*,int*,const int&);
+  
   /**
   * @details This function finds the day number of days before start of month m,
   *          of year iy, in Gregorian intercalation.
@@ -67,7 +73,7 @@ namespace hisp {
   inline int mday (const int& iy, const int& m)
   {
     int leap = iers2010::hisp::leap (iy);
-    return (((367*(m-2-12*((m-14)/12)))/12+29) %  365) + leap*((9+m)/12;
+    return (((367*(m-2-12*((m-14)/12)))/12+29) % (365)) + leap*((9+m)/12);
   }
   
   /**
@@ -99,3 +105,5 @@ namespace hisp {
 };
 
 };
+
+#endif
