@@ -37,7 +37,7 @@
  * @version 2013 September 11
  * 
  */
-int iers2010::hisp::dtfrph (const int* idood,const int* itm,double& freq,double& phase)
+int iers2010::hisp::tdfrph (const int* idood,const int* itm,double& freq,double& phase)
 {
   static int last_date[] = {0,0,0,0,0};
   static double  d[6];
@@ -63,7 +63,7 @@ int iers2010::hisp::dtfrph (const int* idood,const int* itm,double& freq,double&
     double dayfr = itm[2]/24.0e0 + itm[3]/1440.0e0 + itm[4]/84600.0e0;
     double year  = itm[0]+(itm[1]+dayfr) / 
                   (365.0e0+(double)iers2010::hisp::leap(itm[0]));
-    double delta = iers2010::hisp::etutc(year,delta);
+    double delta = iers2010::hisp::etutc(year);
     double djd   = (double)jd - 0.5e0 + dayfr;
     double t     = (djd - 2451545.0e0 + delta/86400.0e0)/36525.0e0;
     

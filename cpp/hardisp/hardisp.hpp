@@ -58,6 +58,13 @@ namespace hisp {
   
   int shells (double*,int*,const int&);
   
+  int spline (const int&,const double*,const double*,double*,double*);
+  
+  int tdfrph (const int*,const int*,double&,double&);
+  
+  int admint (const double*,const int**,const double*,const int&,
+              const int*,double*,double*,double*,int&);
+  
   /**
   * @details This function finds the day number of days before start of month m,
   *          of year iy, in Gregorian intercalation.

@@ -11,7 +11,7 @@ LIB      = ../lib/libiers2010.a
 #
 SRC      = fundarg.cpp  pmsdnut2.cpp  utlibr.cpp fcnnut.cpp arg2.cpp dehanttideinel.cpp \
            st1idiu.cpp st1isem.cpp st1l1.cpp step2diu.cpp step2lon.cpp cal2jd.cpp dat.cpp \
-           etutc.cpp eval.cpp recurs.cpp shells.cpp utils.cpp
+           etutc.cpp eval.cpp recurs.cpp shells.cpp utils.cpp spline.cpp tdfrph.cpp admint.cpp
 
 #
 OBJ_    := $(SRC:%.cpp=%.o)
@@ -84,7 +84,7 @@ $(LIB): $(OBJ)
 	$(CXX) $(CFLAGS) -o ../obj/cal2jd.o dehanttideinel/cal2jd.cpp
 ../obj/dat.o: dehanttideinel/dat.cpp dehanttideinel/dehanttideinel.hpp
 	$(CXX) $(CFLAGS) -o ../obj/dat.o dehanttideinel/dat.cpp
-../obj/admint.o: hardisp/admint.cpp hardisp/hardisp.hpp
+../obj/admint.o: hardisp/admint.cpp hardisp/hardisp.hpp hardisp/tdfrph.cpp hardisp/spline.cpp hardisp/eval.cpp hardisp/shells.cpp 
 	$(CXX) $(CFLAGS) -o ../obj/admint.o hardisp/admint.cpp
 ../obj/etutc.o: hardisp/etutc.cpp hardisp/hardisp.hpp
 	$(CXX) $(CFLAGS) -o ../obj/etutc.o hardisp/etutc.cpp
@@ -96,3 +96,7 @@ $(LIB): $(OBJ)
 	$(CXX) $(CFLAGS) -o ../obj/shells.o hardisp/shells.cpp
 ../obj/utils.o: hardisp/utils.cpp hardisp/hardisp.hpp
 	$(CXX) $(CFLAGS) -o ../obj/utils.o hardisp/utils.cpp
+../obj/spline.o: hardisp/spline.cpp hardisp/hardisp.hpp
+	$(CXX) $(CFLAGS) -o ../obj/spline.o hardisp/spline.cpp
+../obj/tdfrph.o: hardisp/tdfrph.cpp hardisp/hardisp.hpp hardisp/etutc.cpp hardisp/utils.cpp
+	$(CXX) $(CFLAGS) -o ../obj/tdfrph.o hardisp/tdfrph.cpp
