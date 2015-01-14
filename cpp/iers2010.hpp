@@ -41,7 +41,7 @@
  * @attention The FORTRAN subroutines may ba updated; see that their C++ translations stay
  *            updated too.
  *
- * @todo      
+ * @todo
  *        -#  How can we best implement the FORTRAN MOD() fuction in C++ ? Some subroutines, use
  *            both MOD() and DMOD(). We need a translation rule! Affects:
  *            Function    | Comment
@@ -54,6 +54,8 @@
  * 
  *        -#  Provide a test / driver program with differences from the official FORTRAN release,
  *            using the test cases in the modules.
+ *        -#  Input time parameters vary (TT, UTC,  Julian dates,  calendar dates,  etc...),. Need
+ *           to specify a unique pattern for this.
  * 
  * @cite      iers2010
  *
@@ -99,6 +101,10 @@ namespace iers2010 {
    */
   int dehanttideinel (const double*,const double*,const double*,const double&,const double&,double*);
   int dehanttideinel (const double*,const double*,const double*,const int&,const int&,const int&,const double&,double*);
+  
+  /** @brief Computes the effects of zonal Earth tides on the rotation of the Earth.
+   */
+  int rg_zont2 (const double&,double&,double&,double&);
 };
 
 #endif

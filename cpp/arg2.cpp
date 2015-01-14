@@ -1,9 +1,21 @@
+#include "iers2010.hpp"
+
+#ifdef USE_EXTERNAL_CONSTS
+  #include "gencon.hpp"
+#endif
+
+#ifdef QUICK_EXIT
+  #include <algorithm>
+#endif
+
 /**
  * @details The purpose of the function is to compute the angular astronomical
  *          argument, which depends on time, for 11 tidal argument calculations. 
  *          The order of the 11 angular quantities in vector angle are given below:
  *          01-M2, 02-S2, 03-N2, 04-K2, 05-K1, 06-O1, 07-P1, 08-Q1, 09-Mf,
  *          10-Mm, 11-Ssa (See Reference 1) 
+ *          This function is a translation/wrapper for the fortran ARG2
+ *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[in]  iyear Four digit year (Note 1)
  * @param[in]  day   Day of Year Greenwich Time (Note 2)
@@ -69,16 +81,6 @@
  * The Semidiurnal Principal Lunar Tide M2," Marine Geodesy, 6, pp. 219-256.
  *
  */
-#include "iers2010.hpp"
-
-#ifdef USE_EXTERNAL_CONSTS
-  #include "gencon.hpp"
-#endif
-
-#ifdef QUICK_EXIT
-  #include <algorithm>
-#endif
-
 int iers2010::arg2 (const int& iyear,const double& day,double* angle) 
 {
   // check for quick exit

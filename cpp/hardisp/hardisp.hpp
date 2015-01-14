@@ -23,6 +23,9 @@
  * @attention The FORTRAN subroutines may be updated; see that their C++ translations stay
  *            updated too.
  * 
+ * @todo
+ *         -# Translate Fortran's REAL to float and NOT double.
+ * 
  * @cite      iers2010
  *
  * @copyright No COPYRIGHT whatsoever.

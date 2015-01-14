@@ -1,3 +1,8 @@
+#include "iers2010.hpp"
+#ifdef USE_EXTERNAL_CONSTS
+  #include "gencon.hpp"
+#endif
+
 /**
  * @details This function evaluates the model of polar motion for
  *          a nonrigid Earth due to tidal gravitation. This polar motion
@@ -28,23 +33,19 @@
  *          PARAMETER ( iband = 1 )
  *          to  PARAMETER ( iband = 0 )
  * 
+ * @verbatim
  * Test case:
  *     given input: rmjd = 54335D0 ( August 23, 2007 ) 
  *
  *     expected output: (dx) pm(1)  = 24.83144238273364834D0 microarcseconds
  *                      (dy) pm(2) = -14.09240692041837661D0 microarcseconds
+ * @endverbatim
  * 
  * @version 2011 October  13
  * 
  * @cite iers2010
  * 
  */
-
-#include "iers2010.hpp"
-#ifdef USE_EXTERNAL_CONSTS
-  #include "gencon.hpp"
-#endif
-
 int iers2010::pmsdnut2 (const double& rmjd,double* pm) 
 {
   
