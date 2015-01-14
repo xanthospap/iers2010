@@ -10,6 +10,8 @@
  *          spline interpolation of the tidal admittance.  A total of 342
  *          constituent tides are included, which gives a precision of about
  *          0.1%.
+ *          This function is a translation/wrapper for the fortran HARDISP
+ *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[out]  du  Radial tidal ocean loading displacement (Note 2)
  * @param[out]  dw  West tidal ocean loading displacement (Note 2)

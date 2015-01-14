@@ -161,6 +161,24 @@ int main ()
   printf ("\n\t|dy|  = %15.12f",0.6304056321824967613e-01-xcor[1]);
   printf ("\n\t|dz|  = %15.12f",0.5516568152597246810e-01-xcor[2]);
   
+  // subroutine RG_ZONT2
+  printf ("\nFunction RG_ZONT22");
+  printf ("\n\tAbs. differences (see results) :");
+  /*
+   *    Test case:
+   *     given input: T = .07995893223819302 Julian centuries since J2000
+   *                  (MJD = 54465)
+   *     expected output: DUT    =  7.983287678576557467E-002 seconds
+   *                      DLOD   =  5.035331113978199288E-005 seconds / day
+   *                      DOMEGA = -4.249711616463017E-014 radians / second
+   */
+  t = .07995893223819302e0;
+  double dut, /*dlod,*/ domega;
+  iers2010::rg_zont2 (t, dut, dlod, domega);
+  printf ("\n\t|ddut|   = %15.12f (seconds)",7.983287678576557467E-002-dut);
+  printf ("\n\t|ddlod|  = %15.12f (seconds/day)",5.035331113978199288E-005-dlod);
+  printf ("\n\t|ddomega|= %15.12f (radians/second)", -4.249711616463017E-014-domega);
+
   printf ("\n");
   return 0;
 }

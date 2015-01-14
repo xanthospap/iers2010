@@ -10,6 +10,7 @@ LFLAGS   = $(C11) -Wall $(OPT) $(USE_EXTERNAL_CONSTS) $(QUICK_EXIT)
 LIB      = ../lib/libiers2010.a
 #
 SRC      = fundarg.cpp  pmsdnut2.cpp  utlibr.cpp fcnnut.cpp arg2.cpp dehanttideinel.cpp \
+           rg_zont2.cpp \
            st1idiu.cpp st1isem.cpp st1l1.cpp step2diu.cpp step2lon.cpp cal2jd.cpp dat.cpp \
            etutc.cpp eval.cpp recurs.cpp shells.cpp utils.cpp spline.cpp tdfrph.cpp admint.cpp
 
@@ -68,6 +69,8 @@ $(LIB): $(OBJ)
 	$(CXX) $(CFLAGS) -o ../obj/fcnnut.o fcnnut.cpp
 ../obj/arg2.o: arg2.cpp $(HEAD)
 	$(CXX) $(CFLAGS) -o ../obj/arg2.o arg2.cpp
+../obj/rg_zont2.o: rg_zont2.cpp $(HEAD) ../obj/fundarg.o
+	$(CXX) $(CFLAGS) -o ../obj/rg_zont2.o rg_zont2.cpp
 ../obj/dehanttideinel.o: dehanttideinel.cpp $(HEAD)
 	$(CXX) $(CFLAGS) -o ../obj/dehanttideinel.o dehanttideinel.cpp
 ../obj/st1idiu.o: dehanttideinel/st1idiu.cpp dehanttideinel/dehanttideinel.hpp
