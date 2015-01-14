@@ -60,6 +60,12 @@ calculates X - INT(X/Y)*Y. In addition, it can happen that in the same subroutin
 MOD and DMOD are present.
 Affects: pmsdnut2,
 
+* COMPARISSON WITH FORTRAN IMPLEMENTATION
+=======================================
+Run the program test.e found under the /test directory to check the results of this
+implementation compared with the test cases given in (most) fortran routines. Note
+that the cases may *NOT* be up to date.
+
 * LAST UPDATE
 =======================================
 DEC-2014

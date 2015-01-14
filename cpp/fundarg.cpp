@@ -1,3 +1,13 @@
+#include "iers2010.hpp"
+#ifdef USE_EXTERNAL_CONSTS
+  #include "gencon.hpp"
+#endif
+
+inline double _MOD_ (const double& a,const double& p)
+{
+  return a - ( (int)(a/p) * p );
+}
+
 /**
  * @details This subroutine computes the lunisolar fundamental arguments.
  *          The model used is from Simon et al. (1994) as recommended by the IERS
@@ -44,12 +54,6 @@
  * @cite iers2010, @cite simon94
  * 
  */
-
-#include "iers2010.hpp"
-#ifdef USE_EXTERNAL_CONSTS
-  #include "gencon.hpp"
-#endif
-
 int iers2010::fundarg (const double& t,double& l,double& lp,double& f,double& d,double& om)
 {
 

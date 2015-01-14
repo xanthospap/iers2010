@@ -25,11 +25,16 @@ int main ()
   double t = 0.07995893223819302;
   double l,lp,f,d,om;
   iers2010::fundarg (t,l,lp,f,d,om);
-  printf ("\n\t|dl|  = %15.12f",fabs (2.291187512612069099-l));
+  /*printf ("\n\t|dl|  = %15.12f",fabs (2.291187512612069099-l));
   printf ("\n\t|dlp| = %15.12f",fabs (6.212931111003726414-lp));
   printf ("\n\t|df|  = %15.12f",fabs (3.658025792050572989-f));
   printf ("\n\t|dd|  = %15.12f",fabs (4.554139562402433228-d));
-  printf ("\n\t|dom| = %15.12f",fabs (-0.5167379217231804489-om));
+  printf ("\n\t|dom| = %15.12f",fabs (-0.5167379217231804489-om));*/
+  printf ("\n\t|dl|  = %20.15f",fabs (2.291187512612069099-l));
+  printf ("\n\t|dlp| = %20.15f",fabs (6.212931111003726414-lp));
+  printf ("\n\t|df|  = %20.15f",fabs (3.658025792050572989-f));
+  printf ("\n\t|dd|  = %20.15f",fabs (4.554139562402433228-d));
+  printf ("\n\t|dom| = %20.15f",fabs (-0.5167379217231804489-om));
   
   // subroutine FCNNUT
   printf ("\nFunction FCNNUT");
