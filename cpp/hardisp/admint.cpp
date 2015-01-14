@@ -13,7 +13,8 @@
  *          constituents.
  * 
  * @param[in]  ampin  Cartwright-Edden amplitude of tidal constituents
- * @param[in]  idtin  Doodson number of tidal constituents
+ *                    (size \c nin).
+ * @param[in]  idtin  Doodson number of tidal constituents (size 6x\c nin).
  * @param[in]  phin   Phase of tidal constituents
  * @param[in]  nin    Number of harmonics used
  * @param[in]  itm    Date as integer array in UTC. The format should be:

@@ -10,6 +10,8 @@
  *          spline interpolation of the tidal admittance.  A total of 342
  *          constituent tides are included, which gives a precision of about
  *          0.1%.
+ *          This function is a translation/wrapper for the fortran HARDISP
+ *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[out]  du  Radial tidal ocean loading displacement (Note 2)
  * @param[out]  dw  West tidal ocean loading displacement (Note 2)
@@ -193,7 +195,7 @@ int iers2010::hardisp (int argc, const char* argv[],double* du, double* dw, doub
     return 1;
   }
   
-  float tamp[ntin][3], tph[ntin][3];
+  float tamp[3][ntin], tph[3][ntin];
   
   /*+---------------------------------------------------------------------
    *  Read in amplitudes and phases, in standard "Scherneck" form, from
@@ -201,18 +203,44 @@ int iers2010::hardisp (int argc, const char* argv[],double* du, double* dw, doub
    *----------------------------------------------------------------------*/
    for (int i=0;i<3;i++) {
      for (int kk=0;kk<ntin;kk++) {
-       scanf ("%7.5f", tamp[kk][i]);
+       scanf ("%7.5f", tamp[i][kk]);
      }
    }
    for (int i=0;i<3;i++) {
     for (int kk=0;kk<ntin;kk++) {
-      scanf ("%7.5f", tph[kk][i]);
+      scanf ("%7.5f", tph[i][kk]);
      }
      // Change sign for phase, to be negative for lags
      for (int kk=0;kk<ntin;kk++) {
-       tph[kk][i] = -tph[kk][i];
+       tph[i][kk] = -tph[i][kk];
       }
    }
+   
+   /*+---------------------------------------------------------------------
+    *
+    *  Find amplitudes and phases for all constituents, for each of the
+    *  three displacements. Note that the same frequencies are returned 
+    *  each time.
+    *
+    *  BLQ format order is vertical, horizontal EW, horizontal NS
+    *
+    *----------------------------------------------------------------------*/
+   for (int i=0;i<ntin;i++) {
+     amp[i] = tamp[1][i];
+     phase[i] = tph[1][i];
+   }
+   iers2010::hisp::admint (amp,idt,phase,az,f,pz,ntin,ntout);
+   CALL ADMINT(AMP,IDT,PHASE,AZ,F,PZ,NTIN,NTOUT)
+   DO I=1,NTIN
+   AMP(I)=TAMP(2,I)
+   PHASE(I)=TPH(2,I)
+   ENDDO
+   CALL ADMINT(AMP,IDT,PHASE,AW,F,PW,NTIN,NTOUT)
+   DO I=1,NTIN
+   AMP(I)=TAMP(3,I)
+   PHASE(I)=TPH(3,I)
+   ENDDO
+   CALL ADMINT(AMP,IDT,PHASE,AS,F,PS,NTIN,NTOUT)
 
 
 }
