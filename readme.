@@ -64,7 +64,34 @@ Affects: pmsdnut2,
 =======================================
 Run the program test.e found under the /test directory to check the results of this
 implementation compared with the test cases given in (most) fortran routines. Note
-that the cases may *NOT* be up to date.
+that the cases may *NOT* be up to date. When executing the FORTRAN routines from IERS,
+consider the following (Note 1):
+
+FUNDARG.F : The FUNDARG.F and fundarg.cpp produce exactly the same results. Note however that,
+            when running the FUNDARG.F routine, all input/output parameters MUST be provided
+            in explicit double format (i.e. ending with D0 or something similar). E.g., for
+            the test case provided at header, declare epoch as T = 0.07995893223819302D0
+            and NOT T = 0.07995893223819302. Same is true for comparing the results (i.e.
+            WRITE(*,100) 'dl  = ',DABS(2.291187512612069099D0-L) ).
+
+PMSDNUT2.F: The PMSDNUT2.F and mpsdnut2.cpp functions, do not produce identical results. That
+            is because FORTRAN seems to produce small 'garbage' when transforming elements of
+            the vectors XS(25), XC(25), YS(25), YC(25). To fix this, use an explicit double
+            decleration at the source code, i.e. instead of 
+            DATA 
+          .(  (IARG(I,J),i=1,6),     PER(J),   XS(J),  XC(J),  YS(J),  YC(J),
+          .                                                          J=16,25)
+          ./ 1, -1, 0, -2,  0, -1, 1.1196992,   -0.4,   0.3,   -0.3,   -0.4,
+          .  1, -1, 0, -2,  0, -2, 1.1195149,   -2.3,   1.3,   -1.3,   -2.3,
+            use:
+          .(  (IARG(I,J),i=1,6),     PER(J),   XS(J),  XC(J),  YS(J),  YC(J),
+          .                                                          J=16,25)
+          ./ 1, -1, 0, -2,  0, -1, 1.1196992, -0.4D0, 0.3D0, -0.3D0, -0.4D0,
+          .  1, -1, 0, -2,  0, -2, 1.1195149, -2.3D0, 1.3D0, -1.3D0, -2.3D0,
+            c++ normally does not need this, but in any case the corresponding elements are
+            declared in scientific notation.
+
+[Note 1 : cpp library compiled with NO USE_EXTERNAL_CONSTS flag]
 
 * LAST UPDATE
 =======================================
