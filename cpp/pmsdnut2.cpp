@@ -11,7 +11,8 @@
  *          (15 long periodic and 10 quasi diurnal) with coefficients given
  *          in Table 5.1a of the IERS Conventions (2010).
  *          This function is a translation/wrapper for the fortran PMSDNUT2
- *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
+ *          subroutine, found here : 
+ *          http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[in]  rmjd Time expressed as modified Julian date
  * @param[out] pm   Array of size 2, containing the polar motion
@@ -78,7 +79,7 @@ int iers2010::pmsdnut2 (const double& rmjd,double* pm)
   #ifdef QUICK_EXIT
     static double rmjd_previous = .0e0;
     static double pm_previous[] = { .0e0,.0e0 };
-    if ( fabs( rmjd_previous-rmjd ) < DATE_MAX_DIFF ) {
+    if ( fabs(rmjd_previous-rmjd) < DATE_MAX_DIFF ) {
       pm[0] = pm_previous[0];
       pm[1] = pm_previous[1];
       return 1;
@@ -90,19 +91,21 @@ int iers2010::pmsdnut2 (const double& rmjd,double* pm)
 
   // Set constants
   #ifdef USE_EXTERNAL_CONSTS
-    /*constexpr double DAS2R   (DAS2R);     // Arcseconds to radians*/
-    /*constexpr double TURNAS  (TURNAS);    // Arcseconds in a full circle*/
     constexpr double RMJD0   (DJM00);     // Modified Julian date of J2000
-    constexpr double PI      (DPI);       // pi
-    constexpr double TWOPI   (D2PI);      // 2 * pi
+    constexpr double PI      (DPI);
+    constexpr double TWOPI   (D2PI); 
     constexpr double RAD2SEC (DRAD2SEC);  // Radians to seconds
   #else
-    constexpr double DAS2R   ( 4.848136811095359935899141e-6 ); // Arcseconds to radians
-    constexpr double TURNAS  ( 1296000e0 );                     // Arcseconds in a full circle
-    constexpr double RMJD0   ( 51544.5e0 );                     // Modified Julian date of J2000
-    constexpr double PI      ( 3.141592653589793238462643e0 );  // pi
-    constexpr double TWOPI   ( 6.283185307179586476925287e0 );  // 2*pi
-    constexpr double RAD2SEC ( 86400e0 / TWOPI );               // Radians to seconds
+    // Arcseconds to radians
+    constexpr double DAS2R   (4.848136811095359935899141e-6);
+    // Arcseconds in a full circle
+    constexpr double TURNAS  (1296000e0);
+    // Modified Julian date of J2000
+    constexpr double RMJD0   (51544.5e0);
+    constexpr double PI      (3.141592653589793238462643e0);
+    constexpr double TWOPI   (6.283185307179586476925287e0);
+    // Radians to seconds
+    constexpr double RAD2SEC (86400e0 / TWOPI);
   #endif
 
   // Coefficients of the long and quasi diurnal periodic terms in polar motion
@@ -164,7 +167,7 @@ int iers2010::pmsdnut2 (const double& rmjd,double* pm)
   // Fundamental arguments
   iers2010::fundarg( t,arg[1],arg[2],arg[3],arg[4],arg[5] );
   arg[0] = gmst / RAD2SEC + PI;
-  arg[0] = fmod( arg[0],TWOPI );
+  arg[0] = fmod(arg[0],TWOPI);
 
   if (iband==1) jstart = 15;
   else jstart = 0;

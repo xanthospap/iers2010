@@ -5,15 +5,16 @@
  * @details This function computes the station tidal displacement
  *          caused by lunar and solar gravitational attraction (see References). 
  *          The computations are calculated by the following steps:<br>
- *          <b>Step 1):</b> General degree 2 and degree 3 corrections + CALL ST1IDIU 
- *          + CALL ST1ISEM + CALL ST1L1.<br>  
+ *          <b>Step 1):</b> General degree 2 and degree 3 corrections 
+ *          + CALL ST1IDIU + CALL ST1ISEM + CALL ST1L1.<br>  
  *          <b>Step 2):</b> CALL STEP2DIU + CALL STEP2LON<br>
- *          It has been decided that the <b>Step 3</b> non-correction for permanent tide
- *          would not be applied in order to avoid a jump in the reference frame.
- *          This Step 3 must be added in order to get the non-tidal station position
- *          and to conform with the IAG Resolution.
- *          This function is a translation/wrapper for the fortran DEHANTTIDEINEL
- *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
+ *          It has been decided that the <b>Step 3</b> non-correction for 
+ *          permanent tide would not be applied in order to avoid a jump in the
+ *          reference frame. This Step 3 must be added in order to get the 
+ *          non-tidal station position and to conform with the IAG Resolution.
+ *          This function is a translation/wrapper for the fortran 
+ *          DEHANTTIDEINEL subroutine, found here : 
+ *          http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[in]  xsta   Geocentric position of the IGS station (Note 1)
  * @param[in]  xsun   Geocentric position of the Sun (Note 2)
@@ -34,9 +35,9 @@
  *        + sec/3600.0.
  *     -# The displacement vector is in the geocentric ITRF.  All components are
  *        expressed in meters.
- *     -# Parameters jc1 and jc2 constitute the date as Julian Centuries in TT time
- *        scale. The actual date is given by the addition jc1+jc2. Either jc1 or jc2
- *        can be set to zero.
+ *     -# Parameters jc1 and jc2 constitute the date as Julian Centuries in TT 
+ *        time scale. The actual date is given by the addition jc1+jc2. 
+ *        Either jc1 or jc2 can be set to zero.
  *     -# Status: Class 1
  *     -# This fucnction is part of the package dehanttideinel, see
  *        ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ 
@@ -103,17 +104,18 @@
  *     of the Earth," Geophys. Res. Lett., 19(6), pp. 529-531
  * 
  */
-int iers2010::dehanttideinel (const double* xsta, const double* xsun, const double* xmon, const int& yr, const int& month, 
-                              const int& day, const double& fhr, double* dxtide)
+int iers2010::dehanttideinel (const double* xsta,const double* xsun, 
+		const double* xmon,const int& yr,const int& month, 
+		const int& day,const double& fhr,double* dxtide)
 {
   
   double xcorsta[] = {.0e0,.0e0,.0e0};
   
   // Set constants
   #ifdef USE_EXTERNAL_CONSTS
-    constexpr double PI   (DPI);                              // pi
+    constexpr double PI   (DPI);
   #else
-    constexpr double PI   ( 3.1415926535897932384626433e0 );  // pi
+    constexpr double PI   (3.1415926535897932384626433e0);
   #endif
   
   /*----------------------------------------------------------------------  
@@ -250,15 +252,16 @@ int iers2010::dehanttideinel (const double* xsta, const double* xsun, const doub
  * @details This function computes the station tidal displacement
  *          caused by lunar and solar gravitational attraction (see References). 
  *          The computations are calculated by the following steps:<br>
- *          <b>Step 1):</b> General degree 2 and degree 3 corrections + CALL ST1IDIU 
- *          + CALL ST1ISEM + CALL ST1L1.<br>  
+ *          <b>Step 1):</b> General degree 2 and degree 3 corrections 
+ *          + CALL ST1IDIU + CALL ST1ISEM + CALL ST1L1.<br>  
  *          <b>Step 2):</b> CALL STEP2DIU + CALL STEP2LON<br>
- *          It has been decided that the <b>Step 3</b> non-correction for permanent tide
- *          would not be applied in order to avoid a jump in the reference frame.
- *          This Step 3 must be added in order to get the non-tidal station position
- *          and to conform with the IAG Resolution.
- *          This function is a translation/wrapper for the fortran DEHANTTIDEINEL
- *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
+ *          It has been decided that the <b>Step 3</b> non-correction for 
+ *          permanent tide would not be applied in order to avoid a jump in the 
+ *          reference frame. This Step 3 must be added in order to get the 
+ *          non-tidal station position and to conform with the IAG Resolution.
+ *          This function is a translation/wrapper for the fortran 
+ *          DEHANTTIDEINEL subroutine, found here : 
+ *          http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[in]  xsta   Geocentric position of the IGS station (Note 1)
  * @param[in]  xsun   Geocentric position of the Sun (Note 2)
@@ -277,9 +280,9 @@ int iers2010::dehanttideinel (const double* xsta, const double* xsun, const doub
  *        + sec/3600.0.
  *     -# The displacement vector is in the geocentric ITRF.  All components are
  *        expressed in meters.
- *     -# Parameters jc1 and jc2 constitute the date as Julian Centuries in TT time
- *        scale. The actual date is given by the addition jc1+jc2. Either jc1 or jc2
- *        can be set to zero.
+ *     -# Parameters jc1 and jc2 constitute the date as Julian Centuries in TT 
+ *        time scale. The actual date is given by the addition jc1+jc2. Either 
+ *        jc1 or jc2 can be set to zero.
  *     -# Status: Class 1
  *     -# This fucnction is part of the package dehanttideinel, see
  *        ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ 
@@ -347,17 +350,18 @@ int iers2010::dehanttideinel (const double* xsta, const double* xsun, const doub
  *     of the Earth," Geophys. Res. Lett., 19(6), pp. 529-531
  * 
  */
-int iers2010::dehanttideinel (const double* xsta, const double* xsun, const double* xmon, const double& jc1, const double& jc2, 
-                            double* dxtide)
+int iers2010::dehanttideinel (const double* xsta,const double* xsun, 
+		const double* xmon,const double& jc1,const double& jc2, 
+		double* dxtide)
 {
 
   double xcorsta[] = {.0e0,.0e0,.0e0};
 
   // Set constants
   #ifdef USE_EXTERNAL_CONSTS
-    constexpr double PI   (DPI);                              // pi
+    constexpr double PI   (DPI); 
   #else
-    constexpr double PI   ( 3.1415926535897932384626433e0 );  // pi
+    constexpr double PI   (3.1415926535897932384626433e0); 
   #endif
 
   /*----------------------------------------------------------------------  

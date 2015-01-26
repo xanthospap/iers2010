@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<chapter id="chap_02">
+  <title>Installation</title>
+  
+  <section id="chap_02_01"><title>Compiler Support</title></section>
+  
+  <section id="chap_02_02"><title>OS Support</title></section>
+  
+  <section id="chap_02_03"><title>Cloning and Updating</title></section>
+  
+  <section id="chap_02_04"><title>Compilation</title>
+    
+    <section id="chap_02_04_01"><title>Compilation Flags</title></section>
+    
+    <section id="chap_02_04_02"><title>Verification</title></section>
+    
+    </section>
+    
+    <section id="chap_02_05"><title>TroubleShooting</title></section>
+    
+  </chapter>

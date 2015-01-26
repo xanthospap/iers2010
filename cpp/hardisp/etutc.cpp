@@ -25,8 +25,8 @@
  *     3) Change date of latest leap second<br>
  *     <b>Latest leap second:  2012 June 30</b>
  * 
- * @todo Check the case 'For 1820.5 to 1961.5, data is spaced at yearly intervals'. There
- *       seems to be a mixup of integers and doubles ...
+ * @todo Check the case 'For 1820.5 to 1961.5, data is spaced at yearly 
+ *       intervals'. There seems to be a mixup of integers and doubles ...
  * 
  * @verbatim
  * Test case:
@@ -98,7 +98,7 @@
     double delta (.0e0);
     
     // For the oldest epochs, use approximations
-    if ( year < 1700 ) 
+    if (year<1700) 
       return /*delta =*/ .0e0;
       
     else if ( year < 1785.0)

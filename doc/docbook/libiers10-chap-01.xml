@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<chapter id="chap_01">
+  <title>The <application>libiers10++</application> Software Package</title>
+  
+  <abstract id="chap_01_01"><title>Introduction</title>
+    <para>The <application>libiers10++</application> library includes a variety of functions, implementing the
+    models defined by IERS in technical note 36, IERS Conventions (2010). The document is 
+    <ulink url="http://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html?nn=94912">available</ulink> 
+    in the IERS website.</para>
+  <para>The IERS, has a <ulink url="http://62.161.69.131/iers/conv2010/conv2010.html">dedicated website</ulink>,
+    where official implementations of these models are distributed, via source code in FORTRAN programing
+    language. Updates can be found <ulink url="http://62.161.69.131/iers/convupdt/convupdt.html">here</ulink>.
+    The source code and documents can be downloaded and used, following the terms and conditions defined therein.
+  </para>
+  <para><application>libiers10++</application> was developed in Dionysos Satellite Observatory of the National
+    Technical University of Athens, to assist its own geodesy-oriented scientific activities. To that end,
+    most of the IERS routines were translated and compiled into a library for further use. The main programing
+    language used in the Laboratory is C++, consequently, the library is written in this language.</para>
+  </abstract>
+  
+  <section id="chap_01_02"><title>Source Code</title>
+    <para>The languge of choice for the source code is Standard C++. The current ISO C++ standard, known as
+      C++<subscript>11</subscript>, is used.
+      <note>The library uses a number of  C++<subscript>11</subscript> features, so make sure you 
+        use a compiler with support for this ISO version.</note>
+    </para>
+  </section>
+  
+  <section id="chap_01_03"><title>Available functions</title>
+    <para></para>
+    
+    <table frame='all' tocentry='1'>
+      <title>List of Available Functions</title>
+      <tgroup cols="7" colsep='1' rowsep='1'>
+        <thead>
+          <row>
+            <entry>Chapter</entry>
+            <entry>Function Name</entry>
+            <entry>Namespace</entry>
+            <entry>Purpose</entry>
+            <entry>Original Function Name</entry>
+            <entry>Comments</entry>
+            <entry>Original author (fortran)</entry>
+          </row>
+        </thead>
+        <tbody>
+          
+          <row>
+            <entry morerows='3' valign='middle'>Chapter 5</entry>
+            <entry><function>pmsdnut2</function></entry><entry>iers2010</entry>
+            <entry>compute the diurnal lunisolar effect on polar motion</entry>
+            <entry><ulink url="http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F">PMSDNUT2.F</ulink></entry>
+            <entry></entry>
+            <entry>A. Brzezinski</entry>
+          </row>
+          <row>
+            <entry><function>utlibr</function></entry><entry>iers2010</entry>
+            <entry>compute the subdiurnal librations in UT1</entry>
+            <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F">UTLIBR.F</ulink></entry>
+            <entry></entry>
+            <entry>A. Brzezinski</entry>
+          </row>
+          <row>
+            <entry><function>fundarg</function></entry><entry>iers2010</entry>
+            <entry>compute the lunisolar fundamental arguments from the model by Simon et al. (1994)</entry>
+            <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter5/FUNDARG.F">FUNDARG.F</ulink></entry>
+            <entry></entry>
+            <entry></entry>
+          </row>
+          <row>
+            <entry><function>fcnnut</function></entry><entry>iers2010</entry>
+            <entry>compute corrections to the coordinates of the CIP to account for Free Core Nutation</entry>
+            <entry><ulink url="http://maia.usno.navy.mil/conv2010/convupdt/chapter5/FCNNUT.F">FCNNUT.F</ulink></entry>
+            <entry>contains data table to be updated each year, see <ulink url="http://syrte.obspm.fr/%7Elambert/fcn/">here</ulink></entry>
+            <entry>S. Lambert</entry>
+          </row>
+          
+          <row>
+            <entry morerows='0' valign='middle'>Chapter 7</entry>
+            <entry><function>arg2</function></entry><entry>iers2010</entry>
+            <entry>compute the angular argument which depends on time for 11 tidal argument calculations</entry>
+            <entry><ulink url="http://maia.usno.navy.mil/conv2010/convupdt/chapter7/ARG2.F">ARG2.F</ulink></entry>
+            <entry>from a Table by E.W. Schwiderski</entry>
+            <entry></entry>
+          </row>
+          
+          <row>
+            <entry morerows='2' valign='middle'>Chapter 8</entry>
+            <entry><function>cntmx</function></entry><entry>iers2010</entry>
+            <entry>compute the time dependent part of the second degree diurnal and semidiurnal tidal potential</entry>
+            <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter8/CNMTX.F">CNTMX.F</ulink></entry>
+            <entry>called by <function>ortho_eop</function></entry>
+            <entry>R. Eanes</entry>
+          </row>
+          <row>
+            <entry><function>rg_zont2</function></entry><entry>iers2010</entry>
+            <entry>compute the effects of zonal Earth tides on the rotation of the Earth</entry>
+            <entry><ulink url="http://maia.usno.navy.mil/conv2010/convupdt/chapter8/RG_ZONT2.F">RG_ZONT2.F</ulink></entry>
+            <entry>calls <function>cntmx</function></entry>
+            <entry>R. Gross</entry>
+          </row>
+          
+        </tbody>
+      </tgroup>
+    </table>
+  </section>
+  
+  <section id="chap_01_03"><title>Contents and Structure</title></section>
+  
+</chapter>

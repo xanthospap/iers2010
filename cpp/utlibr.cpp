@@ -1,3 +1,8 @@
+#include "iers2010.hpp"
+#ifdef USE_EXTERNAL_CONSTS
+  #include "gencon.hpp"
+#endif
+
 /**
  * @details This function evaluates the model of subdiurnal libration
  *          in the axial component of rotation, expressed by UT1 and LOD.
@@ -11,7 +16,8 @@
  *          the model contains 11 semidiurnal terms. The coefficients of
  *          the model are given in Table 5.1b of the IERS Conventions (2010).
  *          This function is a translation/wrapper for the fortran UTLIBR
- *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
+ *          subroutine, found here : 
+ *          http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[in]  rmjd Time expressed as modified Julian date
  * @param[out] dut1 Incremental UT1 in microseconds
@@ -26,8 +32,8 @@
  * @note    
  *          - Status:  Class 3 model
  *          - The procedure FUNDARG is the same as used by the program PMSDNUT2
- *            which implements the corresponding model of the lunisolar libration in
- *            polar motion.
+ *            which implements the corresponding model of the lunisolar 
+ *            libration in polar motion.
  * 
  *  Test cases:
  *     given input:  rmjd_a = 44239.1 ( January 1, 1980 2:24.00 )
@@ -43,12 +49,6 @@
  * @cite iers2010
  * 
  */
-
-#include "iers2010.hpp"
-#ifdef USE_EXTERNAL_CONSTS
-  #include "gencon.hpp"
-#endif
-
 int iers2010::utlibr (const double& rmjd,double& dut1,double& dlod) 
 {
   
@@ -77,7 +77,7 @@ int iers2010::utlibr (const double& rmjd,double& dut1,double& dlod)
     static double rmjd_previous = .0e0;
     static double dut1_previous = -999.0;
     static double dlod_previous = -999.0;
-    if ( fabs( rmjd_previous-rmjd ) < DATE_MAX_DIFF ) {
+    if ( fabs(rmjd_previous-rmjd) < DATE_MAX_DIFF ) {
       dut1 = dut1_previous;
       dlod = dlod_previous;
       return 1;
@@ -86,19 +86,23 @@ int iers2010::utlibr (const double& rmjd,double& dut1,double& dlod)
       
   // Set constants
   #ifdef USE_EXTERNAL_CONSTS
-    /*constexpr double DAS2R   (DAS2R);     // Arcseconds to radians*/
-    /*constexpr double TURNAS  (TURNAS);    // Arcseconds in a full circle*/
-    constexpr double RMJD0   (DJM00);     // Modified Julian date of J2000
-    constexpr double PI      (DPI);       // pi
-    constexpr double TWOPI   (D2PI);      // 2 * pi
-    constexpr double RAD2SEC (DRAD2SEC);  // Radians to seconds
+    // Modified Julian date of J2000
+    constexpr double RMJD0   (DJM00);
+    constexpr double PI      (DPI);
+    constexpr double TWOPI   (D2PI);
+    // Radians to seconds
+    constexpr double RAD2SEC (DRAD2SEC);
   #else
-    constexpr double DAS2R   ( 4.848136811095359935899141e-6 ); // Arcseconds to radians
-    constexpr double TURNAS  ( 1296000e0 );                     // Arcseconds in a full circle
-    constexpr double RMJD0   ( 51544.5e0 );                     // Modified Julian date of J2000
-    constexpr double PI      ( 3.141592653589793238462643e0 );  // pi
-    constexpr double TWOPI   ( 6.283185307179586476925287e0 );  // 2*pi
-    constexpr double RAD2SEC ( 86400e0 / TWOPI );               // Radians to seconds
+    // Arcseconds to radians
+    constexpr double DAS2R   (4.848136811095359935899141e-6);
+    // Arcseconds in a full circle
+    constexpr double TURNAS  (1296000e0);
+    // Modified Julian date of J2000
+    constexpr double RMJD0   (51544.5e0);
+    constexpr double PI      (3.141592653589793238462643e0);
+    constexpr double TWOPI   (6.283185307179586476925287e0);
+    // Radians to seconds
+    constexpr double RAD2SEC (86400e0 / TWOPI);
   #endif
 
   //  Coefficients of the quasi semidiurnal terms in dUT1, dLOD 
