@@ -1,20 +1,16 @@
-      PROGRAM MAIN
-      DOUBLE PRECISION RMJD,PM(2)
-
-      RMJD = 54335D0
-
-      CALL PMSDNUT2 (RMJD, PM)
-
+*      PROGRAM MAIN
+*      DOUBLE PRECISION RMJD,PM(2)
+*      RMJD = 54335D0
+*      CALL PMSDNUT2 (RMJD, PM)
 *  Test case:
 *     given input: rmjd = 54335D0 ( August 23, 2007 ) 
 *
 *     expected output: (dx) pm(1)  = 24.83144238273364834D0 microarcseconds
 *                      (dy) pm(2) = -14.09240692041837661D0 microarcseconds
-
-      WRITE(*,100) 'dpm(1)  = ',DABS(24.83144238273364834D0-PM(1))
-      WRITE(*,100) 'dpm(2)  = ',DABS(-14.09240692041837661D0-PM(2))
- 100  FORMAT(A,F20.15)
-      END
+*      WRITE(*,100) 'dpm(1)  = ',DABS(24.83144238273364834D0-PM(1))
+*      WRITE(*,100) 'dpm(2)  = ',DABS(-14.09240692041837661D0-PM(2))
+* 100  FORMAT(A,F20.15)
+*      END
 
       SUBROUTINE PMSDNUT2 (RMJD, PM)
 *+

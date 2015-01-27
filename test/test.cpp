@@ -22,19 +22,14 @@ int main ()
    *                       D = 4.554139562402433228 radians
    *                       OM = -0.5167379217231804489 radians
    */
-  double t = 0.07995893223819302;
+  double t = 0.07995893223819302e0;
   double l,lp,f,d,om;
   iers2010::fundarg (t,l,lp,f,d,om);
-  /*printf ("\n\t|dl|  = %15.12f",fabs (2.291187512612069099-l));
-  printf ("\n\t|dlp| = %15.12f",fabs (6.212931111003726414-lp));
-  printf ("\n\t|df|  = %15.12f",fabs (3.658025792050572989-f));
-  printf ("\n\t|dd|  = %15.12f",fabs (4.554139562402433228-d));
-  printf ("\n\t|dom| = %15.12f",fabs (-0.5167379217231804489-om));*/
-  printf ("\n\t|dl|  = %20.15f",fabs (2.291187512612069099-l));
-  printf ("\n\t|dlp| = %20.15f",fabs (6.212931111003726414-lp));
-  printf ("\n\t|df|  = %20.15f",fabs (3.658025792050572989-f));
-  printf ("\n\t|dd|  = %20.15f",fabs (4.554139562402433228-d));
-  printf ("\n\t|dom| = %20.15f",fabs (-0.5167379217231804489-om));
+  printf ("\n\t|dl|  = %20.18f",fabs (2.291187512612069099e0-l));
+  printf ("\n\t|dlp| = %20.18f",fabs (6.212931111003726414e0-lp));
+  printf ("\n\t|df|  = %20.18f",fabs (3.658025792050572989e0-f));
+  printf ("\n\t|dd|  = %20.18f",fabs (4.554139562402433228e0-d));
+  printf ("\n\t|dom| = %20.18f",fabs (-0.5167379217231804489e0-om));
   
   // subroutine FCNNUT
   printf ("\nFunction FCNNUT");
