@@ -2,11 +2,6 @@
       DOUBLE PRECISION T, L, LP, F, D, OM
       T = 0.07995893223819302D0
       CALL FUNDARG ( T, L, LP, F, D, OM )
-*     expected output:  L = 2.291187512612069099 radians
-*                       LP = 6.212931111003726414 radians
-*                       F = 3.658025792050572989 radians
-*                       D = 4.554139562402433228 radians
-*                       OM = -0.5167379217231804489 radians
       WRITE(*,100) 'dl  = ',DABS(2.291187512612069099D0-L)
       WRITE(*,100) 'dlp = ',DABS(6.212931111003726414D0-LP)
       WRITE(*,100) 'df  = ',DABS(3.658025792050572989D0-F)

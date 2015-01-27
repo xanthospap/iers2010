@@ -2,4 +2,83 @@
 
 <chapter id="chap_04">
   <title>Results and Comparisson with Fortan Source Code</title>
+  
+  <section id="chap_04_01"><title>Note on compiling the original code</title>
+    <para>On the following, we are going to use the <ulink url="https://gcc.gnu.org/fortran/">gfortran</ulink> compiler;
+      <command>gfortran</command> is a freely redistributable fortran compiler. It is part of 
+      <ulink url="https://www.gnu.org/software/gcc/">GCC</ulink>, the GNU compiler suite, 
+      and is currently part of that distribution. <command>gfortran</command> comes with most Unix - type OSs.</para>
+    <para>To compile a program, say <filename>TEST.F</filename>, the basic syntax is:
+      <screen>
+        <prompt>bash$</prompt> <command>gfortran <replaceable>TEST.F</replaceable> <arg>-o <replaceable>test.e</replaceable></arg></command>
+      </screen>
+      which should result in the creation of a (executable) file named <filename>test.e</filename>.
+    </para>
+    <note>Our knowledge of FORTRAN and <command>gfortran</command> is very limited, so this chapter should only be seen as a harsh guideline</note>
+    
+    <section id="chap_04_01_01"><title><function>fundarg</function></title>
+      <para>The <filename>FUNDARG.F</filename> and <filename>fundarg.cpp</filename> produce exactly the same results.
+        Note however that, when running the <filename>FUNDARG.F</filename> routine, all input/output 
+        parameters <emphasis>MUST</emphasis> be provided in explicit double precision format (i.e. ending with 
+        D0 or something similar). E.g., for the test case provided at header, declare epoch as <screen>T = 0.07995893223819302D0</screen>
+        and NOT <screen>T = 0.07995893223819302</screen> Same is true for comparing the results, i.e.
+        <screen>WRITE(*,100) 'dl  = ',DABS(2.291187512612069099D0-L)</screen></para>
+      <para>For example, the test case provided in the <filename>fundarg.cpp</filename> header, could be setup as a
+        FORTRAN routine in the following way:
+        <example>
+          <title>Verifiyng FUNDARG.F test case</title>
+          <programlisting linenumbering='numbered'>
+            PROGRAM MAIN
+            DOUBLE PRECISION T, L, LP, F, D, OM
+            T = 0.07995893223819302D0
+            CALL FUNDARG ( T, L, LP, F, D, OM )
+            WRITE(*,100) 'dl  = ',DABS(2.291187512612069099D0-L)
+            WRITE(*,100) 'dlp = ',DABS(6.212931111003726414D0-LP)
+            WRITE(*,100) 'df  = ',DABS(3.658025792050572989D0-F)
+            WRITE(*,100) 'dd  = ',DABS(4.554139562402433228D0-D)
+            WRITE(*,100) 'dom = ',DABS(-0.5167379217231804489D0-OM)
+            100  FORMAT(A,F20.15)
+            END
+          </programlisting>
+        </example>
+        This block, could be added at the top of the file <filename>FUNDARG.F</filename> to run the test case. The code could then
+        be compiled, using e.g.:
+        <screen>
+          <prompt>bash$</prompt> <command>gfortran <replaceable>FUNDARG.F</replaceable> <arg>-o <replaceable>fundarg.e</replaceable></arg></command>
+        </screen>
+        And running the executable (i.e. <filename>fundarg.e</filename>) should produce something like the following:
+        <computeroutput><screen>
+            dl  =    0.000000000000076
+            dlp =    0.000000000009700
+            df  =    0.000000000000078
+            dd  =    0.000000000009591
+            dom =    0.000000000000000
+            </screen></computeroutput>
+      </para>
+    </section>
+    
+    <section id="chap_04_01_02"><title><function>pmsdnut2</function></title>
+      <para>The <filename>PMSDNUT2.F</filename> and <filename>mpsdnut2.cpp</filename> functions, do not produce identical results. That
+        is because FORTRAN seems to produce small 'garbage' when transforming elements of the vectors XS(25), XC(25), YS(25), YC(25).
+        To fix this, use an explicit double decleration at the source code, i.e. instead of
+        <screen>
+        DATA 
+        .(  (IARG(I,J),i=1,6),     PER(J),   XS(J),  XC(J),  YS(J),  YC(J),
+        .                                                          J=16,25)
+        ./ 1, -1, 0, -2,  0, -1, 1.1196992,   -0.4,   0.3,   -0.3,   -0.4,
+        .  1, -1, 0, -2,  0, -2, 1.1195149,   -2.3,   1.3,   -1.3,   -2.3,
+      </screen>
+        use:
+        <screen>
+        .(  (IARG(I,J),i=1,6),     PER(J),   XS(J),  XC(J),  YS(J),  YC(J),
+        .                                                          J=16,25)
+        ./ 1, -1, 0, -2,  0, -1, 1.1196992, -0.4D0, 0.3D0, -0.3D0, -0.4D0,
+        .  1, -1, 0, -2,  0, -2, 1.1195149, -2.3D0, 1.3D0, -1.3D0, -2.3D0,
+      </screen>
+        Note that c++ normally does not need this, but in any case the corresponding elements are declared in scientific notation.
+      </para>
+    </section>
+    
+  </section>
+  
 </chapter>
