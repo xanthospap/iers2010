@@ -76,11 +76,11 @@ int iers2010::ortho_eop (const double& time,double* eop)
  
   // Compute eop changes
   for (int i=0;i<3;i++) {
-	eop[i] = 0e0;
-	for (int j=0;j<12;j++) {
-	       eop[i] += h[j] * orthow[i][j];
-	}
-  }	
+    eop[i] = 0e0;
+    for (int j=0;j<12;j++) {
+      eop[i] += h[j] * orthow[i][j];
+    }
+  }
 
   // update quick exit
   #ifdef QUICK_EXIT
