@@ -124,7 +124,7 @@ int main ()
   double day = 311.5e0;
   double angle[11];
   iers2010::arg2 (iyear,day,angle);
-  for (int i = 0;i<11;i++) printf ("\n\t|dangle(%02i)|  = %15.12f",i+1, fabs (angle[i]-iangle[i]));
+  for (int i = 0;i<11;i++) printf ("\n\t|dangle(%02i)|  = %15.12f",i+1, fabs(angle[i]-iangle[i]));
   
   // subroutine DEHANTTIDEINEL
   printf ("\nFunction DEHANTTIDEINEL");
@@ -183,6 +183,46 @@ int main ()
   printf ("\n\t|ddut|   = %15.12f (seconds)",7.983287678576557467E-002-dut);
   printf ("\n\t|ddlod|  = %15.12f (seconds/day)",5.035331113978199288E-005-dlod);
   printf ("\n\t|ddomega|= %15.12f (radians/second)", -4.249711616463017E-014-domega);
+  
+  // subroutine CNMTX
+  printf ("\nFunction CNMTX (used by ORTHO_EOP)");
+  printf ("\n\tAbs. differences (see results) :");
+  /*
+   *  Test case:
+   *     given input: dmjd = 54964.0D0
+   *
+   *     expected output: */
+  double ht[12],h[12];
+   *(h+0) = 15.35873641938967360e0;
+   *(h+1) = 9.784941251812741214e0;
+   *(h+2) = -5.520740128266865554e0;
+   *(h+3) = 3.575314211234633888e0;
+   *(h+4) = -13.93717453496387648e0;
+   *(h+5) = -9.167400321705855504e0;
+   *(h+6) = 5.532815475865292321e0;
+   *(h+7) = 9.558741883500834646e0;
+   *(h+8) = -10.22541212627272600e0;
+   *(h+9)= 0.8367570529461261231e0;
+   *(h+10)= 1.946355176475630611e0;
+   *(h+11)= -13.55702062247304696e0;
+  iers2010::cnmtx (54964.0e0,ht);
+  for (int i=0;i<12;i++) printf ("\n\t|dh(%02i)|   = %15.12f",i+1,fabs(h[i]-ht[i]));
+
+  // subroutine ORTHO_EOP
+  printf ("\nFunction ORTHO_EOP");
+  printf ("\n\tAbs. differences in microarcseconds :");
+  /*
+   * Test case:
+   *     given input: MJD = 47100D0
+   *
+   *     expected output: delta_x = -162.8386373279636530D0 microarcseconds
+   *                      delta_y = 117.7907525842668974D0 microarcseconds
+   *                      delta_UT1 = -23.39092370609808214D0 microseconds
+   */
+  iers2010::ortho_eop (47100e0,h);
+   printf ("\n\t|deop(1)|   = %15.12f",-162.8386373279636530e0-h[0]);
+   printf ("\n\t|deop(2)|   = %15.12f",117.7907525842668974e0-h[1]);
+   printf ("\n\t|deop(3)|   = %15.12f",-23.39092370609808214e0-h[2]);
 
   printf ("\n");
   return 0;

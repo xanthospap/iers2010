@@ -11,15 +11,18 @@
 /**
  * @details The purpose of the function is to compute the angular astronomical
  *          argument, which depends on time, for 11 tidal argument calculations. 
- *          The order of the 11 angular quantities in vector angle are given below:
+ *          The order of the 11 angular quantities in vector angle are given
+ *          below:
  *          01-M2, 02-S2, 03-N2, 04-K2, 05-K1, 06-O1, 07-P1, 08-Q1, 09-Mf,
  *          10-Mm, 11-Ssa (See Reference 1) 
  *          This function is a translation/wrapper for the fortran ARG2
- *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
+ *          subroutine, found here : 
+ *          http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[in]  iyear Four digit year (Note 1)
  * @param[in]  day   Day of Year Greenwich Time (Note 2)
- * @param[out] angle Angular argument for Schwiderski computation, in radians (Notes 3, 4 and 5)
+ * @param[out] angle Angular argument for Schwiderski computation, in radians 
+ *                   (Notes 3, 4 and 5)
  * @return           An integer value which can be:
  *                   Returned Value | Status
  *                   ---------------|-------------------------------------------
@@ -88,8 +91,8 @@ int iers2010::arg2 (const int& iyear,const double& day,double* angle)
     static int    iyear_previous = .0e0;
     static double day_previous = -999.0;
     static double angle_previous[11];
-    if ( iyear ==  iyear_previous ) {
-      if ( fabs( day_previous-day ) < DATE_MAX_DIFF ) {
+    if (iyear==iyear_previous) {
+      if (fabs(day_previous-day)<DATE_MAX_DIFF) {
         std::copy (angle_previous,angle_previous+11,angle);
         return 1;
       }
@@ -103,7 +106,7 @@ int iers2010::arg2 (const int& iyear,const double& day,double* angle)
   #ifdef USE_EXTERNAL_CONSTS
     constexpr double TWOPI   (D2PI);
   #else
-    constexpr double TWOPI   ( 6.283185307179586476925287e0 ); // 2*pi
+    constexpr double TWOPI   (6.283185307179586476925287e0);
   #endif
 
   /*  ----------------------------------------------
@@ -154,34 +157,37 @@ int iers2010::arg2 (const int& iyear,const double& day,double* angle)
   const double dtr = 0.174532925199e-1;
 
   //  Validate year
-  if ( iyear < iymin ) return -1;
+  if (iyear<iymin) return -1;
 
   // Initialize day of year
   double id,fraction;
-  fraction = modf (day,&id);
+  fraction = modf(day,&id);
 
   /* ------------------------------------------
    *  Compute fractional part of day in seconds 
    * ------------------------------------------ */
   double fday = fraction * 86400e0;
   // Revision 07 October 2011: ICAPD modified 
-  int icapd = (int)id + 365 * ( iyear-1975 ) + ( (iyear-1973) /4 );
+  int icapd = (int)id + 365 * (iyear-1975) + ( (iyear-1973) /4 );
   double capt = (27392.500528e0 + 1.000000035e0 * (double)icapd) / 36525e0;
   
   /* --------------------------------------------------
    *  Compute mean longitude of Sun at beginning of day
    * -------------------------------------------------- */
-  double h0 = ( 279.69668e0 + (36000.768930485e0 + 3.03e-4 * capt ) * capt ) * dtr;
+  double h0 = ( 279.69668e0 + (36000.768930485e0 + 3.03e-4 * capt ) * capt ) 
+	  * dtr;
   
   /* ---------------------------------------------------
    *  Compute mean longitude of Moon at beginning of day 
    * --------------------------------------------------- */
-  double s0 = ( ( (1.9e-6*capt-.001133e0) * capt + 481267.88314137e0) * capt +270.434358e0 ) * dtr;
+  double s0 = ( ( (1.9e-6*capt-.001133e0) * capt + 481267.88314137e0) 
+		  * capt +270.434358e0 ) * dtr;
   
   /* ------------------------------------------------------------
    *  Compute mean longitude of lunar perigee at beginning of day 
    * ------------------------------------------------------------ */
-  double p0 = ( ( (-1.2e-5*capt-.010325e0) * capt + 4069.0340329577e0 ) * capt + 334.329653e0 ) * dtr;
+  double p0 = ( ( (-1.2e-5*capt-.010325e0) * capt + 4069.0340329577e0 ) 
+		  * capt + 334.329653e0 ) * dtr;
 
   // Compute the tidal angle arguments
   for (int i=0;i<k;i++) {
@@ -191,14 +197,14 @@ int iers2010::arg2 (const int& iyear,const double& day,double* angle)
                angfac[i][2]*p0 +
                angfac[i][3]*TWOPI;
     angle[i] = fmod (angle[i],TWOPI);
-    while (angle[i] < 0e0) angle[i] += TWOPI;
+    while (angle[i]<0e0) angle[i] += TWOPI;
   }
   
   // update quick exit
   #ifdef QUICK_EXIT
     iyear_previous = iyear;
     day_previous = day;
-    std::copy (angle,angle+11,angle_previous);
+    std::copy(angle,angle+11,angle_previous);
   #endif
 
   // Finished.

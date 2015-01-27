@@ -3,6 +3,7 @@
   #include "gencon.hpp"
 #endif
 
+/* obsolete; just for testing */
 inline double _MOD_ (const double& a,const double& p)
 {
   return a - ( (int)(a/p) * p );
@@ -10,11 +11,12 @@ inline double _MOD_ (const double& a,const double& p)
 
 /**
  * @details This subroutine computes the lunisolar fundamental arguments.
- *          The model used is from Simon et al. (1994) as recommended by the IERS
- *          Conventions (2010).  Refer to IERS Conventions (2010) Chapter 5 
- *          Sections 5.7.1 - 5.7.2 (pp. 57 - 59).
+ *          The model used is from Simon et al. (1994) as recommended by the 
+ *          IERS Conventions (2010).  Refer to IERS Conventions (2010) 
+ *          Chapter 5 Sections 5.7.1 - 5.7.2 (pp. 57 - 59).
  *          This function is a translation/wrapper for the fortran FUNDARG
- *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
+ *          subroutine, found here : 
+ *          http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[in]  t    TT, Julian centuries since J2000 (Note 1)
  * @param[out] l    Mean anomaly of the Moon (Note 2)
@@ -54,18 +56,19 @@ inline double _MOD_ (const double& a,const double& p)
  * @cite iers2010, @cite simon94
  * 
  */
-int iers2010::fundarg (const double& t,double& l,double& lp,double& f,double& d,double& om)
+int iers2010::fundarg (const double& t,double& l,double& lp,double& f,
+		double& d,double& om)
 {
 
   // Set constants
   #ifdef USE_EXTERNAL_CONSTS
-    /*constexpr double DAS2R   (DAS2R);     // Arcseconds to radians*/
-    /*constexpr double TURNAS  (TURNAS);    // Arcseconds in a full circle*/
     constexpr double TWOPI   (D2PI);
-  #else
-    constexpr double DAS2R   ( 4.848136811095359935899141e-6 ); // Arcseconds to radians
-    constexpr double TURNAS  ( 1296000e0 );                     // Arcseconds in a full circle
-    constexpr double TWOPI   ( 6.283185307179586476925287e0 );  // 2*pi
+  #else 
+    // Arcseconds to radians
+    constexpr double DAS2R   (4.848136811095359935899141e-6);
+    // Arcseconds in a full circle
+    constexpr double TURNAS  (1296000e0);
+    constexpr double TWOPI   (6.283185307179586476925287e0);
   #endif
     
   #ifdef QUICK_EXIT
@@ -75,7 +78,7 @@ int iers2010::fundarg (const double& t,double& l,double& lp,double& f,double& d,
     static double f_previous  = -999.0;
     static double d_previous  = -999.0;
     static double om_previous = -999.0;
-    if ( fabs( t_previous-t ) < DATE_MAX_DIFF ) {
+    if ( fabs(t_previous-t)<DATE_MAX_DIFF ) {
       l  = l_previous;
       lp = lp_previous;
       f  = f_previous;
