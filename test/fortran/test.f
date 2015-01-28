@@ -6,7 +6,7 @@
 *     ------------------------------------------------------------------------
 *     FUNDARG
 *     ------------------------------------------------------------------------
-      WRITE (*,*) 'Function FUNADRG'
+      WRITE (*,*) 'Function FUNDARG'
       WRITE (*,*) 'Abs. differences in radians'
       T = 0.07995893223819302D0
       CALL FUNDARG ( T, L, LP, F, D, OM )
@@ -44,18 +44,20 @@
 *     ------------------------------------------------------------------------
 *     UTLIBR
 *     ------------------------------------------------------------------------
-      WRITE (*,*) 'Function UTLIBR (2 tests)'
+      WRITE (*,*) 'Function UTLIBR (test A)'
       WRITE (*,*) 'Abs. differences in mus and mus/day:'
       T = 44239.1D0
       CALL UTLIBR (T,DUT1,DLOD)
-      WRITE (*,*) '->test A.'
+*      WRITE (*,*) '->test A.'
       WRITE (*,13) '|ddut1|  = ',DABS (2.441143834386761746D0-DUT1)
-      WRITE (*,13) '|ddut1|  = ',DABS (-14.78971247349449492D0-DLOD)
+      WRITE (*,13) '|ddlod|  = ',DABS (-14.78971247349449492D0-DLOD)
+      WRITE (*,*) 'Function UTLIBR (test B)'
+      WRITE (*,*) 'Abs. differences in mus and mus/day:'
       T = 55227.4D0
       CALL UTLIBR (T,DUT1,DLOD)
-      WRITE (*,*) '->test B.'
+*      WRITE (*,*) '->test B.'
       WRITE (*,13) '|ddut1|  = ',DABS (-2.655705844335680244D0-DUT1)
-      WRITE (*,13) '|ddut1|  = ',DABS (27.39445826599846967D0-DLOD)
+      WRITE (*,13) '|ddlod|  = ',DABS (27.39445826599846967D0-DLOD)
  13   FORMAT (A,F20.18)
 
 *     ------------------------------------------------------------------------
@@ -80,7 +82,7 @@
       DO I=1,11
         WRITE (*,14) '|dangle(',I,')|  = ', DABS (ANGLE(I)-IANGLE(I))
       ENDDO
- 14   FORMAT (A,I2,A,F20.18)
+ 14   FORMAT (A,I0.2,A,F20.18)
 
 *     ------------------------------------------------------------------------
 *     RGZONT2
@@ -89,11 +91,11 @@
       WRITE (*,*) 'Abs. differences in (see results):'
       T = .07995893223819302D0;
       CALL RG_ZONT2 (T, X, DX, Y);
-      WRITE (*,15) '|ddut|   = ',DABS(7.983287678576557467D-002
+      WRITE (*,15) '|ddut|    = ',DABS(7.983287678576557467D-002
      .  -X),' seconds'
-      WRITE (*,15) '|ddlod|  = ',DABS(5.035331113978199288D-005
+      WRITE (*,15) '|ddlod|   = ',DABS(5.035331113978199288D-005
      .  -DX),' seconds/day'
-      WRITE (*,15) '|ddomega|= ',DABS(-4.249711616463017D-014
+      WRITE (*,15) '|ddomega| = ',DABS(-4.249711616463017D-014
      .  -Y),' radians/second'
  15   FORMAT (A,F20.18,A)
 

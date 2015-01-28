@@ -2,6 +2,8 @@
 ===========================================================
  TESTING IERS 2010 ROUTINES                                
 ===========================================================
+	 VALUE     DIFFERENCE
+	#########  ####################
 Function FUNDARG
 	Abs. differences in radians:
 	|dl|  = 0.000000000000076383
@@ -19,14 +21,14 @@ Function PMSDNUT2
 	Abs. differences in microarcseconds:
 	|pm(1)|  = 0.000000132875289438
 	|pm(2)|  = 0.000000444179713455
-Function UTLIBR (2 tests)
+Function UTLIBR (test A)
 	Abs. differences in mus and mus/day:
-	->test A.
 	|ddut1|  = 0.000000013757687878
-	|ddut1|  = 0.000000236278697940
-	->test B.
+	|ddlod|  = 0.000000236278697940
+Function UTLIBR (test B)
+	Abs. differences in mus and mus/day:
 	|ddut1|  = 0.000000015220932070
-	|ddut1|  = 0.000000487686200756
+	|ddlod|  = 0.000000487686200756
 Function ARG2
 	Abs. differences in radians:
 	|dangle(01)|  = 0.000000000000000000
@@ -47,14 +49,14 @@ Function DEHANTTIDEINEL
 	|dy|  = 0.000000000000000000
 	|dz|  = 0.000000000000000014
 	Version 2 (TT input):
-	|dx|  = -0.000000000000001027
-	|dy|  = -0.000000000000000333
-	|dz|  = -0.000000000000003386
-Function RG_ZONT22
+	|dx|  = 0.000000000000001027
+	|dy|  = 0.000000000000000333
+	|dz|  = 0.000000000000003386
+Function RG_ZONT2
 	Abs. differences (see results) :
-	|ddut|   = 0.000044497068844990 (seconds)
-	|ddlod|  = 0.000028581797005905 (seconds/day)
-	|ddomega|= -0.000000000000024122 (radians/second)
+	|ddut|    = 0.000044497068844990 (seconds)
+	|ddlod|   = 0.000028581797005905 (seconds/day)
+	|ddomega| = 0.000000000000024122 (radians/second)
 Function CNMTX (used by ORTHO_EOP)
 	Abs. differences (see results) :
 	|dh(01)|   = 0.000000000000000000

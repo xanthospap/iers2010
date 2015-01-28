@@ -1,4 +1,4 @@
- Function FUNADRG
+ Function FUNDARG
  Abs. differences in radians
 |dl|  = 0.000000000000076383
 |dlp| = 0.000000000009699797
@@ -15,32 +15,32 @@
  Abs. differences in microarcseconds:
 |pm(1)|  = 0.000000132875292991
 |pm(2)|  = 0.000000444179711678
- Function UTLIBR (2 tests)
+ Function UTLIBR (test A)
  Abs. differences in mus and mus/day:
- ->test A.
 |ddut1|  = 0.000000000000000000
+|ddlod|  = 0.000000000000000000
+ Function UTLIBR (test B)
+ Abs. differences in mus and mus/day:
 |ddut1|  = 0.000000000000000000
- ->test B.
-|ddut1|  = 0.000000000000000000
-|ddut1|  = 0.000000000000000000
+|ddlod|  = 0.000000000000000000
  Function ARG2
  Abs. differences in radians:
-|dangle( 1)|  = 0.000000000000000000
-|dangle( 2)|  = 0.000000000000000000
-|dangle( 3)|  = 0.000000000000000000
-|dangle( 4)|  = 0.000000000000000000
-|dangle( 5)|  = 0.000000000000000000
-|dangle( 6)|  = 0.000000000000000000
-|dangle( 7)|  = 0.000000000000000000
-|dangle( 8)|  = 0.000000000000000000
-|dangle( 9)|  = 0.000000000000000000
+|dangle(01)|  = 0.000000000000000000
+|dangle(02)|  = 0.000000000000000000
+|dangle(03)|  = 0.000000000000000000
+|dangle(04)|  = 0.000000000000000000
+|dangle(05)|  = 0.000000000000000000
+|dangle(06)|  = 0.000000000000000000
+|dangle(07)|  = 0.000000000000000000
+|dangle(08)|  = 0.000000000000000000
+|dangle(09)|  = 0.000000000000000000
 |dangle(10)|  = 0.000000000000000000
 |dangle(11)|  = 0.000000000000000000
  Function RG_ZONT2
  Abs. differences in (see results):
-|ddut|   = 0.000000000000000000 seconds
-|ddlod|  = 0.000000000000000000 seconds/day
-|ddomega|= 0.000000000000000000 radians/second
+|ddut|    = 0.000000000000000000 seconds
+|ddlod|   = 0.000000000000000000 seconds/day
+|ddomega| = 0.000000000000000000 radians/second
  Function ORTHO_EOP
  Abs. differences in microarcseconds:
 |deop(1)|   = 0.000000000000000000

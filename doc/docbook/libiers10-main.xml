@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<!-- Works on OpenSUSE
+<!-- Works on OpenSUSE -->
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/sgml/docbook/dtd/4.5xml/docbookx.dtd" [
 
@@ -11,9 +11,8 @@
 <!ENTITY chap5 SYSTEM "libiers10-chap-05.xml">
 <!ENTITY gloss SYSTEM "glossary.xml">
 ]>
--->
 
-<!-- Works on Fedora -->
+<!-- Works on Fedora
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
 "/usr/share/sgml/docbook/xml-dtd-4.4/docbookx.dtd" [
 
@@ -24,6 +23,7 @@
 <!ENTITY chap5 SYSTEM "libiers10-chap-05.xml">
 <!ENTITY gloss SYSTEM "glossary.xml">
 ]>
+-->
 
 <book>
   

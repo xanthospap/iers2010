@@ -8,6 +8,8 @@ int main ()
   printf ("\n===========================================================");
   printf ("\n TESTING IERS 2010 ROUTINES                                ");
   printf ("\n===========================================================");
+  printf ("\n\t VALUE     DIFFERENCE");
+  printf ("\n\t#########  ####################");
   
   // subroutine FUNDARG
   printf ("\nFunction FUNDARG");
@@ -43,19 +45,21 @@ int main ()
   
   
   // subroutine UTLIBR
-  printf ("\nFunction UTLIBR (2 tests)");
+  printf ("\nFunction UTLIBR (test A)");
   printf ("\n\tAbs. differences in mus and mus/day:");
   rmjd = 44239.1e0;
   double dut1, dlod;
   iers2010::utlibr (rmjd,dut1,dlod);
-  printf ("\n\t->test A.");
+  // printf ("\n\t->test A.");
   printf ("\n\t|ddut1|  = %20.18f",fabs (2.441143834386761746e0-dut1));
-  printf ("\n\t|ddut1|  = %20.18f",fabs (-14.78971247349449492e0-dlod));
+  printf ("\n\t|ddlod|  = %20.18f",fabs (-14.78971247349449492e0-dlod));
+  printf ("\nFunction UTLIBR (test B)");
+  printf ("\n\tAbs. differences in mus and mus/day:");
   rmjd = 55227.4e0;
   iers2010::utlibr (rmjd,dut1,dlod);
-  printf ("\n\t->test B.");
+  // printf ("\n\t->test B.");
   printf ("\n\t|ddut1|  = %20.18f",fabs (-2.655705844335680244e0-dut1));
-  printf ("\n\t|ddut1|  = %20.18f",fabs (27.39445826599846967e0-dlod));
+  printf ("\n\t|ddlod|  = %20.18f",fabs (27.39445826599846967e0-dlod));
   
   // subroutine ARG2
   printf ("\nFunction ARG2");
@@ -80,24 +84,24 @@ int main ()
   double xcor[3];
   iers2010::dehanttideinel (xsta,xsun,xmon,2009,4,13,.0e0,xcor);
   printf ("\n\tVersion 1 (UTC input):");
-  printf ("\n\t|dx|  = %20.18f",0.7700420357108125891e-01-xcor[0]);
-  printf ("\n\t|dy|  = %20.18f",0.6304056321824967613e-01-xcor[1]);
-  printf ("\n\t|dz|  = %20.18f",0.5516568152597246810e-01-xcor[2]);
+  printf ("\n\t|dx|  = %20.18f",fabs(0.7700420357108125891e-01-xcor[0]));
+  printf ("\n\t|dy|  = %20.18f",fabs(0.6304056321824967613e-01-xcor[1]));
+  printf ("\n\t|dz|  = %20.18f",fabs(0.5516568152597246810e-01-xcor[2]));
   iers2010::dehanttideinel (xsta,xsun,xmon,0.092799473402287e0,.0e0,xcor);
   printf ("\n\tVersion 2 (TT input):");
-  printf ("\n\t|dx|  = %20.18f",0.7700420357108125891e-01-xcor[0]);
-  printf ("\n\t|dy|  = %20.18f",0.6304056321824967613e-01-xcor[1]);
-  printf ("\n\t|dz|  = %20.18f",0.5516568152597246810e-01-xcor[2]);
+  printf ("\n\t|dx|  = %20.18f",fabs(0.7700420357108125891e-01-xcor[0]));
+  printf ("\n\t|dy|  = %20.18f",fabs(0.6304056321824967613e-01-xcor[1]));
+  printf ("\n\t|dz|  = %20.18f",fabs(0.5516568152597246810e-01-xcor[2]));
   
   // subroutine RG_ZONT2
-  printf ("\nFunction RG_ZONT22");
+  printf ("\nFunction RG_ZONT2");
   printf ("\n\tAbs. differences (see results) :");
   t = .07995893223819302e0;
   double dut, /*dlod,*/ domega;
   iers2010::rg_zont2 (t, dut, dlod, domega);
-  printf ("\n\t|ddut|   = %20.18f (seconds)",7.983287678576557467E-002-dut);
-  printf ("\n\t|ddlod|  = %20.18f (seconds/day)",5.035331113978199288E-005-dlod);
-  printf ("\n\t|ddomega|= %20.18f (radians/second)", -4.249711616463017E-014-domega);
+  printf ("\n\t|ddut|    = %20.18f (seconds)",fabs(7.983287678576557467E-002-dut));
+  printf ("\n\t|ddlod|   = %20.18f (seconds/day)",fabs(5.035331113978199288E-005-dlod));
+  printf ("\n\t|ddomega| = %20.18f (radians/second)",fabs(-4.249711616463017E-014-domega));
   
   // subroutine CNMTX
   printf ("\nFunction CNMTX (used by ORTHO_EOP)");
@@ -122,9 +126,9 @@ int main ()
   printf ("\nFunction ORTHO_EOP");
   printf ("\n\tAbs. differences in microarcseconds :");
   iers2010::ortho_eop (47100e0,h);
-  printf ("\n\t|deop(1)|   = %20.18f",-162.8386373279636530e0-h[0]);
-  printf ("\n\t|deop(2)|   = %20.18f",117.7907525842668974e0-h[1]);
-  printf ("\n\t|deop(3)|   = %20.18f",-23.39092370609808214e0-h[2]);
+  printf ("\n\t|deop(1)|   = %20.18f",fabs(-162.8386373279636530e0-h[0]));
+  printf ("\n\t|deop(2)|   = %20.18f",fabs(117.7907525842668974e0-h[1]));
+  printf ("\n\t|deop(3)|   = %20.18f",fabs(-23.39092370609808214e0-h[2]));
 
   printf ("\n");
   return 0;
