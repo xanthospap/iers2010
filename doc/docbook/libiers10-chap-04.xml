@@ -99,15 +99,19 @@
       </orderedlist>
     Follow the steps described below, to create a program testing the results of FORTRAN subroutines.</para>
     <procedure>
-      <title>Test FORTRAN</title>
-      <para>To create a test program for FORTRAN.</para>
+      <title>Making FORTRAN <application>test.e</application></title>
+      <para>To create a test program for FORTRAN :</para>
       <step performance="required">
         <para>Make sure you have all the required FORTRAN files in the <filename>test/fortran</filename> folder (see <xref linkend="rq_for" />).
           In addition, the files <filename>compile.sh</filename> and <filename>test.f</filename> should also reside in the same folder (these files
           come with the package).</para></step>
       <step performance="required">
         <para>Compile the FORTRAN subroutines and the <filename>test.f</filename> program, using <filename>compile.sh</filename>. 
-          To do this, you only need to execute the script:<screen><prompt>bash$</prompt> chmod +x compile.sh; ./compile.sh </screen>
+          To do this, you only need to execute the script:
+          <screen>
+            <prompt>bash$</prompt> <command>chmod</command> +x <filename>compile.sh</filename>
+            <prompt>bash$</prompt> <command>./compile.sh</command>
+            </screen>
           The latter is a dead simple bash script, with a list of command for compiling the subroutines and linking to create the test program. Compilation flags
           are not used, so if you do know what you 're doing, you can edit this file.
           <important>The <filename>compile.sh</filename> script uses gfortran to compile the FORTRAN subroutines. If you don't have this program
@@ -115,17 +119,27 @@
           </para></step>
       <step performance="required">
         <para>If the previous step ended successefuly, you must have a file named <filename>test.e</filename> in the <filename>test/fortran</filename> folder.
-          Go ahead and run this program. <screen><prompt>bash$</prompt> ./test.e </screen>
+          Go ahead and run this program. <screen><prompt>bash$</prompt> <command>./test.e</command> </screen>
           It should report a list of results from running the test cases for every subroutine. The report should be
           self-explanatory. You can also save the output in a file for further use (see).
-          <screen><prompt>bash$</prompt> ./test.e > fortran.test</screen>
+          <screen><prompt>bash$</prompt> <command>./test.e</command> > <filename>fortran.test</filename></screen>
           </para>
         </step>
       </procedure>
   </section>
   
   <section id="chap_04_03"><title>Testing the C++ Implementation</title>
-    <para></para>
+    <para>Once you have sucessefuly installed the libiers10++ library (see <xref linkend="chap_02" />), you should verify the results
+      using the program <filename>test.cpp</filename>. The source code for this program, can be located in the <filename>test</filename>
+      directory.</para>
+    <procedure>
+      <title>Making C++ <application>test.e</application></title>
+      <step performance="required">
+        <para>Navigate to the <filename>test</filename> folder; there should be a file named <filename>test.cpp</filename>.</para></step>
+      <step performance="required">
+        <para>Compile the program, linking with the libiers10++ library. To do this, execute:
+          <screen><prompt>bash$</prompt> <command>g++</command>-Wall -std=c++11 -L../lib/ -I../inc/ -o <filename>test.e</filename> test.cpp -liers2010</screen></para></step>
+      </procedure>
   </section>
   
   <section id="chap_04_04"><title>Comparing the Implementations</title>
