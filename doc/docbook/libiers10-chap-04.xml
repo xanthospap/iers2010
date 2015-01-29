@@ -1,149 +1,264 @@
 <?xml version='1.0' encoding='ISO-8859-1'?>
 
 <chapter id="chap_04">
-  <title>Results and Comparisson with Fortan Source Code</title>
-  
-  <section id="chap_04_01"><title>Note on compiling the original code</title>
-    <para>On the following, we are going to use the <ulink url="https://gcc.gnu.org/fortran/">gfortran</ulink> compiler;
-      <command>gfortran</command> is a freely redistributable fortran compiler. It is part of 
-      <ulink url="https://www.gnu.org/software/gcc/">GCC</ulink>, the GNU compiler suite, 
-      and is currently part of that distribution. <command>gfortran</command> comes with most Unix - type OSs.</para>
-    <para>To compile a program, say <filename>TEST.F</filename>, the basic syntax is:
-      <screen>
-        <prompt>bash$</prompt> <command>gfortran <replaceable>TEST.F</replaceable> <arg>-o <replaceable>test.e</replaceable></arg></command>
-      </screen>
-      which should result in the creation of a (executable) file named <filename>test.e</filename>.
-    </para>
-    <note>Our knowledge of FORTRAN and <command>gfortran</command> is very limited, so this chapter should only be seen as a harsh guideline</note>
+    <title>Results and Comparisson with Fortan Source Code</title>
     
-    <section id="chap_04_01_01"><title><function>fundarg</function></title>
-      <para>The <filename>FUNDARG.F</filename> and <filename>fundarg.cpp</filename> produce exactly the same results.
-        Note however that, when running the <filename>FUNDARG.F</filename> routine, all input/output 
-        parameters <emphasis>MUST</emphasis> be provided in explicit double precision format (i.e. ending with 
-        D0 or something similar). E.g., for the test case provided at header, declare epoch as <screen>T = 0.07995893223819302D0</screen>
-        and NOT <screen>T = 0.07995893223819302</screen> Same is true for comparing the results, i.e.
-        <screen>WRITE(*,100) 'dl  = ',DABS(2.291187512612069099D0-L)</screen></para>
-      <para>For example, the test case provided in the <filename>fundarg.cpp</filename> header, could be setup as a
-        FORTRAN routine in the following way:
-        <example>
-          <title>Verifiyng FUNDARG.F test case</title>
-          <programlisting linenumbering='numbered'>
-            PROGRAM MAIN
-            DOUBLE PRECISION T, L, LP, F, D, OM
-            T = 0.07995893223819302D0
-            CALL FUNDARG ( T, L, LP, F, D, OM )
-            WRITE(*,100) 'dl  = ',DABS(2.291187512612069099D0-L)
-            WRITE(*,100) 'dlp = ',DABS(6.212931111003726414D0-LP)
-            WRITE(*,100) 'df  = ',DABS(3.658025792050572989D0-F)
-            WRITE(*,100) 'dd  = ',DABS(4.554139562402433228D0-D)
-            WRITE(*,100) 'dom = ',DABS(-0.5167379217231804489D0-OM)
-            100  FORMAT(A,F20.15)
-            END
-          </programlisting>
-        </example>
-        This block, could be added at the top of the file <filename>FUNDARG.F</filename> to run the test case. The code could then
-        be compiled, using e.g.:
-        <screen>
-          <prompt>bash$</prompt> <command>gfortran <replaceable>FUNDARG.F</replaceable> <arg>-o <replaceable>fundarg.e</replaceable></arg></command>
-        </screen>
-        And running the executable (i.e. <filename>fundarg.e</filename>) should produce something like the following:
-        <computeroutput><screen>
-            dl  =    0.000000000000076
-            dlp =    0.000000000009700
-            df  =    0.000000000000078
-            dd  =    0.000000000009591
-            dom =    0.000000000000000
-            </screen></computeroutput>
-      </para>
-    </section>
+    <preface id="chap_04_pre"><title>Preface</title>
+        <para>This chapter, presents some tools for testing and validating the already installed
+            (see <xref linkend="chap_02" />) libiers10++ library. In the following, we use the
+            three distinct entities, namely:
+            <itemizedlist mark='opencircle'>
+                <listitem>
+                    <para>the <emphasis>test cases</emphasis> (as reported in the original FORTRAN source code. 
+                        The software subroutines, as published by the IERS, contain a lot of information about
+                        the corresponding subroutines. Among those, there are test cases, describing explicitely
+                        the expected output of the subroutine, given a set of input parameters.</para>
+                    <screen id="chap_04_pre_fa">
+                        *
+                        *  Test case:
+                        *     given input: T = 0.07995893223819302 Julian centuries since J2000
+                        *                  (MJD = 54465)
+                        *     expected output:  L = 2.291187512612069099 radians
+                        *                       LP = 6.212931111003726414 radians
+                        *                       F = 3.658025792050572989 radians
+                        *                       D = 4.554139562402433228 radians
+                        *                       OM = -0.5167379217231804489 radians
+                    </screen>
+                </listitem>
+                <listitem><para></para></listitem>
+                <listitem><para></para></listitem>
+            </itemizedlist>
+        </para>
+    </preface>
     
-    <section id="chap_04_01_02"><title><function>pmsdnut2</function></title>
-      <para>The <filename>PMSDNUT2.F</filename> and <filename>mpsdnut2.cpp</filename> functions, do not produce identical results. That
-        is because FORTRAN seems to produce small 'garbage' when transforming elements of the vectors XS(25), XC(25), YS(25), YC(25).
-        To fix this, use an explicit double decleration at the source code, i.e. instead of
-        <screen>
-        DATA 
-        .(  (IARG(I,J),i=1,6),     PER(J),   XS(J),  XC(J),  YS(J),  YC(J),
-        .                                                          J=16,25)
-        ./ 1, -1, 0, -2,  0, -1, 1.1196992,   -0.4,   0.3,   -0.3,   -0.4,
-        .  1, -1, 0, -2,  0, -2, 1.1195149,   -2.3,   1.3,   -1.3,   -2.3,
-      </screen>
-        use:
-        <screen>
-        .(  (IARG(I,J),i=1,6),     PER(J),   XS(J),  XC(J),  YS(J),  YC(J),
-        .                                                          J=16,25)
-        ./ 1, -1, 0, -2,  0, -1, 1.1196992, -0.4D0, 0.3D0, -0.3D0, -0.4D0,
-        .  1, -1, 0, -2,  0, -2, 1.1195149, -2.3D0, 1.3D0, -1.3D0, -2.3D0,
-      </screen>
-        Note that c++ normally does not need this, but in any case the corresponding elements are declared in scientific notation.
-      </para>
-    </section>
-    
-  </section>
-  
-  <section id="chap_04_02"><title>Testing the FORTRAN Implementation</title>
-    <para>You can easily verify/test the original FORTRAN code, using the utilities provided within the package. To do this,
-      you will need the FORTRAN source code, which can either be downloaded from the corresponding IERS <ulink url="http://maia.usno.navy.mil/conv2010/software.html">website</ulink>,
-      or use the already downloaded subroutines existing in the folder <filename>test/fortran</filename>. Either way, you will need to have
-      the following files (in the <filename>test/fortran</filename> folder):
-      <orderedlist numeration="arabic" id="rq_for">
-        <listitem> <filename>ARG2.F</filename></listitem>
-        <listitem> <filename>CNMTX.F</filename></listitem>
-        <listitem> <filename>FCNNUT.F</filename></listitem>
-        <listitem> <filename>FUNDARG.F</filename></listitem>
-        <listitem> <filename>MCNMTX.F</filename></listitem>
-        <listitem> <filename>ORTHO_EOP.F</filename></listitem>
-        <listitem> <filename>PMSDNUT2.F</filename></listitem>
-        <listitem> <filename>RG_ZONT2.F</filename></listitem>
-        <listitem> <filename>UTLIBR.F</filename></listitem>
-      </orderedlist>
-    Follow the steps described below, to create a program testing the results of FORTRAN subroutines.</para>
-    <procedure>
-      <title>Making FORTRAN <application>test.e</application></title>
-      <para>To create a test program for FORTRAN :</para>
-      <step performance="required">
-        <para>Make sure you have all the required FORTRAN files in the <filename>test/fortran</filename> folder (see <xref linkend="rq_for" />).
-          In addition, the files <filename>compile.sh</filename> and <filename>test.f</filename> should also reside in the same folder (these files
-          come with the package).</para></step>
-      <step performance="required">
-        <para>Compile the FORTRAN subroutines and the <filename>test.f</filename> program, using <filename>compile.sh</filename>. 
-          To do this, you only need to execute the script:
-          <screen>
-            <prompt>bash$</prompt> <command>chmod</command> +x <filename>compile.sh</filename>
-            <prompt>bash$</prompt> <command>./compile.sh</command>
+    <section id="chap_04_01"><title>Note on compiling the original code</title>
+        <para>On the following, we are going to use the <ulink url="https://gcc.gnu.org/fortran/">gfortran</ulink> compiler;
+            <command>gfortran</command> is a freely redistributable fortran compiler. It is part of 
+            <ulink url="https://www.gnu.org/software/gcc/">GCC</ulink>, the GNU compiler suite, 
+            and is currently part of that distribution. <command>gfortran</command> comes with most Unix - type OSs.</para>
+        <para>To compile a program, say <filename>TEST.F</filename>, the basic syntax is:
+            <screen>
+                <prompt>bash$</prompt> <command>gfortran <replaceable>TEST.F</replaceable> <arg>-o <replaceable>test.e</replaceable></arg></command>
             </screen>
-          The latter is a dead simple bash script, with a list of command for compiling the subroutines and linking to create the test program. Compilation flags
-          are not used, so if you do know what you 're doing, you can edit this file.
-          <important>The <filename>compile.sh</filename> script uses gfortran to compile the FORTRAN subroutines. If you don't have this program
-            either install it, or edit the file to use a different compiler.</important>
-          </para></step>
-      <step performance="required">
-        <para>If the previous step ended successefuly, you must have a file named <filename>test.e</filename> in the <filename>test/fortran</filename> folder.
-          Go ahead and run this program. <screen><prompt>bash$</prompt> <command>./test.e</command> </screen>
-          It should report a list of results from running the test cases for every subroutine. The report should be
-          self-explanatory. You can also save the output in a file for further use (see).
-          <screen><prompt>bash$</prompt> <command>./test.e</command> > <filename>fortran.test</filename></screen>
-          </para>
-        </step>
-      </procedure>
-  </section>
-  
-  <section id="chap_04_03"><title>Testing the C++ Implementation</title>
-    <para>Once you have sucessefuly installed the libiers10++ library (see <xref linkend="chap_02" />), you should verify the results
-      using the program <filename>test.cpp</filename>. The source code for this program, can be located in the <filename>test</filename>
-      directory.</para>
-    <procedure>
-      <title>Making C++ <application>test.e</application></title>
-      <step performance="required">
-        <para>Navigate to the <filename>test</filename> folder; there should be a file named <filename>test.cpp</filename>.</para></step>
-      <step performance="required">
-        <para>Compile the program, linking with the libiers10++ library. To do this, execute:
-          <screen><prompt>bash$</prompt> <command>g++</command>-Wall -std=c++11 -L../lib/ -I../inc/ -o <filename>test.e</filename> test.cpp -liers2010</screen></para></step>
-      </procedure>
-  </section>
-  
-  <section id="chap_04_04"><title>Comparing the Implementations</title>
-    <para></para>
-  </section>
-  
-</chapter>
+            which should result in the creation of a (executable) file named <filename>test.e</filename>.
+        </para>
+        <note>Our knowledge of FORTRAN and <command>gfortran</command> is very limited, so this chapter should only be seen as a harsh guideline</note>
+        
+        <section id="chap_04_01_01"><title><function>fundarg</function></title>
+            <para>The <filename>FUNDARG.F</filename> and <filename>fundarg.cpp</filename> produce exactly the same results.
+                Note however that, when running the <filename>FUNDARG.F</filename> routine, all input/output 
+                parameters <emphasis>MUST</emphasis> be provided in explicit double precision format (i.e. ending with 
+                D0 or something similar). E.g., for the test case provided at header, declare epoch as <screen>T = 0.07995893223819302D0</screen>
+                and NOT <screen>T = 0.07995893223819302</screen> Same is true for comparing the results, i.e.
+                <screen>WRITE(*,100) 'dl  = ',DABS(2.291187512612069099D0-L)</screen></para>
+            <para>For example, the test case provided in the <filename>fundarg.cpp</filename> header, could be setup as a
+                FORTRAN routine in the following way:
+                <example>
+                    <title>Verifiyng FUNDARG.F test case</title>
+                    <programlisting linenumbering='numbered'>
+                        PROGRAM MAIN
+                        DOUBLE PRECISION T, L, LP, F, D, OM
+                        T = 0.07995893223819302D0
+                        CALL FUNDARG ( T, L, LP, F, D, OM )
+                        WRITE(*,100) 'dl  = ',DABS(2.291187512612069099D0-L)
+                        WRITE(*,100) 'dlp = ',DABS(6.212931111003726414D0-LP)
+                        WRITE(*,100) 'df  = ',DABS(3.658025792050572989D0-F)
+                        WRITE(*,100) 'dd  = ',DABS(4.554139562402433228D0-D)
+                        WRITE(*,100) 'dom = ',DABS(-0.5167379217231804489D0-OM)
+                        100  FORMAT(A,F20.15)
+                        END
+                    </programlisting>
+                </example>
+                This block, could be added at the top of the file <filename>FUNDARG.F</filename> to run the test case. The code could then
+                be compiled, using e.g.:
+                <screen>
+                    <prompt>bash$</prompt> <command>gfortran <replaceable>FUNDARG.F</replaceable> <arg>-o <replaceable>fundarg.e</replaceable></arg></command>
+                </screen>
+                And running the executable (i.e. <filename>fundarg.e</filename>) should produce something like the following:
+                <computeroutput><screen>
+                        dl  =    0.000000000000076
+                        dlp =    0.000000000009700
+                        df  =    0.000000000000078
+                        dd  =    0.000000000009591
+                        dom =    0.000000000000000
+                        </screen></computeroutput>
+            </para>
+        </section>
+        
+        <section id="chap_04_01_02"><title><function>pmsdnut2</function></title>
+            <para>The <filename>PMSDNUT2.F</filename> and <filename>mpsdnut2.cpp</filename> functions, do not produce identical results. That
+                is because FORTRAN seems to produce small 'garbage' when transforming elements of the vectors XS(25), XC(25), YS(25), YC(25).
+                To fix this, use an explicit double decleration at the source code, i.e. instead of
+                <screen>
+                    DATA 
+                    .(  (IARG(I,J),i=1,6),     PER(J),   XS(J),  XC(J),  YS(J),  YC(J),
+                    .                                                          J=16,25)
+                    ./ 1, -1, 0, -2,  0, -1, 1.1196992,   -0.4,   0.3,   -0.3,   -0.4,
+                    .  1, -1, 0, -2,  0, -2, 1.1195149,   -2.3,   1.3,   -1.3,   -2.3,
+                </screen>
+                use:
+                <screen>
+                    .(  (IARG(I,J),i=1,6),     PER(J),   XS(J),  XC(J),  YS(J),  YC(J),
+                    .                                                          J=16,25)
+                    ./ 1, -1, 0, -2,  0, -1, 1.1196992, -0.4D0, 0.3D0, -0.3D0, -0.4D0,
+                    .  1, -1, 0, -2,  0, -2, 1.1195149, -2.3D0, 1.3D0, -1.3D0, -2.3D0,
+                </screen>
+                Note that c++ normally does not need this, but in any case the corresponding elements are declared in scientific notation.
+            </para>
+        </section>
+        
+    </section>
+    
+    <section id="chap_04_02"><title>Testing the FORTRAN Implementation</title>
+        <para>You can easily verify/test the original FORTRAN code, using the utilities provided within the package. To do this,
+            you will need the FORTRAN source code, which can either be downloaded from the corresponding IERS <ulink url="http://maia.usno.navy.mil/conv2010/software.html">website</ulink>,
+            or use the already downloaded subroutines existing in the folder <filename>test/fortran</filename>. Either way, you will need to have
+            the following files (in the <filename>test/fortran</filename> folder):
+            <orderedlist numeration="arabic" id="rq_for">
+                <listitem> <filename>ARG2.F</filename></listitem>
+                <listitem> <filename>CNMTX.F</filename></listitem>
+                <listitem> <filename>FCNNUT.F</filename></listitem>
+                <listitem> <filename>FUNDARG.F</filename></listitem>
+                <listitem> <filename>MCNMTX.F</filename></listitem>
+                <listitem> <filename>ORTHO_EOP.F</filename></listitem>
+                <listitem> <filename>PMSDNUT2.F</filename></listitem>
+                <listitem> <filename>RG_ZONT2.F</filename></listitem>
+                <listitem> <filename>UTLIBR.F</filename></listitem>
+            </orderedlist>
+            Follow the steps described below, to create a program testing the results of FORTRAN subroutines.</para>
+        <procedure>
+            <title>Making FORTRAN <application>test.e</application></title>
+            <para>To create a test program for FORTRAN :</para>
+            <step performance="required">
+                <para>Make sure you have all the required FORTRAN files in the <filename>test/fortran</filename> folder (see <xref linkend="rq_for" />).
+                    In addition, the files <filename>compile.sh</filename> and <filename>test.f</filename> should also reside in the same folder (these files
+                    come with the package).</para></step>
+            <step performance="required">
+                <para>Compile the FORTRAN subroutines and the <filename>test.f</filename> program, using <filename>compile.sh</filename>. 
+                    To do this, you only need to execute the script:
+                    <screen>
+                        <prompt>bash$</prompt> <command>chmod</command> +x <filename>compile.sh</filename>
+                        <prompt>bash$</prompt> <command>./compile.sh</command>
+                    </screen>
+                    The latter is a dead simple bash script, with a list of command for compiling the subroutines and linking to create the test program. Compilation flags
+                    are not used, so if you do know what you 're doing, you can edit this file.
+                    <important>The <filename>compile.sh</filename> script uses gfortran to compile the FORTRAN subroutines. If you don't have this program
+                        either install it, or edit the file to use a different compiler.</important>
+                    </para></step>
+            <step performance="required">
+                <para>If the previous step ended successefuly, you must have a file named <filename>test.e</filename> in the <filename>test/fortran</filename> folder.
+                    Go ahead and run this program. <screen><prompt>bash$</prompt> <command>./test.e</command> </screen>
+                    It should report a list of results from running the test cases for every subroutine. The report should be
+                    self-explanatory. You can also save the output in a file for further use (see).
+                    <screen><prompt>bash$</prompt> <command>./test.e</command> > <filename>fortran.test</filename></screen>
+                    </para>
+                </step>
+            </procedure>
+            <note>In case you notice big discrepancies between the test cases and the actual results, consider
+                making or reviewing the notes presented in <xref linkend="chap_04_01" /></note>
+        </section>
+        
+        <section id="chap_04_03"><title>Testing the C++ Implementation</title>
+            <para>Once you have sucessefuly installed the libiers10++ library (see <xref linkend="chap_02" />), you should verify the results
+                using the program <filename>test.cpp</filename>. The source code for this program, can be located in the <filename>test</filename>
+                directory.</para>
+            <procedure>
+                <title>Making C++ <application>test.e</application></title>
+                <step performance="required">
+                    <para>Navigate to the <filename>test</filename> folder; there should be a file named <filename>test.cpp</filename>.</para></step>
+                <step performance="required">
+                    <para>Compile the program, linking with the libiers10++ library. To do this, execute:
+                        <screen><prompt>bash$</prompt> <command>g++</command> -Wall -std=c++11 -L../lib/ -I../inc/ -o <filename>test.e</filename> test.cpp -liers2010</screen>
+                        In case you don't have g++, either install it or adapt the previous line to your prefered compiler.</para></step>
+                <step performance="required">
+                    <para>The previous step should have created the executable <filename>test.e</filename>. Run this program to
+                        test the installation of the library. The output should be self-explanatory. You can also save the output in a file for further use (see).</para></step>
+            </procedure>
+        </section>
+        
+        <section id="chap_04_04"><title>Comparing the Implementations</title>
+            <para>Following the instructions presented in <xref linkend="chap_04_02" /> and <xref linkend="chap_04_03" />,
+                users can create and run programs (one for the C++ and one for the FORTRAN implementation) to
+                check the library, using the test cases provided in the original code. Run the two programs
+                to produce two seperate files (one for each implementation). We will use the utility <filename>
+                    cmpcvf.py</filename> to compare the results obtained.</para>
+            <para><filename>cmpcvf.py</filename> is a python script, located in <filename>py</filename> folder, 
+                designed to compare results from <filename>test.cpp</filename> and <filename>test.f</filename>.
+                For ease, we will assume in the following that you have already created the result files, named as
+                <filename>test/cpp.test</filename> and <filename>test/fortran/fortran.test</filename> for the C++
+                and FORTRAN implementations respectively. Navigate to the <filename>py</filename> folder and execute
+                the following:
+                <screen><prompt>bash$</prompt> <command>cmpcvf.py</command> <filename>test/cpp.test</filename> <filename>test/fortran/fortran.test</filename>
+                </screen>
+                <note>Running the above, will also report debugging messages, starting with '##'. To eliminate these and
+                    gain a better view for the results of interest, execute:
+                    <screen><prompt>bash$</prompt> <command>cmpcvf.py</command> <filename>test/cpp.test</filename> <filename>test/fortran/fortran.test</filename> | <command>grep</command> -v "##"
+                    </screen>
+                </note>
+                You should see an ouput similar to this:
+                <computeroutput><screen>
+                        ---------------------------------------------------------------------------
+                        Analysis of test results for libiers10++
+                        Generated by cmpcvf.py
+                        Comparisson of C++ and Fortran results per function
+                        ARGUMENT     TEST-C++  TEST-FOR  FOR-C++
+                        ========== : ========= ========= =========
+                        Function FUNDARG
+                        dl         : 7.638e-14 7.638e-14 0.000e+00              radians
+                        dlp        : 9.700e-12 9.700e-12 0.000e+00              radians
+                        df         : 7.772e-14 7.772e-14 0.000e+00              radians
+                        dd         : 9.591e-12 9.591e-12 0.000e+00              radians
+                        dom        : 2.220e-16 2.220e-16 0.000e+00              radians
+                        Function FCNNUT
+                        dx         : 0.000e+00 0.000e+00 0.000e+00      microarcseconds
+                        dy         : 0.000e+00 0.000e+00 0.000e+00      microarcseconds
+                        ddx        : 0.000e+00 0.000e+00 0.000e+00      microarcseconds
+                        ddy        : 0.000e+00 0.000e+00 0.000e+00      microarcseconds
+                        Function PMSDNUT2
+                        pm(1)      : 1.329e-07 1.329e-07 3.553e-15      microarcseconds
+                        pm(2)      : 4.442e-07 4.442e-07 1.777e-15      microarcseconds
+                        Function UTLIBR (test A) 
+                        ddut1      : 1.376e-08 0.000e+00 1.376e-08              mus/day
+                        ddlod      : 2.363e-07 0.000e+00 2.363e-07              mus/day
+                        Function UTLIBR (test B) 
+                        ddut1      : 1.522e-08 0.000e+00 1.522e-08              mus/day
+                        ddlod      : 4.877e-07 0.000e+00 4.877e-07              mus/day
+                        Function ARG2
+                        dangle(01) : 0.000e+00 0.000e+00 0.000e+00              radians
+                        dangle(02) : 0.000e+00 0.000e+00 0.000e+00              radians
+                        dangle(03) : 0.000e+00 0.000e+00 0.000e+00              radians
+                        dangle(04) : 0.000e+00 0.000e+00 0.000e+00              radians
+                        dangle(05) : 0.000e+00 0.000e+00 0.000e+00              radians
+                        dangle(06) : 0.000e+00 0.000e+00 0.000e+00              radians
+                        dangle(07) : 0.000e+00 0.000e+00 0.000e+00              radians
+                        dangle(08) : 0.000e+00 0.000e+00 0.000e+00              radians
+                        dangle(09) : 0.000e+00 0.000e+00 0.000e+00              radians
+                        dangle(10) : 0.000e+00 0.000e+00 0.000e+00              radians
+                        dangle(11) : 0.000e+00 0.000e+00 0.000e+00              radians
+                        Function RG_ZONT2
+                        ddut       : 4.450e-05 0.000e+00 4.450e-05              seconds
+                        ddlod      : 2.858e-05 0.000e+00 2.858e-05          seconds/day
+                        ddomega    : 2.412e-14 0.000e+00 2.412e-14       radians/second
+                        Function ORTHO_EOP
+                        deop(1)    : 0.000e+00 0.000e+00 0.000e+00      microarcseconds
+                        deop(2)    : 0.000e+00 0.000e+00 0.000e+00      microarcseconds
+                        deop(3)    : 0.000e+00 0.000e+00 0.000e+00      microarcseconds
+                        ---------------------------------------------------------------------------
+                        </screen></computeroutput>
+                For every (main) available function, this output reports (per column):
+                <orderedlist numeration="arabic">
+                    <listitem><emphasis>ARGUMENT</emphasis>, i.e. the name of the parameter computed by the
+                        function</listitem>
+                    <listitem><emphasis>TEST-C++</emphasis>, i.e. the difference (in absolute value) from the test case
+                        provided in the original FORTRAN code with the results obtained using the C++ implementation</listitem>
+                    <listitem><emphasis>TEST-FOR</emphasis>, i.e. the difference (in absolute value) from the test case
+                        provided in the original FORTRAN code with the results obtained using the FORTRAN implementation</listitem>
+                    <listitem><emphasis>FOR-C++</emphasis>, i.e. the difference (in absolute value) from comparing the FORTRAN
+                        and C++ implementations</listitem>
+                    <listitem>the last column reports the units of the results</listitem>
+                </orderedlist>
+                Search through the results for alarming differences.
+            </para>
+        </section>
+        
+    </chapter>
