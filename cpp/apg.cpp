@@ -4,6 +4,8 @@
     #include "gencon.hpp"
 #endif
 
+#include <stdio.h>
+
 /**
  * @details  This subroutine determines the asymmetric delay d in meters caused
  *           by gradients.  The north and east gradients are also provided.
@@ -123,28 +125,46 @@ int iers2010::apg (const double& dlat,const double& dlon,const double& az,
     double z = sin(dlat);
     
     // Legendre polynomials
-    double v[10][10], w[10][10];
+    double v[15][15], w[15][15];
     v[0][0] = 1e0;
     w[0][0] = 0e0;
     v[1][0] = z * v[0][0];
     w[1][0] = 0e0;
 
     for (int n=1;n<nmax;n++) {
-        v[n+1][0] = ( (2*n-1) * z * v[n][0] - (n-1) * v[n-1][0] ) / n;
+        int N ( n + 1 );
+        v[n+1][0] = ( (2*N-1) * z * v[n][0] - (N-1) * v[n-1][0] ) / (double) N;
         w[n+1][0] = 0e0;
     }
     
-    for (int m=0;m<nmax;m++) {
-        v[m+1][m+1] = (2*m-1) * ( x*v[m][m] - y*w[m][m] );
-        w[m+1][m+1] = (2*m-1) * ( x*w[m][m] - y*v[m][m] );
-        if (m<nmax-1) {
-            v[m+2][m+1] = (2*m+1) * z* v[m+1][m+1];
-            w[m+2][m+1] = (2*m+1) * z* w[m+1][m+1];
+    for (int i=0;i<10;i++) {
+        for (int j=0;j<10;j++) {
+            printf (" %20.10f",v[i][j]);
+        }
+        printf ("\n");
+    }
+    
+    for (int m=0;m<mmax;m++) {
+        int M ( m + 1 );
+        v[m+1][m+1] = (2*M-1) * ( x*v[m][m] - y*w[m][m] );
+        w[m+1][m+1] = (2*M-1) * ( x*w[m][m] - y*v[m][m] );
+        if (m<mmax-1) {
+            v[m+2][m+1] = (2*M+1) * z* v[m+1][m+1];
+            w[m+2][m+1] = (2*M+1) * z* w[m+1][m+1];
         }
         for (int n=m+2;n<nmax;n++) {
-            v[n+1][m+1] = ( (2*n-1)*z*v[n][m+1] - (n+m-1)*v[n-1][m+1] ) / (double) (n-m);
-            w[n+1][m+1] = ( (2*n-1)*z*w[n][m+1] - (n+m-1)*w[n-1][m+1] ) / (double) (n-m);
+            int N = M + 2;
+            v[n+1][m+1] = ( (2*N-1)*z*v[n][m+1] - (N+M-1)*v[n-1][m+1] ) / (double) (N-M);
+            w[n+1][m+1] = ( (2*N-1)*z*w[n][m+1] - (N+M-1)*w[n-1][m+1] ) / (double) (N-M);
+            N++;
         }
+    }
+    
+    for (int i=0;i<10;i++) {
+        for (int j=0;j<10;j++) {
+            printf (" %20.10f",v[i][j]);
+        }
+        printf ("\n");
     }
     
     // Surface pressure on the geoid
