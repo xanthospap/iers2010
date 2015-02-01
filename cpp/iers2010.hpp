@@ -130,6 +130,10 @@ namespace iers2010 {
    * orientation.
    */
   int ortho_eop (const double&,double*);
+  
+  /** @brief  Compute the asymmetric delay d (in meters) caused by gradients and the north and east gradients.
+   */
+  int apg (const double&,const double&,const double&,const double&,double&,double&,double&);
 
 };
 

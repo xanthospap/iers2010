@@ -10,7 +10,7 @@ LFLAGS   = $(C11) -Wall $(OPT) $(USE_EXTERNAL_CONSTS) $(QUICK_EXIT)
 LIB      = ../lib/libiers2010.a
 #
 SRC      = fundarg.cpp  pmsdnut2.cpp  utlibr.cpp fcnnut.cpp arg2.cpp dehanttideinel.cpp \
-           rg_zont2.cpp cnmtx.cpp ortho_eop.cpp \
+           rg_zont2.cpp cnmtx.cpp ortho_eop.cpp apg.cpp \
            st1idiu.cpp st1isem.cpp st1l1.cpp step2diu.cpp step2lon.cpp cal2jd.cpp dat.cpp \
            etutc.cpp eval.cpp recurs.cpp shells.cpp utils.cpp spline.cpp tdfrph.cpp admint.cpp
 
@@ -77,6 +77,8 @@ $(LIB): $(OBJ)
 	$(CXX) $(CFLAGS) -o ../obj/cnmtx.o cnmtx.cpp
 ../obj/ortho_eop.o: ortho_eop.cpp cnmtx.cpp $(HEAD)
 	$(CXX) $(CFLAGS) -o ../obj/ortho_eop.o ortho_eop.cpp
+../obj/apg.o: apg.cpp $(HEAD)
+	$(CXX) $(CFLAGS) -o ../obj/apg.o apg.cpp
 ../obj/st1idiu.o: dehanttideinel/st1idiu.cpp dehanttideinel/dehanttideinel.hpp
 	$(CXX) $(CFLAGS) -o ../obj/st1idiu.o dehanttideinel/st1idiu.cpp
 ../obj/st1isem.o: dehanttideinel/st1isem.cpp dehanttideinel/dehanttideinel.hpp

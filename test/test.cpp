@@ -45,7 +45,7 @@ int main ()
   
   
   // subroutine UTLIBR
-  printf ("\nFunction UTLIBR (test A)");
+  printf ("\nFunction UTLIBR               |ddomega| (test A)");
   printf ("\n\tAbs. differences in mus and mus/day:");
   rmjd = 44239.1e0;
   double dut1, dlod;
@@ -129,6 +129,15 @@ int main ()
   printf ("\n\t|deop(1)|   = %20.18f",fabs(-162.8386373279636530e0-h[0]));
   printf ("\n\t|deop(2)|   = %20.18f",fabs(117.7907525842668974e0-h[1]));
   printf ("\n\t|deop(3)|   = %20.18f",fabs(-23.39092370609808214e0-h[2]));
+  
+  // subroutine APG
+  printf ("\nFunction APG");
+  printf ("\n\tAbs. differences in (see results) :");
+  double grn,gre;
+  iers2010::apg (0.6274877539940092e0,2.454994088489240e0,0.2617993877991494e0,0.8726646259971648e0,d,grn,gre);
+  printf ("\n\t|dd|      = %20.18f m",fabs(-0.9677190006296187757e-4-d));
+  printf ("\n\t|dgre|    = %20.18f mm",fabs(-0.1042668498001996791e0-gre));
+  printf ("\n\t|dgrn|    = %20.18f mm",fabs(0.4662515377110782594e-1-grn));
 
   printf ("\n");
   return 0;
