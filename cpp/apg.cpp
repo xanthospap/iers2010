@@ -152,8 +152,8 @@ int iers2010::apg (const double& dlat,const double& dlon,const double& az,
             v[m+2][m+1] = (2*M+1) * z* v[m+1][m+1];
             w[m+2][m+1] = (2*M+1) * z* w[m+1][m+1];
         }
+        int N = M + 2;
         for (int n=m+2;n<nmax;n++) {
-            int N = M + 2;
             v[n+1][m+1] = ( (2*N-1)*z*v[n][m+1] - (N+M-1)*v[n-1][m+1] ) / (double) (N-M);
             w[n+1][m+1] = ( (2*N-1)*z*w[n][m+1] - (N+M-1)*w[n-1][m+1] ) / (double) (N-M);
             N++;
