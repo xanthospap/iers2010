@@ -30,7 +30,7 @@
   <section id="chap_01_03"><title>Available functions</title>
     <para></para>
     
-    <table frame='all'>
+    <table frame='all' id="avfuntab">
       <title>List of Available Functions</title>
       <tgroup cols="7" colsep='1' rowsep='1'>
         <thead>
