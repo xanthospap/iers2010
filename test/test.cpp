@@ -136,8 +136,8 @@ int main ()
   double grn,gre;
   iers2010::apg (0.6274877539940092e0,2.454994088489240e0,0.2617993877991494e0,0.8726646259971648e0,d,grn,gre);
   printf ("\n\t|dd|      = %20.18f m",fabs(-0.9677190006296187757e-4-d));
-  printf ("\n\t|dgre|    = %20.18f mm",fabs(-0.1042668498001996791e0-gre));
-  printf ("\n\t|dgrn|    = %20.18f mm",fabs(0.4662515377110782594e-1-grn));
+  printf ("\n\t|dgre|    = %20.18f mm",fabs(-0.1042668498001996791e0-grn));
+  printf ("\n\t|dgrn|    = %20.18f mm",fabs(0.4662515377110782594e-1-gre));
 
   printf ("\n");
   return 0;

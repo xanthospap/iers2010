@@ -137,44 +137,33 @@ int iers2010::apg (const double& dlat,const double& dlon,const double& az,
         w[n+1][0] = 0e0;
     }
     
-    for (int i=0;i<10;i++) {
-        for (int j=0;j<10;j++) {
-            printf (" %20.10f",v[i][j]);
-        }
-        printf ("\n");
-    }
-    
     for (int m=0;m<mmax;m++) {
         int M ( m + 1 );
-        v[m+1][m+1] = (2*M-1) * ( x*v[m][m] - y*w[m][m] );
-        w[m+1][m+1] = (2*M-1) * ( x*w[m][m] - y*v[m][m] );
+        v[m+1][m+1] = (double) (2*M-1) * ( x*v[m][m] - y*w[m][m] );
+        w[m+1][m+1] = (double) (2*M-1) * ( x*w[m][m] + y*v[m][m] );
         if (m<mmax-1) {
             v[m+2][m+1] = (2*M+1) * z* v[m+1][m+1];
             w[m+2][m+1] = (2*M+1) * z* w[m+1][m+1];
         }
         int N = M + 2;
         for (int n=m+2;n<nmax;n++) {
-            v[n+1][m+1] = ( (2*N-1)*z*v[n][m+1] - (N+M-1)*v[n-1][m+1] ) / (double) (N-M);
-            w[n+1][m+1] = ( (2*N-1)*z*w[n][m+1] - (N+M-1)*w[n-1][m+1] ) / (double) (N-M);
+            v[n+1][m+1] = ( (2*N-1)*z*v[n][m+1] - (N+M-1)*v[n-1][m+1] ) 
+              / (double) (N-M);
+            w[n+1][m+1] = ( (2*N-1)*z*w[n][m+1] - (N+M-1)*w[n-1][m+1] ) 
+              / (double) (N-M);
             N++;
         }
     }
-    
-    for (int i=0;i<10;i++) {
-        for (int j=0;j<10;j++) {
-            printf (" %20.10f",v[i][j]);
-        }
-        printf ("\n");
-    }
-    
+
     // Surface pressure on the geoid
     grn = 0e0;
     gre = 0e0;
     int i = 0;
     for (int n=0;n<=nmax;n++) {
         for (int m=0;m<=n;m++) {
-            grn += ( a_n[i]*v[n+1][m+1] + b_n[i]*w[n+1][m+1] );
-            gre += ( a_e[i]*v[n+1][m+1] + b_e[i]*w[n+1][m+1] );
+            grn += ( a_n[i]*v[n][m] + b_n[i]*w[n][m] );
+            gre += ( a_e[i]*v[n][m] + b_e[i]*w[n][m] );
+            i++;
         }
     }
     

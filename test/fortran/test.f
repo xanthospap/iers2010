@@ -2,6 +2,7 @@
       INTEGER YEAR,I
       DOUBLE PRECISION T,L,LP,F,D,OM,X,DX,Y,DY,PM(2)
       DOUBLE PRECISION DUT1,DLOD,IANGLE(11),ANGLE(11),DAY
+      DOUBLE PRECISION DLAT,DLON,AZ,EL,GRN,GRE
 
 *     ------------------------------------------------------------------------
 *     FUNDARG
@@ -113,5 +114,23 @@
       WRITE (*,16) '|deop(3)|   = ',DABS(-23.39092370609808214D0
      . -ANGLE(3))
  16   FORMAT (A,F20.18)
+
+*     ------------------------------------------------------------------------
+*     APG
+*     ------------------------------------------------------------------------
+      WRITE (*,*) 'Function APG'
+      WRITE (*,*) 'Abs. differences in (see results):'
+      DLAT = 0.6274877539940092D0
+      DLON = 2.454994088489240D0
+      AZ   = 0.2617993877991494D0
+      EL   = 0.8726646259971648D0
+      CALL APG (DLAT,DLON,AZ,EL,D,GRN,GRE)
+      WRITE (*,17) '|dd|        = ',DABS(-0.9677190006296187757D-4
+     . -D)
+      WRITE (*,17) '|dgre|      = ',DABS(-0.1042668498001996791D0
+     . -GRN)
+      WRITE (*,17) '|dgrn|      = ',DABS(0.4662515377110782594D-1
+     . -GRE)
+ 17   FORMAT (A,F20.18)
 
       END PROGRAM MAIN

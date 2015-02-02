@@ -96,10 +96,6 @@ int iers2010::pmsdnut2 (const double& rmjd,double* pm)
     constexpr double TWOPI   (D2PI); 
     constexpr double RAD2SEC (DRAD2SEC);  // Radians to seconds
   #else
-    // Arcseconds to radians
-    constexpr double DAS2R   (4.848136811095359935899141e-6);
-    // Arcseconds in a full circle
-    constexpr double TURNAS  (1296000e0);
     // Modified Julian date of J2000
     constexpr double RMJD0   (51544.5e0);
     constexpr double PI      (3.141592653589793238462643e0);

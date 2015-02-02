@@ -94,19 +94,9 @@ int iers2010::rg_zont2 (const double& t,double& dut,double& dlod,double& domega)
   
   // Set constants
   #ifdef USE_EXTERNAL_CONSTS
-    constexpr double PI      (DPI);
     constexpr double TWOPI   (D2PI);
-    // Radians to seconds
-    constexpr double RAD2SEC (DRAD2SEC);
   #else
-    // Arcseconds to radians
-    constexpr double DAS2R   (4.848136811095359935899141e-6 );
-    // Arcseconds in a full circle
-    constexpr double TURNAS  (1296000e0);
-    constexpr double PI      (3.141592653589793238462643e0);
     constexpr double TWOPI   (6.283185307179586476925287e0);
-    // Radians to seconds
-    constexpr double RAD2SEC (86400e0 / TWOPI);
   #endif
   
   /*  ----------------------

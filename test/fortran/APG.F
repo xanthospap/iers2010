@@ -1,12 +1,3 @@
-      PROGRAM MAIN
-      DOUBLE PRECISION DMJD,DLAT,DLON,DHGT,PRES,TEMP,UNDU
-      DLAT = 0.6274877539940092D0
-      DLON = 2.454994088489240D0
-      AZ   = 0.2617993877991494D0
-      EL   = 0.8726646259971648D0
-      CALL APG (DLAT,DLON,AZ,EL,D,GRN,GRE)
-      END
-
       SUBROUTINE APG (DLAT,DLON,AZ,EL,D,GRN,GRE)
 *+
 *  - - - -
@@ -96,7 +87,7 @@
       DOUBLE PRECISION     V(10,10),W(10,10)
       DOUBLE PRECISION     A_N(55),B_N(55),A_E(55),B_E(55)
 
-      INTEGER*4  I,N,M,NMAX,MMAX,II,JJ,KK
+      INTEGER*4  I,N,M,NMAX,MMAX
       DOUBLE PRECISION     PI,X,Y,Z
 
       PARAMETER ( PI = 3.1415926535897932384626433D0 )    
@@ -171,13 +162,6 @@
         V(N+1,1) = ((2*N-1) * Z * V(N,1) - (N-1) * V(N-1,1)) / N
         W(N+1,1) = 0.0D0
       ENDDO
-      
-        DO II=1,10
-        WRITE (*,*) '\'
-        DO JJ=1,10
-          WRITE (*,'(F20.10,$)') V(II,JJ)
-        END DO
-      END DO
 
       DO M=1,MMAX
         V(M+1,M+1) = (2*M-1) * (X*V(M,M) - Y*W(M,M))
@@ -191,15 +175,6 @@
           W(N+1,M+1) = ((2*N-1)*Z*W(N,M+1) - (N+M-1)*W(N-1,M+1)) / (N-M)
         ENDDO
       ENDDO
-
-
-      DO II=1,10
-        WRITE (*,*) '\'
-        DO JJ=1,10
-          WRITE (*,'(F20.10,$)') V(II,JJ)
-        END DO
-      END DO
-* 81   FORMAT(A,I2,A,I2,A,F20.15)
 
 *     Surface pressure on the geoid
       GRN = 0D0

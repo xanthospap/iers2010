@@ -21,7 +21,7 @@ Function PMSDNUT2
 	Abs. differences in microarcseconds:
 	|pm(1)|  = 0.000000132875289438
 	|pm(2)|  = 0.000000444179713455
-Function UTLIBR (test A)
+Function UTLIBR               |ddomega| (test A)
 	Abs. differences in mus and mus/day:
 	|ddut1|  = 0.000000013757687878
 	|ddlod|  = 0.000000236278697940
@@ -76,3 +76,8 @@ Function ORTHO_EOP
 	|deop(1)|   = 0.000000000000000000
 	|deop(2)|   = 0.000000000000000000
 	|deop(3)|   = 0.000000000000000000
+Function APG
+	Abs. differences in (see results) :
+	|dd|      = 0.000000000000009406 m
+	|dgre|    = 0.000000000000000000 mm
+	|dgrn|    = 0.000000000000000000 mm

@@ -61,14 +61,11 @@ int iers2010::fundarg (const double& t,double& l,double& lp,double& f,
 {
 
   // Set constants
-  #ifdef USE_EXTERNAL_CONSTS
-    constexpr double TWOPI   (D2PI);
-  #else 
+  #ifndef USE_EXTERNAL_CONSTS
     // Arcseconds to radians
     constexpr double DAS2R   (4.848136811095359935899141e-6);
     // Arcseconds in a full circle
     constexpr double TURNAS  (1296000e0);
-    constexpr double TWOPI   (6.283185307179586476925287e0);
   #endif
     
   #ifdef QUICK_EXIT
