@@ -2,7 +2,8 @@
       INTEGER YEAR,I
       DOUBLE PRECISION T,L,LP,F,D,OM,X,DX,Y,DY,PM(2)
       DOUBLE PRECISION DUT1,DLOD,IANGLE(11),ANGLE(11),DAY
-      DOUBLE PRECISION DLAT,DLON,AZ,EL,GRN,GRE
+      DOUBLE PRECISION DLAT,DLON,AZ,EL,GRN,GRE,DMJD,PRES,TEMP
+      DOUBLE PRECISION UNDU
 
 *     ------------------------------------------------------------------------
 *     FUNDARG
@@ -132,5 +133,20 @@
       WRITE (*,17) '|dgrn|      = ',DABS(0.4662515377110782594D-1
      . -GRE)
  17   FORMAT (A,F20.18)
+ 
+*     ------------------------------------------------------------------------
+*     GPT
+*     ------------------------------------------------------------------------
+      WRITE (*,*) 'Function GPT'
+      WRITE (*,*) 'Abs. differences in (see results):'
+      CALL GPT (55055D0,0.6708665767D0,-1.393397187D0,812.546D0,
+     . PRES,TEMP,UNDU)
+      WRITE (*,18) '|dpres|     = ',DABS(918.0710638757363995D0
+     . -PRES),' hPa'
+      WRITE (*,18) '|dtemp|     = ',DABS(19.31914181012882992D0
+     . -TEMP),' Celsius'
+      WRITE (*,18) '|dundu|     = ',DABS(-42.19185643717770517D0
+     . -UNDU),' meters'
+ 18   FORMAT (A,F20.18,A)
 
       END PROGRAM MAIN

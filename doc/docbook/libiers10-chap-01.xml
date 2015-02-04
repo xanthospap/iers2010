@@ -35,7 +35,7 @@
       <tgroup cols="7" colsep='1' rowsep='1'>
         <thead>
           <row>
-            <entry>Chapter</entry>
+              <entry>Chapter<footnote><para>This refers to the chapter of IERS <citetitle>Technical Note 36</citetitle> document; for more information, see <xref linkend="chap_07_02" />.</para></footnote></entry>
             <entry>Function Name</entry>
             <entry>Namespace</entry>
             <entry>Purpose</entry>
@@ -97,17 +97,31 @@
             <entry><function>rg_zont2</function></entry><entry>iers2010</entry>
             <entry>compute the effects of zonal Earth tides on the rotation of the Earth</entry>
             <entry><ulink url="http://maia.usno.navy.mil/conv2010/convupdt/chapter8/RG_ZONT2.F">RG_ZONT2.F</ulink></entry>
-            <entry>calls <function>cntmx</function></entry>
+            <entry>calls <function>fundarg</function></entry>
             <entry>R. Gross</entry>
+          </row>
+          <row>
+              <entry><function>ortho_eop</function></entry><entry>iers2010</entry>
+              <entry>compute the diurnal and semidiurnal variations in the Earth orientation</entry>
+              <entry><ulink url="http://maia.usno.navy.mil/conv2010/convupdt/chapter8/ORTHO_EOP.F">ORTHO_EOP.F</ulink></entry>
+              <entry>calls <function>cntmx</function></entry>
+              <entry>R. Eanes</entry>
           </row>
           
           <row>
-            <entry morerows='0' valign='middle'>Chapter 9</entry>
+            <entry morerows='1' valign='middle'>Chapter 9</entry>
             <entry><function>apg</function></entry><entry>iers2010</entry>
             <entry>compute the asymmetric delay d in meter caused by gradients. The north and east gradients are also provided, based on spherical harmonics up to degree and order 9.</entry>
             <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/APG.F">APG.F</ulink></entry>
             <entry></entry>
             <entry>J. Boehm</entry>
+          </row>
+          <row>
+              <entry><function>gpt</function></entry><entry>iers2010</entry>
+              <entry>compute the Global Pressure and Temperature, based on spherical harmonics up to degree and order 9</entry>
+              <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/GPT.F">GPT.F</ulink></entry>
+              <entry></entry>
+              <entry>J. Boehm</entry>
           </row>
           
         </tbody>

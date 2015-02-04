@@ -1,11 +1,5 @@
 #include "iers2010.hpp"
 
-#ifdef USE_EXTERNAL_CONSTS
-    #include "gencon.hpp"
-#endif
-
-#include <stdio.h>
-
 /**
  * @details  This subroutine determines the asymmetric delay d in meters caused
  *           by gradients.  The north and east gradients are also provided.
@@ -125,7 +119,7 @@ int iers2010::apg (const double& dlat,const double& dlon,const double& az,
     double z = sin(dlat);
     
     // Legendre polynomials
-    double v[15][15], w[15][15];
+    double v[10][10], w[10][10];
     v[0][0] = 1e0;
     w[0][0] = 0e0;
     v[1][0] = z * v[0][0];

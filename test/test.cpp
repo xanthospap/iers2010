@@ -138,6 +138,14 @@ int main ()
   printf ("\n\t|dd|      = %20.18f m",fabs(-0.9677190006296187757e-4-d));
   printf ("\n\t|dgre|    = %20.18f mm",fabs(-0.1042668498001996791e0-grn));
   printf ("\n\t|dgrn|    = %20.18f mm",fabs(0.4662515377110782594e-1-gre));
+  
+  // subroutine GPT
+  printf ("\nFunction GPT");
+  printf ("\n\tAbs. differences in (see results) :");
+  iers2010::gpt (55055e0,0.6708665767e0,-1.393397187e0,812.546e0,d,grn,gre);
+  printf ("\n\t|dpres|   = %20.18f hPa",fabs(918.0710638757363995e0-d));
+  printf ("\n\t|dtemp|   = %20.18f Celsius",fabs(19.31914181012882992e0-grn));
+  printf ("\n\t|dundu|   = %20.18f meters",fabs(-42.19185643717770517e0-gre));
 
   printf ("\n");
   return 0;

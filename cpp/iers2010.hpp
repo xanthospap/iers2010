@@ -131,9 +131,13 @@ namespace iers2010 {
    */
   int ortho_eop (const double&,double*);
   
-  /** @brief  Compute the asymmetric delay d (in meters) caused by gradients and the north and east gradients.
+  /** @brief Compute the asymmetric delay d (in meters) caused by gradients and the north and east gradients.
    */
   int apg (const double&,const double&,const double&,const double&,double&,double&,double&);
+  
+  /** @brief Compute the Global Pressure and Temperature, based on spherical harmonics up to degree and order 9.
+   */
+  int gpt (const double&,const double&,const double&,const double&,double&,double&,double&);
 
 };
 
