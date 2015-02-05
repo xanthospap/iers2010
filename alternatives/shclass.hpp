@@ -7,11 +7,13 @@ int gpt (const double& dmjd,const double& dlat,const double& dlon,
   const double& dhgt,double& pres,double& temp,double& undu);
 int gpt2 (const double& dmjd,const double& dlat,const double& dlon,
   const double& dhgt,double& pres,double& temp,double& undu);
+int gpt3 (const double& dmjd,const double& dlat,const double& dlon,
+          const double& dhgt,double& pres,double& temp,double& undu);
 
 class SphericalHarmonics {
 public:
-  SphericalHarmonics ();
-  SphericalHarmonics (const double& x, const double& y, const double& z);
+  explicit SphericalHarmonics ();
+  explicit SphericalHarmonics (const double& x,const double& y,const double& z);
   ~SphericalHarmonics ();
   SphericalHarmonics (const SphericalHarmonics&);
   SphericalHarmonics& operator = (const SphericalHarmonics&);
