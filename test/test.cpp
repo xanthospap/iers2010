@@ -162,9 +162,10 @@ int main ()
   double mp,mt,mdt,me,mah,maw,mundu;
   int status = iers2010::gpt2 (
           56141e0,&dlat,&dlon,&hell,1,&mp,&mt,&mdt,&me,&mah,&maw,&mundu,0,
-          "/home/xanthos/myrepos/iers2010/cpp/gpt2_5.grd");
+          "/home/xanthos/Software/iers2010/cpp/gpt2_5.grd");
+//          "/home/xanthos/myrepos/iers2010/cpp/gpt2_5.grd");
   if (status)
-      printf ("\nERROR! gpt2 could not run");
+      printf ("\nERROR! gpt2 could not run. Error code: %01i",status);
   else {
     printf ("\n\t|dp|      = %10.5f hPa",fabs(1002.56e0-mp));
     printf ("\n\t|dT|      = %10.5f Celsius",fabs(22.12e0-mt));

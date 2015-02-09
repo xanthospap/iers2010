@@ -25,8 +25,14 @@
                         *                       OM = -0.5167379217231804489 radians
                     </screen>
                 </listitem>
-                <listitem><para></para></listitem>
-                <listitem><para></para></listitem>
+                <listitem><para>the <emphasis>FORTRAN implementation</emphasis>. Some of the test cases provided in the source file headers,
+                    may be outdated (although this is very rare). As a precausion, when testing the libeiers++ library, we re-implement
+                    the FORTRAN realization; this consists of downloading the original FORTRAN routines, compiling them and executing a
+                    (provided with this package) test case (see <xref linkend="chap_04_02" />). This implementation, will be refered to
+                    hereafter as the <emphasis>FORTRAN implementation</emphasis>.<important>The original FORTRAN source files, are licensed
+                      by IERS and are NOT covered by this package's license (see <xref linkend="preface_05" />).</important></para></listitem>
+                <listitem><para>the <emphasis>C++ implementation</emphasis>. This consists of the actual libiers++ source files, and testing
+                    routines.</para></listitem>
             </itemizedlist>
         </para>
     </preface>
@@ -126,6 +132,7 @@
                 <listitem> <filename>UTLIBR.F</filename></listitem>
                 <listitem> <filename>APG.F</filename></listitem>
                 <listitem> <filename>GPT.F</filename></listitem>
+                <listitem> <filename>GPT2.F</filename></listitem>
             </orderedlist>
             Follow the steps described below, to create a program testing the results of FORTRAN subroutines.</para>
         <procedure>
