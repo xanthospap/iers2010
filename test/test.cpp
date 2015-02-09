@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "iers2010.hpp"
 
+#define pi 3.1415926535e0
+
 // COMPILATION: g++ -Wall -std=c++11 -L../lib/ -I../inc/ test.cpp -liers2010
 
 int main ()
@@ -72,7 +74,8 @@ int main ()
   double day = 311.5e0;
   double angle[11];
   iers2010::arg2 (iyear,day,angle);
-  for (int i = 0;i<11;i++) printf ("\n\t|dangle(%02i)|  = %20.18f",i+1, fabs(angle[i]-iangle[i]));
+  for (int i = 0;i<11;i++) 
+      printf ("\n\t|dangle(%02i)|  = %20.18f",i+1, fabs(angle[i]-iangle[i]));
   
   // subroutine DEHANTTIDEINEL
   printf ("\nFunction DEHANTTIDEINEL");
@@ -99,9 +102,12 @@ int main ()
   t = .07995893223819302e0;
   double dut, /*dlod,*/ domega;
   iers2010::rg_zont2 (t, dut, dlod, domega);
-  printf ("\n\t|ddut|    = %20.18f (seconds)",fabs(7.983287678576557467E-002-dut));
-  printf ("\n\t|ddlod|   = %20.18f (seconds/day)",fabs(5.035331113978199288E-005-dlod));
-  printf ("\n\t|ddomega| = %20.18f (radians/second)",fabs(-4.249711616463017E-014-domega));
+  printf ("\n\t|ddut|    = %20.18f (seconds)",
+          fabs(7.983287678576557467E-002-dut));
+  printf ("\n\t|ddlod|   = %20.18f (seconds/day)",
+          fabs(5.035331113978199288E-005-dlod));
+  printf ("\n\t|ddomega| = %20.18f (radians/second)",
+          fabs(-4.249711616463017E-014-domega));
   
   // subroutine CNMTX
   printf ("\nFunction CNMTX (used by ORTHO_EOP)");
@@ -120,7 +126,8 @@ int main ()
    *(h+10)= 1.946355176475630611e0;
    *(h+11)= -13.55702062247304696e0;
   iers2010::cnmtx (54964.0e0,ht);
-  for (int i=0;i<12;i++) printf ("\n\t|dh(%02i)|   = %20.18f",i+1,fabs(h[i]-ht[i]));
+  for (int i=0;i<12;i++) 
+      printf ("\n\t|dh(%02i)|   = %20.18f",i+1,fabs(h[i]-ht[i]));
 
   // subroutine ORTHO_EOP
   printf ("\nFunction ORTHO_EOP");
@@ -134,7 +141,8 @@ int main ()
   printf ("\nFunction APG");
   printf ("\n\tAbs. differences in (see results) :");
   double grn,gre;
-  iers2010::apg (0.6274877539940092e0,2.454994088489240e0,0.2617993877991494e0,0.8726646259971648e0,d,grn,gre);
+  iers2010::apg (0.6274877539940092e0,2.454994088489240e0,0.2617993877991494e0,
+          0.8726646259971648e0,d,grn,gre);
   printf ("\n\t|dd|      = %20.18f m",fabs(-0.9677190006296187757e-4-d));
   printf ("\n\t|dgre|    = %20.18f mm",fabs(-0.1042668498001996791e0-grn));
   printf ("\n\t|dgrn|    = %20.18f mm",fabs(0.4662515377110782594e-1-gre));
@@ -146,6 +154,26 @@ int main ()
   printf ("\n\t|dpres|   = %20.18f hPa",fabs(918.0710638757363995e0-d));
   printf ("\n\t|dtemp|   = %20.18f Celsius",fabs(19.31914181012882992e0-grn));
   printf ("\n\t|dundu|   = %20.18f meters",fabs(-42.19185643717770517e0-gre));
+
+  // subroutine GPT2
+  printf ("\nFunction GPT2");
+  printf ("\n\tAbs. differences in (see results) :");
+  double dlat (48.20e0*pi/180.e0),dlon (16.37e0*pi/180.e0), hell(156.e0);
+  double mp,mt,mdt,me,mah,maw,mundu;
+  int status = iers2010::gpt2 (
+          56141e0,&dlat,&dlon,&hell,1,&mp,&mt,&mdt,&me,&mah,&maw,&mundu,0,
+          "/home/xanthos/myrepos/iers2010/cpp/gpt2_5.grd");
+  if (status)
+      printf ("\nERROR! gpt2 could not run");
+  else {
+    printf ("\n\t|dp|      = %10.5f hPa",fabs(1002.56e0-mp));
+    printf ("\n\t|dT|      = %10.5f Celsius",fabs(22.12e0-mt));
+    printf ("\n\t|ddT|     = %10.5f deg/km",fabs(-6.53e0-mdt));
+    printf ("\n\t|de|      = %10.5f hPa",fabs(15.63e0-me));
+    printf ("\n\t|dah|     = %15.10f (unitless)",fabs(0.0012647e0-mah));
+    printf ("\n\t|daw|     = %15.10f (unitless)",fabs(0.0005726e0-maw));
+    printf ("\n\t|dundu|   = %10.5f meters",fabs(44.06e0-mundu));
+  }
 
   printf ("\n");
   return 0;

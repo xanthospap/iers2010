@@ -131,14 +131,24 @@ namespace iers2010 {
    */
   int ortho_eop (const double&,double*);
   
-  /** @brief Compute the asymmetric delay d (in meters) caused by gradients and the north and east gradients.
+  /** @brief Compute the asymmetric delay d (in meters) caused by gradients and
+   *         the north and east gradients.
    */
-  int apg (const double&,const double&,const double&,const double&,double&,double&,double&);
+  int apg (const double&,const double&,const double&,const double&,double&,
+          double&,double&);
   
-  /** @brief Compute the Global Pressure and Temperature, based on spherical harmonics up to degree and order 9.
+  /** @brief Compute the Global Pressure and Temperature (GPT) model, based on 
+   *         spherical harmonics up to degree and order 9.
    */
-  int gpt (const double&,const double&,const double&,const double&,double&,double&,double&);
+  int gpt (const double&,const double&,const double&,const double&,double&,
+          double&,double&);
 
+  /** @brief Compute the Global Pressure and Temperature 2 (GPT2) model, and 
+   *         the "a" coefficients for VMF1_HT, based on the file gpt2_5.grd.
+   */
+  int gpt2 (const double&,const double*,const double*,const double*,const int&,
+          double*,double*,double*,double*,double*,double*,double*,int it = 0,
+          const char* ifile=nullptr);
 };
 
 #endif
