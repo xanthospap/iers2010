@@ -40,7 +40,12 @@
 inc/*
 lib/*
 obj/*
+autom4te.cache/*
 
 # Html
-#*.html
-#*.htm
+*.html
+*.htm
+
+# Configure Files
+config.*
+autoscan.log

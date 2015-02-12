@@ -3,22 +3,24 @@
 # @configure_input@
 # --------------------------------------------------------------
 
-# Package-related substitution variables
-#package = @PACKAGE_NAME@
-#version = @PACKAGE_VERSION@
-#tarname = @PACKAGE_TARNAME@
-
-# Prefix-related substitution variables
-#prefix      = @prefix@
-#exec_prefix = @exec_prefix@
-#bindir      = @bindir@
-
 include Makefile.conf
 
-export prefix      = /usr/local
-export exec_prefix = $(prefix)
-export includedir  = $(prefix)/include
-export libdir      = $(exec_prefix)/lib
+# Package-related substitution variables
+package     = @PACKAGE_NAME@
+version     = @PACKAGE_VERSION@
+tarname     = @PACKAGE_TARNAME@
+distdir     = $(tarname)-$(version)
+
+# Prefix-related substitution variables
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+bindir      = @bindir@
+includedir  = @includedir@
+libdir      = @libdir@
+
+# VPATH-related substitution variables
+srcdir         = @srcdir@
+VPATH          = @srcdir@
 
 all clean install:
 	$(MAKE) -C src $@
@@ -31,8 +33,13 @@ $(distdir).tar.zg: FORCE $(distdir)
 
 $(distdir):
 	mkdir -p $(distdir)/src
-	cp Makefile $(distdir)
-	cp -r src/* $(distdir)/src
+	cp configure $(distdir)
+	cp Makefile.in $(distdir)
+	cp src/Makefile.in $(distdir)/src
+	cp src/*.cpp $(distdir)/src
+	cp src/*.hpp $(distdir)/src
+	cp -r src/dehanttideinel $(distdir)/src
+	cp -r src/hardisp $(distdir)/src
 
 FORCE:
 	-rm $(distdir).tar.gz &> /dev/null
@@ -46,5 +53,11 @@ distcheck: $(distdir).tar.gz
 
 test:
 	(cd test; g++ -Wall -std=c++11 -L../lib/ -I../inc/ test.cpp -liers2010)
+
+Makefile: Makefile.in config.status
+	./config.status $@
+
+config.status: configure
+	./config.status --recheck
 
 .PHONY: FORCE all clean dist distcheck
