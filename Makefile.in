@@ -4,16 +4,21 @@
 # --------------------------------------------------------------
 
 # Package-related substitution variables
-package = @PACKAGE_NAME@
-version = @PACKAGE_VERSION@
-tarname = @PACKAGE_TARNAME@
+#package = @PACKAGE_NAME@
+#version = @PACKAGE_VERSION@
+#tarname = @PACKAGE_TARNAME@
 
 # Prefix-related substitution variables
-prefix      = @prefix@
-exec_prefix = @exec_prefix@
-bindir      = @bindir@
+#prefix      = @prefix@
+#exec_prefix = @exec_prefix@
+#bindir      = @bindir@
 
 include Makefile.conf
+
+export prefix      = /usr/local
+export exec_prefix = $(prefix)
+export includedir  = $(prefix)/include
+export libdir      = $(exec_prefix)/lib
 
 all clean install:
 	$(MAKE) -C src $@

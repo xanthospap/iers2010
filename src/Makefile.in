@@ -25,9 +25,9 @@ HEAD     = iers2010.hpp
 all: mkdirs $(LIB)
 
 install:
-	install -d $(prefix)/lib
-	install -m 0744 $(LIB) $(prefix)/lib
-	install -m 0744 $(HEAD) $(prefix)/include
+	install -d $(libdir)
+	install -m 0744 $(LIB) $(libdir)
+	install -m 0744 $(HEAD) $(includedir)
 
 mkdirs:
 	-@mkdir ../obj 2>/dev/null
