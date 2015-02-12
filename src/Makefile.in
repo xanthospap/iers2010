@@ -24,6 +24,11 @@ HEAD     = iers2010.hpp
 
 all: mkdirs $(LIB)
 
+install:
+	install -d $(prefix)/lib
+	install -m 0744 $(LIB) $(prefix)/lib
+	install -m 0744 $(HEAD) $(prefix)/include
+
 mkdirs:
 	-@mkdir ../obj 2>/dev/null
 	-@mkdir ../inc 2>/dev/null
@@ -32,7 +37,8 @@ clean:
 	-@rm $(OBJ) 
 	-@rm $(LIB)
 	-@rm $(CURDIR)/../inc/iers2010.hpp
-	-@rm $(CURDIR)/../inc/dehanttideinel.hpp
+	-@rm -rf ../inc
+	-@rm -rf ../obj
 
 $(LIB): $(OBJ)
 	ar rc $(LIB) $(OBJ)

@@ -1,0 +1,45 @@
+# --------------------------------------------------------------
+# TOP-LEVEL MAKEFILE FOR PROJECT LIBIERS2010++
+# @configure_input@
+# --------------------------------------------------------------
+
+# Package-related substitution variables
+package = @PACKAGE_NAME@
+version = @PACKAGE_VERSION@
+tarname = @PACKAGE_TARNAME@
+
+# Prefix-related substitution variables
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+bindir      = @bindir@
+
+include Makefile.conf
+
+all clean install:
+	$(MAKE) -C src $@
+
+dist: $(distdir).tar.gz
+
+$(distdir).tar.zg: FORCE $(distdir)
+	tar chof - $(distdir) | gzip -9 -c > $(distdir).tar.gz
+	rm -rf $(distdir)
+
+$(distdir):
+	mkdir -p $(distdir)/src
+	cp Makefile $(distdir)
+	cp -r src/* $(distdir)/src
+
+FORCE:
+	-rm $(distdir).tar.gz &> /dev/null
+	-rm -rf $(distdir) &> /dev/null
+
+distcheck: $(distdir).tar.gz
+	gzip -cd $+ | tar xvf -
+	$(MAKE) -C $(distdir) all clean
+	rm -rf $(distdir)
+	@echo "*** Package $(distdir).tar.gz ready for distribution."
+
+test:
+	(cd test; g++ -Wall -std=c++11 -L../lib/ -I../inc/ test.cpp -liers2010)
+
+.PHONY: FORCE all clean dist distcheck
