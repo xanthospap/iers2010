@@ -3,7 +3,8 @@
 # @configure_input@
 # --------------------------------------------------------------
 
-include Makefile.conf
+# include configure Makefile
+include $(top_srcdir)/Makefile.conf
 
 # Package-related substitution variables
 package     = @PACKAGE_NAME@
@@ -22,8 +23,12 @@ libdir      = @libdir@
 srcdir         = @srcdir@
 VPATH          = @srcdir@
 
-all clean install:
+all install:
 	$(MAKE) -C src $@
+
+clean:
+	$(MAKE) -C src $@
+	rm -f config.* Makefile
 
 dist: $(distdir).tar.gz
 
@@ -33,13 +38,15 @@ $(distdir).tar.zg: FORCE $(distdir)
 
 $(distdir):
 	mkdir -p $(distdir)/src
-	cp configure $(distdir)
-	cp Makefile.in $(distdir)
-	cp src/Makefile.in $(distdir)/src
-	cp src/*.cpp $(distdir)/src
-	cp src/*.hpp $(distdir)/src
-	cp -r src/dehanttideinel $(distdir)/src
-	cp -r src/hardisp $(distdir)/src
+	cp $(srcdir)/configure $(distdir)
+	cp $(srcdir)/config.h.in $(distdir)
+	cp $(srcdir)/install-sh $(distdir)
+	cp $(srcdir)/Makefile.in $(distdir)
+	cp $(srcdir)/src/Makefile.in $(distdir)/src
+	cp $(srcdir)/src/*.cpp $(distdir)/src
+	cp $(srcdir)/src/*.hpp $(distdir)/src
+	cp -r $(srcdir)/src/dehanttideinel $(distdir)/src
+	cp -r $(srcdir)/src/hardisp $(distdir)/src
 
 FORCE:
 	-rm $(distdir).tar.gz &> /dev/null

@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([libiers10++], [1.0], [xanthos@mail.ntua.gr])
-AC_CONFIG_SRCDIR([src/])
+AC_CONFIG_SRCDIR([src/apg.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
