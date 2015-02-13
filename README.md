@@ -26,4 +26,4 @@ None. This is a standalone library. Of course a C++ compiler is assumed!
 Xanthos, xanthos@mail.ntua.gr
 Mitsos, danast@mail.ntua.gr
 
-{% include figure.html src="doc/images/flag.png" caption="Support the revolution" %}
+{% include figure.html src="doc/figures/flag.png" caption="Support the revolution" %}
