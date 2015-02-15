@@ -1,52 +1,86 @@
-# --------------------------------------------------------------
-# TOP-LEVEL MAKEFILE FOR PROJECT LIBIERS10++
+# ---------------------------------------------------
+# MAKEFILE FOR LIBIERS10++ LIBRARY
+# TOP-LEVEL MAKEFILE
 # @configure_input@
-# --------------------------------------------------------------
+# ----------------------------------------------------
 
-# include configure Makefile
-include $(top_srcdir)/Makefile.conf
-
-# Package-related substitution variables
+## Package-related info (set by autoconf)
+## ===================================================
 package     = @PACKAGE_NAME@
 version     = @PACKAGE_VERSION@
 tarname     = @PACKAGE_TARNAME@
 distdir     = $(tarname)-$(version)
 
-# Prefix-related substitution variables
+## Path(s)-related info (set by autoconf)
+## ===================================================
 prefix      = @prefix@
 exec_prefix = @exec_prefix@
-bindir      = @bindir@
+datarootdir = @datarootdir@
 includedir  = @includedir@
+docdir      = @docdir@
 libdir      = @libdir@
+abs_builddir= @abs_builddir@
 
-# VPATH-related substitution variables
-srcdir         = @srcdir@
-VPATH          = @srcdir@
+## VPATH-related substitution variables
+## ===================================================
+srcdir      = @srcdir@
+VPATH       = @srcdir@
 
-all install:
-	$(MAKE) -C src $@
+## Compiler-related substitution variables
+## ===================================================
+CXX         = @CXX@
+CXXFLAGS    = @CXXFLAGS@
+DEFS        = @DEFS@
+LDFLAGS     = @LDFLAGS@
+LIBS        = @LIBS@
 
-clean:
-	$(MAKE) -C src $@
-	rm -f config.* Makefile
+## Define and export a temporary build folder
+## ===================================================
+export builddir = $(abs_builddir)/obj
+
+SUBDIRS = src
+
+all: $(SUBDIRS)
+
+info:
+	@echo "======================================"
+	@echo "Echoing top-level info"
+	@echo "======================================"
+	@echo "package     = $(package)"
+	@echo "version     = $(version)"
+	@echo "tarname     = $(tarname)"
+	@echo "distdir     = $(distdir)"
+	@echo "prefix      = $(prefix)"
+	@echo "exec_prefix = $(exec_prefix)"
+	@echo "datarootdir = $(datarootdir)"
+	@echo "includedir  = $(includedir)"
+	@echo "docdir      = $(docdir)"
+	@echo "libdir      = $(libdir)"
+	@echo "srcdir      = $(srcdir)"
+	@echo "builddir    = $(builddir)"
+	@echo "VPATH       = $(VPATH)"
+	@echo "DESTDIR     = $(DESTDIR)"
+	@echo "======================================"
+	@echo "CXX         = $(CXX)"
+	@echo "CXXFLAGS    = $(CXXFLAGS)"
+	@echo "DEFS        = $(DEFS)"
+	@echo "LDFLAGS     = $(LDFLAGS)"
+	@echo "LIBS        = $(LIBS)"
+	@echo "======================================"
 
 dist: $(distdir).tar.gz
 
-$(distdir).tar.zg: FORCE $(distdir)
+$(distdir).tar.gz: FORCE $(distdir)
 	tar chof - $(distdir) | gzip -9 -c > $(distdir).tar.gz
 	rm -rf $(distdir)
 
 $(distdir):
 	mkdir -p $(distdir)/src
 	cp $(srcdir)/configure $(distdir)
-	cp $(srcdir)/config.h.in $(distdir)
+	cp $(srcdir)/configure.h.in $(distdir)
 	cp $(srcdir)/install-sh $(distdir)
 	cp $(srcdir)/Makefile.in $(distdir)
-	cp $(srcdir)/src/Makefile.in $(distdir)/src
-	cp $(srcdir)/src/*.cpp $(distdir)/src
-	cp $(srcdir)/src/*.hpp $(distdir)/src
-	cp -r $(srcdir)/src/dehanttideinel $(distdir)/src
-	cp -r $(srcdir)/src/hardisp $(distdir)/src
+	cp -rf $(srcdir)/src/* $(distdir)/src/
 
 FORCE:
 	-rm $(distdir).tar.gz &> /dev/null
@@ -58,8 +92,11 @@ distcheck: $(distdir).tar.gz
 	rm -rf $(distdir)
 	@echo "*** Package $(distdir).tar.gz ready for distribution."
 
-test:
-	(cd test; g++ -Wall -std=c++11 -L../lib/ -I../inc/ test.cpp -liers2010)
+clean:
+	$(MAKE) -C $(SUBDIRS) $(@)
+
+install:
+	$(MAKE) -C $(SUBDIRS) $(@)
 
 Makefile: Makefile.in config.status
 	./config.status $@
@@ -67,4 +104,7 @@ Makefile: Makefile.in config.status
 config.status: configure
 	./config.status --recheck
 
-.PHONY: FORCE all clean dist distcheck
+$(SUBDIRS):
+	$(MAKE) -C $(@)
+
+.PHONY: $(SUBDIRS) FORCE dist clean all distcheck install info
