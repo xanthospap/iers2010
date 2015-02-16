@@ -1,0 +1,57 @@
+# --------------------------------------------------------------
+# MAKEFILE FOR LIBIERS10++ LIBRARY
+# PART 2 / MAKEFILE FOR TEST
+# @configure_input@
+# --------------------------------------------------------------
+
+##  Include the Makefile configuration file
+## ===================================================
+include ../Makefile.conf
+
+## Package-related info (set by autoconf)
+## ===================================================
+package     = @PACKAGE_NAME@
+version     = @PACKAGE_VERSION@
+
+## VPATH-related substitution variables
+## ===================================================
+srcdir      = @srcdir@
+VPATH       = @srcdir@
+
+## Compiler-related substitution variables
+## ===================================================
+CXX         = @CXX@
+CXXFLAGS    = @CXXFLAGS@
+DEFS        = @DEFS@
+LDFLAGS     = @LDFLAGS@
+LIBS        = @LIBS@
+
+## Compiler options
+## ===================================================
+CXX         = @CXX@
+DEFS        = @DEFS@ $(STD_C11) $(OPT_LEVEL) $(USE_EXTERNAL_CONSTS) $(QUICK_EXIT)
+CXXFLAGS    = -c -Wall $(DEFS)
+LDFLAGS     = -Wall $(DEFS)
+LIBS        = @LIBS@ 
+
+## Target for this Makefile
+## ===================================================
+EXE         = test.e
+LIB         = $(srcdir)/../$(package)v$(version).a
+SRC         = test.cpp
+HEAD        = $(srcdir)/iers2010.hpp
+LDFLAGS     = $(LDFLAGS) 
+
+all: test
+
+clean:
+	-rm $(EXE) 
+
+Makefile: Makefile.in ../config.status
+	cd ../ && ./config.status $@
+
+../config.status: ../configure
+	cd ../ && ./config.status --recheck
+
+$(builddir)/fundarg.o: $(srcdir)/fundarg.cpp $(HEAD)
+	$(CXX) $(CXXFLAGS) -o $@ $<

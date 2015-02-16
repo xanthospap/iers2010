@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "iers2010.hpp"
 
 #define pi 3.1415926535e0
@@ -7,6 +8,8 @@
 
 int main ()
 {
+  int status = 0;
+
   printf ("\n===========================================================");
   printf ("\n TESTING IERS 2010 ROUTINES                                ");
   printf ("\n===========================================================");
@@ -160,13 +163,14 @@ int main ()
   printf ("\n\tAbs. differences in (see results) :");
   double dlat (48.20e0*pi/180.e0),dlon (16.37e0*pi/180.e0), hell(156.e0);
   double mp,mt,mdt,me,mah,maw,mundu;
-  int status = iers2010::gpt2 (
+  status = iers2010::gpt2 (
           56141e0,&dlat,&dlon,&hell,1,&mp,&mt,&mdt,&me,&mah,&maw,&mundu,0,
           "/home/xanthos/Software/iers2010/cpp/gpt2_5.grd");
 //          "/home/xanthos/myrepos/iers2010/cpp/gpt2_5.grd");
-  if (status)
+  if (status) {
       printf ("\nERROR! gpt2 could not run. Error code: %01i",status);
-  else {
+      status = 1;
+  } else {
     printf ("\n\t|dp|      = %10.5f hPa",fabs(1002.56e0-mp));
     printf ("\n\t|dT|      = %10.5f Celsius",fabs(22.12e0-mt));
     printf ("\n\t|ddT|     = %10.5f deg/km",fabs(-6.53e0-mdt));
@@ -175,6 +179,13 @@ int main ()
     printf ("\n\t|daw|     = %15.10f (unitless)",fabs(0.0005726e0-maw));
     printf ("\n\t|dundu|   = %10.5f meters",fabs(44.06e0-mundu));
   }
+
+  char ch_status[6];
+  if (status)
+      strcpy (ch_status,"ERROR");
+  else
+      strcpy (ch_status,"OK");
+  printf ("\nLibrary Status : %s", ch_status);
 
   printf ("\n");
   return 0;
