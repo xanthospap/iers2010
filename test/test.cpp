@@ -2,7 +2,7 @@
 #include <string.h>
 #include "iers2010.hpp"
 
-#define pi 3.1415926535e0
+#define pi  3.1415926535e0
 
 // COMPILATION: g++ -Wall -std=c++11 -L../lib/ -I../inc/ test.cpp -liers2010
 

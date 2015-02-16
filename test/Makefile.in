@@ -29,23 +29,22 @@ LIBS        = @LIBS@
 ## Compiler options
 ## ===================================================
 CXX         = @CXX@
-DEFS        = @DEFS@ $(STD_C11) $(OPT_LEVEL) $(USE_EXTERNAL_CONSTS) $(QUICK_EXIT)
-CXXFLAGS    = -c -Wall $(DEFS)
-LDFLAGS     = -Wall $(DEFS)
+DEFS        = $(OPT_LEVEL) $(USE_EXTERNAL_CONSTS) $(QUICK_EXIT)                 
+CXXFLAGS    = -c -Wall $(STD_C11) $(DEFS)                                       
+LDFLAGS     = -Wall $(STD_C11) $(DEFS)
 LIBS        = @LIBS@ 
 
 ## Target for this Makefile
 ## ===================================================
-EXE         = test.e
-LIB         = $(srcdir)/../$(package)v$(version).a
+EXE         = ../test.e
 SRC         = test.cpp
-HEAD        = $(srcdir)/iers2010.hpp
-LDFLAGS     = $(LDFLAGS) 
 
-all: test
+all:
 
 clean:
-	-rm $(EXE) 
+	-rm $(EXE)
+
+check: $(EXE)
 
 Makefile: Makefile.in ../config.status
 	cd ../ && ./config.status $@
@@ -53,5 +52,5 @@ Makefile: Makefile.in ../config.status
 ../config.status: ../configure
 	cd ../ && ./config.status --recheck
 
-$(builddir)/fundarg.o: $(srcdir)/fundarg.cpp $(HEAD)
-	$(CXX) $(CXXFLAGS) -o $@ $<
+$(EXE): $(SRC)
+	$(CXX) $(LDFLAGS) -I../src -L.. -o $@ $< -l$(package)v$(version)

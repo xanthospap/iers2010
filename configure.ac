@@ -3,7 +3,6 @@
 
 AC_PREREQ([2.69])
 AC_INIT([libiers10++], [1.0], [xanthos@mail.ntua.gr])
-# AM_INIT_AUTOMAKE
 
 AC_LANG(C++)
 
@@ -12,7 +11,6 @@ AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CXX
-AX_CXX_COMPILE_STDCXX_11([noext], [mandatory])
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 
