@@ -4,7 +4,7 @@
 
 #define pi  3.1415926535e0
 
-// COMPILATION: g++ -Wall -std=c++11 -L../lib/ -I../inc/ test.cpp -liers2010
+// COMPILATION: g++ -Wall -std=c++11 -L../lib/ -I../inc/ test.cpp -liers10++
 
 int main ()
 {
@@ -50,7 +50,7 @@ int main ()
   
   
   // subroutine UTLIBR
-  printf ("\nFunction UTLIBR               |ddomega| (test A)");
+  printf ("\nFunction UTLIBR (test A)");
   printf ("\n\tAbs. differences in mus and mus/day:");
   rmjd = 44239.1e0;
   double dut1, dlod;
@@ -159,25 +159,43 @@ int main ()
   printf ("\n\t|dundu|   = %20.18f meters",fabs(-42.19185643717770517e0-gre));
 
   // subroutine GPT2
-  printf ("\nFunction GPT2");
+  printf ("\nFunction GPT2 (test A)");
   printf ("\n\tAbs. differences in (see results) :");
   double dlat (48.20e0*pi/180.e0),dlon (16.37e0*pi/180.e0), hell(156.e0);
   double mp,mt,mdt,me,mah,maw,mundu;
   status = iers2010::gpt2 (
           56141e0,&dlat,&dlon,&hell,1,&mp,&mt,&mdt,&me,&mah,&maw,&mundu,0,
-          "/home/xanthos/Software/iers2010/cpp/gpt2_5.grd");
-//          "/home/xanthos/myrepos/iers2010/cpp/gpt2_5.grd");
+          "/home/xanthos/Software/iers2010/src/gpt2_5.grd");
+//          "/home/xanthos/myrepos/iers2010/src/gpt2_5.grd");
   if (status) {
       printf ("\nERROR! gpt2 could not run. Error code: %01i",status);
       status = 1;
   } else {
-    printf ("\n\t|dp|      = %10.5f hPa",fabs(1002.56e0-mp));
-    printf ("\n\t|dT|      = %10.5f Celsius",fabs(22.12e0-mt));
-    printf ("\n\t|ddT|     = %10.5f deg/km",fabs(-6.53e0-mdt));
-    printf ("\n\t|de|      = %10.5f hPa",fabs(15.63e0-me));
-    printf ("\n\t|dah|     = %15.10f (unitless)",fabs(0.0012647e0-mah));
-    printf ("\n\t|daw|     = %15.10f (unitless)",fabs(0.0005726e0-maw));
-    printf ("\n\t|dundu|   = %10.5f meters",fabs(44.06e0-mundu));
+    printf ("\n\t|dp|      = %10.3f hPa",fabs(1002.56e0-mp));
+    printf ("\n\t|dT|      = %10.3f Celsius",fabs(22.12e0-mt));
+    printf ("\n\t|ddT|     = %10.3f deg/km",fabs(-6.53e0-mdt));
+    printf ("\n\t|de|      = %10.3f hPa",fabs(15.63e0-me));
+    printf ("\n\t|dah|     = %15.8f (unitless)",fabs(0.0012647e0-mah));
+    printf ("\n\t|daw|     = %15.8f (unitless)",fabs(0.0005726e0-maw));
+    printf ("\n\t|dundu|   = %10.3f meters",fabs(44.06e0-mundu));
+  }
+
+  printf ("\nFunction GPT2 (test B)");
+  printf ("\n\tAbs. differences in (see results) :");
+  status = iers2010::gpt2 (
+          56141e0,&dlat,&dlon,&hell,1,&mp,&mt,&mdt,&me,&mah,&maw,&mundu,1,
+          "/home/xanthos/Software/iers2010/src/gpt2_5.grd");
+  if (status) {
+      printf ("\nERROR! gpt2 could not run. Error code: %01i",status);
+      status = 1;
+  } else {
+    printf ("\n\t|dp|      = %10.3f hPa",fabs(1003.49e0-mp));
+    printf ("\n\t|dT|      = %10.3f Celsius",fabs(11.95e0-mt));
+    printf ("\n\t|ddT|     = %10.3f deg/km",fabs(-5.47e0-mdt));
+    printf ("\n\t|de|      = %10.3f hPa",fabs(9.58e0-me));
+    printf ("\n\t|dah|     = %15.8f (unitless)",fabs(0.0012395e0-mah));
+    printf ("\n\t|daw|     = %15.8f (unitless)",fabs(0.0005560e0-maw));
+    printf ("\n\t|dundu|   = %10.3f meters",fabs(44.06e0-mundu));
   }
 
   char ch_status[6];

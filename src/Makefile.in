@@ -94,6 +94,7 @@ clean:
 
 $(LIB): $(OBJ)
 	ar rc $(LIB) $(OBJ)
+	cp $(LIB) ../$(package).a
 
 Makefile: Makefile.in ../config.status
 	cd ../ && ./config.status $@

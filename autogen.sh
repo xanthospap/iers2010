@@ -10,3 +10,9 @@ echo "Running automake to create missing scripts"
 automake --add-missing --copy
 
 ./configure
+
+for i in aclocal.m4 \
+    autom4te.cache
+do
+    rm -rf ${i} 2>/dev/null
+done

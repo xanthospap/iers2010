@@ -1,24 +1,20 @@
 #include "iers2010.hpp"
 #include <fstream>
-#include <stdio.h>
 
 #ifdef USE_EXTERNAL_CONSTS
     #include "gencon.hpp"
 #endif
 
-/** @brief       Returns the value of A with the sign of B. Emulates the 
- *               function SIGN(A,B) of FOTRAN. (see 
- *               https://gcc.gnu.org/onlinedocs/gfortran/SIGN.html).
- * @param[in]  a Shall be of type INTEGER or REAL
- * @param[in]  b Shall be of the same type and kind as A 
- * @return       The kind of the return value is that of A and B. If B > 0 
- *               then the result is ABS(A), else it is -ABS(A).
+/** @brief         sign function or signum function; extracts the sign of a real number
+ *  @param[in] val Template parameter
+ *  @return        -1 if val < 0, <br>
+ *                  0 if val = 0, <br>
+ *                  1 if val > 0
  */
-template <typename T>
-inline T sign (const T& a,const T&b)
-{
-    return (b > 0)?  (std::abs (a)) : -(std::abs (a)) ;
-} 
+template <typename T> 
+inline int sgn (T val) {
+  return (T(0) < val) - (val < T(0));
+}
 
 /**
  * @details  This function determines pressure, temperature, temperature lapse
@@ -122,8 +118,9 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
         constexpr double TWOPI   (D2PI);
         constexpr double PI      (DPI);
     #else
-        constexpr double TWOPI   (6.283185307179586476925287e0);
-        constexpr double PI      (3.1415926535e0);
+        //constexpr double TWOPI   (6.283185307179586476925287e0);
+        constexpr double PI      (3.1415926535897932384626433e0);
+        constexpr double TWOPI   ( 2.0e0 * PI );
     #endif
 
     // quick return, if nstat less than 1
@@ -148,12 +145,12 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
     if (it==1) { // constant parameters
         ;        // already initialized to zero
     } else {
-        double tpy (365.25e0 * TWOPI);
-        double fpy (365.25e0 * 2e0 * TWOPI);
-        cosfy = cos (dmjd1 / tpy);
-        coshy = cos (dmjd1 / fpy);
-        sinfy = sin (dmjd1 / tpy);
-        sinhy = sin (dmjd1 / fpy);
+        double fpy  (2e0 * TWOPI);
+        double nom  (dmjd1 / 365.25e0);
+        cosfy = cos (nom * TWOPI);
+        coshy = cos (nom * fpy);
+        sinfy = sin (nom * TWOPI);
+        sinhy = sin (nom * fpy);
     }
 
     // Declare matrices to hold the grid
@@ -176,6 +173,7 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
     std::getline (fin,s);
 
     // Loop over grid points
+    // WARNING Qgrid,  dTgrid, ahgrid and awgrid must be / 1000
     float dummy1,dummy2;
     for (int n=0;n<maxl;n++) {
         fin >> dummy1 >> dummy2
@@ -206,22 +204,21 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
         double ppod ( (-dlat[k] + PI/2e0) * d2r );
 
         // find the index (line in the grid file) of the nearest point
-        // TODO
-        int ipod = floor ( (ppod+5e0)/5e0 ) - 1;
-        int ilon = floor ( (plon+5e0)/5e0 ) - 1;
+        int ipod = floor ( (ppod+5e0)/5e0 );
+        int ilon = floor ( (plon+5e0)/5e0 );
 
         // normalized (to one) differences, can be positive or negative
-        // TODO
-        double diffpod ( (ppod - ( (ipod+1)*5e0 - 2.5e0))/5e0 );
-        double difflon ( (plon - ( (ilon+1)*5e0 - 2.5e0))/5e0 );
+        double diffpod ( (ppod - ( ipod*5e0 - 2.5e0))/5e0 );
+        double difflon ( (plon - ( ilon*5e0 - 2.5e0))/5e0 );
 
         // TODO does that need to be re-arranged for c-type arrays?
         // e.g. if (ipod==36) ipod = 35
-        if (ipod==37)
+        if (ipod==36)
             ipod -= 1;
 
         // get the number of the corresponding line
         indx[0] = (ipod-1)*72 + ilon;
+        if (indx[0]>0) indx[0]--;
 
         // near the poles: nearest neighbour interpolation, otherwise: bilinear
         bool ibilinear (false);
@@ -231,8 +228,6 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
         // case of nearest neighbour
         if (!ibilinear) {
 
-            // for c-type arrays, start is zero !!
-            // TODO check !!
             int ix ( indx[0] );
 
             // transforming ellipsoidial height to orthometric height
@@ -251,11 +246,13 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
             double q = qgrid[ix][0] +
                 qgrid[ix][1] * cosfy + qgrid[ix][2] * sinfy +
                 qgrid[ix][3] * coshy + qgrid[ix][4] * sinhy;
+            q /= 1000.0e0;
 
             // lapse rate of the temperature
             dt[k] = dtgrid[ix][0] +
                 dtgrid[ix][1] * cosfy + dtgrid[ix][2] * sinfy +
                 dtgrid[ix][3] * coshy + dtgrid[ix][4] * sinhy;
+            dt[k] /= 1000.0e0;
 
             // station height - grid height
             double redh ( hgt - hs[ix] );
@@ -281,31 +278,35 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
             ah[k] = ahgrid[ix][0] +
                 ahgrid[ix][1] * cosfy + ahgrid[ix][2] * sinfy +
                 ahgrid[ix][3] * coshy + ahgrid[ix][4] * sinhy;
+            ah[k] /= 1000.0e0;
 
             // wet coefficient aw
             aw[k] = awgrid[ix][0] +
                 awgrid[ix][1] * cosfy + awgrid[ix][2] * sinfy +
                 awgrid[ix][3] * coshy + awgrid[ix][4] * sinhy;
+            aw[k] /= 1000.0e0;
 
         // bilinear interpolation
         } else {
 
             // TODO check !!
-            int ipod1 ( ipod + (int) sign<double> (1e0,diffpod) );
-            int ilon1 ( ilon + (int) sign<double> (1e0,difflon) );
-            if (ilon1==72)
-                ilon1 = 0;
+            int ipod1 ( ipod + sgn<double>(diffpod) );
+            int ilon1 ( ilon + sgn<double>(difflon) );
+            if (ilon1==73)
+                ilon1 = 1;
             if (!ilon)
-                ilon1 = 71;
+                ilon1 = 72;
 
             // get the number of the line
             indx[1] = (ipod1 - 1)*72 + ilon;  // along same logtitude
             indx[2] = (ipod  - 1)*72 + ilon1; // along same polar distance
-            indx[3] = (ipod  - 1)*72 + ilon1; // diagonal
+            indx[3] = (ipod1 - 1)*72 + ilon1; // diagonal
+            if (indx[1]>0) indx[1]--;
+            if (indx[2]>0) indx[2]--;
+            if (indx[3]>0) indx[3]--;
 
             for (int l=0;l<4;l++) {
                 
-                // TODO check (zero-offset)
                 int indxl = indx[l];
 
                 // transforming ellipsoidial height to orthometric height:
@@ -325,6 +326,7 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
                 ql[l] = qgrid[indxl][0] +
                     qgrid[indxl][1] * cosfy + qgrid[indxl][2] * sinfy +
                     qgrid[indxl][3] * coshy + qgrid[indxl][4] * sinhy;
+                ql[l] /= 1000.0e0;
 
                 // reduction = stationheight - gridheight
                 double hs1  ( hs[indxl] );
@@ -334,6 +336,7 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
                 dtl[l] = dtgrid[indxl][0] +
                     dtgrid[indxl][1] * cosfy + dtgrid[indxl][2] * sinfy +
                     dtgrid[indxl][3] * coshy + dtgrid[indxl][4] * sinhy;
+                dtl[l] /= 1000.0e0;
 
                 // temperature reduction to station height
                 tl[l] = t0 + dtl[l]*redh - 273.15e0;
@@ -349,11 +352,13 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
                 ahl[l] = ahgrid[indxl][0] +
                     ahgrid[indxl][1] * cosfy + ahgrid[indxl][2] * sinfy +
                     ahgrid[indxl][3] * coshy + ahgrid[indxl][4] * sinhy;
+                ahl[l] /= 1000.0e0;
 
                 // wet coefficient aw
                 awl[l] = awgrid[indxl][0] +
                     awgrid[indxl][1] * cosfy + awgrid[indxl][2] * sinfy +
                     awgrid[indxl][3] * coshy + awgrid[indxl][4] * sinhy;
+                awl[l] /= 1000.0e0;
 
             }
             

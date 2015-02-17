@@ -38,8 +38,7 @@ LIBS        = @LIBS@
 ## ===================================================
 export builddir = $(abs_builddir)/obj
 
-SUBDIRS = src test
-LIBTRG  = $(package)v$(version).a
+SUBDIRS = src
 
 all: $(SUBDIRS)
 
@@ -100,7 +99,7 @@ install:
 	$(MAKE) -C $(SUBDIRS) $(@)
 
 check:
-	$(MAKE) -C test $(@)
+	$(MAKE) -C test check
 
 Makefile: Makefile.in config.status
 	./config.status $@
