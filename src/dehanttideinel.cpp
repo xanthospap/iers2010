@@ -112,11 +112,13 @@ int iers2010::dehanttideinel (const double* xsta,const double* xsun,
   double xcorsta[] = {.0e0,.0e0,.0e0};
   
   // Set constants
+  /*
   #ifdef USE_EXTERNAL_CONSTS
     constexpr double PI   (DPI);
   #else
     constexpr double PI   (3.1415926535897932384626433e0);
   #endif
+  */
   
   /*----------------------------------------------------------------------  
    * NOMINAL SECOND DEGREE AND THIRD DEGREE LOVE NUMBERS AND SHIDA NUMBERS  
@@ -358,11 +360,11 @@ int iers2010::dehanttideinel (const double* xsta,const double* xsun,
   double xcorsta[] = {.0e0,.0e0,.0e0};
 
   // Set constants
-  #ifdef USE_EXTERNAL_CONSTS
+  /*#ifdef USE_EXTERNAL_CONSTS
     constexpr double PI   (DPI); 
   #else
     constexpr double PI   (3.1415926535897932384626433e0); 
-  #endif
+  #endif*/
 
   /*----------------------------------------------------------------------  
    * NOMINAL SECOND DEGREE AND THIRD DEGREE LOVE NUMBERS AND SHIDA NUMBERS  

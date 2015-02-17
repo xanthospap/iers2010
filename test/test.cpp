@@ -204,6 +204,21 @@ int main ()
   else
       strcpy (ch_status,"OK");
   printf ("\nLibrary Status : %s", ch_status);
+  
+  printf ("\nFunction VMF1_HT");
+  printf ("\n\tAbs. differences in dimensionless :");
+  double vmf1h,vmf1w;
+  iers2010::vmf1_ht (0.00127683e0,0.00060955e0,55055e0,0.6708665767e0,824.17e0,
+          1.278564131e0,vmf1h,vmf1w);
+  printf ("\n\t|dvmf1h|  = %20.18f ",fabs(3.425088087972572470e0-vmf1h));
+  printf ("\n\t|dvmf1w|  = %20.18f ",fabs(3.448299714692572238e0-vmf1w));
+  
+  printf ("\nFunction VMF1");
+  printf ("\n\tAbs. differences in dimensionless :");
+  iers2010::vmf1 (0.00127683e0,0.00060955e0,55055e0,0.6708665767e0,
+                     1.278564131e0,vmf1h,vmf1w);
+  printf ("\n\t|dvmf1h|  = %20.18f ",fabs(3.424342122738070593e0-vmf1h));
+  printf ("\n\t|dvmf1w|  = %20.18f ",fabs(3.448299714692572238e0-vmf1w));
 
   printf ("\n");
   return 0;

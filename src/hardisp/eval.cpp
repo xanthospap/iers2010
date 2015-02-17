@@ -36,7 +36,8 @@ int iers2010::hisp::eval (const double& y, const int& nn, const double* x, const
   int k1 = k-1;
   
   // handle out of bounds; substitute endpoint values
-  if (k >= nn) {double dk = x[k2] - x[k1];
+  if (k >= nn) {
+    //double dk = x[k2] - x[k1];
     val = x[nn-1];
     return 0;
   } 

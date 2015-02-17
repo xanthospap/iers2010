@@ -35,7 +35,7 @@ double inline q (const double& u1,const double& x1,const double& u2,const double
  */
 int iers2010::hisp::spline (const int& nn,const double* x,const double* u,double* a,double* s)
 {
-  constexpr int nmax = 20;
+  //constexpr int nmax = 20;
   
   const int n = abs(nn);
   

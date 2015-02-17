@@ -74,8 +74,8 @@ namespace iers2010 {
       return std::inner_product (x,x+3,y,.0e0);
     }
  
-  };
+  }
   
-};
+}
 
 #endif

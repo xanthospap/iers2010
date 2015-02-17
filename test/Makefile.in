@@ -53,4 +53,4 @@ Makefile: Makefile.in ../config.status
 	cd ../ && ./config.status --recheck
 
 $(EXE): $(SRC)
-	$(CXX) $(LDFLAGS) -I../src -L.. -o $@ $< -l$(package)
+	$(CXX) $(LDFLAGS) -I../src -L.. -o $@ $< -liers10++

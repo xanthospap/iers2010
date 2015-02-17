@@ -108,7 +108,8 @@ inline int sgn (T val) {
  *     (2013), "GPT2: Empirical slant delay model for radio space geodetic
  *     techniques," Geophys. Res. Lett., Vol. 40, pp. 1069-1073, DOI:
  *     10.1002/grl.50288. 
- * 
+ *
+ * TODO Test some extreme cases
  */
 int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
         const double* hell,const int& nstat,double* p,double* t,double* dt,

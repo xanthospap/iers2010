@@ -111,7 +111,7 @@ int iers2010::fcnnut (const double& mjd,double& x,double& y,double& dx,
   };
 
   // Prediction of the amplitude at the input date
-  double axc,axs,ayc,ays;
+  double axc(0e0),axs(0e0),ayc(0e0),ays(0e0);
   if (mjd<=table[0].date) {
     axc = table[0].xc();
     axs = table[0].xs();

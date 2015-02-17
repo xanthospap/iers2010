@@ -149,6 +149,18 @@ namespace iers2010 {
   int gpt2 (const double&,const double*,const double*,const double*,const int&,
           double*,double*,double*,double*,double*,double*,double*,int it = 0,
           const char* ifile=nullptr);
-};
+
+  /** @brief Compute the Vienna Mapping Functions 1 (VMF1), with height 
+   *         corrections to be used with "a" coefficients computed for a grid.
+   */
+  int vmf1_ht (const double&,const double&,const double&,const double&,
+          const double&,const double&,double&,double&);
+  
+  /** @brief Compute the Vienna Mapping Functions 1 (VMF1), to be used with "a"
+   *         coefficients computed for a given site
+   */
+  int vmf1 (const double&,const double&,const double&,const double&,
+          const double&,double&,double&);
+}
 
 #endif
