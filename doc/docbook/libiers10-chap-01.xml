@@ -5,18 +5,18 @@
   
   <abstract id="chap_01_01"><title>Introduction</title>
     <para>The <application>libiers10++</application> library includes a variety of functions, implementing the
-    models defined by IERS in technical note 36, IERS Conventions (2010). The document is 
-    <ulink url="http://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html?nn=94912">available</ulink> 
-    in the IERS website.</para>
-  <para>The IERS, has a <ulink url="http://62.161.69.131/iers/conv2010/conv2010.html">dedicated website</ulink>,
-    where official implementations of these models are distributed, via source code in FORTRAN programing
-    language. Updates can be found <ulink url="http://62.161.69.131/iers/convupdt/convupdt.html">here</ulink>.
-    The source code and documents can be downloaded and used, following the terms and conditions defined therein.
-  </para>
-  <para><application>libiers10++</application> was developed in Dionysos Satellite Observatory of the National
-    Technical University of Athens, to assist its own geodesy-oriented scientific activities. To that end,
-    most of the IERS routines were translated and compiled into a library for further use. The main programing
-    language used in the Laboratory is C++, consequently, the library is written in this language.</para>
+      models defined by IERS in technical note 36, IERS Conventions (2010). The document is 
+      <ulink url="http://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html?nn=94912">available</ulink> 
+      in the IERS website.</para>
+    <para>The IERS, has a <ulink url="http://62.161.69.131/iers/conv2010/conv2010.html">dedicated website</ulink>,
+      where official implementations of these models are distributed, via source code in FORTRAN programing
+      language. Updates can be found <ulink url="http://62.161.69.131/iers/convupdt/convupdt.html">here</ulink>.
+      The source code and documents can be downloaded and used, following the terms and conditions defined therein.
+    </para>
+    <para><application>libiers10++</application> was developed in Dionysos Satellite Observatory of the National
+      Technical University of Athens, to assist its own geodesy-oriented scientific activities. To that end,
+      most of the IERS routines were translated and compiled into a library for further use. The main programing
+      language used in the Laboratory is C++, consequently, the library is written in this language.</para>
   </abstract>
   
   <section id="chap_01_02"><title>Source Code</title>
@@ -35,7 +35,7 @@
       <tgroup cols="7" colsep='1' rowsep='1'>
         <thead>
           <row>
-              <entry>Chapter<footnote><para>This refers to the chapter of IERS <citetitle>Technical Note 36</citetitle> document; for more information, see <xref linkend="chap_07_02" />.</para></footnote></entry>
+            <entry>Chapter<footnote><para>This refers to the chapter of IERS <citetitle>Technical Note 36</citetitle> document; for more information, see <xref linkend="chap_07_02" />.</para></footnote></entry>
             <entry>Function Name</entry>
             <entry>Namespace</entry>
             <entry>Purpose</entry>
@@ -101,15 +101,15 @@
             <entry>R. Gross</entry>
           </row>
           <row>
-              <entry><function>ortho_eop</function></entry><entry>iers2010</entry>
-              <entry>compute the diurnal and semidiurnal variations in the Earth orientation</entry>
-              <entry><ulink url="http://maia.usno.navy.mil/conv2010/convupdt/chapter8/ORTHO_EOP.F">ORTHO_EOP.F</ulink></entry>
-              <entry>calls <function>cntmx</function></entry>
-              <entry>R. Eanes</entry>
+            <entry><function>ortho_eop</function></entry><entry>iers2010</entry>
+            <entry>compute the diurnal and semidiurnal variations in the Earth orientation</entry>
+            <entry><ulink url="http://maia.usno.navy.mil/conv2010/convupdt/chapter8/ORTHO_EOP.F">ORTHO_EOP.F</ulink></entry>
+            <entry>calls <function>cntmx</function></entry>
+            <entry>R. Eanes</entry>
           </row>
           
           <row>
-            <entry morerows='1' valign='middle'>Chapter 9</entry>
+            <entry morerows='2' valign='middle'>Chapter 9</entry>
             <entry><function>apg</function></entry><entry>iers2010</entry>
             <entry>compute the asymmetric delay d in meter caused by gradients. The north and east gradients are also provided, based on spherical harmonics up to degree and order 9.</entry>
             <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/APG.F">APG.F</ulink></entry>
@@ -117,11 +117,18 @@
             <entry>J. Boehm</entry>
           </row>
           <row>
-              <entry><function>gpt</function></entry><entry>iers2010</entry>
-              <entry>compute the Global Pressure and Temperature, based on spherical harmonics up to degree and order 9</entry>
-              <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/GPT.F">GPT.F</ulink></entry>
-              <entry></entry>
-              <entry>J. Boehm</entry>
+            <entry><function>gpt</function></entry><entry>iers2010</entry>
+            <entry>compute the Global Pressure and Temperature, based on spherical harmonics up to degree and order 9</entry>
+            <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/GPT.F">GPT.F</ulink></entry>
+            <entry></entry>
+            <entry>J. Boehm</entry>
+          </row>
+          <row>
+            <entry><function>gpt2</function></entry><entry>iers2010</entry>
+            <entry>compute the Global Pressure and Temperature 2 model, and the "a" coefficients for VMF1_HT.F, based on the file <filename>gpt2_5.grd</filename></entry>
+            <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/GPT2.F">GPT2.F</ulink></entry>
+            <entry>needs the grid file <filename>gpt2_5.grd</filename> (see <xref linkend="chap_03_02" />)</entry>
+            <entry>J. Boehm</entry>
           </row>
           
         </tbody>
