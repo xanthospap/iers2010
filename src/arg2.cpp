@@ -175,19 +175,19 @@ int iers2010::arg2 (const int& iyear,const double& day,double* angle)
    *  Compute mean longitude of Sun at beginning of day
    * -------------------------------------------------- */
   double h0 = ( 279.69668e0 + (36000.768930485e0 + 3.03e-4 * capt ) * capt ) 
-	  * dtr;
+    * dtr;
   
   /* ---------------------------------------------------
    *  Compute mean longitude of Moon at beginning of day 
    * --------------------------------------------------- */
   double s0 = ( ( (1.9e-6*capt-.001133e0) * capt + 481267.88314137e0) 
-		  * capt +270.434358e0 ) * dtr;
+      * capt +270.434358e0 ) * dtr;
   
   /* ------------------------------------------------------------
    *  Compute mean longitude of lunar perigee at beginning of day 
    * ------------------------------------------------------------ */
   double p0 = ( ( (-1.2e-5*capt-.010325e0) * capt + 4069.0340329577e0 ) 
-		  * capt + 334.329653e0 ) * dtr;
+      * capt + 334.329653e0 ) * dtr;
 
   // Compute the tidal angle arguments
   for (int i=0;i<k;i++) {

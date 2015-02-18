@@ -45,14 +45,14 @@
  * 
  */
 int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
-		const double& dhgt,double& pres,double& temp,double& undu)
+    const double& dhgt,double& pres,double& temp,double& undu)
 {
     #ifdef USE_EXTERNAL_CONSTS
         constexpr double TWOPI   (D2PI);
     #else
         constexpr double TWOPI   (6.283185307179586476925287e0);
     #endif
-    
+
     static constexpr double a_geoid [] = {
         -5.6195e-001,-6.0794e-002,-2.0125e-001,-6.4180e-002,-3.6997e-002,
         +1.0098e+001,+1.6436e+001,+1.4065e+001,+1.9881e+000,+6.4414e-001,
@@ -66,7 +66,7 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
         +8.6297e-001,+5.8231e-001,+2.0545e-002,-7.8110e-003,-1.4085e-004,
         -8.8459e-006,+5.7256e-006,-1.5068e-006,+4.0095e-007,-2.4185e-008
     };
-    
+
     static constexpr double b_geoid [] = {
         +0.0000e+000,+0.0000e+000,-6.5993e-002,+0.0000e+000,+6.5364e-002,
         -5.8320e+000,+0.0000e+000,+1.6961e+000,-1.3557e+000,+1.2694e+000,
@@ -80,7 +80,7 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
         +0.0000e+000,+6.0529e-002,-3.5824e-002,-5.1367e-003,+3.0119e-005,
         -2.9911e-005,+1.9844e-005,-1.2349e-006,-7.6756e-009,+5.0100e-008
     };
-    
+
     static constexpr double ap_mean [] = {
         +1.0108e+003,+8.4886e+000,+1.4799e+000,-1.3897e+001,+3.7516e-003,
         -1.4936e-001,+1.2232e+001,-7.6615e-001,-6.7699e-002,+8.1002e-003,
@@ -94,7 +94,7 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
         +5.5046e-001,-2.7312e-001,+3.2532e-003,-2.4277e-003,+1.1596e-004,
         +2.6421e-007,-1.3263e-006,+2.7322e-007,+1.4058e-007,+4.9414e-009
     };
-    
+
     static constexpr double bp_mean [] = {
         +0.0000e+000,+0.0000e+000,-1.2878e+000,+0.0000e+000,+7.0444e-001,
         +3.3222e-001,+0.0000e+000,-2.9636e-001,+7.2248e-003,+7.9655e-003,
@@ -108,7 +108,7 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
         +0.0000e+000,-1.8364e-001,+1.8508e-002,+7.5016e-004,-9.6139e-005,
         -3.1995e-006,+1.3868e-007,-1.9486e-007,+3.0165e-010,-6.4376e-010
     };
-    
+
     static constexpr double ap_amp [] = {
         -1.0444e-001,+1.6618e-001,-6.3974e-002,+1.0922e+000,+5.7472e-001,
         -3.0277e-001,-3.5087e+000,+7.1264e-003,-1.4030e-001,+3.7050e-002,
@@ -122,7 +122,7 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
         -5.9152e-001,-1.7676e-001,+8.1807e-003,+1.0445e-003,+2.3432e-004,
         +9.3421e-006,+2.8104e-006,-1.5788e-007,-3.0648e-008,+2.6421e-010
     };
-    
+
     static constexpr double bp_amp [] = {
         +0.0000e+000,+0.0000e+000,+9.3340e-001,+0.0000e+000,+8.2346e-001,
         +2.2082e-001,+0.0000e+000,+9.6177e-001,-1.5650e-002,+1.2708e-003,
@@ -136,7 +136,7 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
         +0.0000e+000,+4.4777e-002,-3.0421e-003,+2.6062e-005,-7.2421e-005,
         +1.9119e-006,+3.9236e-007,+2.2390e-007,+2.9765e-009,-4.6452e-009
     };
-    
+
     static constexpr double at_mean [] = {
         +1.6257e+001,+2.1224e+000,+9.2569e-001,-2.5974e+001,+1.4510e+000,
         +9.2468e-002,-5.3192e-001,+2.1094e-001,-6.9210e-002,-3.4060e-002,
@@ -164,7 +164,7 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
         +0.0000e+000,-4.5415e-002,-1.8027e-002,+3.6561e-004,-1.1274e-004,
         +1.3047e-005,+2.0001e-006,-1.5152e-007,-2.7807e-008,+7.7491e-009
     };
-    
+
     static constexpr double at_amp [] = {
         -1.8654e+000,-9.0041e+000,-1.2974e-001,-3.6053e+000,+2.0284e-002,
         +2.1872e-001,-1.3015e+000,+4.0355e-001,+2.2216e-001,-4.0605e-003,
@@ -178,7 +178,7 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
         +7.8720e-001,-4.4238e-002,-1.5120e-003,-9.4119e-004,+4.0645e-006,
         -4.9253e-006,-1.8656e-006,-4.0736e-007,-4.9594e-008,+1.6134e-009
     };
-    
+
     static constexpr double bt_amp [] = {
         +0.0000e+000,+0.0000e+000,-8.9895e-001,+0.0000e+000,-1.0790e+000,
         -1.2699e-001,+0.0000e+000,-5.9033e-001,+3.4865e-002,-3.2614e-002,
@@ -213,7 +213,7 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
     w[0][0] = 0e0;
     v[1][0] = z * v[0][0];
     w[1][0] = 0e0;
-    
+
     for (int n=1;n<nmax;n++) {
         int N ( n + 1 );
         v[n+1][0] = ( (2*N-1) * z * v[n][0] - (N-1) * v[n-1][0] ) / (double) N;
@@ -242,10 +242,10 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
     undu = 0e0;
     int i = 0;
     for (int n=0;n<=nmax;n++) {
-	    for (int m=0;m<=n;m++) {
-		    undu += ( a_geoid[i] * v[n][m] + b_geoid[i] * w[n][m] );
+      for (int m=0;m<=n;m++) {
+        undu += ( a_geoid[i] * v[n][m] + b_geoid[i] * w[n][m] );
             i++;
-	    }
+      }
     }
 
     // orthometric height
@@ -256,11 +256,11 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
     double apa (0e0);
     i = 0;
     for (int n=0;n<=nmax;n++) {
-	    for (int m=0;m<=n;m++) {
-		    apm += ( ap_mean[i] * v[n][m] + bp_mean[i] * w[n][m] );
-		    apa += ( ap_amp[i] * v[n][m] + bp_amp[i] * w[n][m] );
+      for (int m=0;m<=n;m++) {
+        apm += ( ap_mean[i] * v[n][m] + bp_mean[i] * w[n][m] );
+        apa += ( ap_amp[i] * v[n][m] + bp_amp[i] * w[n][m] );
             i++;
-	    }
+      }
     }
     double pres0 ( apm + apa * cos (doy/365.25e0*TWOPI) );
 
@@ -272,11 +272,11 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
     double ata (0e0);
     i = 0;
     for (int n=0;n<=nmax;n++) {
-	    for (int m=0;m<=n;m++) {
-		    atm += ( at_mean[i] * v[n][m] + bt_mean[i] * w[n][m] );
-		    ata += ( at_amp[i] * v[n][m] + bt_amp[i] * w[n][m] );
+      for (int m=0;m<=n;m++) {
+        atm += ( at_mean[i] * v[n][m] + bt_mean[i] * w[n][m] );
+        ata += ( at_amp[i] * v[n][m] + bt_amp[i] * w[n][m] );
             i++;
-	    }
+      }
     }
     double temp0 ( atm + ata * cos (doy/365.25e0*TWOPI) );
 

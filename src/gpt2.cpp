@@ -198,7 +198,7 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
 
     // Loop over stations
     for (int k=0;k<nstat;k++) {
-        
+
         // only positive longitude in degrees
         double plon ( (dlon[k]<0e0) ? ((dlon[k]+TWOPI)/d2r) : (dlon[k]*d2r) );
         // transform to polar distance in degrees
@@ -212,8 +212,6 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
         double diffpod ( (ppod - ( ipod*5e0 - 2.5e0))/5e0 );
         double difflon ( (plon - ( ilon*5e0 - 2.5e0))/5e0 );
 
-        // TODO does that need to be re-arranged for c-type arrays?
-        // e.g. if (ipod==36) ipod = 35
         if (ipod==36)
             ipod -= 1;
 
@@ -290,7 +288,6 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
         // bilinear interpolation
         } else {
 
-            // TODO check !!
             int ipod1 ( ipod + sgn<double>(diffpod) );
             int ilon1 ( ilon + sgn<double>(difflon) );
             if (ilon1==73)
@@ -307,7 +304,7 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
             if (indx[3]>0) indx[3]--;
 
             for (int l=0;l<4;l++) {
-                
+
                 int indxl = indx[l];
 
                 // transforming ellipsoidial height to orthometric height:
@@ -362,50 +359,50 @@ int iers2010::gpt2 (const double& dmjd,const double* dlat,const double* dlon,
                 awl[l] /= 1000.0e0;
 
             }
-            
+
             double dnpod1 = std::abs (diffpod);  // distance nearer point
             double dnpod2 = 1.e0 - dnpod1;       // distance to distant point
             double dnlon1 = std::abs (difflon);
             double dnlon2 = 1.e0 - dnlon1;
-            
+
             // pressure
             double r1 = dnpod2 * pl[0] + dnpod1 * pl[1];
             double r2 = dnpod2 * pl[2] + dnpod1 * pl[3];
             p[k] = dnlon2 * r1 + dnlon1 * r2;
-            
+
             // temperature
             r1 = dnpod2 * tl[0] + dnpod1 * tl[1];
             r2 = dnpod2 * tl[2] + dnpod1 * tl[3];
             t[k] = dnlon2 * r1 + dnlon1 * r2;
-            
+
             // temperature in degree per km
             r1 = dnpod2 * dtl[0] + dnpod1 * dtl[1];
             r2 = dnpod2 * dtl[2] + dnpod1 * dtl[3];
             dt[k] = (dnlon2 * r1 + dnlon1 * r2) * 1000.e0;
-            
+
             // humidity
             r1 = dnpod2 * ql[0] + dnpod1 * ql[1];
             r2 = dnpod2 * ql[2] + dnpod1 * ql[3];
             double q ( dnlon2 * r1 + dnlon1 * r2 );
             e[k] = (q * p[k]) / (0.622e0 + 0.378e0 * q);
-            
+
             // hydrostatic
             r1 = dnpod2 * ahl[0] + dnpod1 * ahl[1];
             r2 = dnpod2 * ahl[2] + dnpod1 * ahl[3];
             ah[k] = dnlon2 * r1 + dnlon1 * r2;
-            
+
             // wet
             r1 = dnpod2 * awl[0] + dnpod1 * awl[1];
             r2 = dnpod2 * awl[2] + dnpod1 * awl[3];
             aw[k] = dnlon2 * r1 + dnlon1 * r2;
-            
+
             // undulation
             r1 = dnpod2 * undul[0] + dnpod1 * undul[1];
             r2 = dnpod2 * undul[2] + dnpod1 * undul[3];
             undu[k] = dnlon2 * r1 + dnlon1 * r2;
         }
     }
-    
+
     // Finished
     return 0;
 }

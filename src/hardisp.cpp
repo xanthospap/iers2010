@@ -1,6 +1,5 @@
 #include "iers2010.hpp"
 #include "hardisp/hardisp.hpp"
-#include <stdio.h>
 
 /**
  * @details This program reads in a file of station displacements in the BLQ
@@ -126,7 +125,7 @@
  * 
  */
 int iers2010::hardisp (int argc,const char* argv[],double* du,double* dw,
-		double* ds)
+    double* ds)
 {
   /*+---------------------------------------------------------------------
    *

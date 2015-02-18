@@ -178,14 +178,14 @@ int iers2010::gmf (const double& dmjd,const double& dlat,const double& dlon,
         +0.000e+00, -2.658e-02, -1.947e-03, +7.131e-04, -3.506e-05,
         +1.885e-07, +5.792e-07, +3.990e-08, +2.000e-08, -5.700e-09
     };
-    
+
     //  Define parameter t
     double t ( sin (dlat) );
-    
+
     // Define degree n and order m,  EGM
     constexpr int n = 9;
     constexpr int m = 9;
-    
+
     // Determine n! (factorial) NOT moved by 1
     static double dfac[2*n+2];
     dfac[0] = 1e0;
@@ -282,7 +282,7 @@ int iers2010::gmf (const double& dmjd,const double& dlat,const double& dlon,
     gamma  = aw/( sine + beta);
     topcon = (1e0 + aw/(1e0 + bw/(1e0 + cw)));
     gmfw   = topcon/(sine+gamma);
-    
+
     // Factorial array is now set for next runs
     fact_initialized = true;
 

@@ -80,35 +80,35 @@
 
 #include <cmath>
 
+#ifdef QUICK_EXIT
+    #define DATE_MAX_DIFF 1.0e-06
+#endif
+
 namespace iers2010 {
-  
-    #ifdef QUICK_EXIT
-        #define DATE_MAX_DIFF 1.0e-06
-    #endif
-    
+
     /** @brief Function to compute the diurnal lunisolar effect on polar motion.
     */
     int pmsdnut2 (const double&,double*);
-    
+
     /** @brief Function to compute the subdiurnal librations in UT1.
     */
     int utlibr (const double&,double&,double&);
-    
+
     /** @brief Function to compute the lunisolar fundamental arguments from the 
     *         model by Simon et al. (1994).
     */
     int fundarg (const double&,double&,double&,double&,double&,double&);
-    
+
     /** @brief Computes corrections to the coordinates of the CIP to account for 
     *         Free Core Nutation.
     */
     int fcnnut (const double&,double&,double&,double&,double&);
-    
+
     /** @brief Computes the angular argument which depends on time for 11 tidal 
     *         argument calculations.
     */
     int arg2 (const int&,const double&,double*);
-    
+
     /** @brief Computes tidal corrections of station displacements caused by 
     *         lunar and solar gravitational attraction.
     */
@@ -116,12 +116,12 @@ namespace iers2010 {
             const double&,double*);
     int dehanttideinel (const double*,const double*,const double*,const int&,
             const int&,const int&,const double&,double*);
-    
+
     /** @brief Computes the effects of zonal Earth tides on the rotation of the 
     *         Earth.
     */
     int rg_zont2 (const double&,double&,double&,double&);
-    
+
     /** @brief Function called by ortho_eop.
     */
     int cnmtx (const double&,double*);
@@ -130,13 +130,13 @@ namespace iers2010 {
     * orientation.
     */
     int ortho_eop (const double&,double*);
-    
+
     /** @brief Compute the asymmetric delay d (in meters) caused by gradients and
     *         the north and east gradients.
     */
     int apg (const double&,const double&,const double&,const double&,double&,
             double&,double&);
-    
+
     /** @brief Compute the Global Pressure and Temperature (GPT) model, based on 
     *         spherical harmonics up to degree and order 9.
     */
@@ -155,7 +155,7 @@ namespace iers2010 {
     */
     int vmf1_ht (const double&,const double&,const double&,const double&,
             const double&,const double&,double&,double&);
-    
+
     /** @brief Compute the Vienna Mapping Functions 1 (VMF1), to be used with "a"
     *         coefficients computed for a given site
     */

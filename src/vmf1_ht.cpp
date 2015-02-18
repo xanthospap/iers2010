@@ -108,14 +108,14 @@ int iers2010::vmf1_ht (const double& ah,const double& aw,const double& dmjd,
     double ht_corr_coef ( 1e0/sine - topcon/(sine + gamma) );
     double ht_corr    ( ht_corr_coef * hs_km );
     vmf1h             = vmf1h + ht_corr;
-    
+
     double bw ( 0.00146e0 );
     double cw ( 0.04391e0 );
     beta   = bw/( sine + cw );
     gamma  = aw/( sine + beta);
     topcon = (1e0 + aw/(1e0 + bw/(1e0 + cw)));
     vmf1w  = topcon/(sine+gamma);
-    
+
     // Finished
     return 0;
 }

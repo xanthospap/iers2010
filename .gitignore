@@ -41,11 +41,10 @@ inc/*
 lib/*
 obj/*
 autom4te.cache/*
+autotools/*
 
 # Html
 *.html
 *.htm
 
 # Configure Files
-config.*
-autoscan.log
