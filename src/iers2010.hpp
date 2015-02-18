@@ -82,85 +82,90 @@
 
 namespace iers2010 {
   
-  #ifdef QUICK_EXIT
-    #define DATE_MAX_DIFF 1.0e-06
-  #endif
-  
-  /** @brief Function to compute the diurnal lunisolar effect on polar motion.
-   */
-  int pmsdnut2 (const double&,double*);
-  
-  /** @brief Function to compute the subdiurnal librations in UT1.
-   */
-  int utlibr (const double&,double&,double&);
-  
-  /** @brief Function to compute the lunisolar fundamental arguments from the 
-   *         model by Simon et al. (1994).
-   */
-  int fundarg (const double&,double&,double&,double&,double&,double&);
-  
-  /** @brief Computes corrections to the coordinates of the CIP to account for 
-   *         Free Core Nutation.
-   */
-  int fcnnut (const double&,double&,double&,double&,double&);
-  
-  /** @brief Computes the angular argument which depends on time for 11 tidal 
-   *         argument calculations.
-   */
-  int arg2 (const int&,const double&,double*);
-  
-  /** @brief Computes tidal corrections of station displacements caused by 
-   *         lunar and solar gravitational attraction.
-   */
-  int dehanttideinel (const double*,const double*,const double*,const double&,
-		  const double&,double*);
-  int dehanttideinel (const double*,const double*,const double*,const int&,
-		  const int&,const int&,const double&,double*);
-  
-  /** @brief Computes the effects of zonal Earth tides on the rotation of the 
-   *         Earth.
-   */
-  int rg_zont2 (const double&,double&,double&,double&);
-  
-  /** @brief Function called by ortho_eop.
-   */
-  int cnmtx (const double&,double*);
+    #ifdef QUICK_EXIT
+        #define DATE_MAX_DIFF 1.0e-06
+    #endif
+    
+    /** @brief Function to compute the diurnal lunisolar effect on polar motion.
+    */
+    int pmsdnut2 (const double&,double*);
+    
+    /** @brief Function to compute the subdiurnal librations in UT1.
+    */
+    int utlibr (const double&,double&,double&);
+    
+    /** @brief Function to compute the lunisolar fundamental arguments from the 
+    *         model by Simon et al. (1994).
+    */
+    int fundarg (const double&,double&,double&,double&,double&,double&);
+    
+    /** @brief Computes corrections to the coordinates of the CIP to account for 
+    *         Free Core Nutation.
+    */
+    int fcnnut (const double&,double&,double&,double&,double&);
+    
+    /** @brief Computes the angular argument which depends on time for 11 tidal 
+    *         argument calculations.
+    */
+    int arg2 (const int&,const double&,double*);
+    
+    /** @brief Computes tidal corrections of station displacements caused by 
+    *         lunar and solar gravitational attraction.
+    */
+    int dehanttideinel (const double*,const double*,const double*,const double&,
+            const double&,double*);
+    int dehanttideinel (const double*,const double*,const double*,const int&,
+            const int&,const int&,const double&,double*);
+    
+    /** @brief Computes the effects of zonal Earth tides on the rotation of the 
+    *         Earth.
+    */
+    int rg_zont2 (const double&,double&,double&,double&);
+    
+    /** @brief Function called by ortho_eop.
+    */
+    int cnmtx (const double&,double*);
 
-  /** @brief Compute the diurnal and semidiurnal variations in the Earth 
-   * orientation.
-   */
-  int ortho_eop (const double&,double*);
-  
-  /** @brief Compute the asymmetric delay d (in meters) caused by gradients and
-   *         the north and east gradients.
-   */
-  int apg (const double&,const double&,const double&,const double&,double&,
-          double&,double&);
-  
-  /** @brief Compute the Global Pressure and Temperature (GPT) model, based on 
-   *         spherical harmonics up to degree and order 9.
-   */
-  int gpt (const double&,const double&,const double&,const double&,double&,
-          double&,double&);
+    /** @brief Compute the diurnal and semidiurnal variations in the Earth 
+    * orientation.
+    */
+    int ortho_eop (const double&,double*);
+    
+    /** @brief Compute the asymmetric delay d (in meters) caused by gradients and
+    *         the north and east gradients.
+    */
+    int apg (const double&,const double&,const double&,const double&,double&,
+            double&,double&);
+    
+    /** @brief Compute the Global Pressure and Temperature (GPT) model, based on 
+    *         spherical harmonics up to degree and order 9.
+    */
+    int gpt (const double&,const double&,const double&,const double&,double&,
+            double&,double&);
 
-  /** @brief Compute the Global Pressure and Temperature 2 (GPT2) model, and 
-   *         the "a" coefficients for VMF1_HT, based on the file gpt2_5.grd.
-   */
-  int gpt2 (const double&,const double*,const double*,const double*,const int&,
-          double*,double*,double*,double*,double*,double*,double*,int it = 0,
-          const char* ifile=nullptr);
+    /** @brief Compute the Global Pressure and Temperature 2 (GPT2) model, and 
+    *         the "a" coefficients for VMF1_HT, based on the file gpt2_5.grd.
+    */
+    int gpt2 (const double&,const double*,const double*,const double*,const int&,
+            double*,double*,double*,double*,double*,double*,double*,int it = 0,
+            const char* ifile=nullptr);
 
-  /** @brief Compute the Vienna Mapping Functions 1 (VMF1), with height 
-   *         corrections to be used with "a" coefficients computed for a grid.
-   */
-  int vmf1_ht (const double&,const double&,const double&,const double&,
-          const double&,const double&,double&,double&);
-  
-  /** @brief Compute the Vienna Mapping Functions 1 (VMF1), to be used with "a"
-   *         coefficients computed for a given site
-   */
-  int vmf1 (const double&,const double&,const double&,const double&,
-          const double&,double&,double&);
+    /** @brief Compute the Vienna Mapping Functions 1 (VMF1), with height 
+    *         corrections to be used with "a" coefficients computed for a grid.
+    */
+    int vmf1_ht (const double&,const double&,const double&,const double&,
+            const double&,const double&,double&,double&);
+    
+    /** @brief Compute the Vienna Mapping Functions 1 (VMF1), to be used with "a"
+    *         coefficients computed for a given site
+    */
+    int vmf1 (const double&,const double&,const double&,const double&,
+            const double&,double&,double&);
+
+    /** @brief  Compute the Global Mapping Functions, GMF
+    */
+    int gmf (const double&,const double&,const double&,const double&,
+            const double&,double&,double&);
 }
 
 #endif

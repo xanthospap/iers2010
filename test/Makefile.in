@@ -52,5 +52,10 @@ Makefile: Makefile.in ../config.status
 ../config.status: ../configure
 	cd ../ && ./config.status --recheck
 
-$(EXE): $(SRC)
+$(EXE): $(SRC) FORCE
 	$(CXX) $(LDFLAGS) -I../src -L.. -o $@ $< -liers10++
+
+FORCE:
+	-rm $(EXE) 2>/dev/null
+
+.PHONY: FORCE
