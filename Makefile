@@ -18,7 +18,7 @@ datarootdir = ${prefix}/share
 includedir  = ${prefix}/include
 docdir      = ${datarootdir}/doc/${package}v${version}
 libdir      = ${prefix}/lib
-abs_builddir=`pwd`
+abs_builddir=$(shell pwd)
 
 ## Define and export a temporary build folder
 ## ===================================================

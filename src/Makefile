@@ -57,14 +57,9 @@ clean:
 	-rm -rf $(builddir)
 
 $(LIB): $(OBJ)
-	ar rc $(LIB) $(OBJ)
+	ar cru $(LIB) $(OBJ)
+	ranlib $(LIB)
 	cp $(LIB) ../$(package).a
-
-Makefile: Makefile.in ../config.status
-	cd ../ && ./config.status $@
-
-../config.status: ../configure
-	cd ../ && ./config.status --recheck
 
 $(builddir)/fundarg.o: $(srcdir)/fundarg.cpp $(HEAD)
 	$(CXX) $(CXXFLAGS) -o $@ $<
