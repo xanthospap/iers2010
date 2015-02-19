@@ -1,5 +1,5 @@
 #include "iers2010.hpp"
-#include "hardisp/hardisp.hpp"
+#include "hardisp.hpp"
 
 /**
  * @details This program reads in a file of station displacements in the BLQ

@@ -18,7 +18,7 @@
   *           http://maia.usno.navy.mil/conv2010/software.html
   * 
   * @param[in]   dmjd  Modified Julian Date
-  * @param[out]  d     Vector of length 12 with partials of the tidal variation
+  * @param[out]  h     Vector of length 12 with partials of the tidal variation
   *                    with respect to the orthoweights (Note 1)
   * @return            An integer value which can be:
   *                    Returned Value | Status

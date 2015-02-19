@@ -1,7 +1,7 @@
 check_PROGRAMS    = test
 dist_test_SOURCES = test.cpp
-test_CXXFLAGS     = -I$(top_srcdir)/src -std=c++11
-test_LDADD        = ../libiers10++.a
+test_CXXFLAGS     = -I$(top_srcdir)/src -L$(top_srcdir)/src -std=c++11
+test_LDADD        = $(top_srcdir)/src/libiers10++.a
 
 check_SCRIPTS     = greptest.sh
 TESTS             = $(check_SCRIPTS)

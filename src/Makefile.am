@@ -1,11 +1,15 @@
 pkglib_LIBRARIES           = libiers10++.a
 dist_pkginclude_HEADERS    = iers2010.hpp
-libiers10___a_CXXFLAGS        = -std=c++11 -g -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization
+libiers10___a_CXXFLAGS     = -std=c++11 -g -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization
+dist_pkgdata_DATA          = ../gpt2_5.grd
 dist_libiers10___a_SOURCES = fundarg.cpp \
 							 pmsdnut2.cpp \
 							 utlibr.cpp \
 							 fcnnut.cpp \
 							 arg2.cpp \
+							 vmf1_ht.cpp \
+							 vmf1.cpp \
+							 gmf.cpp \
 							 dehanttideinel.cpp \
 							 rg_zont2.cpp \
 							 cnmtx.cpp \
@@ -28,3 +32,6 @@ dist_libiers10___a_SOURCES = fundarg.cpp \
 							 spline.cpp \
 							 tdfrph.cpp \
 							 admint.cpp
+gpt2.cpp: gpt2-unset.cpp
+	cp gpt2-unset.cpp gpt2.cpp
+	$(SED) -i "s|/foo/bar/gpt2_5.grd|$(abs_top_builddir)/gpt2_5.grd|g" $@

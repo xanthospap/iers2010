@@ -164,9 +164,11 @@ int main ()
     double dlat (48.20e0*pi/180.e0),dlon (16.37e0*pi/180.e0), hell(156.e0);
     double mp,mt,mdt,me,mah,maw,mundu;
     status = iers2010::gpt2 (
-            56141e0,&dlat,&dlon,&hell,1,&mp,&mt,&mdt,&me,&mah,&maw,&mundu,0,
+            56141e0,&dlat,&dlon,&hell,1,&mp,&mt,&mdt,&me,&mah,&maw,&mundu,0);
+            /*
             "/home/xanthos/Software/iers2010/src/gpt2_5.grd");
-    //          "/home/xanthos/myrepos/iers2010/src/gpt2_5.grd");
+            "/home/xanthos/myrepos/iers2010/src/gpt2_5.grd");
+            */
     if (status) {
         printf ("\nERROR! gpt2 could not run. Error code: %01i",status);
         status = 1;
@@ -183,8 +185,10 @@ int main ()
     printf ("\nFunction GPT2 (test B)");
     printf ("\n\tAbs. differences in (see results) :");
     status = iers2010::gpt2 (
-            56141e0,&dlat,&dlon,&hell,1,&mp,&mt,&mdt,&me,&mah,&maw,&mundu,1,
+            56141e0,&dlat,&dlon,&hell,1,&mp,&mt,&mdt,&me,&mah,&maw,&mundu,1);
+            /*
             "/home/xanthos/Software/iers2010/src/gpt2_5.grd");
+            */
     if (status) {
         printf ("\nERROR! gpt2 could not run. Error code: %01i",status);
         status = 1;
@@ -228,5 +232,5 @@ int main ()
     printf ("\n\t|dgmfw|   = %20.18f ",fabs(3.449589116182419257e0-vmf1w));}
 
     printf ("\n");
-    return 0;
+    return status;
 }

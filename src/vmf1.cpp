@@ -15,7 +15,6 @@
  * @param[in]  aw    Wet coefficient a (Note 1)
  * @param[in]  dmjd  Modified Julian Date
  * @param[in]  dlat  Ellipsoidal latitude given in radians
- * @param[in]  ht    Ellipsoidal height given in meters
  * @param[in]  zd    Zenith distance in radians
  * @param[out] vmf1h Hydrostatic mapping function (Note 2)
  * @param[out] vmf1w Wet mapping function (Note 2)
