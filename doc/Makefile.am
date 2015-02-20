@@ -19,9 +19,11 @@ doxyapidir:
 #endif
 
 if HAVE_XSLTPROC
-dxsl: refguide.stamp refguidedir
-	cd xml && @XSLTPROC@ /usr/share/sgml/docbook/xsl-ns-stylesheets-1.78.1/html/chunk.xsl libiers10-main.xml
-	mv xml/*.html refguide_html/
+dxsl: refguide.stamp refguidedir xslstylesheet
+	cd xml && @XSLTPROC@ --output refguide_html $(XSLSS) libiers10-main.xml
+	-mv xml/*.html refguide_html/ 2>/dev/null
+	-mv xml/html/*.html refguide_html/ 2>/dev/null
+	-rm -rf xml/html 2>/dev/null
 else
 dxsl: 
 	touch refguide.stamp
@@ -32,10 +34,16 @@ refguide.stamp:
 
 all: ddox dxsl
 
-#CLEANFILES = refguide.stamp
-
-#all-local: refguide.stamp
+xslstylesheet:
+	$(eval XSLSS = $(shell find /usr/share/ -name chunk.xsl 2>/dev/null | grep xml/docbook/stylesheet | grep html | head -1) )
+	@echo "-----------------------------------------------------"
+	@echo "XSL STYLESHEET SET TO $(XSLSS)"
+	@echo "-----------------------------------------------------"
 
 refguidedir:
 	$(MKDIR_P) refguide_html 2>/dev/null
 #endif
+
+## xsltproc --output admin_guide.fo /usr/share/xml/docbook/stylesheet/suse2013/fo/fo.xsl libiers10-main.xml
+##
+##

@@ -2,7 +2,7 @@
 
 <!-- Works on OpenSUSE -->
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"/usr/share/sgml/docbook/dtd/4.5xml/docbookx.dtd" [
+"/usr/share/xml/docbook/schema/dtd/5.0/docbook.dtd" [
 
 <!ENTITY chap1 SYSTEM "libiers10-chap-01.xml">
 <!ENTITY chap2 SYSTEM "libiers10-chap-02.xml">
