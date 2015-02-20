@@ -16,14 +16,23 @@ AC_PROG_INSTALL
 AC_PROG_RANLIB
 AC_PROG_SED
 AC_PROG_MKDIR_P
+
+# Search for doxygen
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
 if test -z "$DOXYGEN"
 then
-    AC_MSG_WARN([Doxygen not found - continuing without Doxygen])
+    AC_MSG_WARN([Doxygen not found; Library (html) API will not be build.])
 fi
-AM_CONDITIONAL([HAVE_DOXYGEN],
-               [test -n "$DOXYGEN"])AM_COND_IF([HAVE_DOXYGEN],
-                                               [AC_CONFIG_FILES([doc/Doxyfile])])
+AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
+AM_COND_IF([HAVE_DOXYGEN],[AC_CONFIG_FILES([doc/Doxyfile])])
+
+# search for xsltproc
+AC_CHECK_PROGS([XSLTPROC],[xsltproc])
+if test -z "$XSLTPROC"
+then
+    AC_MSG_WARN([xslt not found; Reference guide will not be build.])
+fi
+AM_CONDITIONAL([HAVE_XSLTPROC], [test -n "$XSLTPROC"])
 
 # Checks for optional programs.
 

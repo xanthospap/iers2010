@@ -4,7 +4,8 @@
  * @details This function gives the in-phase and out-of-phase corrections
  *          induced by mantle anelasticity in the diurnal band.
  *          This function is a translation/wrapper for the fortran STEP2DIU
- *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
+ *          subroutine, found here at 
+ *          http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[in]  xsta    Geocentric position of the IGS station (Note 1)
  * @param[in]  fhr     Fractional hours in the day (Note 2)
@@ -41,15 +42,15 @@
  *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
  * 
  */
-void iers2010::dtel::step2diu (const double* xsta,const double& fhr,const double& t,double* xcorsta)
+void iers2010::dtel::step2diu (const double* xsta,const double& fhr,
+        const double& t,double* xcorsta)
 {
 
   // Set constants
   #ifdef USE_EXTERNAL_CONSTS
-    /*constexpr double TWOPI   (D2PI);      // 2 * pi*/
   #else
     constexpr double D2PI   ( 6.283185307179586476925287e0 );  // 2*pi
-    constexpr double DEG2RAD( D2PI / 360e0 );                  // degrees to radians
+    constexpr double DEG2RAD( D2PI / 360e0 );   // degrees to radians
   #endif
 
   static const double datdi[][9] = {
