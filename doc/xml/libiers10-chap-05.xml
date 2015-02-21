@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='ISO-8859-1'?>
 
 <chapter id="chap_05">
-  <title>Updating</title>
+    <title>Updating</title><para></para>
 </chapter>
 
 <chapter id="chap_06">
-  <title>Terms of use</title>
+    <title>Terms of use</title><para></para>
 </chapter>
 
 <chapter id="chap_07">
@@ -39,5 +39,5 @@
 </chapter>
 
 <chapter id="chap_08">
-  <title>Bugs</title>
+    <title>Bugs</title><para></para>
 </chapter>

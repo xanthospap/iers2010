@@ -3,19 +3,19 @@
 <chapter id="chap_03">
   <title>Using <application>libiers10++</application></title>
   
-  <section id="chap_03_01"><title>Intorduction</title></section>
+  <section id="chap_03_01"><title>Intorduction</title><para></para></section>
   
-  <section id="chap_03_02"><title>The file <filename>gpt2_5.grd</filename></title></section>
+  <section id="chap_03_02"><title>The file <filename>gpt2_5.grd</filename></title>
   <para>In order to use the software package (<application>gpt2.cpp</application>), you will need an (ascii) file
     called <filename>gpt2_5.grd</filename>, which provides a grid and is read by some function. This file is distributed
-    by the IERS and can be found at its website (<ulink href="http://maia.usno.navy.mil/conv2010/software.html"></ulink>).
+    by the IERS and can be found at its website (<ulink url="http://maia.usno.navy.mil/conv2010/software.html"></ulink>).
     To download the files, you can use a web-browser or just type:
     <screen><prompt>bash$</prompt><command>wget</command> <replaceable>ftp://maia.usno.navy.mil/conv2010/convupdt/chapter9/gpt2_5.grd</replaceable></screen>
-    </para>
+    </para></section>
   
-  <section id="chap_03_03"><title>Running <filename>test.cpp</filename></title></section>
+    <section id="chap_03_03"><title>Running <filename>test.cpp</filename></title><para></para></section>
   
-  <section id="chap_03_04"><title>Examples</title></section>
+    <section id="chap_03_04"><title>Examples</title><para></para></section>
   
 </chapter>
   

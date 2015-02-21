@@ -28,34 +28,46 @@
 <book>
   
   <!-- START INFORMATION -->
-  <bookinfo>
-    <title>The libiers10++ Software Package</title>
-    <subtitle>A Reference Guide</subtitle>
-    <authorgroup>
-      <author>
-        <firstname>Demitris</firstname>
-        <surname>Anastasiou</surname>
-        <authorinitials>DA</authorinitials>
-        <affiliation>
-          <orgname>National Technical University of Athens</orgname>
-          <address>
-            <email>danast@mail.ntua.gr</email>
-          </address>
-        </affiliation>
-      </author>
-      <author>
-        <firstname>Xanthos</firstname>
-        <surname>Papanikolaou</surname>
-        <authorinitials>XP</authorinitials>
-        <affiliation>
-          <orgname>National Technical University of Athens</orgname>
-          <address>
-            <email>xanthos@mail.ntua.gr</email>
-          </address>
-        </affiliation>
-      </author>
-    </authorgroup>
-  </bookinfo>
+    <bookinfo>
+        <title>The libiers10++ Software Package</title>
+        <subtitle>A Reference Guide</subtitle>
+        <authorgroup>
+            <author>
+                    <firstname>Demitris</firstname>
+                    <surname>Anastasiou</surname>
+                <affiliation>
+                    <shortaffil>NTUA</shortaffil>
+                    <jobtitle>PhD. student</jobtitle>
+                    <orgname>National Technical University of Athens</orgname>
+                    <orgdiv>School of Rural and Surveying Engineering</orgdiv>
+                    <address>
+                        <city>Athens</city>
+                        <country>Greece</country>
+                        <street>Heroon Polytechniou, 9</street>
+                        <state>Zografos</state>
+                    </address>
+                </affiliation>
+                <address><email>danast@mail.ntua.gr</email></address>
+            </author>
+            <author>
+                    <firstname>Xanthos</firstname>
+                    <surname>Papanikolaou</surname>
+                <affiliation>
+                    <shortaffil>NTUA</shortaffil>
+                    <jobtitle>PhD. student</jobtitle>
+                    <orgname>National Technical University of Athens</orgname>
+                    <orgdiv>School of Rural and Surveying Engineering</orgdiv>
+                    <address>
+                        <city>Athens</city>
+                        <country>Greece</country>
+                        <street>Heroon Polytechniou, 9</street>
+                        <state>Zografos</state>
+                    </address>
+                </affiliation>
+                <address><email>xanthos@mail.ntua.gr</email></address>
+            </author>
+        </authorgroup>
+    </bookinfo>
   <!-- END INFORMATION -->
   
   <!-- START PREFACE -->
@@ -99,7 +111,7 @@
         (<ulink url="http://www.iers.org/IERS/EN/Home/home_node.html">IERS</ulink>). Although we have 
         tried to 'stick' as much as possible to the original implementation, there are always minor
         or major modιfications. The results of any function though, should coincide exactly with the
-        ones obtained when using the original FORTRAN routines (see <xref linkend="chap_verification" />)
+        ones obtained when using the original FORTRAN routines (see)
         </para>
       <para>This document is based on the <ulink url="http://www.tldp.org/">Linux Documentation Project</ulink> 
         templates, so we are grateful to this community.</para>

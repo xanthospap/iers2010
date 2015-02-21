@@ -3,7 +3,7 @@
 <chapter id="chap_04">
     <title>Results and Comparisson with Fortan Source Code</title>
     
-    <preface id="chap_04_pre"><title>Preface</title>
+    <section id="chap_04_pre"><title>Preface</title>
         <para>This chapter, presents some tools for testing and validating the already installed
             (see <xref linkend="chap_02" />) libiers10++ library. In the following, we use the
             three distinct entities, namely:
@@ -26,16 +26,16 @@
                     </screen>
                 </listitem>
                 <listitem><para>the <emphasis>FORTRAN implementation</emphasis>. Some of the test cases provided in the source file headers,
-                    may be outdated (although this is very rare). As a precausion, when testing the libeiers++ library, we re-implement
-                    the FORTRAN realization; this consists of downloading the original FORTRAN routines, compiling them and executing a
-                    (provided with this package) test case (see <xref linkend="chap_04_02" />). This implementation, will be refered to
-                    hereafter as the <emphasis>FORTRAN implementation</emphasis>.<important>The original FORTRAN source files, are licensed
-                      by IERS and are NOT covered by this package's license (see <xref linkend="preface_05" />).</important></para></listitem>
+                        may be outdated (although this is very rare). As a precausion, when testing the libeiers++ library, we re-implement
+                        the FORTRAN realization; this consists of downloading the original FORTRAN routines, compiling them and executing a
+                        (provided with this package) test case (see <xref linkend="chap_04_02" />). This implementation, will be refered to
+                        hereafter as the <emphasis>FORTRAN implementation</emphasis>.<important><para>The original FORTRAN source files, are licensed
+                                by IERS and are NOT covered by this package's license (see <xref linkend="preface_05" />).</para></important></para></listitem>
                 <listitem><para>the <emphasis>C++ implementation</emphasis>. This consists of the actual libiers++ source files, and testing
-                    routines.</para></listitem>
+                        routines.</para></listitem>
             </itemizedlist>
         </para>
-    </preface>
+    </section>
     
     <section id="chap_04_01"><title>Note on compiling the original code</title>
         <para>On the following, we are going to use the <ulink url="https://gcc.gnu.org/fortran/">gfortran</ulink> compiler;
@@ -44,11 +44,11 @@
             and is currently part of that distribution. <command>gfortran</command> comes with most Unix - type OSs.</para>
         <para>To compile a program, say <filename>TEST.F</filename>, the basic syntax is:
             <screen>
-                <prompt>bash$</prompt> <command>gfortran <replaceable>TEST.F</replaceable> <arg>-o <replaceable>test.e</replaceable></arg></command>
+                <prompt>bash$</prompt> <command>gfortran <replaceable>TEST.F</replaceable> <option>-o <replaceable>test.e</replaceable></option></command>
             </screen>
             which should result in the creation of a (executable) file named <filename>test.e</filename>.
         </para>
-        <note>Our knowledge of FORTRAN and <command>gfortran</command> is very limited, so this chapter should only be seen as a harsh guideline</note>
+        <note><para>Our knowledge of FORTRAN and <command>gfortran</command> is very limited, so this chapter should only be seen as a harsh guideline.</para></note>
         
         <section id="chap_04_01_01"><title><function>fundarg</function></title>
             <para>The <filename>FUNDARG.F</filename> and <filename>fundarg.cpp</filename> produce exactly the same results.
@@ -78,16 +78,16 @@
                 This block, could be added at the top of the file <filename>FUNDARG.F</filename> to run the test case. The code could then
                 be compiled, using e.g.:
                 <screen>
-                    <prompt>bash$</prompt> <command>gfortran <replaceable>FUNDARG.F</replaceable> <arg>-o <replaceable>fundarg.e</replaceable></arg></command>
+                    <prompt>bash$</prompt> <command>gfortran <replaceable>FUNDARG.F</replaceable> <option>-o <replaceable>fundarg.e</replaceable></option></command>
                 </screen>
                 And running the executable (i.e. <filename>fundarg.e</filename>) should produce something like the following:
-                <computeroutput><screen>
+                <screen><computeroutput>
                         dl  =    0.000000000000076
                         dlp =    0.000000000009700
                         df  =    0.000000000000078
                         dd  =    0.000000000009591
                         dom =    0.000000000000000
-                        </screen></computeroutput>
+                        </computeroutput></screen>
             </para>
         </section>
         
@@ -120,26 +120,26 @@
             you will need the FORTRAN source code, which can either be downloaded from the corresponding IERS <ulink url="http://maia.usno.navy.mil/conv2010/software.html">website</ulink>,
             or use the already downloaded subroutines existing in the folder <filename>test/fortran</filename>. Either way, you will need to have
             the following files (in the <filename>test/fortran</filename> folder):
-            <orderedlist numeration="arabic" id="rq_for">
-                <listitem> <filename>ARG2.F</filename></listitem>
-                <listitem> <filename>CNMTX.F</filename></listitem>
-                <listitem> <filename>FCNNUT.F</filename></listitem>
-                <listitem> <filename>FUNDARG.F</filename></listitem>
-                <listitem> <filename>MCNMTX.F</filename></listitem>
-                <listitem> <filename>ORTHO_EOP.F</filename></listitem>
-                <listitem> <filename>PMSDNUT2.F</filename></listitem>
-                <listitem> <filename>RG_ZONT2.F</filename></listitem>
-                <listitem> <filename>UTLIBR.F</filename></listitem>
-                <listitem> <filename>APG.F</filename></listitem>
-                <listitem> <filename>GPT.F</filename></listitem>
-                <listitem> <filename>GPT2.F</filename></listitem>
+            <orderedlist numeration="arabic">
+                <listitem><para><filename>ARG2.F</filename></para></listitem>
+                <listitem><para><filename>CNMTX.F</filename></para></listitem>
+                <listitem><para><filename>FCNNUT.F</filename></para></listitem>
+                <listitem><para><filename>FUNDARG.F</filename></para></listitem>
+                <listitem><para><filename>MCNMTX.F</filename></para></listitem>
+                <listitem><para><filename>ORTHO_EOP.F</filename></para></listitem>
+                <listitem><para><filename>PMSDNUT2.F</filename></para></listitem>
+                <listitem><para><filename>RG_ZONT2.F</filename></para></listitem>
+                <listitem><para><filename>UTLIBR.F</filename></para></listitem>
+                <listitem><para><filename>APG.F</filename></para></listitem>
+                <listitem><para><filename>GPT.F</filename></para></listitem>
+                <listitem><para><filename>GPT2.F</filename></para></listitem>
             </orderedlist>
             Follow the steps described below, to create a program testing the results of FORTRAN subroutines.</para>
         <procedure>
             <title>Making FORTRAN <application>test.e</application></title>
             <para>To create a test program for FORTRAN :</para>
             <step performance="required">
-                <para>Make sure you have all the required FORTRAN files in the <filename>test/fortran</filename> folder (see <xref linkend="rq_for" />).
+                <para>Make sure you have all the required FORTRAN files in the <filename>test/fortran</filename> folder (see).
                     In addition, the files <filename>compile.sh</filename> and <filename>test.f</filename> should also reside in the same folder (these files
                     come with the package).</para></step>
             <step performance="required">
@@ -151,8 +151,8 @@
                     </screen>
                     The latter is a dead simple bash script, with a list of command for compiling the subroutines and linking to create the test program. Compilation flags
                     are not used, so if you do know what you 're doing, you can edit this file.
-                    <important>The <filename>compile.sh</filename> script uses gfortran to compile the FORTRAN subroutines. If you don't have this program
-                        either install it, or edit the file to use a different compiler.</important>
+                    <important><para>The <filename>compile.sh</filename> script uses gfortran to compile the FORTRAN subroutines. If you don't have this program
+                            either install it, or edit the file to use a different compiler.</para></important>
                     </para></step>
             <step performance="required">
                 <para>If the previous step ended successefuly, you must have a file named <filename>test.e</filename> in the <filename>test/fortran</filename> folder.
@@ -163,8 +163,8 @@
                     </para>
                 </step>
             </procedure>
-            <note>In case you notice big discrepancies between the test cases and the actual results, consider
-                making or reviewing the notes presented in <xref linkend="chap_04_01" /></note>
+            <note><para>In case you notice big discrepancies between the test cases and the actual results, consider
+                    making or reviewing the notes presented in <xref linkend="chap_04_01" /></para></note>
         </section>
         
         <section id="chap_04_03"><title>Testing the C++ Implementation</title>
@@ -199,13 +199,13 @@
                 the following:
                 <screen><prompt>bash$</prompt> <command>cmpcvf.py</command> <filename>test/cpp.test</filename> <filename>test/fortran/fortran.test</filename>
                 </screen>
-                <note>Running the above, will also report debugging messages, starting with '##'. To eliminate these and
-                    gain a better view for the results of interest, execute:
-                    <screen><prompt>bash$</prompt> <command>cmpcvf.py</command> <filename>test/cpp.test</filename> <filename>test/fortran/fortran.test</filename> | <command>grep</command> -v "##"
-                    </screen>
-                </note>
+                <note><para>Running the above, will also report debugging messages, starting with '##'. To eliminate these and
+                        gain a better view for the results of interest, execute:
+                        <screen><prompt>bash$</prompt> <command>cmpcvf.py</command> <filename>test/cpp.test</filename> <filename>test/fortran/fortran.test</filename> | <command>grep</command> -v "##"
+                        </screen>
+                        </para></note>
                 You should see an ouput similar to this:
-                <computeroutput><screen>
+                <screen><computeroutput>
                         ---------------------------------------------------------------------------
                         Analysis of test results for libiers10++
                         Generated by cmpcvf.py
@@ -253,21 +253,22 @@
                         deop(2)    : 0.000e+00 0.000e+00 0.000e+00      microarcseconds
                         deop(3)    : 0.000e+00 0.000e+00 0.000e+00      microarcseconds
                         ---------------------------------------------------------------------------
-                        </screen></computeroutput>
+                        </computeroutput></screen>
                 For every (main) available function, this output reports (per column):
                 <orderedlist numeration="arabic">
-                    <listitem><emphasis>ARGUMENT</emphasis>, i.e. the name of the parameter computed by the
-                        function</listitem>
-                    <listitem><emphasis>TEST-C++</emphasis>, i.e. the difference (in absolute value) from the test case
-                        provided in the original FORTRAN code with the results obtained using the C++ implementation</listitem>
-                    <listitem><emphasis>TEST-FOR</emphasis>, i.e. the difference (in absolute value) from the test case
-                        provided in the original FORTRAN code with the results obtained using the FORTRAN implementation</listitem>
-                    <listitem><emphasis>FOR-C++</emphasis>, i.e. the difference (in absolute value) from comparing the FORTRAN
-                        and C++ implementations</listitem>
-                    <listitem>the last column reports the units of the results</listitem>
+                    <listitem><para><emphasis>ARGUMENT</emphasis>, i.e. the name of the parameter computed by the
+                            function</para></listitem>
+                    <listitem><para><emphasis>TEST-C++</emphasis>, i.e. the difference (in absolute value) from the test case
+                            provided in the original FORTRAN code with the results obtained using the C++ implementation</para></listitem>
+                    <listitem><para><emphasis>TEST-FOR</emphasis>, i.e. the difference (in absolute value) from the test case
+                            provided in the original FORTRAN code with the results obtained using the FORTRAN implementation</para></listitem>
+                    <listitem><para><emphasis>FOR-C++</emphasis>, i.e. the difference (in absolute value) from comparing the FORTRAN
+                            and C++ implementations</para></listitem>
+                    <listitem><para>the last column reports the units of the results</para></listitem>
                 </orderedlist>
                 Search through the results for alarming differences.
             </para>
         </section>
         
     </chapter>
+    

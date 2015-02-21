@@ -21,10 +21,8 @@
   
   <section id="chap_01_02"><title>Source Code</title>
     <para>The languge of choice for the source code is Standard C++. The current ISO C++ standard, known as
-      C++<subscript>11</subscript>, is used.
-      <note>The library uses a number of  C++<subscript>11</subscript> features, so make sure you 
-        use a compiler with support for this ISO version.</note>
-    </para>
+        C++<subscript>11</subscript>, is used.</para>
+    <note><para>The library uses a number of  C++<subscript>11</subscript> features, so make sure you use a compiler with support for this ISO version.</para></note>
   </section>
   
   <section id="chap_01_03"><title>Available functions</title>
@@ -157,6 +155,6 @@
     </table>
   </section>
   
-  <section id="chap_01_03"><title>Contents and Structure</title></section>
+  <section id="chap_01_04"><title>Contents and Structure</title><para></para></section>
   
 </chapter>
