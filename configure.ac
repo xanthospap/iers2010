@@ -25,7 +25,8 @@ then
     AC_MSG_WARN([Doxygen not found; Library (html) API will not be build.])
 fi
 AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
-AM_COND_IF([HAVE_DOXYGEN],[AC_CONFIG_FILES([doc/Doxyfile])])
+AM_COND_IF([HAVE_DOXYGEN],[AC_CONFIG_FILES([doc/Doxyfile-html
+            doc/Doxyfile-man])])
 
 # search for xsltproc
 AC_CHECK_PROGS([XSLTPROC],[xsltproc])

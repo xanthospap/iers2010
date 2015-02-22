@@ -42,9 +42,24 @@ lib/*
 obj/*
 autom4te.cache/*
 autotools/*
+refguide_html/*
+api_html/*
+.deps/*
+test-driver/*
 
 # Html
 *.html
 *.htm
 
 # Configure Files
+aclocal.m4
+config.*
+stamp-h1
+
+# Stamp files
+*.stamp
+
+# Templates
+Makefile.in
+Makefile
+Doxyfile*.in
