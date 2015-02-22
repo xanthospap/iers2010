@@ -166,6 +166,22 @@ namespace iers2010 {
     */
     int gmf (const double&,const double&,const double&,const double&,
             const double&,double&,double&);
+
+    /** @brief Compute the global total FCULa mapping function.
+     */
+    int fcul_a (const double&,const double&,const double&,const double&,
+            double&);
+
+    /** @brief Compute the global total FCULb mapping function.
+     */
+    int fcul_b (const double&,const double&,const double&,const double&,
+            double&);
+
+    /** @brief Compute the Mendes-Pavlis zenith total delay, for optical 
+     *         wavelengths, valid for infrared to ultraviolet. 
+     */
+    int fcul_zd_hpa (const double&,const double&,const double&,const double&,
+            const double&,double&,double&,double&);
 }
 
 #endif

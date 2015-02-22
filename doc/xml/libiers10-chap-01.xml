@@ -107,7 +107,7 @@
           </row>
           
           <row>
-            <entry morerows='5' valign='middle'>Chapter 9</entry>
+            <entry morerows='8' valign='middle'>Chapter 9</entry>
             <entry><function>apg</function></entry><entry>iers2010</entry>
             <entry>compute the asymmetric delay d in meter caused by gradients. The north and east gradients are also provided, based on spherical harmonics up to degree and order 9.</entry>
             <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/APG.F">APG.F</ulink></entry>
@@ -130,7 +130,7 @@
           </row>
           <row>
               <entry><function>vmf1</function></entry><entry>iers2010</entry>
-              <entry> compute the Vienna Mapping Functions 1 (VMF1), to be used with "a" coefficients computed for a given site</entry>
+              <entry>compute the Vienna Mapping Functions 1 (VMF1), to be used with "a" coefficients computed for a given site</entry>
               <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/VMF1.F">VMF1.F</ulink></entry>
               <entry></entry>
               <entry>J. Boehm</entry>
@@ -144,10 +144,31 @@
           </row>
           <row>
               <entry><function>gmf</function></entry><entry>iers2010</entry>
-              <entry> compute the Global Mapping Functions, GMF</entry>
+              <entry>compute the Global Mapping Functions, GMF</entry>
               <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/VMF1_HT.F">GMF.F</ulink></entry>
               <entry></entry>
               <entry>J. Boehm</entry>
+          </row>
+          <row>
+              <entry><function>fcul_a</function></entry><entry>iers2010</entry>
+              <entry>compute the global total FCULa mapping function, dependent on latitude, height, and surface temperature</entry>
+              <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/FCUL_A.F">FCUL_A.F</ulink></entry>
+              <entry></entry>
+              <entry>V. Mendes</entry>
+          </row>
+          <row>
+              <entry><function>fcul_b</function></entry><entry>iers2010</entry>
+              <entry>compute the global total FCULb mapping function, dependent on latitude, height and day of year</entry>
+              <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/FCUL_B.F">FCUL_B.F</ulink></entry>
+              <entry></entry>
+              <entry>V. Mendes</entry>
+          </row>
+          <row>
+              <entry><function>fcul_zd_aph</function></entry><entry>iers2010</entry>
+              <entry>compute the Mendes-Pavlis zenith total delay, for optical wavelengths, valid for infrared to ultraviolet</entry>
+              <entry><ulink url="http://maia.usno.navy.mil/conv2010/chapter9/FCUL_ZD_APH.F">FCUL_ZD_APH.F</ulink></entry>
+              <entry></entry>
+              <entry>V. Mendes</entry>
           </row>
           
         </tbody>

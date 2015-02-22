@@ -230,6 +230,24 @@ int main ()
         vmf1h, vmf1w);
     printf ("\n\t|dgmfh|   = %20.18f ",fabs(3.425245519339138678e0-vmf1h));
     printf ("\n\t|dgmfw|   = %20.18f ",fabs(3.449589116182419257e0-vmf1w));}
+    
+    printf ("\nFunction FCUL_A");
+    printf ("\n\tAbs. differences in dimensionless :");
+    iers2010::fcul_a (30.67166667e0,2075e0,300.15e0,15e0,vmf1h);
+    printf ("\n\t|dfcul_a| = %20.18f ",fabs(3.800243667312344087e0-vmf1h));
+    
+    printf ("\nFunction FCUL_B");
+    printf ("\n\tAbs. differences in dimensionless :");
+    iers2010::fcul_b (30.67166667e0,2075e0,224e0,15e0,vmf1h);
+    printf ("\n\t|dfcul_b| = %20.18f ",fabs(3.800758725284345996e0-vmf1h));
+    
+    printf ("\nFunction FCUL_ZD_APH");
+    printf ("\n\tAbs. differences in meters :");
+    iers2010::fcul_zd_hpa (30.67166667e0,2010.344e0,798.4188e0,14.322e0,0.532e0,
+                           vmf1h,vmf1w,mt);
+    printf ("\n\t|dfcul_ztd| = %20.18f ",fabs(1.935225924846803114e0-vmf1h));
+    printf ("\n\t|dfcul_zhd| = %20.18f ",fabs(1.932992176591644462e0-vmf1w));
+    printf ("\n\t|dfcul_zwd| = %20.18f ",fabs(0.2233748255158703871e-02-mt));
 
     printf ("\n");
     return status;

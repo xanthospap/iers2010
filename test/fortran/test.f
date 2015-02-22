@@ -3,7 +3,7 @@
       DOUBLE PRECISION T,L,LP,F,D,OM,X,DX,Y,DY,PM(2)
       DOUBLE PRECISION DUT1,DLOD,IANGLE(11),ANGLE(11),DAY
       DOUBLE PRECISION DLAT,DLON,AZ,EL,GRN,GRE,DMJD,PRES,TEMP
-      DOUBLE PRECISION UNDU
+      DOUBLE PRECISION UNDU,FCUL_ZHD,FCUL_ZWD,FCUL_ZTD
 
 *     ------------------------------------------------------------------------
 *     FUNDARG
@@ -148,5 +148,19 @@
       WRITE (*,18) '|dundu|     = ',DABS(-42.19185643717770517D0
      . -UNDU),' meters'
  18   FORMAT (A,F20.18,A)
+
+*     ------------------------------------------------------------------------
+*     FCUL_ZD_HPA
+*     ------------------------------------------------------------------------
+      WRITE (*,*) 'Function FCUL_ZD_HPA'
+      WRITE (*,*) 'Abs. differences in meters:'
+      CALL FCULZD_HPA
+     . (30.67166667D0,2010.344D0,798.4188D0,14.322D0,0.532D0,
+     . FCUL_ZTD, FCUL_ZHD, FCUL_ZWD)
+      WRITE (*,19) '|dfcul_ztd|= ',DABS(1.935225924846803114D0-FCUL_ZTD)
+      WRITE (*,19) '|dfcul_zhd|= ',DABS(1.932992176591644462D0-FCUL_ZHD)
+      WRITE (*,19) '|dfcul_zwd|= ',DABS(0.2233748255158703871D-02-
+     . FCUL_ZWD)
+ 19   FORMAT (A,F20.18,A)
 
       END PROGRAM MAIN

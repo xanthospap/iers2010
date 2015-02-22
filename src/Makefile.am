@@ -17,6 +17,9 @@ dist_libiers10___a_SOURCES = fundarg.cpp \
 							 apg.cpp \
 							 gpt.cpp \
 							 gpt2.cpp \
+							 fcul_a.cpp \
+							 fcul_b.cpp \
+							 fcul_zd_hpa.cpp \
 							 st1idiu.cpp \
 							 st1isem.cpp \
 							 st1l1.cpp \
@@ -35,3 +38,5 @@ dist_libiers10___a_SOURCES = fundarg.cpp \
 gpt2.cpp: gpt2-unset.cpp
 	cp gpt2-unset.cpp gpt2.cpp
 	$(SED) -i "s|/foo/bar/gpt2_5.grd|$(abs_top_builddir)/gpt2_5.grd|g" $@
+
+## TODO Remove the gpt2-unset.cpp file

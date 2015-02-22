@@ -15,6 +15,7 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 AC_PROG_SED
+AC_PROG_GREP
 AC_PROG_MKDIR_P
 
 # Search for doxygen
@@ -33,6 +34,14 @@ then
     AC_MSG_WARN([xslt not found; Reference guide will not be build.])
 fi
 AM_CONDITIONAL([HAVE_XSLTPROC], [test -n "$XSLTPROC"])
+
+# search for fop
+AC_CHECK_PROGS([FOP],[fop])
+if test -z "$FOP"
+then
+    AC_MSG_WARN([fop not found; Reference guide (pdf) will not be build.])
+fi
+AM_CONDITIONAL([HAVE_FOP], [test -n "$FOP"])
 
 # Checks for optional programs.
 
