@@ -449,7 +449,7 @@ int iers2010::gpt2 (const double& dmjd,const double& dlat,const double& dlon,
 
   // Define degree n and order m EGM
   constexpr int nmax (9);
-  constexpr int mmax (9);
+  //constexpr int mmax (9);
 
   // Define unit vector
   double x ( cos (dlat) * cos (dlon) );
@@ -667,7 +667,7 @@ int iers2010::gpt3 (const double& dmjd,const double& dlat,const double& dlon,
     
     // Define degree n and order m EGM
     constexpr int nmax (9);
-    constexpr int mmax (9);
+    //constexpr int mmax (9);
     
     // Define unit vector
     double x ( cos (dlat) * cos (dlon) );

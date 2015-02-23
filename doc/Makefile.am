@@ -1,5 +1,10 @@
+validate-dtd:
+	xmllint --valid --noout xml/libiers10-main.xml
+
 api_html:
+	-cp ../README.md ../src
 	$(DOXYGEN) Doxyfile-html
+	-rm ../src/README.md
 
 clean_api_html:
 	-rm -rf api_html/

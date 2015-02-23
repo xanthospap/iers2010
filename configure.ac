@@ -11,6 +11,7 @@ AC_CONFIG_SRCDIR([src/gpt.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
+AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_RANLIB
@@ -60,5 +61,8 @@ AC_CHECK_FUNCS([floor modf pow sqrt])
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  test/Makefile
-                 doc/Makefile])
+                 doc/Makefile
+                 script/Makefile
+                 alternatives/Makefile])
+
 AC_OUTPUT

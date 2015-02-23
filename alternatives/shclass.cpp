@@ -6,7 +6,6 @@
 iers2010::SphericalHarmonics::SphericalHarmonics ()
 :  mdegree(9), morder(9), mx(0e0), my(0e0), mz(0e0)
 {
-  //printf ("\n\tINITIALIZED");
   mv = new double* [mdegree+1];
   mw = new double* [mdegree+1];
   for (int i=0;i<=mdegree;i++) {
@@ -15,10 +14,10 @@ iers2010::SphericalHarmonics::SphericalHarmonics ()
    }
 }
 
-iers2010::SphericalHarmonics::SphericalHarmonics (const double& x, const double& y, const double& z)
-:  mdegree(9), morder(9), mx(x), my(y), mz(z)
+iers2010::SphericalHarmonics::SphericalHarmonics (const double& xi,
+        const double& yi,const double& zi)
+:  mdegree(9), morder(9), mx(xi), my(yi), mz(zi)
   {
-    ///printf ("\n\tINITIALIZED");
     mv = new double* [mdegree+1];
     mw = new double* [mdegree+1];
     for (int i=0;i<=mdegree;i++) {
@@ -31,7 +30,6 @@ iers2010::SphericalHarmonics::SphericalHarmonics (const double& x, const double&
   
 iers2010::SphericalHarmonics::~SphericalHarmonics ()
 {
-  //printf ("\n\tDYING");
   for (int i=0;i<=mdegree;i++) {
     delete [] mv[i];
     delete [] mw[i];
@@ -43,7 +41,6 @@ iers2010::SphericalHarmonics::~SphericalHarmonics ()
 iers2010::SphericalHarmonics::SphericalHarmonics (const SphericalHarmonics& s)
 :  mdegree(9), morder(9), mx(s.mx), my(s.my), mz(s.mz)
 {
-  //printf ("\n\tINITIALIZED");
   mv = new double* [mdegree+1];
   mw = new double* [mdegree+1];
   for (int i=0;i<=mdegree;i++) {
@@ -54,13 +51,14 @@ iers2010::SphericalHarmonics::SphericalHarmonics (const SphericalHarmonics& s)
    }
 }
 
-iers2010::SphericalHarmonics& iers2010::SphericalHarmonics::operator = (const SphericalHarmonics& s)
-{  //printf ("\n\tINITIALIZED");
-  if (this != &s) {
-    mx = s.mx;
-    my = s.my;
-    mz = s.mz;
-    this->populate ();
+iers2010::SphericalHarmonics& iers2010::SphericalHarmonics::operator = 
+(const SphericalHarmonics& s)
+{
+    if (this != &s) {
+        mx = s.mx;
+        my = s.my;
+        mz = s.mz;
+        this->populate ();
   }
   return *this;
 }

@@ -1,10 +1,11 @@
-#include "iers2010.hpp"
 #include <algorithm>
 #include <stdio.h>
 
 #ifdef USE_EXTERNAL_CONSTS
     #include "gencon.hpp"
 #endif
+
+namespace iers2010 {
 
 /**
  * @details  This function determines the Global Mapping Functions GMF 
@@ -48,7 +49,7 @@
  *     Geophy. Res. Lett., Vol. 33, L07304, doi:10.1029/2005GL025545.
  * 
  */
-int iers2010::gmf (const double& dmjd,const double& dlat,const double& dlon,
+int gmf (const double& dmjd,const double& dlat,const double& dlon,
     const double& dhgt,const double& zd,double& gmfh,double& gmfw)
 {
     #ifdef USE_EXTERNAL_CONSTS
@@ -296,3 +297,5 @@ int iers2010::gmf (const double& dmjd,const double& dlat,const double& dlon,
     // Finished
     return 0;
 }
+
+}// end of namespace
