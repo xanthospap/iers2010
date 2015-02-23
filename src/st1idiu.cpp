@@ -4,7 +4,8 @@
  * @details This function gives the out-of-phase corrections induced by
  *          mantle anelasticity in the diurnal band. 
  *          This function is a translation/wrapper for the fortran ST1IDIU
- *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
+ *          subroutine, found here : 
+ *          http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[in]  xsta    Geocentric position of the IGS station (Note 1)
  * @param[in]  xsun    Geocentric position of the Sun (Note 2)
@@ -14,20 +15,21 @@
  * @param[out] xcorsta Out of phase station corrections for diurnal band
  * 
  * @note
- *       -# The IGS station is in ITRF co-rotating frame. All coordinates are
- *          expressed in meters, as arrays, i.e. [x,y,z].
- *       -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
- *          coordinates are expressed in meters, as arrays, i.e. [x,y,z].
- *       -# The expressions are computed in the main program. TGP is the tide
- *          generated potential. The units are inverse meters.
- *       -# Status: Class 1
- *       -# This fucnction is part of the package dehanttideinel, see
- *          ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
+ *   -# The IGS station is in ITRF co-rotating frame. All coordinates are
+ *      expressed in meters, as arrays, i.e. [x,y,z].
+ *   -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
+ *      coordinates are expressed in meters, as arrays, i.e. [x,y,z].
+ *   -# The expressions are computed in the main program. TGP is the tide
+ *      generated potential. The units are inverse meters.
+ *   -# Status: Class 1
+ *   -# This fucnction is part of the package dehanttideinel, see
+ *      ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
  *
- * @warning The vector norms of the geocentric position of the Sun and Moon (see
- *          rmon2, rsun2) are pretty close to overflow. Maybe that should be dealt
- *          with (e.g. use a scaling factor?). 
+ * @warning The vector norms of the geocentric position of the Sun and Moon 
+ *          (see rmon2, rsun2) are pretty close to overflow. Maybe that should 
+ *          be dealt with (e.g. use a scaling factor?). 
  * 
+ * @verbatim
  *  Test case:
  *     given input: XSTA(1) = 4075578.385D0 meters
  *                  XSTA(2) =  931852.890D0 meters
@@ -44,7 +46,8 @@
  *expected output:  XCORSTA(1) = -0.2836337012840008001D-03 meters
  *                  XCORSTA(2) =  0.1125342324347507444D-03 meters
  *                  XCORSTA(3) = -0.2471186224343683169D-03 meters
- * 
+ * @endverbatim
+ *
  * @version 2009 July     31
  * 
  * @cite iers2010,
@@ -52,48 +55,49 @@
  *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477
  * 
  */
-void iers2010::dtel::st1idiu (const double* xsta,const double* xsun,const double* xmon,const double& fac2sun,
-              const double& fac2mon,double* xcorsta)
+void iers2010::dtel::st1idiu (const double* xsta,const double* xsun,
+        const double* xmon,const double& fac2sun,const double& fac2mon,
+        double* xcorsta)
 {
 
   const double dhi ( -0.0025e0 ), dli ( -0.0007e0 );
 
   // Compute the normalized position vector of the IGS station.
-  double rsta    = ::sqrt ( std::inner_product (xsta,xsta+3,xsta,.0e0) );
+  double rsta    ( ::sqrt ( std::inner_product (xsta,xsta+3,xsta,.0e0) ) );
 
-  double sinphi  = xsta[2] / rsta;
-  double cosphi  = ::sqrt (xsta[0]*xsta[0] + xsta[1]*xsta[1]) / rsta;
-  double cos2phi = cosphi * cosphi - sinphi * sinphi;
-  double sinla   = xsta[1] / cosphi / rsta;
-  double cosla   = xsta[0] / cosphi / rsta;
+  double sinphi  ( xsta[2] / rsta );
+  double cosphi  ( ::sqrt (xsta[0]*xsta[0] + xsta[1]*xsta[1]) / rsta );
+  double cos2phi ( cosphi * cosphi - sinphi * sinphi );
+  double sinla   ( xsta[1] / cosphi / rsta );
+  double cosla   ( xsta[0] / cosphi / rsta );
 
   // Compute the normalized position vector of the Moon.
-  double rmon2   = /*::sqrt (*/ std::inner_product (xmon,xmon+3,xmon,.0e0) /*)*/;
+  double rmon2   ( std::inner_product (xmon,xmon+3,xmon,.0e0) );
 
   // Compute the normalized position vector of the Sun.
-  double rsun2   = /*::sqrt (*/ std::inner_product (xsun,xsun+3,xsun,.0e0) /*)*/;
+  double rsun2   ( std::inner_product (xsun,xsun+3,xsun,.0e0) );
 
-  double drsun   = -3e0*dhi*sinphi*cosphi*fac2sun*xsun[2]*(xsun[0]*
-                  sinla-xsun[1]*cosla)/rsun2;
+  double drsun   ( -3e0*dhi*sinphi*cosphi*fac2sun*xsun[2]*(xsun[0]*
+              sinla-xsun[1]*cosla)/rsun2 );
 
-  double drmon   = -3e0*dhi*sinphi*cosphi*fac2mon*xmon[2]*(xmon[0]*
-                  sinla-xmon[1]*cosla)/rmon2;
+  double drmon   ( -3e0*dhi*sinphi*cosphi*fac2mon*xmon[2]*(xmon[0]*
+              sinla-xmon[1]*cosla)/rmon2 );
 
-  double dnsun   = -3e0*dli*cos2phi*fac2sun*xsun[2]*(xsun[0]*sinla-
-                  xsun[1]*cosla)/rsun2;
+  double dnsun   ( -3e0*dli*cos2phi*fac2sun*xsun[2]*(xsun[0]*sinla-
+              xsun[1]*cosla)/rsun2 );
 
-  double dnmon   = -3e0*dli*cos2phi*fac2mon*xmon[2]*(xmon[0]*sinla-
-                  xmon[1]*cosla)/rmon2;
+  double dnmon   ( -3e0*dli*cos2phi*fac2mon*xmon[2]*(xmon[0]*sinla-
+              xmon[1]*cosla)/rmon2 );
 
-  double desun   = -3e0*dli*sinphi*fac2sun*xsun[2]*
-                  (xsun[0]*cosla+xsun[1]*sinla)/rsun2;
+  double desun   ( -3e0*dli*sinphi*fac2sun*xsun[2]*(xsun[0]*cosla+
+              xsun[1]*sinla)/rsun2 );
 
-  double demon   = -3e0*dli*sinphi*fac2mon*xmon[2]*
-                  (xmon[0]*cosla+xmon[1]*sinla)/rmon2;
+  double demon   ( -3e0*dli*sinphi*fac2mon*xmon[2]*(xmon[0]*cosla+
+              xmon[1]*sinla)/rmon2 );
 
-  double dr      = drsun + drmon;
-  double dn      = dnsun + dnmon;
-  double de      = desun + demon;
+  double dr      ( drsun + drmon );
+  double dn      ( dnsun + dnmon );
+  double de      ( desun + demon );
 
   // Compute the corrections for the station.
   xcorsta[0] = dr*cosla*cosphi-de*sinla-dn*sinphi*cosla;

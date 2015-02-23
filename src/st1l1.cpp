@@ -4,7 +4,8 @@
  * @details This function gives the corrections induced by the latitude 
  *          dependence given by L^1 in Mathews et al. 1991 (See References).
  *          This function is a translation/wrapper for the fortran ST1L1
- *          subroutine, found here : http://maia.usno.navy.mil/conv2010/software.html
+ *          subroutine, found here : 
+ *          http://maia.usno.navy.mil/conv2010/software.html
  * 
  * @param[in]  xsta    Geocentric position of the IGS station (Note 1)
  * @param[in]  xsun    Geocentric position of the Sun (Note 2)
@@ -14,20 +15,21 @@
  * @param[out] xcorsta Out of phase station corrections for semi-diurnal band
  * 
  * @note
- *       -# The IGS station is in ITRF co-rotating frame. All coordinates are
- *          expressed in meters, as arrays, i.e. [x,y,z].
- *       -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
- *          coordinates are expressed in meters, as arrays, i.e. [x,y,z].
- *       -# The expressions are computed in the main program. TGP is the tide
- *          generated potential. The units are inverse meters.
- *       -# Status: Class 1
- *       -# This fucnction is part of the package dehanttideinel, see
- *          ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
+ *    -# The IGS station is in ITRF co-rotating frame. All coordinates are
+ *       expressed in meters, as arrays, i.e. [x,y,z].
+ *    -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
+ *       coordinates are expressed in meters, as arrays, i.e. [x,y,z].
+ *    -# The expressions are computed in the main program. TGP is the tide
+ *       generated potential. The units are inverse meters.
+ *    -# Status: Class 1
+ *    -# This fucnction is part of the package dehanttideinel, see
+ *       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
  *
- * @warning The vector norms of the geocentric position of the Sun and Moon (see
- *          rmon2, rsun2) are pretty close to overflow. Maybe that should be dealt
- *          with (e.g. use a scaling factor?). 
+ * @warning The vector norms of the geocentric position of the Sun and Moon 
+ *          (see rmon2, rsun2) are pretty close to overflow. Maybe that should 
+ *          be dealt with (e.g. use a scaling factor?). 
  * 
+ * @verbatim
  *  Test case:
  *     given input: XSTA(1) = 4075578.385D0 meters
  *                  XSTA(2) =  931852.890D0 meters
@@ -44,7 +46,8 @@
  *     expected output:  XCORSTA(1) = 0.2367189532359759044D-03 meters
  *                       XCORSTA(2) = 0.5181609907284959182D-03 meters
  *                       XCORSTA(3) = -0.3014881422940427977D-03 meters
- * 
+ * @endverbatim
+ *
  * @version 2009 July     31
  * 
  * @cite iers2010,
@@ -56,39 +59,42 @@
  *       96, 8243-8257
  * 
  */
-void iers2010::dtel::st1l1 (const double* xsta,const double* xsun,const double* xmon,const double& fac2sun,
-              const double& fac2mon,double* xcorsta)
+void iers2010::dtel::st1l1 (const double* xsta,const double* xsun,
+        const double* xmon,const double& fac2sun,const double& fac2mon,
+        double* xcorsta)
 {
   const double l1d ( 0.0012e0 ), l1sd ( 0.0024e0 );
 
   // Compute the normalized position vector of the IGS station.
-  double rsta     = ::sqrt ( std::inner_product (xsta,xsta+3,xsta,.0e0) );
+  double rsta     ( ::sqrt ( std::inner_product (xsta,xsta+3,xsta,.0e0) ) );
 
-  double sinphi   = xsta[2] / rsta;
-  double sinphi2  = sinphi * sinphi;
-  double cosphi   = sqrt (xsta[0]*xsta[0] + xsta[1]*xsta[1]) / rsta;
-  double cosphi2  = cosphi * cosphi;
-  double sinla    = xsta[1] / cosphi / rsta;
-  double cosla    = xsta[0] / cosphi / rsta;
+  double sinphi   ( xsta[2] / rsta );
+  double sinphi2  ( sinphi * sinphi );
+  double cosphi   ( sqrt (xsta[0]*xsta[0] + xsta[1]*xsta[1]) / rsta );
+  double cosphi2  ( cosphi * cosphi );
+  double sinla    ( xsta[1] / cosphi / rsta );
+  double cosla    ( xsta[0] / cosphi / rsta );
  
   // Compute the normalized position vector of the Moon.
-  double rmon2   = /*::sqrt (*/ std::inner_product (xmon,xmon+3,xmon,.0e0) /*)*/;
+  double rmon2   ( std::inner_product (xmon,xmon+3,xmon,.0e0) );
 
   // Compute the normalized position vector of the Sun.
   
-  double rsun2   = /*::sqrt (*/ std::inner_product (xsun,xsun+3,xsun,.0e0) /*)*/;
+  double rsun2   ( std::inner_product (xsun,xsun+3,xsun,.0e0) );
   
   // Compute the station corrections for the diurnal band.
-  double l1 = l1d;  
-  double dnsun = -l1*sinphi2*fac2sun*xsun[2]*(xsun[0]*cosla+xsun[1]*sinla)/rsun2;
-  double dnmon = -l1*sinphi2*fac2mon*xmon[2]*(xmon[0]*cosla+xmon[1]*sinla)/rmon2;
-  double desun =  l1*sinphi*(cosphi2-sinphi2)*fac2sun*xsun[2]*
-                  (xsun[0]*sinla-xsun[1]*cosla)/rsun2;
-  double demon =  l1*sinphi*(cosphi2-sinphi2)*fac2mon*xmon[2]*
-                  (xmon[0]*sinla-xmon[1]*cosla)/rmon2;
+  double l1    ( l1d );  
+  double dnsun ( -l1*sinphi2*fac2sun*xsun[2]*(xsun[0]*cosla+xsun[1]*sinla)
+          /rsun2 );
+  double dnmon ( -l1*sinphi2*fac2mon*xmon[2]*(xmon[0]*cosla+xmon[1]*sinla)
+          /rmon2 );
+  double desun (  l1*sinphi*(cosphi2-sinphi2)*fac2sun*xsun[2]*
+          (xsun[0]*sinla-xsun[1]*cosla)/rsun2 );
+  double demon (  l1*sinphi*(cosphi2-sinphi2)*fac2mon*xmon[2]*
+          (xmon[0]*sinla-xmon[1]*cosla)/rmon2 );
   
-  double de = 3e0*(desun+demon);
-  double dn = 3e0*(dnsun+dnmon);
+  double de ( 3e0*(desun+demon) );
+  double dn ( 3e0*(dnsun+dnmon) );
   
   xcorsta[0] = -de*sinla-dn*sinphi*cosla;
   xcorsta[1] =  de*cosla-dn*sinphi*sinla;
@@ -97,8 +103,8 @@ void iers2010::dtel::st1l1 (const double* xsta,const double* xsun,const double* 
   // Compute the station corrections for the semi-diurnal band.
   
   l1 = l1sd;  
-  double costwola = cosla*cosla-sinla*sinla;  
-  double sintwola = 2.e0*cosla*sinla; 
+  double costwola ( cosla*cosla-sinla*sinla );
+  double sintwola ( 2.e0*cosla*sinla );
   
   dnsun = -l1/2e0*sinphi*cosphi*fac2sun*((pow(xsun[0],2)-pow(xsun[1],2))*
           costwola+2e0*xsun[0]*xsun[1]*sintwola)/rsun2;
@@ -117,7 +123,7 @@ void iers2010::dtel::st1l1 (const double* xsta,const double* xsun,const double* 
   
   xcorsta[0] += (-de*sinla-dn*sinphi*cosla);
   xcorsta[1] += (de*cosla-dn*sinphi*sinla);
-  xcorsta[2] +=  dn*cosphi;
+  xcorsta[2] += (dn*cosphi);
 
   // Finished
   return;

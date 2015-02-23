@@ -3,7 +3,7 @@
 
 /**
  * @details This function computes the station tidal displacement
- *          caused by lunar and solar gravitational attraction (see References). 
+ *          caused by lunar and solar gravitational attraction (see References).
  *          The computations are calculated by the following steps:<br>
  *          <b>Step 1):</b> General degree 2 and degree 3 corrections 
  *          + CALL ST1IDIU + CALL ST1ISEM + CALL ST1L1.<br>  
@@ -113,69 +113,61 @@ int iers2010::dehanttideinel (const double* xsta,const double* xsun,
     
     double xcorsta[] = {.0e0,.0e0,.0e0};
     
-    // Set constants
-    /*
-    #ifdef USE_EXTERNAL_CONSTS
-        constexpr double PI   (DPI);
-    #else
-        constexpr double PI   (3.1415926535897932384626433e0);
-    #endif
-    */
-    
     /*----------------------------------------------------------------------  
     * NOMINAL SECOND DEGREE AND THIRD DEGREE LOVE NUMBERS AND SHIDA NUMBERS  
     *----------------------------------------------------------------------*/
-    constexpr double h20 (0.6078e0), l20 (0.0847e0), h3 (0.292e0), l3 (0.015e0);
+    constexpr double h20 (0.6078e0), l20 (0.0847e0), 
+              h3 (0.292e0), l3 (0.015e0);
     
     /*----------------------------------------------------------------------  
     * SCALAR PRODUCT OF STATION VECTOR WITH SUN/MOON VECTOR  
     *----------------------------------------------------------------------*/
     double rsta,rsun,rmon;
-    double scs = iers2010::dtel::_sprod_ (xsta,xsun,rsta,rsun);
-    double scm = iers2010::dtel::_sprod_ (xsta,xmon,rsta,rmon); 
-    double scsun = scs / rsta / rsun; 
-    double scmon = scm / rsta / rmon;
+    double scs   ( iers2010::dtel::_sprod_ (xsta,xsun,rsta,rsun) );
+    double scm   ( iers2010::dtel::_sprod_ (xsta,xmon,rsta,rmon) );
+    double scsun ( scs / rsta / rsun );
+    double scmon ( scm / rsta / rmon );
     
     /*----------------------------------------------------------------------   
     * COMPUTATION OF NEW H2 AND L2  
     *----------------------------------------------------------------------*/
-    double cosphi = ::sqrt ( xsta[0]*xsta[0]+xsta[1]*xsta[1] ) / rsta;
-    double h2     = h20 - 0.0006e0*(1e0-3e0/2e0*cosphi*cosphi);
-    double l2     = l20 + 0.0002e0*(1e0-3e0/2e0*cosphi*cosphi);
+    double cosphi ( ::sqrt ( xsta[0]*xsta[0]+xsta[1]*xsta[1] ) / rsta );
+    double h2     ( h20 - 0.0006e0*(1e0-3e0/2e0*cosphi*cosphi) );
+    double l2     ( l20 + 0.0002e0*(1e0-3e0/2e0*cosphi*cosphi) );
     
     // P2 term  
-    double p2sun = 3e0*(h2/2e0-l2)*scsun*scsun-h2/2e0;
-    double p2mon = 3e0*(h2/2e0-l2)*scmon*scmon-h2/2e0;
+    double p2sun ( 3e0*(h2/2e0-l2)*scsun*scsun-h2/2e0 );
+    double p2mon ( 3e0*(h2/2e0-l2)*scmon*scmon-h2/2e0 );
     
     // P3 term  
-    double p3sun = 5e0/2e0*(h3-3e0*l3)*pow(scsun,3)+3e0/2e0*(l3-h3)*scsun;
-    double p3mon = 5e0/2e0*(h3-3e0*l3)*pow(scmon,3)+3e0/2e0*(l3-h3)*scmon;
+    double p3sun ( 5e0/2e0*(h3-3e0*l3)*pow(scsun,3)+3e0/2e0*(l3-h3)*scsun );
+    double p3mon ( 5e0/2e0*(h3-3e0*l3)*pow(scmon,3)+3e0/2e0*(l3-h3)*scmon );
     
     /*----------------------------------------------------------------------  
     * TERM IN DIRECTION OF SUN/MOON VECTOR  
     *----------------------------------------------------------------------*/
-    double x2sun = 3e0*l2*scsun;
-    double x2mon = 3e0*l2*scmon;
-    double x3sun = 3e0*l3/2e0*(5e0*scsun*scsun-1e0);
-    double x3mon = 3e0*l3/2e0*(5e0*scmon*scmon-1e0);
+    double x2sun ( 3e0*l2*scsun );
+    double x2mon ( 3e0*l2*scmon );
+    double x3sun ( 3e0*l3/2e0*(5e0*scsun*scsun-1e0) );
+    double x3mon ( 3e0*l3/2e0*(5e0*scmon*scmon-1e0) );
     
     /*----------------------------------------------------------------------  
     * FACTORS FOR SUN/MOON USING IAU CURRENT BEST ESTIMATES (SEE REFERENCES) 
     *----------------------------------------------------------------------*/
-    const double mass_ratio_sun  = 332946.0482e0;
-    const double mass_ratio_moon = 0.0123000371e0;
-    const double re              = 6378136.6e0;
-    const double fac2sun         = mass_ratio_sun*re*pow(re/rsun,3);
-    const double fac2mon         = mass_ratio_moon*re*pow(re/rmon,3);
-    const double fac3sun         = fac2sun*(re/rsun);
-    const double fac3mon         = fac2mon*(re/rmon);
+    const double mass_ratio_sun  ( 332946.0482e0 );
+    const double mass_ratio_moon ( 0.0123000371e0 );
+    const double re              ( 6378136.6e0 );
+    const double fac2sun         ( mass_ratio_sun*re*pow(re/rsun,3) );
+    const double fac2mon         ( mass_ratio_moon*re*pow(re/rmon,3) );
+    const double fac3sun         ( fac2sun*(re/rsun) );
+    const double fac3mon         ( fac2mon*(re/rmon) );
     
     // TOTAL DISPLACEMENT
     for (int i=0;i<3;i++) 
         dxtide[i] = fac2sun*( x2sun*xsun[i]/rsun + p2sun*xsta[i]/rsta ) +
-        fac2mon*( x2mon*xmon[i]/rmon + p2mon*xsta[i]/rsta ) +  
-        fac3sun*( x3sun*xsun[i]/rsun + p3sun*xsta[i]/rsta ) +   
-        fac3mon*( x3mon*xmon[i]/rmon + p3mon*xsta[i]/rsta );
+            fac2mon*( x2mon*xmon[i]/rmon + p2mon*xsta[i]/rsta ) +
+            fac3sun*( x3sun*xsun[i]/rsun + p3sun*xsta[i]/rsta ) +
+            fac3mon*( x3mon*xmon[i]/rmon + p3mon*xsta[i]/rsta );
     
     /*+---------------------------------------------------------------------  
     * CORRECTIONS FOR THE OUT-OF-PHASE PART OF LOVE NUMBERS (PART H_2^(0)I  
@@ -183,19 +175,22 @@ int iers2010::dehanttideinel (const double* xsta,const double* xsun,
     *----------------------------------------------------------------------*/
     
     // FIRST, FOR THE DIURNAL BAND
-    iers2010::dtel::st1idiu ( xsta,xsun,xmon,fac2sun,fac2mon,xcorsta );
-    for (int i=0;i<3;i++) dxtide[i] += xcorsta[i];
+    iers2010::dtel::st1idiu (xsta,xsun,xmon,fac2sun,fac2mon,xcorsta);
+    for (int i=0;i<3;i++)
+        dxtide[i] += xcorsta[i];
     
     // SECOND, FOR THE SEMI-DIURNAL BAND       
-    iers2010::dtel::st1isem ( xsta,xsun,xmon,fac2sun,fac2mon,xcorsta );
-    for (int i=0;i<3;i++) dxtide[i] += xcorsta[i];  
+    iers2010::dtel::st1isem (xsta,xsun,xmon,fac2sun,fac2mon,xcorsta);
+    for (int i=0;i<3;i++)
+        dxtide[i] += xcorsta[i];  
     
     
     /*+---------------------------------------------------------------------
     * CORRECTIONS FOR THE LATITUDE DEPENDENCE OF LOVE NUMBERS (PART L^(1) )  
     *----------------------------------------------------------------------*/
-    iers2010::dtel::st1l1 ( xsta,xsun,xmon,fac2sun,fac2mon,xcorsta );
-    for (int i=0;i<3;i++) dxtide[i] += xcorsta[i];
+    iers2010::dtel::st1l1 (xsta,xsun,xmon,fac2sun,fac2mon,xcorsta);
+    for (int i=0;i<3;i++)
+        dxtide[i] += xcorsta[i];
     
     // CONSIDER CORRECTIONS FOR STEP 2
     
@@ -207,15 +202,15 @@ int iers2010::dehanttideinel (const double* xsta,const double* xsun,
     *   1) CALL THE SUBROUTINE COMPUTING THE JULIAN DATE 
     *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     double jjm0,jjm1;
-    iers2010::dtel::cal2jd ( yr, month, day, jjm0, jjm1 );
-    double fhrd = fhr / 24.0e0;
+    iers2010::dtel::cal2jd (yr,month,day,jjm0,jjm1);
+    double fhrd ( fhr / 24.0e0 );
     /*    17 May 2013 Corrected bug as noted in header                     */
-    double t=((jjm0-2451545.0e0)+jjm1+fhrd)/36525e0;
+    double t ( ((jjm0-2451545.0e0)+jjm1+fhrd)/36525e0 );
     /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
     *   2) CALL THE SUBROUTINE COMPUTING THE CORRECTION OF UTC TIME  
     *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     double dtt;
-    iers2010::dtel::dat ( yr, month, day, fhrd, dtt );
+    iers2010::dtel::dat (yr,month,day,fhrd,dtt);
     /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     dtt += 32.184e0;
     /*    CONVERSION OF T IN TT TIME                                        */
@@ -223,13 +218,15 @@ int iers2010::dehanttideinel (const double* xsta,const double* xsun,
     
     //  SECOND, WE CAN CALL THE SUBROUTINE STEP2DIU, FOR THE DIURNAL BAND
     //+ CORRECTIONS, (in-phase and out-of-phase frequency dependence):
-    iers2010::dtel::step2diu ( xsta,fhr,t,xcorsta );
-    for (int i=0;i<3;i++) dxtide[i] += xcorsta[i];
+    iers2010::dtel::step2diu (xsta,fhr,t,xcorsta);
+    for (int i=0;i<3;i++)
+        dxtide[i] += xcorsta[i];
     
     //  CORRECTIONS FOR THE LONG-PERIOD BAND,
     //+ (in-phase and out-of-phase frequency dependence):  
-    iers2010::dtel::step2lon ( xsta,t,xcorsta );
-    for (int i=0;i<3;i++) dxtide[i] += xcorsta[i];
+    iers2010::dtel::step2lon (xsta,t,xcorsta);
+    for (int i=0;i<3;i++)
+        dxtide[i] += xcorsta[i];
     
     // CONSIDER CORRECTIONS FOR STEP 3
     
@@ -270,26 +267,23 @@ int iers2010::dehanttideinel (const double* xsta,const double* xsun,
  * @param[in]  xsta   Geocentric position of the IGS station (Note 1)
  * @param[in]  xsun   Geocentric position of the Sun (Note 2)
  * @param[in]  xmon   Geocentric position of the Moon (Note 2)
- * @param[in]  jc1    Julian Centuries in TT (Note 6)
- * @param[in]  jc2    Julian Centuries in TT (Note 6)
+ * @param[in]  mjd1   Part 1 of Modified Julian Date in TT (Note 4)
+ * @param[in]  mjd2   Part 2 of Modified Julian Date in TT (Note 4)
  * @param[out] dxtide Displacement vector (Note 5) 
  * 
  * @note
- *     -# The IGS station is in ITRF co-rotating frame.  All coordinates,
- *        X, Y, and Z, are expressed in meters. 
- *     -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
- *        coordinates are expressed in meters.
- *     -# (\b OBSOLETE) The values are expressed in Coordinated Universal Time (UTC).
- *     -# (\b OBSOLETE) The fractional hours in the day is computed as the hour + minutes/60.0
- *        + sec/3600.0.
- *     -# The displacement vector is in the geocentric ITRF.  All components are
- *        expressed in meters.
- *     -# Parameters jc1 and jc2 constitute the date as Julian Centuries in TT 
- *        time scale. The actual date is given by the addition jc1+jc2. Either 
- *        jc1 or jc2 can be set to zero.
- *     -# Status: Class 1
- *     -# This fucnction is part of the package dehanttideinel, see
- *        ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ 
+ *    -# The IGS station is in ITRF co-rotating frame.  All coordinates,
+ *       X, Y, and Z, are expressed in meters. 
+ *    -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
+ *       coordinates are expressed in meters.
+ *    -# The displacement vector is in the geocentric ITRF.  All components are
+ *       expressed in meters.
+ *    -# Parameters mjd1 and mjd2 constitute the date as Modified Julian Date in TT 
+ *       time scale. The actual date is given by the addition mjd1+mjd2. Either 
+ *       mjd1 or mjd2 can be set to zero.
+ *    -# Status: Class 1
+ *    -# This fucnction is part of the package dehanttideinel, see
+ *       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ 
  * 
  *  Test case:
  *     given input: XSTA(1) = 4075578.385D0 meters
@@ -354,129 +348,113 @@ int iers2010::dehanttideinel (const double* xsta,const double* xsun,
  *     of the Earth," Geophys. Res. Lett., 19(6), pp. 529-531
  * 
  */
-int iers2010::dehanttideinel (const double* xsta,const double* xsun, 
-    const double* xmon,const double& jc1,const double& jc2, 
-    double* dxtide)
+int iers2010::dehanttideinel (const double* xsta,const double* xsun,
+    const double* xmon,const double& mjd1,const double& mjd2,
+    double* dxtide, char* timesys)
 {
-
+    
     double xcorsta[] = {.0e0,.0e0,.0e0};
-
-    // Set constants
-    /*#ifdef USE_EXTERNAL_CONSTS
-        constexpr double PI   (DPI); 
-    #else
-        constexpr double PI   (3.1415926535897932384626433e0); 
-    #endif*/
-
+    
     /*----------------------------------------------------------------------  
-    * NOMINAL SECOND DEGREE AND THIRD DEGREE LOVE NUMBERS AND SHIDA NUMBERS  
-    *----------------------------------------------------------------------*/
-    constexpr double h20 (0.6078e0), l20 (0.0847e0), h3 (0.292e0), l3 (0.015e0);
-
+     * NOMINAL SECOND DEGREE AND THIRD DEGREE LOVE NUMBERS AND SHIDA NUMBERS  
+     *----------------------------------------------------------------------*/
+    constexpr double h20 (0.6078e0), l20 (0.0847e0), 
+    h3 (0.292e0), l3 (0.015e0);
+    
     /*----------------------------------------------------------------------  
-    * SCALAR PRODUCT OF STATION VECTOR WITH SUN/MOON VECTOR  
-    *----------------------------------------------------------------------*/
+     * SCALAR PRODUCT OF STATION VECTOR WITH SUN/MOON VECTOR  
+     *----------------------------------------------------------------------*/
     double rsta,rsun,rmon;
-    double scs = iers2010::dtel::_sprod_ (xsta,xsun,rsta,rsun);
-    double scm = iers2010::dtel::_sprod_ (xsta,xmon,rsta,rmon); 
-    double scsun = scs / rsta / rsun; 
-    double scmon = scm / rsta / rmon;
-
+    double scs   ( iers2010::dtel::_sprod_ (xsta,xsun,rsta,rsun) );
+    double scm   ( iers2010::dtel::_sprod_ (xsta,xmon,rsta,rmon) );
+    double scsun ( scs / rsta / rsun );
+    double scmon ( scm / rsta / rmon );
+    
     /*----------------------------------------------------------------------   
-    * COMPUTATION OF NEW H2 AND L2  
-    *----------------------------------------------------------------------*/
-    double cosphi = ::sqrt ( xsta[0]*xsta[0]+xsta[1]*xsta[1] ) / rsta;
-    double h2     = h20 - 0.0006e0*(1e0-3e0/2e0*cosphi*cosphi);
-    double l2     = l20 + 0.0002e0*(1e0-3e0/2e0*cosphi*cosphi);
-
+     * COMPUTATION OF NEW H2 AND L2  
+     *----------------------------------------------------------------------*/
+    double cosphi ( ::sqrt ( xsta[0]*xsta[0]+xsta[1]*xsta[1] ) / rsta );
+    double h2     ( h20 - 0.0006e0*(1e0-3e0/2e0*cosphi*cosphi) );
+    double l2     ( l20 + 0.0002e0*(1e0-3e0/2e0*cosphi*cosphi) );
+    
     // P2 term  
-    double p2sun = 3e0*(h2/2e0-l2)*scsun*scsun-h2/2e0;
-    double p2mon = 3e0*(h2/2e0-l2)*scmon*scmon-h2/2e0;
-
+    double p2sun ( 3e0*(h2/2e0-l2)*scsun*scsun-h2/2e0 );
+    double p2mon ( 3e0*(h2/2e0-l2)*scmon*scmon-h2/2e0 );
+    
     // P3 term  
-    double p3sun = 5e0/2e0*(h3-3e0*l3)*pow(scsun,3)+3e0/2e0*(l3-h3)*scsun;
-    double p3mon = 5e0/2e0*(h3-3e0*l3)*pow(scmon,3)+3e0/2e0*(l3-h3)*scmon;
-
+    double p3sun ( 5e0/2e0*(h3-3e0*l3)*pow(scsun,3)+3e0/2e0*(l3-h3)*scsun );
+    double p3mon ( 5e0/2e0*(h3-3e0*l3)*pow(scmon,3)+3e0/2e0*(l3-h3)*scmon );
+    
     /*----------------------------------------------------------------------  
-    * TERM IN DIRECTION OF SUN/MOON VECTOR  
-    *----------------------------------------------------------------------*/
-    double x2sun = 3e0*l2*scsun;
-    double x2mon = 3e0*l2*scmon;
-    double x3sun = 3e0*l3/2e0*(5e0*scsun*scsun-1e0);
-    double x3mon = 3e0*l3/2e0*(5e0*scmon*scmon-1e0);
-
+     * TERM IN DIRECTION OF SUN/MOON VECTOR  
+     *----------------------------------------------------------------------*/
+    double x2sun ( 3e0*l2*scsun );
+    double x2mon ( 3e0*l2*scmon );
+    double x3sun ( 3e0*l3/2e0*(5e0*scsun*scsun-1e0) );
+    double x3mon ( 3e0*l3/2e0*(5e0*scmon*scmon-1e0) );
+    
     /*----------------------------------------------------------------------  
-    * FACTORS FOR SUN/MOON USING IAU CURRENT BEST ESTIMATES (SEE REFERENCES) 
-    *----------------------------------------------------------------------*/
-    const double mass_ratio_sun  = 332946.0482e0;
-    const double mass_ratio_moon = 0.0123000371e0;
-    const double re              = 6378136.6e0;
-    const double fac2sun         = mass_ratio_sun*re*pow(re/rsun,3);
-    const double fac2mon         = mass_ratio_moon*re*pow(re/rmon,3);
-    const double fac3sun         = fac2sun*(re/rsun);
-    const double fac3mon         = fac2mon*(re/rmon);
+     * FACTORS FOR SUN/MOON USING IAU CURRENT BEST ESTIMATES (SEE REFERENCES) 
+     *----------------------------------------------------------------------*/
+    const double mass_ratio_sun  ( 332946.0482e0 );
+    const double mass_ratio_moon ( 0.0123000371e0 );
+    const double re              ( 6378136.6e0 );
+    const double fac2sun         ( mass_ratio_sun*re*pow(re/rsun,3) );
+    const double fac2mon         ( mass_ratio_moon*re*pow(re/rmon,3) );
+    const double fac3sun         ( fac2sun*(re/rsun) );
+    const double fac3mon         ( fac2mon*(re/rmon) );
     
     // TOTAL DISPLACEMENT
     for (int i=0;i<3;i++) 
         dxtide[i] = fac2sun*( x2sun*xsun[i]/rsun + p2sun*xsta[i]/rsta ) +
-                    fac2mon*( x2mon*xmon[i]/rmon + p2mon*xsta[i]/rsta ) +  
-                    fac3sun*( x3sun*xsun[i]/rsun + p3sun*xsta[i]/rsta ) +   
-                    fac3mon*( x3mon*xmon[i]/rmon + p3mon*xsta[i]/rsta );
-
+        fac2mon*( x2mon*xmon[i]/rmon + p2mon*xsta[i]/rsta ) +
+        fac3sun*( x3sun*xsun[i]/rsun + p3sun*xsta[i]/rsta ) +
+        fac3mon*( x3mon*xmon[i]/rmon + p3mon*xsta[i]/rsta );
+    
     /*+---------------------------------------------------------------------  
-    * CORRECTIONS FOR THE OUT-OF-PHASE PART OF LOVE NUMBERS (PART H_2^(0)I  
-    * AND L_2^(0)I )  
-    *----------------------------------------------------------------------*/
-
+     * CORRECTIONS FOR THE OUT-OF-PHASE PART OF LOVE NUMBERS (PART H_2^(0)I  
+     * AND L_2^(0)I )  
+     *----------------------------------------------------------------------*/
+    
     // FIRST, FOR THE DIURNAL BAND
-    iers2010::dtel::st1idiu ( xsta,xsun,xmon,fac2sun,fac2mon,xcorsta );
-    for (int i=0;i<3;i++) dxtide[i] += xcorsta[i];
+    iers2010::dtel::st1idiu (xsta,xsun,xmon,fac2sun,fac2mon,xcorsta);
+    for (int i=0;i<3;i++)
+        dxtide[i] += xcorsta[i];
     
     // SECOND, FOR THE SEMI-DIURNAL BAND       
-    iers2010::dtel::st1isem ( xsta,xsun,xmon,fac2sun,fac2mon,xcorsta );
-    for (int i=0;i<3;i++) dxtide[i] += xcorsta[i];  
-
-
+    iers2010::dtel::st1isem (xsta,xsun,xmon,fac2sun,fac2mon,xcorsta);
+    for (int i=0;i<3;i++)
+        dxtide[i] += xcorsta[i];  
+    
+    
     /*+---------------------------------------------------------------------
-    * CORRECTIONS FOR THE LATITUDE DEPENDENCE OF LOVE NUMBERS (PART L^(1) )  
-    *----------------------------------------------------------------------*/
-    iers2010::dtel::st1l1 ( xsta,xsun,xmon,fac2sun,fac2mon,xcorsta );
-    for (int i=0;i<3;i++) dxtide[i] += xcorsta[i];    
+     * CORRECTIONS FOR THE LATITUDE DEPENDENCE OF LOVE NUMBERS (PART L^(1) )  
+     *----------------------------------------------------------------------*/
+    iers2010::dtel::st1l1 (xsta,xsun,xmon,fac2sun,fac2mon,xcorsta);
+    for (int i=0;i<3;i++)
+        dxtide[i] += xcorsta[i];
     
     // CONSIDER CORRECTIONS FOR STEP 2
-
-    /*+---------------------------------------------------------------------  
-    * CORRECTIONS FOR THE DIURNAL BAND:  
-    * 
-    *  FIRST, WE NEED TO KNOW THE DATE CONVERTED IN JULIAN CENTURIES 
-    *        
-    *   1) CALL THE SUBROUTINE COMPUTING THE JULIAN DATE 
-    *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/ 
-    ///      CALL CAL2JD ( YR, MONTH, DAY, JJM0, JJM1, STATUT )
-    ///      FHRD = FHR/24.D0
-    /*    17 May 2013 Corrected bug as noted in header                     */
-    ///      T=((JJM0-2451545.0D0)+JJM1+FHRD)/36525D0
-    /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
-    *   2) CALL THE SUBROUTINE COMPUTING THE CORRECTION OF UTC TIME  
-    *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-    ///     CALL DAT ( YR, MONTH, DAY, FHRD, DTT, STATUT )
-    /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-    ///      DTT = DTT + 32.184D0
-    /*    CONVERSION OF T IN TT TIME                                        */
-    ///     T=T+DTT/(3600.0D0*24.0D0*36525D0)
-    
+      
     double t = jc1 + jc2;
     double fhr = .0e0;
+    
+    char ctai[4] = "TAI";
+    if (timesys)
+        if ( ! strcmp (ctai,timesys) )
+            t += 32.184e0;
 
     //  SECOND, WE CAN CALL THE SUBROUTINE STEP2DIU, FOR THE DIURNAL BAND
     //+ CORRECTIONS, (in-phase and out-of-phase frequency dependence):
-    iers2010::dtel::step2diu ( xsta,fhr,t,xcorsta );
-    for (int i=0;i<3;i++) dxtide[i] += xcorsta[i]; 
+    iers2010::dtel::step2diu (xsta,fhr,t,xcorsta);
+    for (int i=0;i<3;i++)
+        dxtide[i] += xcorsta[i]; 
     
     //  CORRECTIONS FOR THE LONG-PERIOD BAND,
     //+ (in-phase and out-of-phase frequency dependence):  
-    iers2010::dtel::step2lon ( xsta,t,xcorsta );
-    for (int i=0;i<3;i++) dxtide[i] += xcorsta[i];  
+    iers2010::dtel::step2lon (xsta,t,xcorsta);
+    for (int i=0;i<3;i++)
+        dxtide[i] += xcorsta[i];  
         
     // CONSIDER CORRECTIONS FOR STEP 3
 

@@ -11,6 +11,7 @@ int gpt3 (const double& dmjd,const double& dlat,const double& dlon,
           const double& dhgt,double& pres,double& temp,double& undu);
 
 class SphericalHarmonics {
+
 public:
   explicit SphericalHarmonics ();
   explicit SphericalHarmonics (const double& x,const double& y,const double& z);
@@ -24,11 +25,11 @@ public:
   inline double v (const int& i, const int& j) const {return mv[i][j];}
   inline double w (const int& i, const int& j) const {return mw[i][j];}
   
-  inline void reset (const double& x, const double& y, const double& z)
+  inline void reset (const double& xi,const double& yi,const double& zi)
   {
-    mx = x;
-    my = y;
-    mz = z;
+    mx = xi;
+    my = yi;
+    mz = zi;
     this->populate ();
     return;
   }
@@ -42,4 +43,4 @@ private:
   double** mw;
 };
 
-}; //  end of namespace
+} //  end of namespace

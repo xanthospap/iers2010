@@ -3,9 +3,39 @@
 <chapter id="chap_02">
   <title>Installation</title>
   
-  <section id="chap_02_01"><title>Compiler Support</title><para></para></section>
+  <section id="chap_02_01"><title>Compiler Support</title>
+      <para>The only tested compiler is <ulink url="https://gcc.gnu.org/">GNU/GCC</ulink> compiler;
+          <application>GNU/GCC</application> comes with most Linux distros and most flavors
+          of Unix-type OSs.</para>
+      <para><application>GNU/GCC</application> is available also for 
+          <trademark class='registered'>Windows</trademark> OS, via 
+          <ulink url="http://www.mingw.org/"> Minimalist GNU for Windows 
+              <acronym>(MinGW)</acronym></ulink></para>
+      <para>The <application>libiers10++ Software Package</application> uses the C++<subscript>11</subscript>
+          ISO, which is supported by any version of <application>GNU/GCC</application> later than
+          <emphasis>v4.3</emphasis> (for a detailed list, see 
+          <ulink url="https://gcc.gnu.org/projects/cxx0x.html">C++0x/C++11 Support in GCC</ulink>).
+      </para>
+      <important><para>When compiling against the <application>GNU/GCC</application> compiler the user
+              must set the appropriate flag for using the C++<subscript>11</subscript> ISO.
+              Depending on the version of the compiler, this can either be <option>-std=c++11</option>
+              (for versions later than <emphasis>v4.6</emphasis>), or <option>-std=c++0x</option>
+              (for versions earlier than <emphasis>v4.6</emphasis>). To see what version of 
+              <application>GNU/GCC</application> you use, just type:
+              <screen><prompt>bash$</prompt> <command>g++</command> <option>--version</option></screen>
+              You should see an output simmilar to the following
+              <screen>
+g++ (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6)
+Copyright (C) 2014 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+</screen>
+              where the version is clear in the first line (i.e. in this example 
+              <emphasis>v4.9.2</emphasis>).
+              </para></important>
+  </section>
   
-  <section id="chap_02_02"><title>OS Support</title><para></para></section>
+  <!--<section id="chap_02_02"><title>OS Support</title><para></para></section>-->
   
   <section id="chap_02_03"><title>Cloning and Updating</title><para></para></section>
   
