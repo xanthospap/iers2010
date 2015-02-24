@@ -32,13 +32,13 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = libiers10++
+PROJECT_NAME           = @PACKAGE_NAME@
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = 1.0
+PROJECT_NUMBER         = @PACKAGE_VERSION@
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -58,7 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = /home/xanthos/Software/iers2010/doc
+OUTPUT_DIRECTORY       = @abs_srcdir@
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -682,7 +682,7 @@ LAYOUT_FILE            =
 # LATEX_BIB_STYLE. To use this feature you need bibtex and perl available in the
 # search path. See also \cite for info how to create references.
 
-CITE_BIB_FILES         = /home/xanthos/Software/iers2010/doc/crefs.bib
+CITE_BIB_FILES         = @abs_srcdir@/crefs.bib
 
 #---------------------------------------------------------------------------
 # Configuration options related to warning and progress messages
@@ -753,7 +753,7 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = /home/xanthos/Software/iers2010/src
+INPUT                  = @abs_top_srcdir@/src
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -804,7 +804,7 @@ EXCLUDE_SYMLINKS       = NO
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       =
+EXCLUDE_PATTERNS       = 
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -821,7 +821,7 @@ EXCLUDE_SYMBOLS        =
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           = /home/xanthos/Software/iers2010/test
+EXAMPLE_PATH           = @abs_top_srcdir@/test
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
@@ -1010,7 +1010,7 @@ IGNORE_PREFIX          =
 # If the GENERATE_HTML tag is set to YES doxygen will generate HTML output
 # The default value is: YES.
 
-GENERATE_HTML          = NO
+GENERATE_HTML          = YES
 
 # The HTML_OUTPUT tag is used to specify where the HTML docs will be put. If a
 # relative path is entered the value of OUTPUT_DIRECTORY will be put in front of
@@ -1018,7 +1018,7 @@ GENERATE_HTML          = NO
 # The default directory is: html.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_OUTPUT            = api_html
+HTML_OUTPUT            = @srcdir@/api_html
 
 # The HTML_FILE_EXTENSION tag can be used to specify the file extension for each
 # generated HTML page (for example: .htm, .php, .asp).
@@ -1553,7 +1553,7 @@ EXTRA_SEARCH_MAPPINGS  =
 # If the GENERATE_LATEX tag is set to YES doxygen will generate LaTeX output.
 # The default value is: YES.
 
-GENERATE_LATEX         = YES
+GENERATE_LATEX         = NO
 
 # The LATEX_OUTPUT tag is used to specify where the LaTeX docs will be put. If a
 # relative path is entered the value of OUTPUT_DIRECTORY will be put in front of
@@ -1561,7 +1561,7 @@ GENERATE_LATEX         = YES
 # The default directory is: latex.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-LATEX_OUTPUT           = ./api_latex
+LATEX_OUTPUT           = latex
 
 # The LATEX_CMD_NAME tag can be used to specify the LaTeX command name to be
 # invoked.
@@ -1757,7 +1757,7 @@ RTF_EXTENSIONS_FILE    =
 # classes and files.
 # The default value is: NO.
 
-GENERATE_MAN           = YES
+GENERATE_MAN           = NO
 
 # The MAN_OUTPUT tag is used to specify where the man pages will be put. If a
 # relative path is entered the value of OUTPUT_DIRECTORY will be put in front of
@@ -1766,7 +1766,7 @@ GENERATE_MAN           = YES
 # The default directory is: man.
 # This tag requires that the tag GENERATE_MAN is set to YES.
 
-MAN_OUTPUT             = ./api_man
+MAN_OUTPUT             = man
 
 # The MAN_EXTENSION tag determines the extension that is added to the generated
 # man pages. In case the manual section does not start with a number, the number
@@ -1782,7 +1782,7 @@ MAN_EXTENSION          = .3
 # MAN_EXTENSION with the initial . removed.
 # This tag requires that the tag GENERATE_MAN is set to YES.
 
-MAN_SUBDIR             = 1.0
+MAN_SUBDIR             =
 
 # If the MAN_LINKS tag is set to YES and doxygen generates man output, then it
 # will generate one additional man file for each entity documented in the real
@@ -1791,7 +1791,7 @@ MAN_SUBDIR             = 1.0
 # The default value is: NO.
 # This tag requires that the tag GENERATE_MAN is set to YES.
 
-MAN_LINKS              = YES
+MAN_LINKS              = NO
 
 #---------------------------------------------------------------------------
 # Configuration options related to the XML output

@@ -62,4 +62,4 @@ stamp-h1
 # Templates
 Makefile.in
 Makefile
-Doxyfile*.in
+Doxyfile

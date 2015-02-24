@@ -92,121 +92,126 @@
 int iers2010::dtel::dat(const int& iy,const int& im,const int& id,const double& fd,
   double& deltat)
 {
+    // Release year for this version of iauDat
+    enum { IYV = 2013};
 
-  // Release year for this version of iauDat
-  enum { IYV = 2013};
-
-  // Reference dates (MJD) and drift rates (s/day), pre leap seconds
-  static const double drift[][2] = {
-    { 37300.0, 0.0012960 },
-    { 37300.0, 0.0012960 },
-    { 37300.0, 0.0012960 },
-    { 37665.0, 0.0011232 },
-    { 37665.0, 0.0011232 },
-    { 38761.0, 0.0012960 },
-    { 38761.0, 0.0012960 },
-    { 38761.0, 0.0012960 },
-    { 38761.0, 0.0012960 },
-    { 38761.0, 0.0012960 },
-    { 38761.0, 0.0012960 },
-    { 38761.0, 0.0012960 },
-    { 39126.0, 0.0025920 },
-    { 39126.0, 0.0025920 }
-  };
-
-  // Number of Delta(AT) expressions before leap seconds were introduced
-  enum { NERA1 = (int) (sizeof drift / sizeof (double) / 2) };
-
-  // Dates and Delta(AT)s
-  static const struct {
-    int iyear, month;
-    double delat;
-    } changes[] = {
-      { 1960,  1,  1.4178180 },
-      { 1961,  1,  1.4228180 },
-      { 1961,  8,  1.3728180 },
-      { 1962,  1,  1.8458580 },
-      { 1963, 11,  1.9458580 },
-      { 1964,  1,  3.2401300 },
-      { 1964,  4,  3.3401300 },
-      { 1964,  9,  3.4401300 },
-      { 1965,  1,  3.5401300 },
-      { 1965,  3,  3.6401300 },
-      { 1965,  7,  3.7401300 },
-      { 1965,  9,  3.8401300 },
-      { 1966,  1,  4.3131700 },
-      { 1968,  2,  4.2131700 },
-      { 1972,  1, 10.0       },
-      { 1972,  7, 11.0       },
-      { 1973,  1, 12.0       },
-      { 1974,  1, 13.0       },
-      { 1975,  1, 14.0       },
-      { 1976,  1, 15.0       },
-      { 1977,  1, 16.0       },
-      { 1978,  1, 17.0       },
-      { 1979,  1, 18.0       },
-      { 1980,  1, 19.0       },
-      { 1981,  7, 20.0       },
-      { 1982,  7, 21.0       },
-      { 1983,  7, 22.0       },
-      { 1985,  7, 23.0       },
-      { 1988,  1, 24.0       },
-      { 1990,  1, 25.0       },
-      { 1991,  1, 26.0       },
-      { 1992,  7, 27.0       },
-      { 1993,  7, 28.0       },
-      { 1994,  7, 29.0       },
-      { 1996,  1, 30.0       },
-      { 1997,  7, 31.0       },
-      { 1999,  1, 32.0       },
-      { 2006,  1, 33.0       },
-      { 2009,  1, 34.0       },
-      { 2012,  7, 35.0       }
+    // Reference dates (MJD) and drift rates (s/day), pre leap seconds
+    static const double drift[][2] = {
+        { 37300.0, 0.0012960 },
+        { 37300.0, 0.0012960 },
+        { 37300.0, 0.0012960 },
+        { 37665.0, 0.0011232 },
+        { 37665.0, 0.0011232 },
+        { 38761.0, 0.0012960 },
+        { 38761.0, 0.0012960 },
+        { 38761.0, 0.0012960 },
+        { 38761.0, 0.0012960 },
+        { 38761.0, 0.0012960 },
+        { 38761.0, 0.0012960 },
+        { 38761.0, 0.0012960 },
+        { 39126.0, 0.0025920 },
+        { 39126.0, 0.0025920 }
     };
 
-  // Number of Delta(AT) changes
-  const int NDAT = sizeof changes / sizeof changes[0];
+    // Number of Delta(AT) expressions before leap seconds were introduced
+    enum { NERA1 = (int) (sizeof drift / sizeof (double) / 2) };
 
-  // Miscellaneous local variables 
-  int j, i, m;
-  double da, djm0, djm;
+    // Dates and Delta(AT)s
+    static const struct {
+        int iyear, month;
+        double delat;
+        } changes[] = {
+        { 1960,  1,  1.4178180 },
+        { 1961,  1,  1.4228180 },
+        { 1961,  8,  1.3728180 },
+        { 1962,  1,  1.8458580 },
+        { 1963, 11,  1.9458580 },
+        { 1964,  1,  3.2401300 },
+        { 1964,  4,  3.3401300 },
+        { 1964,  9,  3.4401300 },
+        { 1965,  1,  3.5401300 },
+        { 1965,  3,  3.6401300 },
+        { 1965,  7,  3.7401300 },
+        { 1965,  9,  3.8401300 },
+        { 1966,  1,  4.3131700 },
+        { 1968,  2,  4.2131700 },
+        { 1972,  1, 10.0       },
+        { 1972,  7, 11.0       },
+        { 1973,  1, 12.0       },
+        { 1974,  1, 13.0       },
+        { 1975,  1, 14.0       },
+        { 1976,  1, 15.0       },
+        { 1977,  1, 16.0       },
+        { 1978,  1, 17.0       },
+        { 1979,  1, 18.0       },
+        { 1980,  1, 19.0       },
+        { 1981,  7, 20.0       },
+        { 1982,  7, 21.0       },
+        { 1983,  7, 22.0       },
+        { 1985,  7, 23.0       },
+        { 1988,  1, 24.0       },
+        { 1990,  1, 25.0       },
+        { 1991,  1, 26.0       },
+        { 1992,  7, 27.0       },
+        { 1993,  7, 28.0       },
+        { 1994,  7, 29.0       },
+        { 1996,  1, 30.0       },
+        { 1997,  7, 31.0       },
+        { 1999,  1, 32.0       },
+        { 2006,  1, 33.0       },
+        { 2009,  1, 34.0       },
+        { 2012,  7, 35.0       }
+        };
 
-  // Initialize the result to zero.
-  deltat = da = 0.0e0;
+    // Number of Delta(AT) changes
+    const int NDAT = sizeof changes / sizeof changes[0];
 
-  // If invalid fraction of a day, set error status and give up.
-  if (fd < 0.0 || fd > 1.0) return -4;
+    // Miscellaneous local variables 
+    int j, i, m;
+    double da, djm0, djm;
 
-  // Convert the date into an MJD. 
-  j = iers2010::dtel::cal2jd (iy,im,id,djm0,djm);
+    // Initialize the result to zero.
+    deltat = da = 0.0e0;
 
-  // If invalid year, month, or day, give up. 
-  if (j < 0) return j;
+    // If invalid fraction of a day, set error status and give up.
+    if (fd < 0.0 || fd > 1.0)
+        return -4;
 
-  // If pre-UTC year, set warning status and give up. 
-  if (iy < changes[0].iyear) return 1;
+    // Convert the date into an MJD. 
+    j = iers2010::dtel::cal2jd (iy,im,id,djm0,djm);
 
-  // If suspiciously late year, set warning status but proceed. 
-  if (iy > IYV + 5) j = 1;
+    // If invalid year, month, or day, give up. 
+    if (j < 0)
+        return j;
 
-  // Combine year and month to form a date-ordered integer...
-  m = 12*iy + im;
+    // If pre-UTC year, set warning status and give up. 
+    if (iy < changes[0].iyear)
+        return 1;
 
-  // ...and use it to find the preceding table entry.
-  for (i = NDAT-1; i >=0; i--) {
-    if (m >= (12 * changes[i].iyear + changes[i].month)) break;
-  }
+    // If suspiciously late year, set warning status but proceed. 
+    if (iy > IYV + 5)
+        j = 1;
 
-  // Get the Delta(AT).
-  if ( i<0 ) i++; /* not needed; just stop g++ from complaining! */
-  da = changes[i].delat;
+    // Combine year and month to form a date-ordered integer...
+    m = 12*iy + im;
 
-  // If pre-1972, adjust for drift. 
-  if (i < NERA1) da += (djm + fd - drift[i][0]) * drift[i][1];
+    // ...and use it to find the preceding table entry.
+    for (i = NDAT-1; i >=0; i--) {
+        if (m >= (12 * changes[i].iyear + changes[i].month))
+            break;
+    }
 
-  // Return the Delta(AT) value. 
-  deltat = da;
+    // Get the Delta(AT).
+    if ( i<0 ) i++; /* not needed; just stop g++ from complaining! */
+    da = changes[i].delat;
 
-  // Return the status. 
-  return j;
+    // If pre-1972, adjust for drift. 
+    if (i < NERA1)
+        da += (djm + fd - drift[i][0]) * drift[i][1];
+
+    // Return the Delta(AT) value. 
+    deltat = da;
+
+    // Return the status. 
+    return j;
 }
