@@ -25,18 +25,19 @@
  */
 int iers2010::hisp::shells (double* x,int* k,const int& n)
 {
-  typedef std::vector<std::pair<double,int> > div;
+    typedef std::vector<std::pair<double,int> > div;
   
-  div pairs (n);
+    div pairs (n);
   
-  for (int i=0;i<n;i++) pairs[i] = std::pair<double,int> (x[i],i);
+    for (int i=0;i<n;i++)
+        pairs[i] = std::pair<double,int> (x[i],i);
   
-  std::sort (pairs.begin(),pairs.end());
+    std::sort (pairs.begin(),pairs.end());
   
-  for (int i=0;i<n;i++) {
-    x[i] = pairs[i].first;
-    k[i] = pairs[i].second;
-  }
+    for (int i=0;i<n;i++) {
+        x[i] = pairs[i].first;
+        k[i] = pairs[i].second;
+    }
   
-  return 0;
+    return 0;
 }

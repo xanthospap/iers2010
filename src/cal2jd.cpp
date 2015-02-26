@@ -37,37 +37,42 @@
  *
  */
 int iers2010::dtel::cal2jd (const int& iy,const int& im,const int& id,
-  double& djm0,double& djm)
+        double& djm0,double& djm)
 {
 
-  // Earliest year allowed (4800BC)
-  const int IYMIN = -4799;
+    // Earliest year allowed (4800BC)
+    constexpr int IYMIN = -4799;
 
-  // Month lengths in days
-  static const int mtab[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    // Month lengths in days
+    static constexpr int mtab[] = {
+        31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    };
 
-  // Preset status.
-  int j = 0;
+    // Preset status.
+    int j = 0;
 
-  // Validate year and month
-  if (iy < IYMIN) return -1;
-  if (im < 1 || im > 12) return -2;
+    // Validate year and month
+    if (iy < IYMIN)
+        return -1;
+    if (im < 1 || im > 12)
+        return -2;
 
-  // If February in a leap year, 1, otherwise 0.
-  int ly = ((im == 2) && !(iy%4) && (iy%100 || !(iy%400)));
+    // If February in a leap year, 1, otherwise 0.
+    int ly = ( (im == 2) && !(iy%4) && (iy%100 || !(iy%400)) );
 
-  // Validate day, taking into account leap years.
-  if ( (id < 1) || (id > (mtab[im-1] + ly))) j = -3;
+    // Validate day, taking into account leap years.
+    if ( (id < 1) || (id > (mtab[im-1] + ly)))
+        j = -3;
 
-  // Return result.
-  int my = (im - 14) / 12;
-  long iypmy = (long) (iy + my);
-  djm0 = 2400000.5e0/* or DJM0 */;
-  djm = (double)((1461L * (iypmy + 4800L)) / 4L
-    + (367L * (long) (im - 2 - 12 * my)) / 12L
-    - (3L * ((iypmy + 4900L) / 100L)) / 4L
-    + (long) id - 2432076L);
+    // Return result.
+    int my = (im - 14) / 12;
+    long iypmy = (long) (iy + my);
+    djm0 = 2400000.5e0/* or DJM0 */;
+    djm = (double)((1461L * (iypmy + 4800L)) / 4L
+        + (367L * (long) (im - 2 - 12 * my)) / 12L
+        - (3L * ((iypmy + 4900L) / 100L)) / 4L
+        + (long) id - 2432076L);
 
-  // Return status
-  return j;
+    // Return status
+    return j;
 }

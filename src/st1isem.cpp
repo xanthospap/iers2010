@@ -63,7 +63,11 @@ void iers2010::dtel::st1isem (const double* xsta,const double* xsun,
   const double dhi ( -0.0022e0 ), dli ( -0.0007e0 );
 
   // Compute the normalized position vector of the IGS station.
+<<<<<<< HEAD
   double rsta     ( ::sqrt ( std::inner_product (xsta,xsta+3,xsta,.0e0) );
+=======
+  double rsta     ( ::sqrt ( std::inner_product (xsta,xsta+3,xsta,.0e0) ) );
+>>>>>>> e08f44bba1ef60e879a56802a728f431111a5838
 
   double sinphi   ( xsta[2] / rsta );
   double cosphi   ( sqrt (xsta[0]*xsta[0] + xsta[1]*xsta[1]) / rsta );

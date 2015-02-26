@@ -247,6 +247,7 @@ int iers2010::dehanttideinel (const double* xsta,const double* xsun,
     
     // Finished.
     return 0;
+<<<<<<< HEAD
 }
 
 /**
@@ -476,3 +477,6 @@ int iers2010::dehanttideinel (const double* xsta,const double* xsun,
     // Finished.
     return 0;
 }
+=======
+}
+>>>>>>> e08f44bba1ef60e879a56802a728f431111a5838

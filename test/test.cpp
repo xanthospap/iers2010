@@ -93,11 +93,15 @@ int main ()
     printf ("\n\t|dx|  = %20.18f",fabs(0.7700420357108125891e-01-xcor[0]));
     printf ("\n\t|dy|  = %20.18f",fabs(0.6304056321824967613e-01-xcor[1]));
     printf ("\n\t|dz|  = %20.18f",fabs(0.5516568152597246810e-01-xcor[2]));
-    iers2010::dehanttideinel (xsta,xsun,xmon,0.092799473402287e0,.0e0,xcor);
+    /*
+    jc1 = 54934.0e0;
+    jc2 = 34e0 / (24e0 *3600e0);
+    iers2010::dehanttideinel (xsta,xsun,xmon,jc1,jc2,xcor);
     printf ("\n\tVersion 2 (TT input):");
     printf ("\n\t|dx|  = %20.18f",fabs(0.7700420357108125891e-01-xcor[0]));
     printf ("\n\t|dy|  = %20.18f",fabs(0.6304056321824967613e-01-xcor[1]));
     printf ("\n\t|dz|  = %20.18f",fabs(0.5516568152597246810e-01-xcor[2]));
+    */
     
     // subroutine RG_ZONT2
     printf ("\nFunction RG_ZONT2");
