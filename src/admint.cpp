@@ -37,9 +37,9 @@
  *       IERS Technical Note No. 32, BKG (2004)
  * 
  */
-int iers2010::hisp::admint (const double* ampin,const int** idtin,
-		const double* phin,const int& nin,const int* itm, double* amp,
-		double* f,double* p,int& nout)
+int iers2010::hisp::admint (const double* ampin,const int (*idtin)[6],
+    const double* phin,double* amp,double* f,double* p,const int& nin,
+    int& nout, const int* itm)
  {
     
     /*+----------------------------------------------------------------------
@@ -272,9 +272,12 @@ int iers2010::hisp::admint (const double* ampin,const int** idtin,
     iers2010::hisp::shells(rf,key,k);
     
     for (int i=0;i<k;i++) {
-        if (rf[i] < 0.5e0) nlp+= 1;
-        if ( (rf[i]<1.5e0) && (rf[i]>0.5e0) ) ndi += 1;
-        if ( (rf[i]<2.5e0) && (rf[i]>1.5e0) ) nsd += 1;
+        if (rf[i] < 0.5e0)
+            nlp+= 1;
+        if ( (rf[i]<1.5e0) && (rf[i]>0.5e0) )
+            ndi += 1;
+        if ( (rf[i]<2.5e0) && (rf[i]>1.5e0) )
+            nsd += 1;
         scr[i] = rl[key[i]];
     }
     
@@ -296,17 +299,17 @@ int iers2010::hisp::admint (const double* ampin,const int** idtin,
     if (nlp)
         iers2010::hisp::spline (nlp,rf,aim,zdi,scr);
 
-    iers2010::hisp::spline (ndi,rf+nlp/*+1*/,rl+nlp/*+1*/,dr,scr);
-    iers2010::hisp::spline (ndi,rf+nlp/*+1*/,aim+nlp/*+1*/,di,scr);
-    iers2010::hisp::spline (nsd,rf+nlp+ndi/*+1*/,rl+nlp+ndi/*+1*/,sdr,scr);
-    iers2010::hisp::spline (nsd,rf+nlp+ndi/*+1*/,aim+nlp+ndi/*+1*/,sdi,scr);
+    iers2010::hisp::spline (ndi,rf+nlp,rl+nlp,dr,scr);
+    iers2010::hisp::spline (ndi,rf+nlp,aim+nlp,di,scr);
+    iers2010::hisp::spline (nsd,rf+nlp+ndi,rl+nlp+ndi,sdr,scr);
+    iers2010::hisp::spline (nsd,rf+nlp+ndi,aim+nlp+ndi,sdi,scr);
     
     // Evaluate all harmonics using the interpolated admittance
     int j = 0;
     for (int i=0;i<nt;i++) {
         if ( (!idd[i][1]) && (!nlp) ) {
-            //CALL TDFRPH(IDD(1,I),F(J),P(J))
-            iers2010::hisp::tdfrph(idd[i],itm,f[j],p[j]);
+
+            iers2010::hisp::tdfrph (idd[i],itm,f[j],p[j]);
         
             //  Compute phase corrections to equilibrium tide using function EVAL
             if (idd[i][1] == 0)
@@ -315,19 +318,19 @@ int iers2010::hisp::admint (const double* ampin,const int** idtin,
                 p[j] += 90.0e0;
             sf = f[j];
             if (idd[i][1] == 0) 
-                /*re =*/iers2010::hisp::eval (sf,nlp,rf,rl,zdr,re);
+                iers2010::hisp::eval (sf,nlp,rf,rl,zdr,re);
             if (idd[i][1] == 0) 
-                /*am =*/iers2010::hisp::eval (sf,nlp,rf,aim,zdi,am);
+                iers2010::hisp::eval (sf,nlp,rf,aim,zdi,am);
             if (idd[i][1] == 1) 
-                /*re =*/iers2010::hisp::eval (sf,ndi,rf+nlp/*+1*/,rl+nlp/*+1*/,dr,re);
+                iers2010::hisp::eval (sf,ndi,rf+nlp,rl+nlp,dr,re);
             if (idd[i][1] == 1) 
-                /*am =*/iers2010::hisp::eval (sf,ndi,rf+nlp/*+1*/,aim+nlp/*+1*/,di,am);
+                iers2010::hisp::eval (sf,ndi,rf+nlp,aim+nlp,di,am);
             if (idd[i][1] == 2) 
-                /*re =*/iers2010::hisp::eval (sf,nsd,rf+nlp+ndi/*+1*/,rl+nlp+ndi/*+1*/,sdr,re);
+                iers2010::hisp::eval (sf,nsd,rf+nlp+ndi,rl+nlp+ndi,sdr,re);
             if (idd[i][1] == 2) 
-                /*am =*/iers2010::hisp::eval (sf,nsd,rf+nlp+ndi/*+1*/,aim+nlp+ndi/*+1*/,sdi,am);
+                iers2010::hisp::eval (sf,nsd,rf+nlp+ndi,aim+nlp+ndi,sdi,am);
 
-            amp[j] = tamp[i]*sqrt(re*re+am*am);
+            amp[j] = tamp[i]*sqrt (re*re+am*am);
             p[j] += atan2(am,re) / dtr;
         
             if (p[j] > 180)

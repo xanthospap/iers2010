@@ -180,6 +180,8 @@ namespace iers2010 {
      */
     int fcul_zd_hpa (const double&,const double&,const double&,const double&,
             const double&,double&,double&,double&);
+            
+int hardisp (int argc,const char* argv[],double* du,double* dw,double* ds);
 }
 
 #endif
