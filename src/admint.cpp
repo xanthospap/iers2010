@@ -1,4 +1,5 @@
 #include "hardisp.hpp"
+#include <stdio.h>
 
 /**
  * @details This function returns the ocean loading displacement amplitude,
@@ -37,11 +38,11 @@
  *       IERS Technical Note No. 32, BKG (2004)
  * 
  */
-int iers2010::hisp::admint (const double* ampin,const int (*idtin)[6],
+int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     const double* phin,double* amp,double* f,double* p,const int& nin,
     int& nout, const int* itm)
  {
-    
+    //printf ("\n--In admint\n");
     /*+----------------------------------------------------------------------
     *  The parameters below set the number of harmonics used in the prediction
     *  (nt; This must also be set in the main program) and the number of
@@ -234,6 +235,8 @@ int iers2010::hisp::admint (const double* ampin,const int (*idtin)[6],
     int nlp ( 0 );
     int ndi ( 0 );
     int nsd ( 0 );
+    //printf ("\nSaying hello before looping starts ...");
+    //printf ("\n");
     
     for (int ll=0;ll<nin;ll++) {
         int ii;
@@ -262,6 +265,8 @@ int iers2010::hisp::admint (const double* ampin,const int (*idtin)[6],
             }
         }
     }
+    //printf ("\nloop with ll seems ok ... ");
+    //printf ("\n");
 
     /*+---------------------------------------------------------------------
     * Done going through constituents; there are k of them.
@@ -269,7 +274,9 @@ int iers2010::hisp::admint (const double* ampin,const int (*idtin)[6],
     * and separate diurnal and semidiurnal, recopying admittances to get them
     * in order using Shell Sort.
     *----------------------------------------------------------------------*/
-    iers2010::hisp::shells(rf,key,k);
+    iers2010::hisp::shells (rf,key,k);
+    //printf ("\nshells seems ok ... ");
+    //printf ("\n");
     
     for (int i=0;i<k;i++) {
         if (rf[i] < 0.5e0)
@@ -288,7 +295,8 @@ int iers2010::hisp::admint (const double* ampin,const int (*idtin)[6],
     
     for (int i=0;i<k;i++)
         aim[i] = scr[i];
-    
+    //printf ("\nthree more loops seem ok ... ");
+    //printf ("\n");
     /*+---------------------------------------------------------------------
     * now set up splines (8 cases - four species, each real and imaginary)
     * We have to allow for the case when there are no constituent amplitudes
@@ -298,16 +306,31 @@ int iers2010::hisp::admint (const double* ampin,const int (*idtin)[6],
         iers2010::hisp::spline (nlp,rf,rl,zdr,scr);
     if (nlp)
         iers2010::hisp::spline (nlp,rf,aim,zdi,scr);
+    //printf ("\nsplines seems ok ... ");
+    //printf ("\n");
 
+    //printf ("\nbefore going in, ndi=%2i, nlp=%2i, ncon=%2i",ndi,nlp,ncon);
+    //printf ("\n");
     iers2010::hisp::spline (ndi,rf+nlp,rl+nlp,dr,scr);
+    //printf ("\nspline 1 ok");
+    //printf ("\n");
     iers2010::hisp::spline (ndi,rf+nlp,aim+nlp,di,scr);
+    //printf ("\nspline 2 ok");
+    //printf ("\n");
     iers2010::hisp::spline (nsd,rf+nlp+ndi,rl+nlp+ndi,sdr,scr);
+    //printf ("\nspline 3 ok");
+    //printf ("\n");
     iers2010::hisp::spline (nsd,rf+nlp+ndi,aim+nlp+ndi,sdi,scr);
+    //printf ("\neven more splines seems ok ... ");
+    //printf ("\n");
     
     // Evaluate all harmonics using the interpolated admittance
-    int j = 0;
+    //printf ("\nFinal step: harmonics");
+    //printf ("\n");
+    int j = 1;
     for (int i=0;i<nt;i++) {
-        if ( (!idd[i][1]) && (!nlp) ) {
+        //printf ("\n-->idd[%03i][0] = %02i",i,idd[i][0]);
+        if ( idd[i][0] + nlp ) {
 
             iers2010::hisp::tdfrph (idd[i],itm,f[j],p[j]);
         

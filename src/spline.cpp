@@ -37,13 +37,14 @@ int iers2010::hisp::spline (const int& nn,const double* x,const double* u,
         double* a,double* s)
 {
     //constexpr int nmax = 20;
-    
+    //printf ("\n\tinto spline ... ");
     const int n ( abs (nn) );
     
     if (n<=3) {
         // series too short for cubic spline - use straight lines.
         for (int i=0;i<n;i++)
             s[i] = 0.0e0;
+        //printf ("... short exit; ok\n");
         return 0;
     }
     
@@ -57,14 +58,16 @@ int iers2010::hisp::spline (const int& nn,const double* x,const double* u,
     
     s[0] = 6.0e0*((u[1]-u[0])/(x[1]-x[0]) - q1);
     int n1 ( n - 1 );
+    //printf ("\nBounds: n1 = %02i, n = %02i, nn = %02i",n1,n,nn);
     
     for (int i=1;i<n1;i++)
         s[i] = (u[i-1]/(x[i]-x[i-1]) - u[i]*(1.0e0/(x[i]-x[i-1]) 
                   + 1.0e0/(x[i+1]-x[i])) + u[i+1]/(x[i+1]-x[i]))*6.0e0;
-        s[n-1] = 6.0e0*(qn + (u[n1-1]-u[n-1])/(x[n-1]-x[n1-1]));
-        a[0]   = 2.0e0*(x[1]-x[0]);
-        a[1]   = 1.5e0*(x[1]-x[0]) + 2.0e0*(x[2]-x[1]);
-        s[1]   = s[1] - 0.5e0*s[0];
+
+    s[n-1] = 6.0e0*(qn + (u[n1-1]-u[n-1])/(x[n-1]-x[n1-1]));
+    a[0]   = 2.0e0*(x[1]-x[0]);
+    a[1]   = 1.5e0*(x[1]-x[0]) + 2.0e0*(x[2]-x[1]);
+    s[1]   = s[1] - 0.5e0*s[0];
     
     double c;
     for (int i=2;i<n1;i++) {
@@ -79,10 +82,12 @@ int iers2010::hisp::spline (const int& nn,const double* x,const double* u,
     
     
     // Back substitute
-    s[n-1] = s[n-1] / a[n-1];
+    s[n-1] /= a[n-1];
     
-    for (int i=n-2;i>=0;i++)
+    for (int i=n-2;i>=0;i--)
         s[i] =(s[i] - (x[i+1]-x[i])*s[i+1]) / a[i];
+        //printf ("\naccessing s(%2i), x(%2i), x(%2i), s(%2i), a(%2i)",i,i+1,i,i+1,i);
+    //printf ("... exiting\n");
     
     // Finished
     return 0;

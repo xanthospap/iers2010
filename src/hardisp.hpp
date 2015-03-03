@@ -70,7 +70,8 @@ namespace iers2010 {
 
         int tdfrph (const int*,const int*,double&,double&);
 
-        int admint (const double*,const int (*)[6],const double*,double*,double*,double*,const int&,int&,const int*);
+        int admint (const double*,const int [][6],
+        const double*,double*,double*,double*,const int&,int&,const int*);
 
         /**
          * @details This function finds the day number of days before start of 

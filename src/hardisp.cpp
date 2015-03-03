@@ -1,6 +1,8 @@
 #include "iers2010.hpp"
 #include "hardisp.hpp"
 
+#include <iostream>
+
 /**
  * @details This program reads in a file of station displacements in the BLQ
  *          format used by Scherneck and Bos for ocean loading, and outputs a
@@ -124,8 +126,8 @@
  * @cite iers2010
  * 
  */
-int iers2010::hardisp (int argc,const char* argv[],double* du,double* dw,
-    double* ds)
+int main (int argc,const char* argv[])
+//int iers2010::hardisp (int argc,const char* argv[])
 {
     /*+---------------------------------------------------------------------
      *
@@ -141,7 +143,7 @@ int iers2010::hardisp (int argc,const char* argv[],double* du,double* dw,
 
     double dr ( 0.01745329252e0 );
     int irli  ( 1 );
-    int luo   ( 6 );
+    // int luo   ( 6 );
     int it[5];
 
     constexpr double PI = 3.1415926535897932384626433e0;
@@ -149,10 +151,17 @@ int iers2010::hardisp (int argc,const char* argv[],double* du,double* dw,
     //  Cartwright-Tayler numbers of tides used in Scherneck lists:
     //+     M2, S2, N2, K2, K1, O1, P1, Q1, Mf, Mm, Ssa
     static int idt[][6] = {
-        {2, 0, 0, 0, 0, 0},   {2, 2,-2, 0, 0, 0},   {2,-1, 0, 1, 0, 0},
-        {2, 2, 0, 0, 0, 0},   {1, 1, 0, 0, 0, 0},   {1,-1, 0, 0, 0, 0},
-        {1, 1,-2, 0, 0, 0},   {1,-2, 0, 1, 0, 0},   {0, 2, 0, 0, 0, 0},
-        {0, 1, 0,-1, 0, 0},   {0, 0, 2, 0, 0, 0}
+        {2, 0, 0, 0, 0, 0},
+        {2, 2,-2, 0, 0, 0},
+        {2,-1, 0, 1, 0, 0},
+        {2, 2, 0, 0, 0, 0},
+        {1, 1, 0, 0, 0, 0},
+        {1,-1, 0, 0, 0, 0},
+        {1, 1,-2, 0, 0, 0},
+        {1,-2, 0, 1, 0, 0},
+        {0, 2, 0, 0, 0, 0},
+        {0, 1, 0,-1, 0, 0},
+        {0, 0, 2, 0, 0, 0}
     };
 
     /*+----------------------------------------------------------------------
@@ -160,7 +169,7 @@ int iers2010::hardisp (int argc,const char* argv[],double* du,double* dw,
      *  Check number of arguments from command line, then read them in
      *
      *-----------------------------------------------------------------------*/
-    if (argc<7 || argc>8) {
+    if (argc<8 || argc>9) {
         printf ("Usage:\n");
         printf ("   hardisp yr [d-of-yr | month day] hr min sec num samp\n");
         printf (" Where \n");
@@ -177,7 +186,7 @@ int iers2010::hardisp (int argc,const char* argv[],double* du,double* dw,
     }
 
     //  read in date and store it in it[] array
-    int next ( 0 );
+    int next ( 1 );
     int irnt;
     double samp;
     try {
@@ -201,27 +210,48 @@ int iers2010::hardisp (int argc,const char* argv[],double* du,double* dw,
         printf ("Invalid argument while reading input arguments. Fatal.\n");
         return 1;
     }
+    printf ("\nRead date: %4i %03i %02i %02i %02i", it[0], it[1], it[2], it[3], it[4]);
+    printf ("\nOutput epochs  : %03i", irnt);
+    printf ("\nSample interval: %05.1f (seconds)", samp);
+    printf ("\n");
     
     double tamp[3][ntin], tph[3][ntin];
-    double amp[ntin], phase[ntin];
-    
     /*+---------------------------------------------------------------------
      *  Read in amplitudes and phases, in standard "Scherneck" form, from
      *  standard input
      *----------------------------------------------------------------------*/
+     // WARNING Neet to read better; Skip lines starting with '$',  skip or read
+     //  station name
+    printf ("\nFirst 3 lines: ");
     for (int i=0;i<3;i++) {
+        printf ("\n\t");
         for (int kk=0;kk<ntin;kk++) {
-            scanf ("%lf", &tamp[i][kk]);
+            //scanf ("%lf", &tamp[i][kk]);
+            std::cin >> tamp[i][kk];
+            printf (" %+08.5f", tamp[i][kk]);
         }
     }
+    if ( !std::cin || std::cin.fail() ) {
+        printf ("\nError reading data lines. Exiting ...\n");
+        return 1;
+    }
+
+    printf ("\nNext 3 lines: ");
     for (int i=0;i<3;i++) {
+        printf ("\n\t");
         for (int kk=0;kk<ntin;kk++) {
-            scanf ("%lf", &tph[i][kk]);
+            //scanf ("%lf", &tph[i][kk]);
+            std::cin >> tph[i][kk];
+            printf (" %+08.5f", tph[i][kk]);
         }
         // Change sign for phase, to be negative for lags
         for (int kk=0;kk<ntin;kk++) {
             tph[i][kk] = -tph[i][kk];
         }
+    }
+    if ( !std::cin || std::cin.fail() ) {
+        printf ("\nError reading data lines. Exiting ...\n");
+        return 1;
     }
     
     /*+---------------------------------------------------------------------
@@ -235,24 +265,26 @@ int iers2010::hardisp (int argc,const char* argv[],double* du,double* dw,
      *----------------------------------------------------------------------*/
     double az[nt],pz[nt],f[nt],aw[nt],pw[nt],as[nt],ps[nt];
     int ntout;
+    double amp[ntin], phase[ntin];
+    
     for (int i=0;i<ntin;i++) {
         amp[i]   = tamp[0][i];
         phase[i] = tph[0][i];
     }
     iers2010::hisp::admint (amp,idt,phase,az,f,pz,ntin,ntout,it);
-
+    printf ("\nntout = %02i",ntout);
     for (int i=0;i<ntin;i++) {
         amp[i] = tamp[1][i];
         phase[i] = tph[1][i];
     }
     iers2010::hisp::admint (amp,idt,phase,aw,f,pw,ntin,ntout,it);
-
+    printf ("\nntout = %02i",ntout);
     for (int i=0;i<ntin;i++) {
         amp[i] = tamp[2][i];
         phase[i] = tph[2][i];
     }
     iers2010::hisp::admint (amp,idt,phase,as,f,ps,ntin,ntout,it);
-
+    printf ("\nntout = %02i",ntout);
     // set up for recursion, by normalizing frequencies, and converting
     // phases to radians
     double wf[nt];
@@ -263,6 +295,13 @@ int iers2010::hardisp (int argc,const char* argv[],double* du,double* dw,
         f[i]  = samp * PI * f[i]/43200.e0;
         wf[i] = f[i];
     }
+    printf ("\nntout = %02i",ntout);
+    
+    for (int i=0;i<ntout;i++) printf ("\n%14.6f",pz[i]);
+    /*
+    for (int i=0;i<ntout;i++) printf ("\n%14.6f",ps[i]);
+    for (int i=0;i<ntout;i++) printf ("\n%14.6f",pw[i]);
+    */
 
     /*+---------------------------------------------------------------------
      *
@@ -272,39 +311,41 @@ int iers2010::hardisp (int argc,const char* argv[],double* du,double* dw,
      *  block is done recursively, since the times are equi-spaced.
      *
      *----------------------------------------------------------------------*/
-    int irhi ( std::min (irli+nl-1,irnt) );
-    int np   ( irhi - irli + 1 );
+    while ( true ) {
+        int irhi ( std::min (irli+nl-1,irnt) );
+        int np   ( irhi - irli + 1 );
 
-    // Set up harmonic coefficients, compute tide, and write out
-    double hcz[2*nt+1],hcs[2*nt+1],hcw[2*nt+1];
-    for (int i=0;i<nt;i++) {
-        hcz[2*i] = az[i] * cos (pz[i]);
-        hcz[2*i+1]  = -az[i] * sin (pz[i]);
-        hcs[2*i] = as[i] * cos (ps[i]);
-        hcs[2*i+1]  = -as[i] * sin (ps[i]);
-        hcw[2*i] = aw[i] * cos (pw[i]);
-        hcw[2*i+1]  = -aw[i] * sin (pw[i]);
-    }
+        // Set up harmonic coefficients, compute tide, and write out
+        double hcz[2*nt+1],hcs[2*nt+1],hcw[2*nt+1];
+        for (int i=0;i<nt;i++) {
+            hcz[2*i] = az[i] * cos (pz[i]);
+            hcz[2*i+1]  = -az[i] * sin (pz[i]);
+            hcs[2*i] = as[i] * cos (ps[i]);
+            hcs[2*i+1]  = -as[i] * sin (ps[i]);
+            hcw[2*i] = aw[i] * cos (pw[i]);
+            hcw[2*i+1]  = -aw[i] * sin (pw[i]);
+        }
 
-    // double dz[nl],ds[nl],dw[nl];
-    double scr[3*nt];
-    iers2010::hisp::recurs (dz,np,hcz,ntout,wf,scr);
-    iers2010::hisp::recurs (ds,np,hcs,ntout,wf,scr);
-    iers2010::hisp::recurs (dw,np,hcw,ntout,wf,scr);
+        double dz[nl],ds[nl],dw[nl];
+        double scr[3*nt];
+        iers2010::hisp::recurs (dz,np,hcz,ntout,wf,scr);
+        iers2010::hisp::recurs (ds,np,hcs,ntout,wf,scr);
+        iers2010::hisp::recurs (dw,np,hcw,ntout,wf,scr);
 
-    for (int i=0;i<np;i++)
-        printf ("\n%+14.6f %+14.6f %+14.6f",dz[i],ds[i],dw[i]);
+        for (int i=0;i<np;i++)
+            printf ("\n[%02i] %+14.6f %+14.6f %+14.6f",i+1,dz[i],ds[i],dw[i]);
 
-    if (irhi==irnt)
-        return 0;
+        if (irhi==irnt)
+            break;
 
-    irli = irhi + 1;
+        irli = irhi + 1;
 
-    // Reset phases to the start of the new section
-    for (int i=0;i<nt;i++) {
-        pz[i] = modf (pz[i] + np * f[i],2.e0*PI);
-        ps[i] = modf (ps[i] + np * f[i],2.e0*PI);
-        pw[i] = modf (pw[i] + np * f[i],2.e0*PI);
+        // Reset phases to the start of the new section
+        for (int i=0;i<nt;i++) {
+            pz[i] = fmod (pz[i] + np * f[i],2.e0*PI);
+            ps[i] = fmod (ps[i] + np * f[i],2.e0*PI);
+            pw[i] = fmod (pw[i] + np * f[i],2.e0*PI);
+        }
     }
 
     return 0;

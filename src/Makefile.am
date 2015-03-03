@@ -34,8 +34,7 @@ dist_libiers10___a_SOURCES = fundarg.cpp \
 							 utils.cpp \
 							 spline.cpp \
 							 tdfrph.cpp \
-							 admint.cpp \
-							 hardisp.cpp
+							 admint.cpp
 gpt2.cpp: gpt2-unset.cpp
 	cp gpt2-unset.cpp gpt2.cpp
 	$(SED) -i "s|/foo/bar/gpt2_5.grd|$(abs_top_builddir)/gpt2_5.grd|g" $@
