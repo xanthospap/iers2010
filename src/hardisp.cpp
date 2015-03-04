@@ -1,5 +1,6 @@
 #include "iers2010.hpp"
 #include "hardisp.hpp"
+#include <stdexcept>
 
 #include <iostream>
 
@@ -272,6 +273,7 @@ int main (int argc,const char* argv[])
         phase[i] = tph[0][i];
     }
     iers2010::hisp::admint (amp,idt,phase,az,f,pz,ntin,ntout,it);
+    // for (int i=0;i<nt;i++) printf ("\naz(%03i)=%14.6f",i,az[i]);
     printf ("\nntout = %02i",ntout);
     for (int i=0;i<ntin;i++) {
         amp[i] = tamp[1][i];
@@ -297,7 +299,7 @@ int main (int argc,const char* argv[])
     }
     printf ("\nntout = %02i",ntout);
     
-    for (int i=0;i<ntout;i++) printf ("\n%14.6f",pz[i]);
+    // for (int i=0;i<ntout;i++) printf ("\n%14.6f",pz[i]);
     /*
     for (int i=0;i<ntout;i++) printf ("\n%14.6f",ps[i]);
     for (int i=0;i<ntout;i++) printf ("\n%14.6f",pw[i]);

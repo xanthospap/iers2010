@@ -1,3 +1,7 @@
+bin_PROGRAMS               = hardisp
+hardisp_SOURCES            = hardisp.cpp
+hardisp_CXXFLAGS           = -std=c++11 -g -Wall -Wextra -pedantic -W -Wshadow -Winline -Wdisabled-optimization -I$(srcdir) -L$(srcdir)
+hardisp_LDADD              = libiers10++.a
 pkglib_LIBRARIES           = libiers10++.a
 dist_pkginclude_HEADERS    = iers2010.hpp
 libiers10___a_CXXFLAGS     = -std=c++11 -g -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization

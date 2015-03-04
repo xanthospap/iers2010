@@ -246,13 +246,14 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
             ii = 0;
         
             for (int i=0;i<6;i++) {
-                ii += abs( idd[kk][i]-idtin[ll][i] );
+                ii += std::abs ( idd[kk][i]-idtin[ll][i] );
             }
         
             // If you have a match, put line into array [5]
             if ( (!ii) && k<ncon ) {
-                rl[k] = ampin[ll] * cos(dtr*phin[ll]) / abs(tamp[kk]);
-                aim[k]= ampin[ll] * sin(dtr*phin[ll]) / abs(tamp[kk]);
+                //printf ("\nInto llop 5; ii=%03i, k=%03i",ii,k);
+                rl[k] = ampin[ll] * cos (dtr*phin[ll]) / std::abs (tamp[kk]);
+                aim[k]= ampin[ll] * sin (dtr*phin[ll]) / std::abs (tamp[kk]);
                 /*+---------------------------------------------------------------------
                 * Now have real and imaginary parts of admittance, scaled by Cartwright-
                 * Edden amplitude. Admittance phase is whatever was used in the original
@@ -261,10 +262,15 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
                 *---------------------------------------------------------------------*/
                 iers2010::hisp::tdfrph (idd[kk],itm,fr,pr);
                 rf[k] = fr;
+                //printf ("\nampin(%03i)=%14.6f phin(%03i)=%14.6f tamp(%03i)=%14.6f",
+                //        ll,ampin[ll],ll,phin[ll],kk,tamp[kk]);
+                //printf ("\nrl=%14.6f aim=%14.6f rf=%14.6f",rl[k],aim[k],rf[k]);
                 k++;
             }
         }
     }
+    //for (int i=0;i<k;i++) 
+    //    printf ("\nrf(%03i)=%14.6f rl=%14.6f aim=%14.6f",i,rf[i],rl[i],aim[i]);
     //printf ("\nloop with ll seems ok ... ");
     //printf ("\n");
 
