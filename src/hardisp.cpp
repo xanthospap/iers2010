@@ -211,10 +211,10 @@ int main (int argc,const char* argv[])
         printf ("Invalid argument while reading input arguments. Fatal.\n");
         return 1;
     }
-    printf ("\nRead date: %4i %03i %02i %02i %02i", it[0], it[1], it[2], it[3], it[4]);
-    printf ("\nOutput epochs  : %03i", irnt);
-    printf ("\nSample interval: %05.1f (seconds)", samp);
-    printf ("\n");
+    //printf ("\nRead date: %4i %03i %02i %02i %02i", it[0], it[1], it[2], it[3], it[4]);
+    //printf ("\nOutput epochs  : %03i", irnt);
+    //printf ("\nSample interval: %05.1f (seconds)", samp);
+    //printf ("\n");
     
     double tamp[3][ntin], tph[3][ntin];
     /*+---------------------------------------------------------------------
@@ -223,13 +223,13 @@ int main (int argc,const char* argv[])
      *----------------------------------------------------------------------*/
      // WARNING Neet to read better; Skip lines starting with '$',  skip or read
      //  station name
-    printf ("\nFirst 3 lines: ");
+    //printf ("\nFirst 3 lines: ");
     for (int i=0;i<3;i++) {
         printf ("\n\t");
         for (int kk=0;kk<ntin;kk++) {
             //scanf ("%lf", &tamp[i][kk]);
             std::cin >> tamp[i][kk];
-            printf (" %+08.5f", tamp[i][kk]);
+            //printf (" %+08.5f", tamp[i][kk]);
         }
     }
     if ( !std::cin || std::cin.fail() ) {
@@ -237,13 +237,13 @@ int main (int argc,const char* argv[])
         return 1;
     }
 
-    printf ("\nNext 3 lines: ");
+    //printf ("\nNext 3 lines: ");
     for (int i=0;i<3;i++) {
         printf ("\n\t");
         for (int kk=0;kk<ntin;kk++) {
             //scanf ("%lf", &tph[i][kk]);
             std::cin >> tph[i][kk];
-            printf (" %+08.5f", tph[i][kk]);
+            //printf (" %+08.5f", tph[i][kk]);
         }
         // Change sign for phase, to be negative for lags
         for (int kk=0;kk<ntin;kk++) {
@@ -275,21 +275,21 @@ int main (int argc,const char* argv[])
     printf ("\nCall to admint");
     iers2010::hisp::admint (amp,idt,phase,az,f,pz,ntin,ntout,it);
     // for (int i=0;i<nt;i++) printf ("\naz(%03i)=%14.6f",i,az[i]);
-    printf ("\nntout = %02i",ntout);
+    //printf ("\nntout = %02i",ntout);
     for (int i=0;i<ntin;i++) {
         amp[i] = tamp[1][i];
         phase[i] = tph[1][i];
     }
     printf ("\nCall to admint");
     iers2010::hisp::admint (amp,idt,phase,aw,f,pw,ntin,ntout,it);
-    printf ("\nntout = %02i",ntout);
+    //printf ("\nntout = %02i",ntout);
     for (int i=0;i<ntin;i++) {
         amp[i] = tamp[2][i];
         phase[i] = tph[2][i];
     }
     printf ("\nCall to admint");
     iers2010::hisp::admint (amp,idt,phase,as,f,ps,ntin,ntout,it);
-    printf ("\nntout = %02i",ntout);
+    //printf ("\nntout = %02i",ntout);
     // set up for recursion, by normalizing frequencies, and converting
     // phases to radians
     double wf[nt];
@@ -300,7 +300,7 @@ int main (int argc,const char* argv[])
         f[i]  = samp * PI * f[i]/43200.e0;
         wf[i] = f[i];
     }
-    printf ("\nntout = %02i",ntout);
+    //printf ("\nntout = %02i",ntout);
     
     // for (int i=0;i<ntout;i++) printf ("\n%14.6f",pz[i]);
     /*

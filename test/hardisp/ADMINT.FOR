@@ -305,18 +305,18 @@
 *----------------------------------------------------------------------
             CALL TDFRPH(IDD(1,KK),FR,PR)
             RF(K) = FR
-            WRITE (*,'(A,I2,A,F14.6,A,I2,A,F14.6,A,I2,A,F14.6)') 
-     .            'AMPIN(',LL,')=',AMPIN(LL),' PHIN(',LL,')=',
-     .            PHIN(LL),' TAMP(',KK,')=',TAMP(KK)
-            WRITE (*,'(A,F14.6,A,F14.6,A,F14.6)') 'RL=',RL(K),' AIM=',
-     .                 AIM(K),' RF=',RF(K)
+*            WRITE (*,'(A,I2,A,F14.6,A,I2,A,F14.6,A,I2,A,F14.6)') 
+*     .            'AMPIN(',LL,')=',AMPIN(LL),' PHIN(',LL,')=',
+*     .            PHIN(LL),' TAMP(',KK,')=',TAMP(KK)
+*            WRITE (*,'(A,F14.6,A,F14.6,A,F14.6)') 'RL=',RL(K),' AIM=',
+*     .                 AIM(K),' RF=',RF(K)
          ENDIF
       ENDDO
 
-      DO LL=1,K
-        WRITE (*,'(A,I3,A,F14.6,A,F14.6,A,F14.6)') 'RF(',LL,')=',RF(LL),
-     .         ' RL=',RL(LL),'AIM=',AIM(LL)
-      ENDDO
+*      DO LL=1,K
+*        WRITE (*,'(A,I3,A,F14.6,A,F14.6,A,F14.6)') 'RF(',LL,')=',RF(LL),
+*     .         ' RL=',RL(LL),'AIM=',AIM(LL)
+*      ENDDO
 *+---------------------------------------------------------------------
 *  Done going through constituents; there are k of them.
 *  Have specified admittance at a number of points. Sort these by frequency
@@ -360,12 +360,23 @@
          SF = F(J)
          IF(IDD(1,I).EQ.0) RE = EVAL(SF,NLP,RF,RL,ZDR)
          IF(IDD(1,I).EQ.0) AM = EVAL(SF,NLP,RF,AIM,ZDI)
+*         IF(IDD(1,I).EQ.0) THEN
+*            WRITE (*,'(A,I3,A,I3)') '0 = IDD(1,',I,') J=',J
+*         ENDIF
          IF(IDD(1,I).EQ.1) RE = EVAL(SF,NDI,RF(NLP+1),RL(NLP+1),DR)
          IF(IDD(1,I).EQ.1) AM = EVAL(SF,NDI,RF(NLP+1),AIM(NLP+1),DI)
+*         IF(IDD(1,I).EQ.1) THEN
+*            WRITE (*,'(A,I3,A,I3)') '1 = IDD(1,',I,') J=',J
+*         ENDIF
          IF(IDD(1,I).EQ.2) RE =
      .      EVAL(SF,NSD,RF(NLP+NDI+1),RL(NLP+NDI+1),SDR)
          IF(IDD(1,I).EQ.2) AM =
      .      EVAL(SF,NSD,RF(NLP+NDI+1),AIM(NLP+NDI+1),SDI)
+*         IF(IDD(1,I).EQ.2) THEN
+*            WRITE (*,'(A,I3,A,I3)') '2 = IDD(1,',I,') J=',J
+*         ENDIF
+         WRITE(*,'(A,I3,A,F14.6,A,F14.6,A,I1)') 'computing computing 
+     .   amp(',I,') with re=',RE,' am=',AM,' idd=',IDD(1,I)
          AMP(J) = TAMP(I)*SQRT(RE**2+AM**2)
          P(J) = P(J) + ATAN2(AM,RE)/DTR
          IF(P(J).GT.180) P(J)=P(J)-360.
@@ -373,6 +384,10 @@
  11      CONTINUE
       ENDDO
       NOUT = J - 1
+
+*      DO I=1,NOUT
+*          WRITE(*,'(A,I3,A,F14.6)') 'AMP(',I,') = ',AMP(I)
+*      ENDDO
       RETURN
 
 *  Finished.

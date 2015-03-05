@@ -353,26 +353,29 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
             iers2010::hisp::tdfrph (idd[i],itm,f[j],p[j]);
             //printf ("\nf=%14.6f p=%14.6f",f[j],p[j]);
             //  Compute phase corrections to equilibrium tide using function EVAL
-            if (idd[i][1] == 0)
+            if (idd[i][0] == 0) {
                 p[j] += 180.0e0;
-            if (idd[i][1] == 1)
+            } else if (idd[i][0] == 1) {
                 p[j] += 90.0e0;
-            sf = f[j];
-            if (idd[i][1] == 0) {
-                iers2010::hisp::eval (sf,nlp,rf,rl,zdr,re);
-                printf ("\nre=%14.6f (j=%05i)",re,j+1);
             }
-            if (idd[i][1] == 0) 
+            sf = f[j];
+            if (idd[i][0] == 0) {
+                iers2010::hisp::eval (sf,nlp,rf,rl,zdr,re);
+            //if (idd[i][1] == 0) 
                 iers2010::hisp::eval (sf,nlp,rf,aim,zdi,am);
-            if (idd[i][1] == 1) 
+                //printf ("\n0 = IDD(%3i,1) J=%3i",i+1,j+1);
+            } else if (idd[i][0] == 1) {
                 iers2010::hisp::eval (sf,ndi,rf+nlp,rl+nlp,dr,re);
-            if (idd[i][1] == 1) 
+            //if (idd[i][1] == 1) 
                 iers2010::hisp::eval (sf,ndi,rf+nlp,aim+nlp,di,am);
-            if (idd[i][1] == 2) 
+                //printf ("\n1 = IDD(%3i,1) J=%3i",i+1,j+1);
+            } else if (idd[i][0] == 2) {
                 iers2010::hisp::eval (sf,nsd,rf+nlp+ndi,rl+nlp+ndi,sdr,re);
-            if (idd[i][1] == 2) 
+            // if (idd[i][1] == 2) 
                 iers2010::hisp::eval (sf,nsd,rf+nlp+ndi,aim+nlp+ndi,sdi,am);
-
+                //printf ("\n2 = IDD(%3i,1) J=%3i",i+1,j+1);
+            }
+            printf ("\ncomputing amp(%3i) with re=%14.6f, am=%14.6f, idd=%1i",j+1,re,am,idd[i][0]);
             amp[j] = tamp[i]*sqrt (re*re+am*am);
             p[j] += atan2(am,re) / dtr;
         
@@ -385,6 +388,8 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     }
 
     nout = j-1;
+
+    //for (int i=0;i<nout;i++) printf ("\namp(%3i) = %14.6f",i,amp[i]);
     
     // Finished
     return 0;
