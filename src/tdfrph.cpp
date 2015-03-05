@@ -60,13 +60,21 @@ int iers2010::hisp::tdfrph (const int* idood,const int* itm,double& freq,
         
         // This will only use itm[0:2] and itm2[0:3], ie. itm1[0]=year and itm[1]=day of year
         iers2010::hisp::toymd (itm,itm2);
+        //for (int i=0;i<6;i++) printf ("\nitm2=%5i",itm2[i]);
         int    jd     ( iers2010::hisp::juldat(itm2) );
+        //printf ("\njd=%10i",jd);
         double dayfr  ( itm[2]/24.0e0 + itm[3]/1440.0e0 + itm[4]/84600.0e0 );
+        //printf ("\ndayfr=%20.18f",dayfr);
         double year   ( itm[0]+(itm[1]+dayfr) / 
                 ( 365.0e0 + (double) iers2010::hisp::leap (itm[0]) ) );
+        //printf ("\nyear=%25.18f",year);
         double delta  ( iers2010::hisp::etutc (year) );
         double djd    ( (double) jd - 0.5e0 + dayfr );
+        //printf ("\ndjd=%20.10f",djd);
+        //printf ("\ndelta=%20.18f",delta);
+        delta = .0e0;
         double t      ( (djd - 2451545.0e0 + delta/86400.0e0)/36525.0e0 );
+        //printf ("\nt=%20.18f",t);
         
         // IERS expressions for the Delaunay arguments, in degrees
         
@@ -136,8 +144,10 @@ int iers2010::hisp::tdfrph (const int* idood,const int* itm,double& freq,
     freq  = 0.0e0;
     phase = 0.0e0;
     for (int i=0;i<6;i++) {
-        freq  += idood[i]*dd[i];
-        phase += idood[i]*d[i];
+        if ( idood[i] ) {
+            freq  += ((double) idood[i]) * dd[i];
+            phase += ((double) idood[i]) * d[i];
+        }
     }
     
     // Adjust phases so that they fall in the positive range 0 to 360

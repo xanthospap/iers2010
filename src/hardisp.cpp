@@ -272,6 +272,7 @@ int main (int argc,const char* argv[])
         amp[i]   = tamp[0][i];
         phase[i] = tph[0][i];
     }
+    printf ("\nCall to admint");
     iers2010::hisp::admint (amp,idt,phase,az,f,pz,ntin,ntout,it);
     // for (int i=0;i<nt;i++) printf ("\naz(%03i)=%14.6f",i,az[i]);
     printf ("\nntout = %02i",ntout);
@@ -279,12 +280,14 @@ int main (int argc,const char* argv[])
         amp[i] = tamp[1][i];
         phase[i] = tph[1][i];
     }
+    printf ("\nCall to admint");
     iers2010::hisp::admint (amp,idt,phase,aw,f,pw,ntin,ntout,it);
     printf ("\nntout = %02i",ntout);
     for (int i=0;i<ntin;i++) {
         amp[i] = tamp[2][i];
         phase[i] = tph[2][i];
     }
+    printf ("\nCall to admint");
     iers2010::hisp::admint (amp,idt,phase,as,f,ps,ntin,ntout,it);
     printf ("\nntout = %02i",ntout);
     // set up for recursion, by normalizing frequencies, and converting
@@ -336,6 +339,7 @@ int main (int argc,const char* argv[])
 
         for (int i=0;i<np;i++)
             printf ("\n[%02i] %+14.6f %+14.6f %+14.6f",i+1,dz[i],ds[i],dw[i]);
+        printf ("\n");
 
         if (irhi==irnt)
             break;

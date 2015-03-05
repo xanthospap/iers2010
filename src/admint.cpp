@@ -301,53 +301,67 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     
     for (int i=0;i<k;i++)
         aim[i] = scr[i];
-    //printf ("\nthree more loops seem ok ... ");
-    //printf ("\n");
+
+    // for (int i=0;i<k;i++) printf ("\nrf(%03i)=%14.6f",i,rf[i]);
+    // for (int i=0;i<k;i++) printf ("\nrl(%03i)=%14.6f",i,rl[i]);
+    // for (int i=0;i<k;i++) printf ("\naim(%03i)=%14.6f",i,aim[i]);
+    // All of these are OK (i.e rf,rl,aim)
     /*+---------------------------------------------------------------------
     * now set up splines (8 cases - four species, each real and imaginary)
     * We have to allow for the case when there are no constituent amplitudes
     * for the long-period tides.
     *----------------------------------------------------------------------*/
-    if (nlp)
+    if (nlp) {
         iers2010::hisp::spline (nlp,rf,rl,zdr,scr);
-    if (nlp)
+        //for (int i=0;i<nlp;i++) printf ("\nzdr(%03i) = %14.6f",i+1,zdr[i]);
+    }
+    if (nlp) {
         iers2010::hisp::spline (nlp,rf,aim,zdi,scr);
+        //for (int i=0;i<nlp;i++) printf ("\nzdi(%03i) = %14.6f",i+1,zdi[i]);
+    }
     //printf ("\nsplines seems ok ... ");
     //printf ("\n");
 
     //printf ("\nbefore going in, ndi=%2i, nlp=%2i, ncon=%2i",ndi,nlp,ncon);
     //printf ("\n");
     iers2010::hisp::spline (ndi,rf+nlp,rl+nlp,dr,scr);
+    //for (int i=0;i<ndi;i++) printf ("\nrf=%14.6f rl=%14.6f",*(rf+nlp+i),*(rl+nlp+i));
+    //for (int i=0;i<ndi;i++) printf ("\ndr(%03i) = %14.6f",i+1,dr[i]);
     //printf ("\nspline 1 ok");
     //printf ("\n");
     iers2010::hisp::spline (ndi,rf+nlp,aim+nlp,di,scr);
+    //for (int i=0;i<ndi;i++) printf ("\ndi(%03i) = %14.6f",i+1,di[i]);
     //printf ("\nspline 2 ok");
     //printf ("\n");
     iers2010::hisp::spline (nsd,rf+nlp+ndi,rl+nlp+ndi,sdr,scr);
+    //for (int i=0;i<nsd;i++) printf ("\nsdr(%03i) = %14.6f",i+1,sdr[i]);
     //printf ("\nspline 3 ok");
     //printf ("\n");
     iers2010::hisp::spline (nsd,rf+nlp+ndi,aim+nlp+ndi,sdi,scr);
+    //for (int i=0;i<nsd;i++) printf ("\nsdi(%03i) = %14.6f",i+1,sdi[i]);
     //printf ("\neven more splines seems ok ... ");
     //printf ("\n");
     
     // Evaluate all harmonics using the interpolated admittance
     //printf ("\nFinal step: harmonics");
     //printf ("\n");
-    int j = 1;
+    int j = 0;
     for (int i=0;i<nt;i++) {
         //printf ("\n-->idd[%03i][0] = %02i",i,idd[i][0]);
         if ( idd[i][0] + nlp ) {
-
+            // printf ("\nin loop i=%3i j=%03i idd=%03i nlp=%03i",i+1,j+1,idd[i][0],nlp);
             iers2010::hisp::tdfrph (idd[i],itm,f[j],p[j]);
-        
+            //printf ("\nf=%14.6f p=%14.6f",f[j],p[j]);
             //  Compute phase corrections to equilibrium tide using function EVAL
             if (idd[i][1] == 0)
                 p[j] += 180.0e0;
             if (idd[i][1] == 1)
                 p[j] += 90.0e0;
             sf = f[j];
-            if (idd[i][1] == 0) 
+            if (idd[i][1] == 0) {
                 iers2010::hisp::eval (sf,nlp,rf,rl,zdr,re);
+                printf ("\nre=%14.6f (j=%05i)",re,j+1);
+            }
             if (idd[i][1] == 0) 
                 iers2010::hisp::eval (sf,nlp,rf,aim,zdi,am);
             if (idd[i][1] == 1) 

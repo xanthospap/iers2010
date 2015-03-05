@@ -9,7 +9,7 @@
  * @param[in]  nn   Number of samples of the original function
  * @param[in]  x    Array containing sample coordinates x(1),x(2),...x(nn) (Note 2)
  * @param[in]  s    Array containing the 2nd derivatives at the sample points (Note 3)
- * @param[in]  u    Array containing samples of a function at the coordinates 
+ * @param[out] u    Array containing samples of a function at the coordinates 
  *                  x(1),x(2),...x(nn)
  * @param[out] val  The interpolated value of the function at y
  * @return          Zero on success; else 1.
@@ -24,10 +24,11 @@
  * @version 2009 August 19
  * 
  */
-int iers2010::hisp::eval (const double& y, const int& nn, const double* x, const double* s, const double* u, 
-                          double& val)
+int iers2010::hisp::eval (const double& y,const int& nn,const double* x,
+        const double* u,const double* s,double& val)
 {
-  if (nn < 0) return 1;
+  if (nn < 0)
+      return 1;
   
   // find index k, such that x[k-1] < y <= x[k]
   int k = std::distance ( x, std::lower_bound (x,x+nn,y) );
@@ -51,7 +52,8 @@ int iers2010::hisp::eval (const double& y, const int& nn, const double* x, const
   double dy = x[k2] - y;
   double dy1 = y - x[k1];
   double dk = x[k2] - x[k1];
-  if (dk < 1e-15) return 1;
+  if (dk < 1e-15)
+      return 1;
   double deli = 1.0e0 / (6.0e0 * dk);
   double ff1 = s[k1]*dy*dy*dy;
   double ff2 = s[k2]*dy1*dy1*dy1;
