@@ -37,23 +37,17 @@ int iers2010::hisp::spline (const int& nn,const double* x,const double* u,
         double* s,double* a)
 {
     //constexpr int nmax = 20;
-    //printf ("\n\tinto spline ... ");
-    const int n ( abs (nn) );
+    const int n ( std::abs (nn) );
     
     if (n<=3) {
         // series too short for cubic spline - use straight lines.
         for (int i=0;i<n;i++)
             s[i] = 0.0e0;
-        //printf ("... short exit; ok\n");
         return 0;
     }
 
-    //for (int i=0;i<n;i++)
-    //    printf ("\nx=%14.6f u=%14.6f",x[i],u[i]);
-    
     double q1 ( q(u[1]-u[0],x[1]-x[0],u[2]-u[0],x[2]-x[0]) );
     double qn ( q(u[n-2]-u[n-1],x[n-2]-x[n-1],u[n-3]-u[n-1],x[n-3]-x[n-1]) );
-    //printf ("\nq1=%14.6f, qn=%14.6f",q1,qn);
     
     if (nn<=0) {
         q1 = s[0];
@@ -61,21 +55,16 @@ int iers2010::hisp::spline (const int& nn,const double* x,const double* u,
     }
     
     s[0] = 6.0e0*((u[1]-u[0])/(x[1]-x[0]) - q1);
-    //printf ("\ns[1]=%14.6f",s[0]);
     int n1 ( n - 1 );
-    //printf ("\nBounds: n1 = %02i, n = %02i, nn = %02i",n1,n,nn);
     
-    for (int i=1;i<n1;i++) {
+    for (int i=1;i<n1;i++) 
         s[i] = (u[i-1]/(x[i]-x[i-1]) - u[i]*(1.0e0/(x[i]-x[i-1]) 
                   + 1.0e0/(x[i+1]-x[i])) + u[i+1]/(x[i+1]-x[i]))*6.0e0;
-        //printf ("\ns(%03i)=%14.6f",i+1,s[i]);
-    }
 
     s[n-1] = 6.0e0*(qn + (u[n1-1]-u[n-1])/(x[n-1]-x[n1-1]));
     a[0]   = 2.0e0*(x[1]-x[0]);
     a[1]   = 1.5e0*(x[1]-x[0]) + 2.0e0*(x[2]-x[1]);
     s[1]   = s[1] - 0.5e0*s[0];
-    //printf ("\ns[n]=%14.6f s[2]=%14.6f",s[n-1],s[1]);
     
     double c;
     for (int i=2;i<n1;i++) {
@@ -94,12 +83,8 @@ int iers2010::hisp::spline (const int& nn,const double* x,const double* u,
     
     for (int j=1;j<=n1;j++) {
         int i (n - j - 1);
-        s[i] =(s[i] - (x[i+1]-x[i])*s[i+1]) / a[i];
-        //printf ("\ns(%1i)=%14.6f",i+1,s[i]);
+        s[i] = (s[i] - (x[i+1]-x[i])*s[i+1]) / a[i];
     }
-    //printf ("\naccessing s(%2i), x(%2i), x(%2i), s(%2i), a(%2i)",i,i+1,i,i+1,i);
-    //printf ("... exiting\n");
-    //for (int i=0;i<n;i++) printf ("\ns[%1i]=%14.6f",i+1,s[i]);
     
     // Finished
     return 0;

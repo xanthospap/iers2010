@@ -44,10 +44,6 @@
 #include <cmath>
 #include <algorithm>
 
-#ifdef USE_EXTERNAL_CONSTS
-  #include "gencon.hpp"
-# endif
-
 namespace iers2010 {
 
     namespace hisp {
@@ -70,8 +66,8 @@ namespace iers2010 {
 
         int tdfrph (const int*,const int*,double&,double&);
 
-        int admint (const double*,const int [][6],
-        const double*,double*,double*,double*,const int&,int&,const int*);
+        int admint (const double*,const int [][6],const double*,double*,
+                double*,double*,const int&,int&,const int*);
 
         /**
          * @details This function finds the day number of days before start of 
@@ -86,9 +82,9 @@ namespace iers2010 {
          * @version 2009 July  29
          * 
          */
-        inline int mday (const int& iy, const int& m)
+        inline int mday (const int& iy,const int& m)
         {
-            int leap = iers2010::hisp::leap (iy);
+            int leap ( iers2010::hisp::leap (iy) );
             return (((367*(m-2-12*((m-14)/12)))/12+29) % (365)) + 
                 leap*((9+m)/12);
         }
@@ -119,8 +115,8 @@ namespace iers2010 {
                 (3*((it[0]+4900+(it[1]-14)/12)/100))/4+it[2]-32075;
         }
 
-  }
+  } /* end namespace hisp */
 
-}
+}/* end namespace iers2010 */
 
 #endif

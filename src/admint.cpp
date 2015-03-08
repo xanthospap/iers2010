@@ -313,7 +313,8 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     for (int i=0;i<nt;i++) {
         if ( idd[i][0] + nlp ) {
             iers2010::hisp::tdfrph (idd[i],itm,f[j],p[j]);
-            //  Compute phase corrections to equilibrium tide using function EVAL
+            //  Compute phase corrections to equilibrium tide using 
+            //  function 'eval'
             if (idd[i][0] == 0) {
                 p[j] += 180.0e0;
             } else if (idd[i][0] == 1) {

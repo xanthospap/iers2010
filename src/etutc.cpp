@@ -42,22 +42,22 @@
  * @version 2012 March 13
  * 
  */
-  double iers2010::hisp::etutc (const double& year)
-  {
-      constexpr int nstep ( 25 );
+double iers2010::hisp::etutc (const double& year)
+{
+    constexpr int nstep ( 25 );
       
-      //  si gives amount of step, at the times given in st
-      //+ but all of them are 1.0
-      // const double si [] = ... ;
+    //  si gives amount of step, at the times given in st
+    //+ but all of them are 1.0
+    // const double si [] = ... ;
       
-      static constexpr double st[] = {
+    static constexpr double st[] = {
         1972.5,1973.0,1974.0,1975.0,1976.0,1977.0,1978.0,
         1979.0,1980.0,1981.5,1982.5,1983.5,1985.5,1988.0,
         1990.0,1991.0,1992.5,1993.5,1994.5,1996.0,1997.5,
         1999.0,2006.0,2009.0,2012.5
-      };
+    };
       
-      static const double d[142] = {
+    static const double d[142] = {
         5.15e0, 4.64e0, 5.36e0, 3.49e0, 3.27e0, 2.45e0, 4.03e0, 1.76e0, 3.30e0,
         1.00e0, 2.42e0, 0.94e0, 2.31e0, 2.27e0,-0.22e0, 0.03e0,-0.05e0,-0.06e0,-0.57e0,
         0.03e0,-0.47e0, 0.98e0,-0.86e0, 2.45e0, 0.22e0, 0.37e0, 2.79e0, 1.20e0, 3.52e0,
@@ -73,9 +73,9 @@
         23.80e0,24.20e0,24.99e0,24.97e0,25.72e0,26.21e0,26.37e0,26.89e0,27.68e0,28.13e0,
         28.94e0,29.42e0,29.66e0,30.29e0,30.96e0,31.09e0,31.59e0,32.06e0,31.82e0,32.69e0,
         33.05e0,33.16e0,33.59
-      };
-      
-      static const double tx[39] = {
+    };
+    
+    static const double tx[39] = {
         61.5e0,
         62.e0     ,62.5e0     ,63.e0      ,63.5e0     ,64.e0      ,64.5e0     ,65.e0   ,
         65.5e0    ,66.e0      ,66.5e0     ,67.e0      ,67.5e0     ,68.e0      ,68.25e0 ,
@@ -83,9 +83,9 @@
         70.25e0   ,70.5e0     ,70.75e0    ,71.e0      ,71.085e0   ,71.162e0   ,71.247e0,
         71.329e0  ,71.414e0   ,71.496e0   ,71.581e0   ,71.666e0   ,71.748e0   ,71.833e0,
         71.915e0  ,71.999e0   ,72.0e0
-      };
-      
-      static const double ty[39] = {
+    };
+    
+    static const double ty[39] = {
         33.59e0,
         34.032e0  ,34.235e0   ,34.441e0   ,34.644e0   ,34.95e0    ,35.286e0   ,35.725e0,
         36.16e0   ,36.498e0   ,36.968e0   ,37.444e0   ,37.913e0   ,38.39e0    ,38.526e0,
@@ -93,50 +93,48 @@
         40.42e0   ,40.654e0   ,40.892e0   ,41.131e0   ,41.211e0   ,41.284e0   ,41.364e0,
         41.442e0  ,41.522e0   ,41.600e0   ,41.680e0   ,41.761e0   ,41.838e0   ,41.919e0,
         41.996e0  ,42.184e0   ,42.184e0
-      };
+    };
       
-      double delta (.0e0);
-      
-      // For the oldest epochs, use approximations
-      if (year<1700) 
-        return /*delta =*/ .0e0;
-        
-      else if ( year < 1785.0)
+    double delta (.0e0);
+    
+    // For the oldest epochs, use approximations
+    if (year<1700) {
+        return /*delta =*/ .0e0; 
+    } else if ( year < 1785.0) {
         return /*delta =*/ (year-1750.0e0)/5.0e0;
-        
-      else if ( year < 1820.5 )
+    } else if ( year < 1820.5 ) {
         return /*delta =*/ 6.0e0;
-        
-      // For 1820.5 to 1961.5, data is spaced at yearly intervals
-      else if ( year < 1961.5 ) {
+    // For 1820.5 to 1961.5, data is spaced at yearly intervals
+    } else if ( year < 1961.5 ) {
         int n = year - 1819.5e0;
         double frac  = year - (1819.5e0 + n);
         delta = (d[n] - d[n-1])*frac + d[n-1];
-        return delta;
-      }
-
-      // For 1961.5 to 1972.0, interpolate between unequispaced data
-      else if ( year < 1972.0 ) {
-        for (int i = 0;i<38;i++) {
-          if ( (year-1900.0) == tx[i] ) {
-            return /*delta =*/ty[i];
-          }
-          if ( (year-1900.0) < tx[i] ) {
-            delta = ty[i-1] + (ty[i]-ty[i-1])*
-                    ((year-1900.0e0-tx[i-1])/(tx[i]-tx[i-1]));
-            return delta;
-          } if (year >= st[i]) delta += /*si[i]*/1.0e0;
+        return delta;   
+    // For 1961.5 to 1972.0, interpolate between unequispaced data
+    } else if ( year < 1972.0 ) {
+        for (int i=0;i<38;i++) {
+            if ( (year-1900.0) == tx[i] ) {
+                return /*delta =*/ty[i];
+            } else if ( (year-1900.0) < tx[i] ) {
+                delta = ty[i-1] + (ty[i]-ty[i-1])*
+                ((year-1900.0e0-tx[i-1])/(tx[i]-tx[i-1]));
+                return delta;
+            } 
+            if (year >= st[i]) 
+                delta += /*si[i]*/1.0e0;
         }
-      }
-
+    }
+    
     /*--------------------------------------------------------------------------*
-    *   after 1972 et-utc has only step offsets. st is the array of step times,*
-    *   and si is the step sizes (an added second is +1.)                      *
-    *--------------------------------------------------------------------------*/
+     *   after 1972 et-utc has only step offsets. st is the array of step times,*
+     *   and si is the step sizes (an added second is +1.)                      *
+     *--------------------------------------------------------------------------*/
     delta = 42.184e0;
     for (int i=0;i<nstep;i++) {
-      if (year >= st[i]) delta += /*si[i]*/1.0e0;
-      if (year < st[i]) return delta;
+        if (year >= st[i]) 
+            delta += /*si[i]*/1.0e0;
+        if (year < st[i]) 
+            return delta;
     }
     
     return delta;
