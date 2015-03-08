@@ -39,10 +39,9 @@
  * 
  */
 int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
-    const double* phin,double* amp,double* f,double* p,const int& nin,
-    int& nout, const int* itm)
+        const double* phin,double* amp,double* f,double* p,const int& nin,
+        int& nout, const int* itm)
  {
-    //printf ("\n--In admint\n");
     /*+----------------------------------------------------------------------
     *  The parameters below set the number of harmonics used in the prediction
     *  (nt; This must also be set in the main program) and the number of
@@ -235,8 +234,6 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     int nlp ( 0 );
     int ndi ( 0 );
     int nsd ( 0 );
-    //printf ("\nSaying hello before looping starts ...");
-    //printf ("\n");
     
     for (int ll=0;ll<nin;ll++) {
         int ii;
@@ -251,28 +248,22 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
         
             // If you have a match, put line into array [5]
             if ( (!ii) && k<ncon ) {
-                //printf ("\nInto llop 5; ii=%03i, k=%03i",ii,k);
+                
                 rl[k] = ampin[ll] * cos (dtr*phin[ll]) / std::abs (tamp[kk]);
                 aim[k]= ampin[ll] * sin (dtr*phin[ll]) / std::abs (tamp[kk]);
-                /*+---------------------------------------------------------------------
-                * Now have real and imaginary parts of admittance, scaled by Cartwright-
-                * Edden amplitude. Admittance phase is whatever was used in the original
-                * expression. (Usually phase is given relative to some reference,
-                * but amplitude is in absolute units). Next get frequency.
-                *---------------------------------------------------------------------*/
+                /*+------------------------------------------------------------
+                * Now have real and imaginary parts of admittance, scaled by 
+                * Cartwright-Edden amplitude. Admittance phase is whatever was 
+                * used in the original expression. (Usually phase is given 
+                * relative to some reference, but amplitude is in absolute 
+                * units). Next get frequency.
+                *------------------------------------------------------------*/
                 iers2010::hisp::tdfrph (idd[kk],itm,fr,pr);
                 rf[k] = fr;
-                //printf ("\nampin(%03i)=%14.6f phin(%03i)=%14.6f tamp(%03i)=%14.6f",
-                //        ll,ampin[ll],ll,phin[ll],kk,tamp[kk]);
-                //printf ("\nrl=%14.6f aim=%14.6f rf=%14.6f",rl[k],aim[k],rf[k]);
                 k++;
             }
         }
     }
-    //for (int i=0;i<k;i++) 
-    //    printf ("\nrf(%03i)=%14.6f rl=%14.6f aim=%14.6f",i,rf[i],rl[i],aim[i]);
-    //printf ("\nloop with ll seems ok ... ");
-    //printf ("\n");
 
     /*+---------------------------------------------------------------------
     * Done going through constituents; there are k of them.
@@ -281,8 +272,6 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     * in order using Shell Sort.
     *----------------------------------------------------------------------*/
     iers2010::hisp::shells (rf,key,k);
-    //printf ("\nshells seems ok ... ");
-    //printf ("\n");
     
     for (int i=0;i<k;i++) {
         if (rf[i] < 0.5e0)
@@ -302,10 +291,6 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     for (int i=0;i<k;i++)
         aim[i] = scr[i];
 
-    // for (int i=0;i<k;i++) printf ("\nrf(%03i)=%14.6f",i,rf[i]);
-    // for (int i=0;i<k;i++) printf ("\nrl(%03i)=%14.6f",i,rl[i]);
-    // for (int i=0;i<k;i++) printf ("\naim(%03i)=%14.6f",i,aim[i]);
-    // All of these are OK (i.e rf,rl,aim)
     /*+---------------------------------------------------------------------
     * now set up splines (8 cases - four species, each real and imaginary)
     * We have to allow for the case when there are no constituent amplitudes
@@ -313,45 +298,21 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     *----------------------------------------------------------------------*/
     if (nlp) {
         iers2010::hisp::spline (nlp,rf,rl,zdr,scr);
-        //for (int i=0;i<nlp;i++) printf ("\nzdr(%03i) = %14.6f",i+1,zdr[i]);
     }
     if (nlp) {
         iers2010::hisp::spline (nlp,rf,aim,zdi,scr);
-        //for (int i=0;i<nlp;i++) printf ("\nzdi(%03i) = %14.6f",i+1,zdi[i]);
     }
-    //printf ("\nsplines seems ok ... ");
-    //printf ("\n");
 
-    //printf ("\nbefore going in, ndi=%2i, nlp=%2i, ncon=%2i",ndi,nlp,ncon);
-    //printf ("\n");
     iers2010::hisp::spline (ndi,rf+nlp,rl+nlp,dr,scr);
-    //for (int i=0;i<ndi;i++) printf ("\nrf=%14.6f rl=%14.6f",*(rf+nlp+i),*(rl+nlp+i));
-    //for (int i=0;i<ndi;i++) printf ("\ndr(%03i) = %14.6f",i+1,dr[i]);
-    //printf ("\nspline 1 ok");
-    //printf ("\n");
     iers2010::hisp::spline (ndi,rf+nlp,aim+nlp,di,scr);
-    //for (int i=0;i<ndi;i++) printf ("\ndi(%03i) = %14.6f",i+1,di[i]);
-    //printf ("\nspline 2 ok");
-    //printf ("\n");
     iers2010::hisp::spline (nsd,rf+nlp+ndi,rl+nlp+ndi,sdr,scr);
-    //for (int i=0;i<nsd;i++) printf ("\nsdr(%03i) = %14.6f",i+1,sdr[i]);
-    //printf ("\nspline 3 ok");
-    //printf ("\n");
     iers2010::hisp::spline (nsd,rf+nlp+ndi,aim+nlp+ndi,sdi,scr);
-    //for (int i=0;i<nsd;i++) printf ("\nsdi(%03i) = %14.6f",i+1,sdi[i]);
-    //printf ("\neven more splines seems ok ... ");
-    //printf ("\n");
     
     // Evaluate all harmonics using the interpolated admittance
-    //printf ("\nFinal step: harmonics");
-    //printf ("\n");
     int j = 0;
     for (int i=0;i<nt;i++) {
-        //printf ("\n-->idd[%03i][0] = %02i",i,idd[i][0]);
         if ( idd[i][0] + nlp ) {
-            // printf ("\nin loop i=%3i j=%03i idd=%03i nlp=%03i",i+1,j+1,idd[i][0],nlp);
             iers2010::hisp::tdfrph (idd[i],itm,f[j],p[j]);
-            //printf ("\nf=%14.6f p=%14.6f",f[j],p[j]);
             //  Compute phase corrections to equilibrium tide using function EVAL
             if (idd[i][0] == 0) {
                 p[j] += 180.0e0;
@@ -361,21 +322,14 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
             sf = f[j];
             if (idd[i][0] == 0) {
                 iers2010::hisp::eval (sf,nlp,rf,rl,zdr,re);
-            //if (idd[i][1] == 0) 
                 iers2010::hisp::eval (sf,nlp,rf,aim,zdi,am);
-                //printf ("\n0 = IDD(%3i,1) J=%3i",i+1,j+1);
             } else if (idd[i][0] == 1) {
                 iers2010::hisp::eval (sf,ndi,rf+nlp,rl+nlp,dr,re);
-            //if (idd[i][1] == 1) 
                 iers2010::hisp::eval (sf,ndi,rf+nlp,aim+nlp,di,am);
-                //printf ("\n1 = IDD(%3i,1) J=%3i",i+1,j+1);
             } else if (idd[i][0] == 2) {
                 iers2010::hisp::eval (sf,nsd,rf+nlp+ndi,rl+nlp+ndi,sdr,re);
-            // if (idd[i][1] == 2) 
                 iers2010::hisp::eval (sf,nsd,rf+nlp+ndi,aim+nlp+ndi,sdi,am);
-                //printf ("\n2 = IDD(%3i,1) J=%3i",i+1,j+1);
             }
-            printf ("\ncomputing amp(%3i) with re=%14.6f, am=%14.6f, idd=%1i",j+1,re,am,idd[i][0]);
             amp[j] = tamp[i]*sqrt (re*re+am*am);
             p[j] += atan2(am,re) / dtr;
         
@@ -389,8 +343,6 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
 
     nout = j-1;
 
-    //for (int i=0;i<nout;i++) printf ("\namp(%3i) = %14.6f",i,amp[i]);
-    
     // Finished
     return 0;
  }

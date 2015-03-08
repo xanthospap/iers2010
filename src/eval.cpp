@@ -31,7 +31,7 @@ int iers2010::hisp::eval (const double& y,const int& nn,const double* x,
       return 1;
   
   // find index k, such that x[k-1] < y <= x[k]
-  int k = std::distance ( x, std::lower_bound (x,x+nn,y) );
+  int k = std::distance (x,std::lower_bound (x,x+nn,y));
   
   int k2 = k;
   int k1 = k-1;
@@ -39,11 +39,11 @@ int iers2010::hisp::eval (const double& y,const int& nn,const double* x,
   // handle out of bounds; substitute endpoint values
   if (k >= nn) {
     //double dk = x[k2] - x[k1];
-    val = x[nn-1];
+    val = u[nn-1];
     return 0;
   } 
   else if (k == 0) {
-    val = x[0];
+    val = u[0];
     return 0;
   }
   
@@ -52,7 +52,7 @@ int iers2010::hisp::eval (const double& y,const int& nn,const double* x,
   double dy = x[k2] - y;
   double dy1 = y - x[k1];
   double dk = x[k2] - x[k1];
-  if (dk < 1e-15)
+  if (dk < 1e-30)
       return 1;
   double deli = 1.0e0 / (6.0e0 * dk);
   double ff1 = s[k1]*dy*dy*dy;
@@ -61,6 +61,7 @@ int iers2010::hisp::eval (const double& y,const int& nn,const double* x,
   double f2 = dy1*((u[k2]/dk)-(s[k2]*dk)/6.0e0);
   double f3 = dy*((u[k1]/dk)-(s[k1]*dk)/6.0e0);
   val = f1 + f2 + f3;
+  //printf ("\nEVAL: F1=%14.6f F2=%14.6f F3=%14.6f",f1,f2,f3);
   
   // Finished
   return 0;
