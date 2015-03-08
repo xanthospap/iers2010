@@ -42,10 +42,6 @@
 #include <numeric>
 #include <cmath>
 
-#ifdef USE_EXTERNAL_CONSTS
-    #include "gencon.hpp"
-#endif
-
 namespace iers2010 {
   
     namespace dtel {

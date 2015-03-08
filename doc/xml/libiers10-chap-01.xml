@@ -175,6 +175,166 @@
                 </tbody>
             </tgroup>
         </table>
+        
+        <para></para>
+        
+        <table frame='all' id="avfuntab_support">
+            <title>Support Functions</title>
+            <tgroup cols="7" colsep='1' rowsep='1'>
+                <thead>
+                    <row>
+                        <entry>Chapter<footnote><para>This refers to the chapter of IERS <citetitle>Technical Note 36</citetitle> document; for more information, see <xref linkend="chap_07_02" />.</para></footnote></entry>
+                        <entry>Function Name</entry>
+                        <entry>Namespace</entry>
+                        <entry>Purpose</entry>
+                        <entry>Original Function Name</entry>
+                        <entry>Comments</entry>
+                        <entry>Original author (fortran)</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    
+                    <row>
+                        <entry morerows='16' valign='middle'>Chapter 7</entry>
+                        <entry><function>st1idiu</function></entry><entry>iers2010::dtel</entry>
+                        <entry>compute the out-of-phase corrections induced by mantle anelasticity in the diurnal band</entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ST1IDIU.F">ST1IDIU.F</ulink></entry>
+                        <entry>called by dehanttideinel</entry>
+                        <entry>V. Dehant</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>st1isem</function></entry><entry>iers2010::dtel</entry>
+                        <entry>compute out-of-phase corrections induced by mantle anelasticity in the semi-diurnal band</entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ST1ISEM.F">ST1ISEM.F</ulink></entry>
+                        <entry>called by dehanttideinel</entry>
+                        <entry>V. Dehant</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>st1l1</function></entry><entry>iers2010::dtel</entry>
+                        <entry>compute corrections induced by the latitude dependence given by L<superscript>1</superscript></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ST1L1.F">ST1L1.F</ulink></entry>
+                        <entry>called by dehanttideinel</entry>
+                        <entry>V. Dehant</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>step2diu</function></entry><entry>iers2010::dtel</entry>
+                        <entry>compute the in-phase and out-of-phase corrections induced by mantle anelasticity in the diurnal band</entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/STEP2DIU.F">STEP2DIU.F</ulink></entry>
+                        <entry>called by dehanttideinel</entry>
+                        <entry>V. Dehant</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>step2lon</function></entry><entry>iers2010::dtel</entry>
+                        <entry>compute the in-phase and out-of-phase corrections induced by mantle anelasticity in the long period band</entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/STEP2LON.F">STEP2LON.F</ulink></entry>
+                        <entry>called by dehanttideinel</entry>
+                        <entry>V. Dehant</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>_sprod_</function></entry><entry>iers2010::dtel</entry>
+                        <entry>compute the scalar product of two vectors and their norms.</entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/SPROD.F">SPROD.F</ulink></entry>
+                        <entry>called by dehanttideinel</entry>
+                        <entry>V. Dehant</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>admint</function></entry><entry>iers2010::hisp</entry>
+                        <entry></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/ADMINT.F">ADMINT.F</ulink></entry>
+                        <entry>called by hardisp</entry>
+                        <entry>D. Agnew</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>etutc</function></entry><entry>iers2010::hisp</entry>
+                        <entry></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/ETUTC.F">ETUTC.F</ulink></entry>
+                        <entry>called by hardisp</entry>
+                        <entry></entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>eval</function></entry><entry>iers2010::hisp</entry>
+                        <entry></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/EVAL.F">EVAL.F</ulink></entry>
+                        <entry>called by hardisp</entry>
+                        <entry>D. Agnew</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>juldat</function></entry><entry>iers2010::hisp</entry>
+                        <entry></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/JULDAT.F">JULDAT.F</ulink></entry>
+                        <entry>called by hardisp</entry>
+                        <entry>D. Agnew</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>leap</function></entry><entry>iers2010::hisp</entry>
+                        <entry></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/LEAP.F">LEAP.F</ulink></entry>
+                        <entry>called by hardisp; implemented in <filename>utils.cpp</filename></entry>
+                        <entry>D. Agnew</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>mday</function></entry><entry>iers2010::hisp</entry>
+                        <entry></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/MDAY.F">MDAY.F</ulink></entry>
+                        <entry>called by hardisp</entry>
+                        <entry>D. Agnew</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>recurs</function></entry><entry>iers2010::hisp</entry>
+                        <entry></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/RECURS.F">RECURS.F</ulink></entry>
+                        <entry>called by hardisp</entry>
+                        <entry>D. Agnew</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>shells</function></entry><entry>iers2010::hisp</entry>
+                        <entry></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/SHELLS.F">SHELLS.F</ulink></entry>
+                        <entry>called by hardisp</entry>
+                        <entry>D. Agnew</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>spline</function></entry><entry>iers2010::hisp</entry>
+                        <entry></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/SPLINE.F">SPLINE.F</ulink></entry>
+                        <entry>called by hardisp</entry>
+                        <entry>D. Agnew</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>tdfrph</function></entry><entry>iers2010::hisp</entry>
+                        <entry></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/TDFRPH.F">TDFRPH.F</ulink></entry>
+                        <entry>called by hardisp</entry>
+                        <entry>D. Agnew</entry>
+                    </row>
+                    
+                    <row>
+                        <entry><function>toymd</function></entry><entry>iers2010::hisp</entry>
+                        <entry></entry>
+                        <entry><ulink url="ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/TOYMD.F">TOYMD.F</ulink></entry>
+                        <entry>called by hardisp; implemented in <filename>utils.cpp</filename></entry>
+                        <entry>D. Agnew</entry>
+                    </row>
+                    
+                </tbody>
+            </tgroup>
+        </table>
+        
     </section>
     
     <section id="chap_01_04"><title>Contents and Structure</title>

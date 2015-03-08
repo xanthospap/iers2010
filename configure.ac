@@ -62,7 +62,7 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  test/Makefile
                  doc/Makefile
-                 script/Makefile
-                 alternatives/Makefile])
+                 script/Makefile])
+#                 alternatives/Makefile])
 
 AC_OUTPUT

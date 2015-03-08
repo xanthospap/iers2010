@@ -24,9 +24,9 @@ int iers2010::hisp::toymd (const int* it1, int* it2)
     {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366}
   };
 
-  long leap  = ( (*it1) % 4 == 0 );
-  long guess = it1[1] * 0.032;
-  long more  = ( ( it1[1] - month_day[leap][guess+1] ) > 0 );
+  long leap  ( (*it1) % 4 == 0 );
+  long guess ( it1[1] * 0.032 );
+  long more  ( ( (it1[1] - month_day[leap][guess+1]) > 0 ) );
   it2[0]     = it1[0];
   it2[1]     = guess + more + 1;
   it2[2]     = it1[1] - month_day[leap][guess+more];
@@ -39,10 +39,9 @@ int iers2010::hisp::toymd (const int* it1, int* it2)
  *          year.
  * 
  * @param[in]  iy  Year (Note 1)
- * @return         The function returns a boolean variable, denoting if the given
- *                 year is leap (i.e if the returned value is 0, then the year is NOT
- *                 leap).
- * 
+ * @return         The function returns a boolean variable, denoting if the 
+ *                 given year is leap (i.e if the returned value is 0, then the
+ *                 year is NOT leap).
  * 
  * @note
  *     -# The year is a Gregorian year (integer).
@@ -53,9 +52,10 @@ int iers2010::hisp::toymd (const int* it1, int* it2)
  */
 bool iers2010::hisp::leap (const int& iy)
 {
-  int leap = 1 - ( (iy % 4) + 3 ) / 4;
+  int leap ( 1 - ( (iy % 4) + 3 ) / 4 );
 
-  if ( ( !(iy % 100) ) && (iy % 400) ) return false;
+  if ( ( !(iy % 100) ) && (iy % 400) ) 
+      return false;
 
   return leap;
 }
