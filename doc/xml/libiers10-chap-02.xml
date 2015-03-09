@@ -1,89 +1,166 @@
 <?xml version='1.0' encoding='ISO-8859-1'?>
 
 <chapter id="chap_02">
-  <title>Installation</title>
-  
-  <section id="chap_02_01"><title>Compiler Support</title>
-      <para>The only tested compiler is <ulink url="https://gcc.gnu.org/">GNU/GCC</ulink> compiler;
-          <application>GNU/GCC</application> comes with most Linux distros and most flavors
-          of Unix-type OSs.</para>
-      <para><application>GNU/GCC</application> is available also for 
-          <trademark class='registered'>Windows</trademark> OS, via 
-          <ulink url="http://www.mingw.org/"> Minimalist GNU for Windows 
-              <acronym>(MinGW)</acronym></ulink></para>
-      <para>The <application>libiers10++ Software Package</application> uses the C++<subscript>11</subscript>
-          ISO, which is supported by any version of <application>GNU/GCC</application> later than
-          <emphasis>v4.3</emphasis> (for a detailed list, see 
-          <ulink url="https://gcc.gnu.org/projects/cxx0x.html">C++0x/C++11 Support in GCC</ulink>).
-      </para>
-      <important><para>When compiling against the <application>GNU/GCC</application> compiler the user
-              must set the appropriate flag for using the C++<subscript>11</subscript> ISO.
-              Depending on the version of the compiler, this can either be <option>-std=c++11</option>
-              (for versions later than <emphasis>v4.6</emphasis>), or <option>-std=c++0x</option>
-              (for versions earlier than <emphasis>v4.6</emphasis>). To see what version of 
-              <application>GNU/GCC</application> you use, just type:
-              <screen><prompt>bash$</prompt> <command>g++</command> <option>--version</option></screen>
-              You should see an output simmilar to the following
-              <screen>
-g++ (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6)
-Copyright (C) 2014 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-</screen>
-              where the version is clear in the first line (i.e. in this example 
-              <emphasis>v4.9.2</emphasis>).
-              </para></important>
-  </section>
-  
-  <!--<section id="chap_02_02"><title>OS Support</title><para></para></section>-->
-  
-  <section id="chap_02_03"><title>Cloning and Updating</title><para></para></section>
-  
-  <section id="chap_02_04"><title>Compilation</title>
-      
-      <section id="chap_02_04_00"><title>Quick Guide</title>
-          <para>Follow the next steps to install the Software:
-              <procedure><title>Quick Install</title>
-                  <step>
-                      <para>If you downloaded the tarball, you first need to uncompress it;
-                          <screen><prompt>bash$</prompt> <command>tar</command> <option>xzvf</option> <replaceable>libiers10++-1.0.tar.gz</replaceable></screen>
-                          This will create a new folder named <filename class='directory'>libiers10++-1.0</filename>. Change
-                          into the newly created directory:
-                          <screen><prompt>bash$</prompt> <command>cd</command> <replaceable>libiers10++-1.0</replaceable></screen>
-                      </para>
-                  </step>
-                  <step>
-                      <para>Run <filename>configure</filename> script to prepare the installation:
-                          <screen><prompt>bash$</prompt> <command>./configure</command></screen>
-                      </para>
-                  </step>
-                  <step>
-                      <para>Run <application>make</application>:
-                          <screen><prompt>bash$</prompt> <command>make</command></screen>
-                          </para>
-                      </step>
-                      <step>
-                          <para>And finally, :
-                              <screen><prompt>bash$</prompt> <command>sudo</command> <command>make</command> <replaceable>install</replaceable></screen>
-                              <note><para>You will need root privileges for this last command (hence the <emphasis>sudo</emphasis>).</para></note>
-                          </para>
-                      </step> 
-                  </procedure>
-              </para>
-              <para>That should be all! Check <xref linkend='chap_02_04_02' /> for details on verifying the installation.</para>
-          </section>
+    <title>Installation</title>
     
-      <section id="chap_02_04_01"><title>Compilation Flags</title><para></para></section>
-    
-      <section id="chap_02_04_02"><title>Verification</title>
-          <para></para>
-          <section id="chap_02_04_02_01"><title>Installed Files and Programs</title>
-              <para>After a successeful installation, you should have the following files:</para>
-              
-          </section>
-    
+    <section id="chap_02_01"><title>Compiler Support</title>
+        <para>The only tested compiler is <ulink url="https://gcc.gnu.org/">GNU/GCC</ulink> compiler;
+            <application>GNU/GCC</application> comes with most Linux distros and most flavors
+            of Unix-type OSs.</para>
+        <para><application>GNU/GCC</application> is available also for 
+            <trademark class='registered'>Windows</trademark> OS, via 
+            <ulink url="http://www.mingw.org/"> Minimalist GNU for Windows 
+                <acronym>(MinGW)</acronym></ulink></para>
+        <para>The <application>libiers10++ Software Package</application> uses the C++<subscript>11</subscript>
+            ISO, which is supported by any version of <application>GNU/GCC</application> later than
+            <emphasis>v4.3</emphasis> (for a detailed list, see 
+            <ulink url="https://gcc.gnu.org/projects/cxx0x.html">C++0x/C++11 Support in GCC</ulink>).
+        </para>
+        <important><para>When compiling against the <application>GNU/GCC</application> compiler the user
+                must set the appropriate flag for using the C++<subscript>11</subscript> ISO.
+                Depending on the version of the compiler, this can either be <option>-std=c++11</option>
+                (for versions later than <emphasis>v4.6</emphasis>), or <option>-std=c++0x</option>
+                (for versions earlier than <emphasis>v4.6</emphasis>). To see what version of 
+                <application>GNU/GCC</application> you use, just type:
+                <screen><prompt>bash$</prompt> <command>g++</command> <option>--version</option></screen>
+                You should see an output simmilar to the following
+                <screen>
+                    g++ (GCC) 4.9.2 20150212 (Red Hat 4.9.2-6)
+                    Copyright (C) 2014 Free Software Foundation, Inc.
+                    This is free software; see the source for copying conditions.  There is NO
+                    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+                </screen>
+                where the version is clear in the first line (i.e. in this example 
+                <emphasis>v4.9.2</emphasis>).
+                </para></important>
     </section>
+    
+    <!--<section id="chap_02_02"><title>OS Support</title><para></para></section>-->
+    
+    <section id="chap_02_03"><title>Cloning and Updating</title><para></para></section>
+    
+    <section id="chap_02_04"><title>Compilation</title>
+        
+        <section id="chap_02_04_00"><title>Quick Guide</title>
+            <para>Follow the next steps to install the Software:
+                <procedure><title>Quick Install</title>
+                    <step>
+                        <para>If you downloaded the tarball, you first need to uncompress it;
+                            <screen><prompt>bash$</prompt> <command>tar</command> <option>xzvf</option> <replaceable>libiers10++-1.0.tar.gz</replaceable></screen>
+                            This will create a new folder named <filename class='directory'>libiers10++-1.0</filename>. Change
+                            into the newly created directory:
+                            <screen><prompt>bash$</prompt> <command>cd</command> <replaceable>libiers10++-1.0</replaceable></screen>
+                        </para>
+                    </step>
+                    <step>
+                        <para>Run <filename>configure</filename> script to prepare the installation:
+                            <screen><prompt>bash$</prompt> <command>./configure</command></screen>
+                        </para>
+                    </step>
+                    <step>
+                        <para>Run <application>make</application>:
+                            <screen><prompt>bash$</prompt> <command>make</command></screen>
+                        </para>
+                    </step>
+                    <step>
+                        <para>And finally, :
+                            <screen><prompt>bash$</prompt> <command>sudo</command> <command>make</command> <replaceable>install</replaceable></screen>
+                            <note><para>You will need root privileges for this last command (hence the <emphasis>sudo</emphasis>).</para></note>
+                        </para>
+                    </step> 
+                </procedure>
+            </para>
+            <para>That should be all! Check <xref linkend='chap_02_04_02' /> for details on verifying the installation.</para>
+        </section>
+        
+        <section id="chap_02_04_01"><title>Compilation Flags</title><para></para></section>
+        
+        
+        <section id="chap_02_04_02"><title>Verification</title>
+            
+            <section id="chap_02_04_02_01"><title>Installed Files and Programs</title>
+                <para>After a successeful installation, you should have the following files:</para>
+                <table frame='all' id="installed">
+                    <title>Installed Files</title>
+                    <tgroup cols="3" colsep='1' rowsep='1'>
+                        <thead>
+                            <row>
+                                <entry>Filename</entry>
+                                <entry>Installation Directory</entry>
+                                <entry>Purpose</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><filename>hardisp</filename></entry>
+                                <entry><filename class='directory'>${EPREFIX}/bin</filename></entry>
+                                <entry>The routine hardisp (executable)</entry>
+                            </row>
+                            <row>
+                                <entry><filename>libiers10++.a</filename></entry>
+                                <entry><filename class='directory'>${EPREFIX}/lib</filename></entry>
+                                <entry>The library</entry>
+                            </row>
+                            <row>
+                                <entry><filename>dehanttideinel.hpp</filename>,
+                                    <filename>hardisp.hpp</filename>,
+                                    <filename>iers2010.hpp</filename>
+                                </entry>
+                                <entry><filename class='directory'>${EPREFIX}/include</filename></entry>
+                                <entry>Header files</entry>
+                            </row>
+                            <row>
+                                <entry><filename>gpt2_5.grd</filename>
+                                </entry>
+                                <entry><filename class='directory'>${EPREFIX}/share</filename></entry>
+                                <entry>Grid file (see <xref linkend="chap_03_02" />)</entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+                <note><para>${EPREFIX} defaults to <filename class='directory'>/usr/local</filename>. You can change this, using the
+                        <option>--prefix=</option><replaceable>PREFIX</replaceable> option.</para></note>
+                <para>To build the documentation, see <xref linkend="chap_02_04_03" />.</para>
+            </section>
+            
+        </section>
+        
+        <section id="chap_02_04_03"><title>Building The Documentation</title>
+            <para>The Project's documentation is <emphasis>NOT</emphasis> build by default (i.e. when invoking <command>make</command>).
+                The reason for this, is that the build process (for the documentation) is based on external tools that may or may not
+                de present on the target system. Hence, the process could easily fail and force the installation process to
+                stop, or confuse users regarding the installation status.</para>
+            <para>The documentation for the Project, is build using two seperate tools, namely <application><ulink url="http://www.stack.nl/~dimitri/doxygen/">Doxygen</ulink></application> and
+                <ulink url="http://docbook.sourceforge.net/">DocBook</ulink>. <application>Doxygen</application> is a cross-platform documentation generator
+                published under <ulink url="https://gnu.org/licenses/gpl.html">GNUGPL</ulink>. This tool is used to create an API for the library and
+                some man pages.</para>
+            <para>DocBook is used to create the reference manual (what you are actually reading) in html and pdf format. It is not a 'tool' per se, but
+                depends on a toolchain of tools. To build the aforementioned files, you will need:
+                <itemizedlist mark='bullet'>
+                    <listitem><para><ulink url="http://www.xmlsoft.org/">xsltproc</ulink>, which is an XML parser and toolkit</para></listitem>
+                    <listitem><para><ulink url="http://xmlgraphics.apache.org/fop/">fop</ulink>, which is an print formatter driven by XSL formatting objects (XSL-FO) and an output independent formatter</para></listitem>
+                    <listitem><para><ulink url="http://www.docbook.org/tdg5/en/html/appa.html">DocBook Stylesheets</ulink>, which are stylesheets to control the output</para></listitem>
+                </itemizedlist>
+                If you are not interested in installing the reference guide, there is no need to install/use any of the tools above. After all, you can
+                download or see the reference guide online at <ulink url="http://dionysos.survey.ntua.gr/">Dionysos Satellite Observatory</ulink>.
+            </para>
+            <para>There are several build targets, depending on what you are interesting in:
+                <itemizedlist mark='bullet'>
+                    <listitem><para><emphasis>api_html</emphasis>: uses Doxygen to create a library API in html format.</para></listitem>
+                    <listitem><para><emphasis>api_man</emphasis> : uses Doxygen to create a library man pages.</para></listitem>
+                    <listitem><para><emphasis>ref_guide_html</emphasis> : uses xsltproc and a valid stylesheet to create (this) reference guide in html format.</para></listitem>
+                    <listitem><para><emphasis>ref_guide_pdf</emphasis>: uses xsltproc, fop and a valid stylesheet to create (this) reference guide in pdf format.</para></listitem>
+                    <listitem><para><emphasis>doc</emphasis>: build all the above.</para></listitem>
+                </itemizedlist>
+            </para>
+            <para>Change into the <filename class='directory'>doc/</filename> directory to build whatever target you need, using:
+                <screen><prompt>bash$</prompt> <command>make</command> <replaceable>TARGET</replaceable></screen>
+            </para>
+        </section>
+        
+    </section>
+    
     
     <section id="chap_02_05"><title>TroubleShooting</title><para></para></section>
     
-    </chapter>
+</chapter>

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([libiers10++], [1.0], [xanthos@mail.ntua.gr])
+AC_INIT([libiers10++], [1.0], [xanthos@mail.ntua.gr], [libiers10])
 AM_INIT_AUTOMAKE
 
 AC_LANG(C++)

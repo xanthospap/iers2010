@@ -1,3 +1,10 @@
+EXTRA_DIST = xml/libiers10-chap-01.xml \
+			 xml/libiers10-chap-02.xml \
+			 xml/libiers10-chap-03.xml \
+			 xml/libiers10-chap-04.xml \
+			 xml/libiers10-chap-05.xml \
+			 xml/libiers10-main.xml
+
 validate-dtd:
 	xmllint --valid --noout xml/libiers10-main.xml
 
@@ -61,7 +68,9 @@ endif
 rm_log:
 	-rm dummy.log xml/dummy.log
 
-all: REF_GUIDE_HTML REF_GUIDE_PDF API_HTML API_MAN rm_log
+all:
+
+doc: REF_GUIDE_HTML REF_GUIDE_PDF API_HTML API_MAN rm_log
 
 clean: clean_api_html clean_api_man clean_ref_guide_html clean_ref_guide_pdf rm_log
 
