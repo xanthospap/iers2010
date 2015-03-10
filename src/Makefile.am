@@ -38,7 +38,8 @@ dist_libiers10___a_SOURCES = fundarg.cpp \
 							 utils.cpp \
 							 spline.cpp \
 							 tdfrph.cpp \
-							 admint.cpp
+							 admint.cpp \
+							 iohardisp.cpp
 dist_libiers10___a_EXTRA   = gpt2-unset.cpp
 EXTRA_DIST                 = gpt2-unset.cpp
 nodist_libiers10___a_SOURCES = gpt2.cpp

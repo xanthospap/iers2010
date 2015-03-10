@@ -7,12 +7,20 @@
 constexpr int ntin ( 11 );
 double tamp[3][ntin], tph[3][ntin];
 
-int collect_argv (std::istream& is)
+int collect_argv (std::ifstream& is)
 {
+    char line[256];
+    char c = is.peek ();
+    while (c == '$')
+        is.getline (line,256);
+
     for (int i=0;i<3;i++) {
         for (int kk=0;kk<ntin;kk++) {
             is >> tamp[i][kk];
         }
+        c = is.peek ();
+        while (c == '$')
+            is.getline (line,256);
     }
     if ( !is || is.fail() ) {
         printf ("\nError reading data lines. Exiting ...\n");
@@ -20,6 +28,9 @@ int collect_argv (std::istream& is)
     }
 
     for (int i=0;i<3;i++) {
+        c = is.peek ();
+        while (c == '$')
+            is.getline (line,256);
         for (int kk=0;kk<ntin;kk++) {
             is >> tph[i][kk];
         }
@@ -37,8 +48,7 @@ int collect_argv (std::istream& is)
 }
 
 int hardisp (const int* idate,const int& it_size,const int& irnt,
-        const double& samp)
-//int iers2010::hardisp (int argc,const char* argv[])
+        const double& samp,const char* filename)
 {
     /*+---------------------------------------------------------------------
      *
@@ -58,7 +68,7 @@ int hardisp (const int* idate,const int& it_size,const int& irnt,
     constexpr double PI = 3.1415926535897932384626433e0;
 
     //  Cartwright-Tayler numbers of tides used in Scherneck lists:
-    //+     M2, S2, N2, K2, K1, O1, P1, Q1, Mf, Mm, Ssa
+    //+ M2, S2, N2, K2, K1, O1, P1, Q1, Mf, Mm, Ssa
     static int idt[][6] = {
         {2, 0, 0, 0, 0, 0},
         {2, 2,-2, 0, 0, 0},
@@ -75,7 +85,7 @@ int hardisp (const int* idate,const int& it_size,const int& irnt,
 
     /*+----------------------------------------------------------------------
      *
-     *  Check number of arguments from command line, then read them in
+     *  Read and assign the date
      *
      *-----------------------------------------------------------------------*/
     if (it_size == 5) {
@@ -95,10 +105,17 @@ int hardisp (const int* idate,const int& it_size,const int& irnt,
 
     /*+---------------------------------------------------------------------
      *  Read in amplitudes and phases, in standard "Scherneck" form, from
-     *  standard input
+     *  input file
      *----------------------------------------------------------------------*/
-    std::ifstream fileinput (ifile);
-    collect_argv (istream);
+    std::ifstream fin;
+    fin.open (filename,std::ifstream::in);
+    if (!fin.is_open ())
+        return 1;
+    if ( collect_argv (fin) ) {
+        fin.close ();
+        return 1;
+    }
+    fin.close ();
      // WARNING Neet to read better; Skip lines starting with '$',  skip or read
      //  station name
     
