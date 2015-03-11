@@ -169,10 +169,6 @@ int main ()
     double mp,mt,mdt,me,mah,maw,mundu;
     status = iers2010::gpt2 (
             56141e0,&dlat,&dlon,&hell,1,&mp,&mt,&mdt,&me,&mah,&maw,&mundu,0);
-            /*
-            "/home/xanthos/Software/iers2010/src/gpt2_5.grd");
-            "/home/xanthos/myrepos/iers2010/src/gpt2_5.grd");
-            */
     if (status) {
         printf ("\nERROR! gpt2 could not run. Error code: %01i",status);
         status = 1;
@@ -190,9 +186,6 @@ int main ()
     printf ("\n\tAbs. differences in (see results) :");
     status = iers2010::gpt2 (
             56141e0,&dlat,&dlon,&hell,1,&mp,&mt,&mdt,&me,&mah,&maw,&mundu,1);
-            /*
-            "/home/xanthos/Software/iers2010/src/gpt2_5.grd");
-            */
     if (status) {
         printf ("\nERROR! gpt2 could not run. Error code: %01i",status);
         status = 1;
@@ -252,6 +245,20 @@ int main ()
     printf ("\n\t|dfcul_ztd| = %20.18f ",fabs(1.935225924846803114e0-vmf1h));
     printf ("\n\t|dfcul_zhd| = %20.18f ",fabs(1.932992176591644462e0-vmf1w));
     printf ("\n\t|dfcul_zwd| = %20.18f ",fabs(0.2233748255158703871e-02-mt));
+
+    printf ("\nFunction HARDISP");
+    printf ("\n\tAbs. differences in meters :");
+    int idate[] = {2009, 6, 25, 0, 0, 0};
+    int it_size = 6;
+    int irnt = 24;
+    double samp = 3600.0e0;
+    char filename[] = "/home/xanthos/myrepos/iers2010/blq";
+    status = iers2010::hardisp (idate,it_size,irnt,samp,filename);
+    if (status)
+        strcpy (ch_status,"ERROR");
+    else
+        strcpy (ch_status,"OK");
+    printf ("\nLibrary Status : %s", ch_status);
 
     printf ("\n");
     return status;

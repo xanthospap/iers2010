@@ -276,9 +276,11 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     for (int i=0;i<k;i++) {
         if (rf[i] < 0.5e0)
             nlp+= 1;
-        if ( (rf[i]<1.5e0) && (rf[i]>0.5e0) )
+        // if ( (rf[i]<1.5e0) && (rf[i]>0.5e0) )
+        else if (rf[i]<1.5e0)
             ndi += 1;
-        if ( (rf[i]<2.5e0) && (rf[i]>1.5e0) )
+        // if ( (rf[i]<2.5e0) && (rf[i]>1.5e0) )
+        else if (rf[i]<2.5e0)
             nsd += 1;
         scr[i] = rl[key[i]];
     }

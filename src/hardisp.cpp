@@ -127,7 +127,6 @@
  * 
  */
 int main (int argc,const char* argv[])
-//int iers2010::hardisp (int argc,const char* argv[])
 {
     /*+---------------------------------------------------------------------
      *
@@ -313,7 +312,7 @@ int main (int argc,const char* argv[])
         iers2010::hisp::recurs (dw,np,hcw,ntout,wf,scr);
 
         for (int i=0;i<np;i++)
-            printf ("\n[%02i] %+14.6f %+14.6f %+14.6f",i+1,dz[i],ds[i],dw[i]);
+            printf ("\n%14.6f %14.6f %14.6f",dz[i],ds[i],dw[i]);
         printf ("\n");
 
         if (irhi==irnt)

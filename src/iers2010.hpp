@@ -46,18 +46,6 @@
  *            translations stay updated too.
  *
  * @todo
- *        -#  How can we best implement the FORTRAN MOD() fuction in C++ ? Some
- *            subroutines, use both MOD() and DMOD(). We need a translation 
- *            rule! Affects:
- *            Function    | Comment
- *            ------------|---------------------------------------------------
- *            pmsdnut2    | has both MOD and MOD
- *            utlibr      | MOD
- *            fundarg     | MOD
- *            step2diu    | MOD
- *            arg2        | DMOD
- *        -#  Provide a test / driver program with differences from the 
- *            official FORTRAN release, using the test cases in the modules.
  *        -#  Input time parameters vary (TT, UTC,  Julian dates,  calendar 
  *            dates,  etc...). Need to specify a unique pattern for this.
  * 
@@ -67,8 +55,8 @@
  *            National Technical University of Athens.         <br>
  *            This work is free. You can redistribute it and/or modify it under
  *            the terms of the Do What The Fuck You Want To Public License, 
- *            Version 2, as published by Sam Hocevar. See the license file for 
- *            more details.
+ *            Version 2, as published by Sam Hocevar. See http://www.wtfpl.net/
+ *            for more details.
  * 
  * <b><center><hr>
  * National Technical University of Athens <br>
@@ -180,8 +168,12 @@ namespace iers2010 {
      */
     int fcul_zd_hpa (const double&,const double&,const double&,const double&,
             const double&,double&,double&,double&);
-            
-int hardisp (int argc,const char* argv[],double* du,double* dw,double* ds);
+    
+    /** @brief Compute ocean tidal loading from a table of amplitudes and 
+     *         phases of the 11 main tides.
+     */
+    int hardisp (const int*,const int&,const int&,const double&,const char*);
+
 }
 
 #endif
