@@ -144,7 +144,11 @@ int main (int argc,const char* argv[])
     int irli  ( 1 );
     int it[5];
 
-    constexpr double PI = 3.1415926535897932384626433e0;
+    #ifdef USE_EXTERNAL_CONSTS
+        constexpr double PI (DPI);
+    #else
+        constexpr double PI ( 3.1415926535897932384626433e0 );
+    #endif
 
     //  Cartwright-Tayler numbers of tides used in Scherneck lists:
     //+     M2, S2, N2, K2, K1, O1, P1, Q1, Mf, Mm, Ssa
@@ -168,18 +172,18 @@ int main (int argc,const char* argv[])
      *
      *-----------------------------------------------------------------------*/
     if (argc<8 || argc>9) {
-        printf ("Usage:\n");
+        printf (" Usage:\n");
         printf ("   hardisp yr [d-of-yr | month day] hr min sec num samp\n");
         printf (" Where \n");
         printf ("   the UTC date given is the time of the first term output\n");
         printf ("   num is the number of output epochs to be written out\n");
         printf ("   samp is the sample interval (seconds)\n");
         printf (" The harmonics file (amp and phase of displacement) is \n");
-        printf ("    read from standard input in the BLQ format used by  \n");
-        printf ("    Scherneck and Bos\n");
+        printf ("   read from standard input in the BLQ format used by  \n");
+        printf ("   Scherneck and Bos\n");
         printf (" Results are written to standard output (units = m):\n");
         printf ("      dU    dS    dW   \n");
-        printf ("    using format: 3F14.6 \n");
+        printf ("   using format: 3F14.6 \n");
         return 1;
     }
 

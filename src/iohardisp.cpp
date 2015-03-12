@@ -127,7 +127,11 @@ int iers2010::hardisp (const int* idate,const int& it_size,const int& irnt,
     int irli  ( 1 );
     int it[5];
 
-    constexpr double PI = 3.1415926535897932384626433e0;
+    #ifdef USE_EXTERNAL_CONSTS
+        constexpr double PI (DPI);
+    #else
+        constexpr double PI ( 3.1415926535897932384626433e0 );
+    #endif
 
     //  Cartwright-Tayler numbers of tides used in Scherneck lists:
     //+ M2, S2, N2, K2, K1, O1, P1, Q1, Mf, Mm, Ssa
