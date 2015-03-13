@@ -6,6 +6,8 @@ pkglib_LIBRARIES           = libiers10++.a
 dist_pkginclude_HEADERS    = iers2010.hpp hardisp.hpp dehanttideinel.hpp
 libiers10___a_CXXFLAGS     = -std=c++11 -g -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization
 dist_pkgdata_DATA          = ../gpt2_5.grd
+nodist_libiers10___a_SOURCES = gpt2.cpp
+EXTRA_DIST = gpt2-unset.cpp
 dist_libiers10___a_SOURCES = fundarg.cpp \
 							 pmsdnut2.cpp \
 							 utlibr.cpp \
@@ -19,8 +21,6 @@ dist_libiers10___a_SOURCES = fundarg.cpp \
 							 cnmtx.cpp \
 							 ortho_eop.cpp \
 							 apg.cpp \
-							 gpt.cpp \
-							 gpt2.cpp \
 							 fcul_a.cpp \
 							 fcul_b.cpp \
 							 fcul_zd_hpa.cpp \
@@ -40,12 +40,9 @@ dist_libiers10___a_SOURCES = fundarg.cpp \
 							 tdfrph.cpp \
 							 admint.cpp \
 							 iohardisp.cpp
-dist_libiers10___a_EXTRA   = gpt2-unset.cpp
-EXTRA_DIST                 = gpt2-unset.cpp
-nodist_libiers10___a_SOURCES = gpt2.cpp
-gpt2.cpp: gpt2-unset.cpp
-	cp gpt2-unset.cpp gpt2.cpp
-	$(SED) -i "s|#define PATH_TO_GRD25_GRD.*|\
-		#define PATH_TO_GRD25_GRD \"$(abs_top_builddir)/gpt2_5.grd\"|g" $@
+#gpt2.cpp: gpt2-unset.cpp
+#	cp gpt2-unset.cpp gpt2.cpp
+#	$(SED) -i "s|#define PATH_TO_GRD25_GRD.*|#define PATH_TO_GRD25_GRD \"@datarootdir@/gpt2_5.grd\"|g" $@
+#	-@echo "$(SED) -i \"s|#define PATH_TO_GRD25_GRD.*|#define PATH_TO_GRD25_GRD \"@datarootdir@/gpt2_5.grd\"|g\" $@"
 
 ## TODO Remove the gpt2-unset.cpp file
