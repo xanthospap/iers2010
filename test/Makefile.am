@@ -1,5 +1,9 @@
 check_PROGRAMS    = test
 dist_test_SOURCES = test.cpp
+EXTRA_DIST        = hardisp_results_onsa \
+					hardisp_results_reyk \
+					reyk.blq \
+					onsa.blq
 test_CXXFLAGS     = -I$(top_srcdir)/src -L$(top_srcdir)/src -std=c++11
 test_LDADD        = $(top_srcdir)/src/libiers10++.a
 

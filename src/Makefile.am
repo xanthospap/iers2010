@@ -45,6 +45,7 @@ EXTRA_DIST                 = gpt2-unset.cpp
 nodist_libiers10___a_SOURCES = gpt2.cpp
 gpt2.cpp: gpt2-unset.cpp
 	cp gpt2-unset.cpp gpt2.cpp
-	$(SED) -i "s|/foo/bar/gpt2_5.grd|$(abs_top_builddir)/gpt2_5.grd|g" $@
+	$(SED) -i "s|#define PATH_TO_GRD25_GRD.*|\
+		#define PATH_TO_GRD25_GRD \"$(abs_top_builddir)/gpt2_5.grd\"|g" $@
 
 ## TODO Remove the gpt2-unset.cpp file
