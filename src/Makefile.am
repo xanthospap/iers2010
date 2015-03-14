@@ -39,10 +39,11 @@ dist_libiers10___a_SOURCES = fundarg.cpp \
 							 spline.cpp \
 							 tdfrph.cpp \
 							 admint.cpp \
-							 iohardisp.cpp
-#gpt2.cpp: gpt2-unset.cpp
-#	cp gpt2-unset.cpp gpt2.cpp
-#	$(SED) -i "s|#define PATH_TO_GRD25_GRD.*|#define PATH_TO_GRD25_GRD \"@datarootdir@/gpt2_5.grd\"|g" $@
-#	-@echo "$(SED) -i \"s|#define PATH_TO_GRD25_GRD.*|#define PATH_TO_GRD25_GRD \"@datarootdir@/gpt2_5.grd\"|g\" $@"
+							 iohardisp.cpp \
+							 gpt.cpp
+gpt2.cpp: gpt2-unset.cpp
+	cp gpt2-unset.cpp gpt2.cpp
+	$(SED) -i "s|#define PATH_TO_GRD25_GRD.*|#define PATH_TO_GRD25_GRD \"@datarootdir@/gpt2_5.grd\"|g" $@
+	-@echo "$(SED) -i \"s|#define PATH_TO_GRD25_GRD.*|#define PATH_TO_GRD25_GRD \"@datarootdir@/gpt2_5.grd\"|g\" $@"
 
 ## TODO Remove the gpt2-unset.cpp file

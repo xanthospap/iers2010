@@ -7,9 +7,9 @@
 
 /** @brief  Define the path to the gpt2_5.grd file (including the filename)
  */
-#define PATH_TO_GRD25_GRD "/home/xanthos/Software/iers2010/gpt2_5.grd"
+#define PATH_TO_GRD25_GRD "/usr/local/share/gpt2_5.grd"
 
-/** @brief         sign function or signum function; extracts the sign of a real number
+/** @brief sign function or signum function; extracts the sign of a real number
  *  @param[in] val Template parameter
  *  @return        -1 if val < 0, <br>
  *                  0 if val = 0, <br>

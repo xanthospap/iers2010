@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE
 
 AC_LANG(C++)
 
-AC_CONFIG_SRCDIR([src/gpt.cpp])
+AC_CONFIG_SRCDIR([src/fundarg.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.

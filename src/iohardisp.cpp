@@ -73,9 +73,6 @@ int collect_argv (std::ifstream& is)
  * @param[in]   samp     Sampling interval (in seconds)
  * @param[in]   file     File containing station displacements in the BLQ
  *                       format
- * @param[out]  du       Radial tidal ocean loading displacement (Note 2)
- * @param[out]  dw       West tidal ocean loading displacement (Note 2)
- * @param[out]  ds       South tidal ocean loading displacement (Note 2)
  * @return               An integer denoting the exit status:
  *                       Returned Value  | Function Status
  *                       ----------------|-------------------------------------
