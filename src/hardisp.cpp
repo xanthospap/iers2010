@@ -28,7 +28,6 @@
  *                      (integer)
  *                   -# Sampling interval (in seconds) (double)
  *                   -# Ocean loading coefficients in 'blq' format
- *
  * @return           An integer denoting the exit status:
  *                   Returned Value  | Function Status
  *                   ----------------|-------------------------------------
@@ -157,7 +156,7 @@ int main (int argc,const char* argv[])
     constexpr int nt   ( 342 );
     constexpr int ntin ( 11 );
 
-    double dr ( 0.01745329252e0 );
+    constexpr double dr ( 0.01745329252e0 );
     int irli  ( 1 );
     int it[5];
 

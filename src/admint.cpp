@@ -24,7 +24,7 @@
  * @param[out] f      Frequency due to ocean loading
  * @param[out] p      Phase due to ocean loading
  * @param[out] nout   Number of harmonics returned
- * @return            zero
+ * @return            Always zero
  * 
  * @note
  *     -# The phase is determined for a time set in COMMON block /date/ in
@@ -55,12 +55,12 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     //+ at most ncon constituents may be specified. 
     constexpr double dtr ( .01745329252e0 );
     int key[ncon];
-    double rl[ncon],aim[ncon],rf[ncon],scr[ncon],
-    zdi[ncon],zdr[ncon],di[ncon],dr[ncon],sdi[ncon],sdr[ncon];
+    double rl[ncon],aim[ncon],rf[ncon],scr[ncon],zdi[ncon],zdr[ncon],di[ncon],
+           dr[ncon],sdi[ncon],sdr[ncon];
     double fr,pr,re,am,sf;
     
     // Arrays containing information about all stored constituents
-    static const int idd[/*nt*/][6] = {
+    static constexpr int idd[/*nt*/][6] = {
         {2, 0, 0, 0, 0, 0},  { 2, 2,-2, 0, 0, 0},  { 2,-1, 0, 1, 0, 0},
         {2, 2, 0, 0, 0, 0},  { 2, 2, 0, 0, 1, 0},  { 2, 0, 0, 0,-1, 0},
         {2,-1, 2,-1, 0, 0},  { 2,-2, 2, 0, 0, 0},  { 2, 1, 0,-1, 0, 0},
@@ -177,7 +177,7 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
         {0, 4,-3, 0, 1, 1},  { 0, 2, 0, 0, 3, 0},  { 0, 6,-4, 0, 0, 0}
     };
     
-    static const double tamp[/*nt*/] = { 
+    static constexpr double tamp[/*nt*/] = { 
         .632208e0, .294107e0, .121046e0, .079915e0, .023818e0,-.023589e0, .022994e0,
         .019333e0,-.017871e0, .017192e0, .016018e0, .004671e0,-.004662e0,-.004519e0,
         .004470e0, .004467e0, .002589e0,-.002455e0,-.002172e0, .001972e0, .001947e0,
@@ -251,13 +251,13 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
                 
                 rl[k] = ampin[ll] * cos (dtr*phin[ll]) / std::abs (tamp[kk]);
                 aim[k]= ampin[ll] * sin (dtr*phin[ll]) / std::abs (tamp[kk]);
-                /*+------------------------------------------------------------
-                * Now have real and imaginary parts of admittance, scaled by 
-                * Cartwright-Edden amplitude. Admittance phase is whatever was 
-                * used in the original expression. (Usually phase is given 
-                * relative to some reference, but amplitude is in absolute 
-                * units). Next get frequency.
-                *------------------------------------------------------------*/
+                /*------------------------------------------------------------
+                 * Now have real and imaginary parts of admittance, scaled by 
+                 * Cartwright-Edden amplitude. Admittance phase is whatever was 
+                 * used in the original expression. (Usually phase is given 
+                 * relative to some reference, but amplitude is in absolute 
+                 * units). Next get frequency.
+                 *------------------------------------------------------------*/
                 iers2010::hisp::tdfrph (idd[kk],itm,fr,pr);
                 rf[k] = fr;
                 k++;
@@ -265,23 +265,22 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
         }
     }
 
-    /*+---------------------------------------------------------------------
-    * Done going through constituents; there are k of them.
-    * Have specified admittance at a number of points. Sort these by frequency
-    * and separate diurnal and semidiurnal, recopying admittances to get them
-    * in order using Shell Sort.
-    *----------------------------------------------------------------------*/
+    /*---------------------------------------------------------------------
+     * Done going through constituents; there are k of them.
+     * Have specified admittance at a number of points. Sort these by frequency
+     * and separate diurnal and semidiurnal, recopying admittances to get them
+     * in order using Shell Sort.
+     *----------------------------------------------------------------------*/
     iers2010::hisp::shells (rf,key,k);
     
     for (int i=0;i<k;i++) {
-        if (rf[i] < 0.5e0)
+        if (rf[i]<0.5e0) {
             nlp+= 1;
-        // if ( (rf[i]<1.5e0) && (rf[i]>0.5e0) )
-        else if (rf[i]<1.5e0)
+        } else if (rf[i]<1.5e0) {
             ndi += 1;
-        // if ( (rf[i]<2.5e0) && (rf[i]>1.5e0) )
-        else if (rf[i]<2.5e0)
+        } else if (rf[i]<2.5e0) {
             nsd += 1;
+        }
         scr[i] = rl[key[i]];
     }
     
@@ -293,15 +292,13 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     for (int i=0;i<k;i++)
         aim[i] = scr[i];
 
-    /*+---------------------------------------------------------------------
-    * now set up splines (8 cases - four species, each real and imaginary)
-    * We have to allow for the case when there are no constituent amplitudes
-    * for the long-period tides.
-    *----------------------------------------------------------------------*/
+    /*---------------------------------------------------------------------
+     * now set up splines (8 cases - four species, each real and imaginary)
+     * We have to allow for the case when there are no constituent amplitudes
+     * for the long-period tides.
+     *----------------------------------------------------------------------*/
     if (nlp) {
         iers2010::hisp::spline (nlp,rf,rl,zdr,scr);
-    }
-    if (nlp) {
         iers2010::hisp::spline (nlp,rf,aim,zdi,scr);
     }
 
@@ -313,8 +310,11 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
     // Evaluate all harmonics using the interpolated admittance
     int j = 0;
     for (int i=0;i<nt;i++) {
+        
         if ( idd[i][0] + nlp ) {
+            
             iers2010::hisp::tdfrph (idd[i],itm,f[j],p[j]);
+            
             //  Compute phase corrections to equilibrium tide using 
             //  function 'eval'
             if (idd[i][0] == 0) {
@@ -322,7 +322,9 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
             } else if (idd[i][0] == 1) {
                 p[j] += 90.0e0;
             }
+
             sf = f[j];
+            
             if (idd[i][0] == 0) {
                 iers2010::hisp::eval (sf,nlp,rf,rl,zdr,re);
                 iers2010::hisp::eval (sf,nlp,rf,aim,zdi,am);
@@ -333,6 +335,7 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
                 iers2010::hisp::eval (sf,nsd,rf+nlp+ndi,rl+nlp+ndi,sdr,re);
                 iers2010::hisp::eval (sf,nsd,rf+nlp+ndi,aim+nlp+ndi,sdi,am);
             }
+
             amp[j] = tamp[i]*sqrt (re*re+am*am);
             p[j] += atan2(am,re) / dtr;
         

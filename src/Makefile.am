@@ -1,10 +1,14 @@
 bin_PROGRAMS               = hardisp
 hardisp_SOURCES            = hardisp.cpp
-hardisp_CXXFLAGS           = -std=c++11 -g -Wall -Wextra -pedantic -W -Wshadow -Winline -Wdisabled-optimization -I$(srcdir) -L$(srcdir)
+## Only use the following flags for debuging purposes
+## hardisp_CXXFLAGS           = -std=c++11 -g -Wall -Wextra -pedantic -W -Wshadow -Winline -Wdisabled-optimization -I$(srcdir) -L$(srcdir)
+hardisp_CXXFLAGS           = -std=c++11 -Wall -O3
 hardisp_LDADD              = libiers10++.a
 pkglib_LIBRARIES           = libiers10++.a
 dist_pkginclude_HEADERS    = iers2010.hpp hardisp.hpp dehanttideinel.hpp
-libiers10___a_CXXFLAGS     = -std=c++11 -g -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization
+## Only use the following flags for debuging purposes
+## libiers10___a_CXXFLAGS     = -std=c++11 -g -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization
+libiers10___a_CXXFLAGS     = -std=c++11 -Wall -O3
 dist_pkgdata_DATA          = ../gpt2_5.grd
 nodist_libiers10___a_SOURCES = gpt2.cpp
 EXTRA_DIST = gpt2-unset.cpp

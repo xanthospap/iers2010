@@ -14,7 +14,20 @@
  * @brief     C++ functions and definitions implementing the IERS 2010 
  *            standards.
  * 
- * @details   
+ * @details   Decleration of a number of C++ function, implementing the IERS
+ *            2010 standards (see References). The collections of functions 
+ *            found here, are translated from their FORTRAN counterparts,
+ *            which can be found at the IERS website (e.g. see 
+ *            http://maia.usno.navy.mil/conv2010/software.html).
+ *            All of the functions declared here, are put into a namespace,
+ *            namely iers2010.
+ *            The functions included in this header, are neither exhaustive
+ *            nor stand-alone. There should be two more header files, namely
+ *            \c hardisp.hpp and \c dehanttideinel.hpp, which contain functions
+ *            called by functions declared here. See these header files for
+ *            more details.
+ *            For detailed information on the models used in the functions, see
+ *            IERS Technical Note 36.
  * 
  * @note      
  *         -# Original FORTRAN software can be found at 
@@ -42,13 +55,9 @@
  *            case, the compilation flag <b>USE_EXTERNAL_CONSTS</b> should be 
  *            used.
  * 
- * @attention The FORTRAN subroutines may ba updated; see that their C++ 
+ * @attention The FORTRAN subroutines may be updated; see that their C++ 
  *            translations stay updated too.
  *
- * @todo
- *        -#  Input time parameters vary (TT, UTC,  Julian dates,  calendar 
- *            dates,  etc...). Need to specify a unique pattern for this.
- * 
  * @cite      iers2010
  *
  * @copyright Copyright © 2015 Dionysos Satellite Observatory, <br>
@@ -75,81 +84,81 @@
 namespace iers2010 {
 
     /** @brief Function to compute the diurnal lunisolar effect on polar motion.
-    */
+     */
     int pmsdnut2 (const double&,double*);
 
     /** @brief Function to compute the subdiurnal librations in UT1.
-    */
+     */
     int utlibr (const double&,double&,double&);
 
     /** @brief Function to compute the lunisolar fundamental arguments from the 
-    *         model by Simon et al. (1994).
-    */
+     *         model by Simon et al. (1994).
+     */
     int fundarg (const double&,double&,double&,double&,double&,double&);
 
-    /** @brief Computes corrections to the coordinates of the CIP to account for 
-    *         Free Core Nutation.
-    */
+    /** @brief Computes corrections to the coordinates of the CIP to account for
+     *         Free Core Nutation.
+     */
     int fcnnut (const double&,double&,double&,double&,double&);
 
     /** @brief Computes the angular argument which depends on time for 11 tidal 
-    *         argument calculations.
-    */
+     *         argument calculations.
+     */
     int arg2 (const int&,const double&,double*);
 
     /** @brief Computes tidal corrections of station displacements caused by 
-    *         lunar and solar gravitational attraction.
-    */
+     *         lunar and solar gravitational attraction.
+     */
     int dehanttideinel (const double*,const double*,const double*,const int&,
             const int&,const int&,const double&,double*);
 
-    /** @brief Computes the effects of zonal Earth tides on the rotation of the 
-    *         Earth.
-    */
+    /** @brief Computes the effects of zonal Earth tides on the rotation of the
+     *         Earth.
+     */
     int rg_zont2 (const double&,double&,double&,double&);
 
     /** @brief Function called by ortho_eop.
-    */
+     */
     int cnmtx (const double&,double*);
 
     /** @brief Compute the diurnal and semidiurnal variations in the Earth 
-    * orientation.
-    */
+     *         orientation.
+     */
     int ortho_eop (const double&,double*);
 
-    /** @brief Compute the asymmetric delay d (in meters) caused by gradients and
-    *         the north and east gradients.
-    */
+    /** @brief Compute the asymmetric delay d (in meters) caused by gradients
+     *         and the north and east gradients.
+     */
     int apg (const double&,const double&,const double&,const double&,double&,
             double&,double&);
 
-    /** @brief Compute the Global Pressure and Temperature (GPT) model, based on 
-    *         spherical harmonics up to degree and order 9.
-    */
+    /** @brief Compute the Global Pressure and Temperature (GPT) model, based on
+     *         spherical harmonics up to degree and order 9.
+     */
     int gpt (const double&,const double&,const double&,const double&,double&,
             double&,double&);
 
     /** @brief Compute the Global Pressure and Temperature 2 (GPT2) model, and 
-    *         the "a" coefficients for VMF1_HT, based on the file gpt2_5.grd.
-    */
-    int gpt2 (const double&,const double*,const double*,const double*,const int&,
-            double*,double*,double*,double*,double*,double*,double*,int it = 0,
-            const char* ifile=nullptr);
+     *         the "a" coefficients for VMF1_HT, based on the file gpt2_5.grd.
+     */
+    int gpt2 (const double&,const double*,const double*,const double*,
+            const int&,double*,double*,double*,double*,double*,double*,
+            double*,int it = 0,const char* ifile=nullptr);
 
     /** @brief Compute the Vienna Mapping Functions 1 (VMF1), with height 
-    *         corrections to be used with "a" coefficients computed for a grid.
-    */
+     *         corrections to be used with "a" coefficients computed for a grid.
+     */
     int vmf1_ht (const double&,const double&,const double&,const double&,
             const double&,const double&,double&,double&);
 
-    /** @brief Compute the Vienna Mapping Functions 1 (VMF1), to be used with "a"
-    *         coefficients computed for a given site
-    */
+    /** @brief Compute the Vienna Mapping Functions 1 (VMF1), to be used with
+     *         "a" coefficients computed for a given site
+     */
     int vmf1 (const double&,const double&,const double&,const double&,
             const double&,double&,double&);
 
     /** @brief  Compute the Global Mapping Functions, GMF
-    */
+     */
     int gmf (const double&,const double&,const double&,const double&,
             const double&,double&,double&);
 
@@ -173,7 +182,6 @@ namespace iers2010 {
      *         phases of the 11 main tides.
      */
     int hardisp (const int*,const int&,const int&,const double&,const char*);
-
 }
 
 #endif
