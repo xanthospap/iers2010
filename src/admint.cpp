@@ -340,7 +340,7 @@ int iers2010::hisp::admint (const double* ampin,const int idtin[][6],
             p[j] += atan2(am,re) / dtr;
         
             if (p[j] > 180)
-                p[j] = p[j]-360.0e0;
+                p[j] -= 360.0e0;
         
             j++;
         
