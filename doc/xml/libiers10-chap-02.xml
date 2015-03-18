@@ -189,10 +189,14 @@
         </section>
     
     
-    <section id="chap_02_07"><title>TroubleShooting</title><para>
-            Most often, compilation problems occur when trying to build the documentation (see <xref linkend="chap_02_06" />). This
-            can be caused by a lot of factors, including missing programs, stylesheets, etc. In any case, if you encounter any
-            problems during the installation procedure, please send an email describing your problem at <email>xanthos@mail.ntua.gr</email>, or
+    <section id="chap_02_07"><title>TroubleShooting</title>
+        <para> Most often, compilation problems occur when trying to build the documentation (see <xref linkend="chap_02_06" />). This
+            can be caused by a lot of factors, including missing programs, stylesheets, etc. </para>
+        <para>Another point of notice,is that (as already mentioned) the source code is written using the
+            C++<subscript>11</subscript> ISO, so <emphasis>make sure you compiler is C++<subscript>11</subscript>-able</emphasis>.
+            For more information, see <xref linkend="chap_02_01" />.</para>
+        <para>In any case, if you encounter any problems during the installation procedure, please send an email 
+            describing your problem at <email>xanthos@mail.ntua.gr</email>, or
             <email>danast@mail.ntua.gr</email>. Please also include information (name, version) about the compiler you used.
             </para></section>
     
