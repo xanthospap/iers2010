@@ -123,6 +123,32 @@
                 <para>To build the documentation, see <xref linkend="chap_02_04_03" />.</para>
             </section>
             
+            <section id="chap_02_04_02_02"><title>Test Suits</title>
+                <para>The package includes source files for testing the installation and/or implementation of the libiers software.
+                    You can only perform the tests, after a successeful installation. Two source code files, namely 
+                    <filename>test/test.cpp</filename> and <filename>test/test-hardisp.cpp</filename> provide easy-to-built test cases.
+                </para>
+                <para>The files <filename>test/test.cpp</filename> implements a number of tests, using all but one functions
+                    (hardisp) of the library. To build this file, change into the <filename class='directory'>test/</filename>
+                    directory, and type:
+                    <screen><prompt>bash$</prompt> <command>make</command> <replaceable>test</replaceable></screen>
+                    This will (hopefully) result in an executable file, named <filename>test</filename> in the <filename class='directory'>test</filename>
+                    directory.</para>
+                <para>You can execute this program and see the results. It should output the differences compared to the test
+                    cases provided in the original FORTRAN source code files. More information can be found at <xref linkend="chap_04" />.
+                </para>
+                <para>The source code file <filename>test/test-hardisp.cpp</filename> is an implementation of the <emphasis>hardisp</emphasis>
+                    function. The version of the function implemented here though, differs from the original, as it is not a
+                    stand-alone program, but a pure function, used as any other in this library. The user can specify an input file and a
+                    set of input parameters and deploy the function.</para>
+                <para>To build this test suite, change into the <filename class='directory'>test</filename> directory and execute:
+                    <screen><prompt>bash$</prompt> <command>make</command> <replaceable>test-hardisp</replaceable></screen>
+                    This should result in a new executable file called <filename>test-hardisp</filename> (in the <filename class='directory'>test</filename>
+                    directory). To run this, you must provide a file containing the required coefficients. Such a file, is e.g. <filename>test/onsa.blq</filename>
+                    and <filename>test/reyk.blq</filename>.
+                    </para>
+            </section>
+            
         </section>
         
         <section id="chap_02_04_03"><title>Building The Documentation</title>
