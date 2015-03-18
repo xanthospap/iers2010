@@ -9,9 +9,76 @@
   <para>In order to use the software package (<application>gpt2.cpp</application>), you will need an (ascii) file
     called <filename>gpt2_5.grd</filename>, which provides a grid and is read by some function. This file is distributed
     by the IERS and can be found at its website (<ulink url="http://maia.usno.navy.mil/conv2010/software.html"></ulink>).
-    To download the files, you can use a web-browser or just type:
-    <screen><prompt>bash$</prompt><command>wget</command> <replaceable>ftp://maia.usno.navy.mil/conv2010/convupdt/chapter9/gpt2_5.grd</replaceable></screen>
-    </para></section>
+    </para>
+    <para>The distributed tarball, should already contain this file, which during the installation (i.e. <emphasis>make install</emphasis> step at
+        <xref linkend="chap_02_04_00" />) process is copyied (with the right privileges, at <filename class='directory'>${EPREFIX}/share</filename> 
+        see <xref linkend="chap_02_05_00" />).</para>
+
+    <qandaset defaultlabel='qanda'>
+        
+        <qandaentry>
+            <question>
+                <para>Who uses the <filename>gpt2_5.grd</filename> file ?</para></question>
+            <answer>
+                <para>The function <emphasis>iers2010::gpt2</emphasis>.</para></answer>
+            </qandaentry>
+            
+            <qandaentry>
+            <question>
+                <para>Where is the path to <filename>gpt2_5.grd</filename> set ?</para></question>
+            <answer>
+                <para>In function <emphasis>iers2010::gpt2</emphasis>, found in the source file <filename>src/gpt2.cpp</filename> there is a 
+                    <emphasis>DEFINE</emphasis> statement (at the top
+                of the source file), similar to:
+                <programlisting linenumbering='numbered'>
+/** @brief  Define the path to the gpt2_5.grd file (including the filename)
+ */
+#define PATH_TO_GRD25_GRD "/usr/local/share/gpt2_5.grd"
+                    </programlisting>
+                This line is set during the installation procedure, and the path is automatically set to reflect the <emphasis>datarootdir</emphasis>
+                directory.</para>
+                </answer>
+                </qandaentry>
+                
+                <qandaentry>
+                <question>
+                    <para>Can you change the <filename>gpt2_5.grd</filename> installation directory ?</para></question>
+                <answer>
+                    <para>Yes. You can set accordingly the <emphasis>@datarootdir@</emphasis> during <command>make</command> and 
+                        <command>make</command> <replaceable>install</replaceable>. Or you can do it manually: download the grid file
+                        to your preferred location, for example <filename>/foo/bar/gpt2_5.grd</filename>. Then set the path accordingly at the
+                        file <filename>src/gpt2.cpp</filename>:
+                        <programlisting linenumbering='numbered'>
+/** @brief  Define the path to the gpt2_5.grd file (including the filename)
+ */
+#define PATH_TO_GRD25_GRD "/foo/bar/gpt2_5.grd"
+</programlisting>.</para>
+                        <para>You can also choose to ommit this last part (i.e. modifying the source code) and provide the path to the grid file at
+                        evey call to <emphasis>iers2010::gpt2</emphasis>. That means writting:
+                        <programlisting linenumbering='numbered'>
+void foo ( parameter_list )
+{
+    int status;
+    // do various things ...
+    status = iers2010::gpt2 ();
+    // do more things ...
+}
+                        </programlisting>
+                        instead of
+                        <programlisting linenumbering='numbered'>
+void foo ( parameter_list )
+{
+    int status;
+    // do various things ...
+    status = iers2010::gpt2 ();
+    // do more things ...
+}
+                        </programlisting>
+                        </para>
+                    </answer>
+        </qandaentry>
+    </qandaset>
+    </section>
   
     <section id="chap_03_03"><title>Running <filename>test.cpp</filename></title><para></para></section>
   

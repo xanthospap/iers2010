@@ -14,15 +14,16 @@
                         the corresponding subroutines. Among those, there are test cases, describing explicitely
                         the expected output of the subroutine, given a set of input parameters.</para>
                     <screen id="chap_04_pre_fa">
-                        *
-                        *  Test case:
-                        *     given input: T = 0.07995893223819302 Julian centuries since J2000
-                        *                  (MJD = 54465)
-                        *     expected output:  L = 2.291187512612069099 radians
-                        *                       LP = 6.212931111003726414 radians
-                        *                       F = 3.658025792050572989 radians
-                        *                       D = 4.554139562402433228 radians
-                        *                       OM = -0.5167379217231804489 radians
+*
+*  Test case:
+*     given input: T = 0.07995893223819302 Julian centuries since J2000
+*                  (MJD = 54465)
+*     expected output:  L = 2.291187512612069099 radians
+*                       LP = 6.212931111003726414 radians
+*                       F = 3.658025792050572989 radians
+*                       D = 4.554139562402433228 radians
+*                       OM = -0.5167379217231804489 radians
+*
                     </screen>
                 </listitem>
                 <listitem><para>the <emphasis>FORTRAN implementation</emphasis>. Some of the test cases provided in the source file headers,

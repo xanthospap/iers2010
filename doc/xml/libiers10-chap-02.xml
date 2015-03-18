@@ -70,15 +70,16 @@
                     </step> 
                 </procedure>
             </para>
-            <para>That should be all! Check <xref linkend='chap_02_04_02' /> for details on verifying the installation.</para>
+            <para>That should be all! Check <xref linkend='chap_02_05' /> for details on verifying the installation.</para>
         </section>
         
         <section id="chap_02_04_01"><title>Compilation Flags</title><para></para></section>
         
+        </section>
         
-        <section id="chap_02_04_02"><title>Verification</title>
+        <section id="chap_02_05"><title>Verification</title>
             
-            <section id="chap_02_04_02_01"><title>Installed Files and Programs</title>
+            <section id="chap_02_05_00"><title>Installed Files and Programs</title>
                 <para>After a successeful installation, you should have the following files:</para>
                 <table frame='all' id="installed">
                     <title>Installed Files</title>
@@ -120,10 +121,10 @@
                 </table>
                 <note><para>${EPREFIX} defaults to <filename class='directory'>/usr/local</filename>. You can change this, using the
                         <option>--prefix=</option><replaceable>PREFIX</replaceable> option.</para></note>
-                <para>To build the documentation, see <xref linkend="chap_02_04_03" />.</para>
+                <para>To build the documentation, see <xref linkend="chap_02_06" />.</para>
             </section>
             
-            <section id="chap_02_04_02_02"><title>Test Suits</title>
+            <section id="chap_02_05_01"><title>Test Suits</title>
                 <para>The package includes source files for testing the installation and/or implementation of the libiers software.
                     You can only perform the tests, after a successeful installation. Two source code files, namely 
                     <filename>test/test.cpp</filename> and <filename>test/test-hardisp.cpp</filename> provide easy-to-built test cases.
@@ -136,6 +137,10 @@
                     directory.</para>
                 <para>You can execute this program and see the results. It should output the differences compared to the test
                     cases provided in the original FORTRAN source code files. More information can be found at <xref linkend="chap_04" />.
+                    <important><para>For this program to be successeful, the package should have already been installed. If not, then
+                            the program will issue an error because it will not be able to locate the grid file <filename>gpt2_5.grd</filename>
+                            in the default installation path, i.e. <filename class='directory'>${EPREFIX}/share</filename> (see
+                            <xref linkend="chap_02_05_00" /> and <xref linkend="chap_03_02" />).</para></important>
                 </para>
                 <para>The source code file <filename>test/test-hardisp.cpp</filename> is an implementation of the <emphasis>hardisp</emphasis>
                     function. The version of the function implemented here though, differs from the original, as it is not a
@@ -148,10 +153,9 @@
                     and <filename>test/reyk.blq</filename>.
                     </para>
             </section>
-            
         </section>
         
-        <section id="chap_02_04_03"><title>Building The Documentation</title>
+        <section id="chap_02_06"><title>Building The Documentation</title>
             <para>The Project's documentation is <emphasis>NOT</emphasis> build by default (i.e. when invoking <command>make</command>).
                 The reason for this, is that the build process (for the documentation) is based on external tools that may or may not
                 de present on the target system. Hence, the process could easily fail and force the installation process to
@@ -183,10 +187,13 @@
                 <screen><prompt>bash$</prompt> <command>make</command> <replaceable>TARGET</replaceable></screen>
             </para>
         </section>
-        
-    </section>
     
     
-    <section id="chap_02_05"><title>TroubleShooting</title><para></para></section>
+    <section id="chap_02_07"><title>TroubleShooting</title><para>
+            Most often, compilation problems occur when trying to build the documentation (see <xref linkend="chap_02_06" />). This
+            can be caused by a lot of factors, including missing programs, stylesheets, etc. In any case, if you encounter any
+            problems during the installation procedure, please send an email describing your problem at <email>xanthos@mail.ntua.gr</email>, or
+            <email>danast@mail.ntua.gr</email>. Please also include information (name, version) about the compiler you used.
+            </para></section>
     
 </chapter>
