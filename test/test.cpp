@@ -246,6 +246,10 @@ int main ()
     printf ("\n\t|dfcul_zhd| = %20.18f ",fabs(1.932992176591644462e0-vmf1w));
     printf ("\n\t|dfcul_zwd| = %20.18f ",fabs(0.2233748255158703871e-02-mt));
 
+    /*
+     * The test case for hardisp function, is implemented in the
+     * test-hardisp.cpp file.
+     *
     printf ("\nFunction HARDISP");
     printf ("\n\tAbs. differences in meters :");
     int idate[] = {2009, 6, 25, 0, 0, 0};
@@ -259,6 +263,7 @@ int main ()
     else
         strcpy (ch_status,"OK");
     printf ("\nLibrary Status : %s", ch_status);
+    */
 
     printf ("\n");
     return status;
