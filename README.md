@@ -19,6 +19,11 @@ The installation process (will) be trivial, using the standard FSF GNU tools
 This software is meant to be implemented on Unix-type OSs. No effort will be
 undertaken for compatibility with otherOS types.
 
+To compile the library in any UNIX-like OS, just follow the 3 basic steps
+configure
+make
+make install
+
 ## Prerequisites
 None. This is a standalone library. Of course a C++ compiler is assumed!
 
