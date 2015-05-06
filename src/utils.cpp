@@ -14,7 +14,9 @@
  *     -# Time is represented as an array of the form [year, month, day]
  *     -# Status:  Class 1 model
  * 
- * @cite GPS Toolbox:Date/Time conversion algorithms by Benjamin W. Remondi
+ * Reference: GPS Toolbox:Date/Time conversion algorithms by
+ *            Benjamin W. Remondi, see
+ *            http://www.ngs.noaa.gov/gps-toolbox/bwr-c.txt
  * 
  */
 int iers2010::hisp::toymd (const int* it1, int* it2)

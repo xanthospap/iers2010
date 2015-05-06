@@ -34,8 +34,7 @@
  * 
  * @version 2009 August 19
  * 
- * @cite McCarthy, D. D., Petit, G. (eds.), IERS Conventions (2003),
- *       IERS Technical Note No. 32, BKG (2004)
+ * @cite iers2010
  * 
  */
 int iers2010::hisp::admint (const double* ampin,const int idtin[][6],

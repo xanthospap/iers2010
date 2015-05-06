@@ -23,11 +23,11 @@ int main ()
     dlat[i] *= pi/180.e0;
     dlon[i] *= pi/180.e0;
   }
-  
+
   status = iers2010::gpt2 (
     dmjd,dlat,dlon,hell,nstat,mp,mt,mdt,me,mah,maw,mundu,it,
     "/home/xanthos/Software/iers2010/src/gpt2_5.grd");
-    
+
   if (status) {
     printf ("\nERROR! gpt2 could not run. Error code: %01i",status);
     status = 1;

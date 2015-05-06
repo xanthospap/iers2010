@@ -4,8 +4,8 @@ hardisp_SOURCES            = hardisp.cpp
 ## hardisp_CXXFLAGS           = -std=c++11 -g -Wall -Wextra -pedantic -W -Wshadow -Winline -Wdisabled-optimization -I$(srcdir) -L$(srcdir)
 hardisp_CXXFLAGS           = -std=c++11 -Wall -O3
 hardisp_LDADD              = libiers10++.a
-pkglib_LIBRARIES           = libiers10++.a
-dist_pkginclude_HEADERS    = iers2010.hpp hardisp.hpp dehanttideinel.hpp
+lib_LIBRARIES           = libiers10++.a
+dist_include_HEADERS    = iers2010.hpp hardisp.hpp dehanttideinel.hpp
 ## Only use the following flags for debuging purposes
 ## libiers10___a_CXXFLAGS     = -std=c++11 -g -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization
 libiers10___a_CXXFLAGS     = -std=c++11 -Wall -O3
@@ -47,7 +47,7 @@ dist_libiers10___a_SOURCES = fundarg.cpp \
 							 gpt.cpp
 gpt2.cpp: gpt2-unset.cpp
 	cp gpt2-unset.cpp gpt2.cpp
-	$(SED) -i "s|#define PATH_TO_GRD25_GRD.*|#define PATH_TO_GRD25_GRD \"@datarootdir@/gpt2_5.grd\"|g" $@
-	-@echo "$(SED) -i \"s|#define PATH_TO_GRD25_GRD.*|#define PATH_TO_GRD25_GRD \"@datarootdir@/gpt2_5.grd\"|g\" $@"
+	$(SED) -i "s|#define PATH_TO_GRD25_GRD.*|#define PATH_TO_GRD25_GRD \"@datarootdir@/libiers10/gpt2_5.grd\"|g" $@
+	@echo "$(SED) -i \"s|#define PATH_TO_GRD25_GRD.*|#define PATH_TO_GRD25_GRD \"@datarootdir@/gpt2_5.grd\"|g\" $@"
 
 ## TODO Remove the gpt2-unset.cpp file
