@@ -6,16 +6,17 @@
   <section id="chap_03_01"><title>Intorduction</title><para></para></section>
   
   <section id="chap_03_02"><title>The file <filename>gpt2_5.grd</filename></title>
-  <para>In order to use the software package (<application>gpt2.cpp</application>), you will need an (ascii) file
-    called <filename>gpt2_5.grd</filename>, which provides a grid and is read by some function. This file is distributed
+  <para>In order to use the software package, you will need an (ascii) file
+      called <filename>gpt2_5.grd</filename>, which provides a grid and is read by function <emphasis>iers2010::gpt2(...)</emphasis>. This file is distributed
     by the IERS and can be found at its website (<ulink url="http://maia.usno.navy.mil/conv2010/software.html"></ulink>).
     </para>
     <para>The distributed tarball, should already contain this file, which during the installation (i.e. <emphasis>make install</emphasis> step at
-        <xref linkend="chap_02_04_00" />) process is copyied (with the right privileges, at <filename class='directory'>${EPREFIX}/share</filename> 
-        see <xref linkend="chap_02_05_00" />).</para>
+        <xref linkend="chap_02_04_00" />) process is copyied (with the right privileges) at <filename class='directory'>${EPREFIX}/share</filename> 
+        (see <xref linkend="chap_02_05_00" />).</para>
 
+    <para><emphasis>Some simple facts about <filename>gpt2_5.grd</filename></emphasis></para>
+    
     <qandaset defaultlabel='qanda'>
-        
         <qandaentry>
             <question>
                 <para>Who uses the <filename>gpt2_5.grd</filename> file ?</para></question>
@@ -24,18 +25,26 @@
             </qandaentry>
             
             <qandaentry>
+                <question>
+                    <para>Will the library work without <filename>gpt2_5.grd</filename> ?</para></question>
+                <answer>
+                    <para>In part, i.e. calling the function <emphasis>iers2010::gpt2</emphasis> will result in an error.</para></answer>
+            </qandaentry>
+            
+            <qandaentry>
             <question>
-                <para>Where is the path to <filename>gpt2_5.grd</filename> set ?</para></question>
+                <para>Where/when is the path to <filename>gpt2_5.grd</filename> set ?</para></question>
             <answer>
                 <para>In function <emphasis>iers2010::gpt2</emphasis>, found in the source file <filename>src/gpt2.cpp</filename> there is a 
-                    <emphasis>DEFINE</emphasis> statement (at the top
+                    <emphasis>DEFINE</emphasis> (pre-processor) statement (at the top
                 of the source file), similar to:
                 <programlisting linenumbering='numbered'>
 /** @brief  Define the path to the gpt2_5.grd file (including the filename)
  */
 #define PATH_TO_GRD25_GRD "/usr/local/share/gpt2_5.grd"
                     </programlisting>
-                This line is set during the installation procedure, and the path is automatically set to reflect the <emphasis>datarootdir</emphasis>
+                    This line is set during the installation procedure (when running <command>make</command> in the <filename class='directory'>src</filename> directory), 
+                    and the path is automatically set to reflect the <emphasis>datarootdir</emphasis>
                 directory.</para>
                 </answer>
                 </qandaentry>
@@ -52,7 +61,7 @@
 /** @brief  Define the path to the gpt2_5.grd file (including the filename)
  */
 #define PATH_TO_GRD25_GRD "/foo/bar/gpt2_5.grd"
-</programlisting>.</para>
+</programlisting></para>
                         <para>You can also choose to ommit this last part (i.e. modifying the source code) and provide the path to the grid file at
                         evey call to <emphasis>iers2010::gpt2</emphasis>. That means writting:
                         <programlisting linenumbering='numbered'>
@@ -60,7 +69,7 @@ void foo ( parameter_list )
 {
     int status;
     // do various things ...
-    status = iers2010::gpt2 ();
+    status = iers2010::gpt2 (dmjd,dlat,...,undu,it,"/foo/bar/gpt2_5.grd");
     // do more things ...
 }
                         </programlisting>
@@ -70,7 +79,7 @@ void foo ( parameter_list )
 {
     int status;
     // do various things ...
-    status = iers2010::gpt2 ();
+    status = iers2010::gpt2 (dmjd,dlat,...,undu,it);
     // do more things ...
 }
                         </programlisting>
@@ -80,7 +89,8 @@ void foo ( parameter_list )
     </qandaset>
     </section>
   
-    <section id="chap_03_03"><title>Running <filename>test.cpp</filename></title><para></para></section>
+    <section id="chap_03_03"><title>Running <filename>test.cpp</filename></title>
+        <para></para></section>
   
     <section id="chap_03_04"><title>Examples</title><para></para></section>
   
