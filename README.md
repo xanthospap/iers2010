@@ -29,10 +29,10 @@ make install
 | Chapter | (Sub)Routine | Translated | Tested | Comments | Version |
 |:--------|:-------------|:----------:|:------:|:---------|:--------|
 | 4       | GCONV2.F     | [ ]        | [ ]    |          |         |
-| 5       | PMSDNUT2.F   | [ ]        | [ ]    |          |         |
-|         | UTLIBR.F     | [ ]        | [ ]    |          |         |
-|         | FUNDARG.F    | [ ]        | [ ]    |          |         |
-|         | FCNNUT.F     | [ ]        | [ ]    |          |         |
+| 5       | PMSDNUT2.F   | [x]        | [x]    |          |         |
+|         | UTLIBR.F     | [x]        | [x]    |          |         |
+|         | FUNDARG.F    | [x]        | [x]    |          |         |
+|         | FCNNUT.F     | [x]        | [x]    |          |         |
 
 ## Prerequisites
 None. This is a standalone library. Of course a C++ compiler is assumed!
