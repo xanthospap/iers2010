@@ -27,7 +27,7 @@ make install
 
 | Chapter | (Sub)Routine | Translated | Tested | Comments | Version |
 |:--------|:-------------|:----------:|:------:|:---------|:--------|
-| 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)|<ul><li>- [x] item1</li><li>- [ ] item2</li></ul>|<ul><li>[ ]</li></ul>| | |
+| 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)|<ul><li>- [x] </li><li>- [ ] </li></ul>|<ul><li>[ ]</li></ul>| | |
 | 5       | [PMSDNUT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F) ||| | |
 |         | [UTLIBR](http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F)  ||| | |
 |         | [FUNDARG](http://maia.usno.navy.mil/conv2010/chapter5/FUNDARG.F) ||| | |
