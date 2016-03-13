@@ -61,6 +61,7 @@ int main()
     int pmsdnut2_status = TEST_STATUS_SUCCESS;
     int utlibr_status   = TEST_STATUS_SUCCESS;
     int fcnnut_status   = TEST_STATUS_SUCCESS;
+    double diff;
     
     // format results
     std::cout.setf(std::ios::fixed/*, std:: ios::floatfield*/);
@@ -69,11 +70,13 @@ int main()
     std::cerr.precision(15);
 
     // testing fundarg
-    std::cout<<"Testing routine : fundarg...\n";
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> fundarg\n";
+    std::cout<<"----------------------------------------\n";
     double fargs[5];
     iers2010::fundarg(fundarg_inp, fargs);
     for (int i=0; i<5; ++i) {
-        double diff = std::fabs(fargs[i]-fundarg_res[i]);
+        diff = std::fabs(fargs[i]-fundarg_res[i]);
         std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
         if (diff > 1e-15) {
             fundarg_status = TEST_STATUS_FAILURE;
@@ -83,12 +86,14 @@ int main()
     status += fundarg_status;
     
     // testing pmsdnut2
-    std::cout<<"Testing routine : pmsdnut2...\n";
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> pmsdnut2\n";
+    std::cout<<"----------------------------------------\n";
     iers2010::pmsdnut2(pmsdnut2_inp, fargs[0], fargs[1]);
     for (int i=0; i<2; ++i) {
-        if (std::fabs(fargs[i]-pmsdnut2_res[i]) > 1e-15) {
-            std::cerr << "\targument[" << i << "] diff: " 
-                        << std::fabs(fargs[i]-pmsdnut2_res[i])<<"\n";
+        diff = std::fabs(fargs[i]-pmsdnut2_res[i]);
+        std::cout << "\tdiff: " << diff <<"\n";
+        if ( diff > 1e-15) {
             pmsdnut2_status = TEST_STATUS_FAILURE;
         }
     }
@@ -96,22 +101,24 @@ int main()
     status += pmsdnut2_status;
     
     // testing utlibr
-    std::cout<<"Testing routine : utlibr...\n";
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> utlibr\n";
+    std::cout<<"----------------------------------------\n";
     // test-case A
     iers2010::utlibr(utlibr_inp[0], fargs[0], fargs[1]);
     for (int i=0; i<2; ++i) {
-        if (std::fabs(fargs[i]-utlibr_res[i]) > 1e-15) {
-            std::cerr << "\targument[" << i << "] diff: " 
-                        << std::fabs(fargs[i]-utlibr_res[i])<<"\n";
+        diff = std::fabs(fargs[i]-utlibr_res[i]);
+        std::cout << "\tdiff: " << diff <<"\n";
+        if (diff > 1e-15) {
             utlibr_status = TEST_STATUS_FAILURE;
         }
     }
     // test-case B
     iers2010::utlibr(utlibr_inp[1], fargs[0], fargs[1]);
     for (int i=0; i<2; ++i) {
-        if (std::fabs(fargs[i]-utlibr_res[i+2]) > 1e-15) {
-            std::cerr << "\targument[" << i << "] diff: " 
-                        << std::fabs(fargs[i]-utlibr_res[i+2])<<"\n";
+        diff = std::fabs(fargs[i]-utlibr_res[i+2]); 
+        std::cout << "\tdiff: " << diff <<"\n";
+        if ( diff > 1e-15) {
             utlibr_status = TEST_STATUS_FAILURE;
         }
     }
@@ -119,12 +126,14 @@ int main()
     status += utlibr_status;
     
     // testing fcnnut
-    std::cout<<"Testing routine : fcnnut...\n";
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> fcnnut\n";
+    std::cout<<"----------------------------------------\n";
     iers2010::fcnnut(fcnnut_inp, fargs[0], fargs[1], fargs[2], fargs[3]);
     for (int i=0; i<4; ++i) {
-        if (std::fabs(fargs[i]-fcnnut_res[i]) > 1e-15) {
-            std::cerr << "\targument[" << i << "] diff: " 
-                        << std::fabs(fargs[i]-fcnnut_res[i])<<"\n";
+        diff = std::fabs(fargs[i]-fcnnut_res[i]); 
+        std::cout << "\tdiff: " << diff <<"\n";
+        if (diff > 1e-15) {
             fcnnut_status = TEST_STATUS_FAILURE;
         }
     }
