@@ -20,30 +20,30 @@ AC_PROG_GREP
 AC_PROG_MKDIR_P
 
 # Search for doxygen
-AC_CHECK_PROGS([DOXYGEN], [doxygen])
-if test -z "$DOXYGEN"
-then
-    AC_MSG_WARN([Doxygen not found; Library (html) API will not be build.])
-fi
-AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
-AM_COND_IF([HAVE_DOXYGEN],[AC_CONFIG_FILES([doc/Doxyfile-html
-            doc/Doxyfile-man])])
+# AC_CHECK_PROGS([DOXYGEN], [doxygen])
+# if test -z "$DOXYGEN"
+# then
+#     AC_MSG_WARN([Doxygen not found; Library (html) API will not be build.])
+# fi
+# AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
+# AM_COND_IF([HAVE_DOXYGEN],[AC_CONFIG_FILES([doc/Doxyfile-html
+#             doc/Doxyfile-man])])
 
 # search for xsltproc
-AC_CHECK_PROGS([XSLTPROC],[xsltproc])
-if test -z "$XSLTPROC"
-then
-    AC_MSG_WARN([xslt not found; Reference guide will not be build.])
-fi
-AM_CONDITIONAL([HAVE_XSLTPROC], [test -n "$XSLTPROC"])
+# AC_CHECK_PROGS([XSLTPROC],[xsltproc])
+# if test -z "$XSLTPROC"
+# then
+#     AC_MSG_WARN([xslt not found; Reference guide will not be build.])
+# fi
+# AM_CONDITIONAL([HAVE_XSLTPROC], [test -n "$XSLTPROC"])
 
 # search for fop
-AC_CHECK_PROGS([FOP],[fop])
-if test -z "$FOP"
-then
-    AC_MSG_WARN([fop not found; Reference guide (pdf) will not be build.])
-fi
-AM_CONDITIONAL([HAVE_FOP], [test -n "$FOP"])
+# AC_CHECK_PROGS([FOP],[fop])
+# if test -z "$FOP"
+# then
+#     AC_MSG_WARN([fop not found; Reference guide (pdf) will not be build.])
+# fi
+# AM_CONDITIONAL([HAVE_FOP], [test -n "$FOP"])
 
 # Checks for optional programs.
 
@@ -60,9 +60,9 @@ AC_CHECK_FUNCS([floor modf pow sqrt])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
-                 test/Makefile
-                 doc/Makefile
-                 script/Makefile])
+                 test/Makefile])
+#                 doc/Makefile
+#                 script/Makefile])
 #                 alternatives/Makefile])
 
 AC_OUTPUT
