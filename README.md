@@ -27,11 +27,15 @@ make install
 
 | Chapter | (Sub)Routine | Translated | Tested | Comments | Version |
 |:--------|:-------------|:----------:|:------:|:---------|:--------|
-| 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)|- [x]|- [x]| | |
+| 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)|- [x] |-[ ]| | |
 | 5       | [PMSDNUT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F) | [x] | [x] | | |
 |         | [UTLIBR](http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F)  | [x] | [x] | | |
 |         | [FUNDARG](http://maia.usno.navy.mil/conv2010/chapter5/FUNDARG.F) | [x] | [x] | | |
 |         | [FCNNUT](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/FCNNUT.F) | [x] | [x] | | |
+
+
+- [ ] task1
+- [x] task2
 
 ## Prerequisites
 None. This is a standalone library. Of course a C++ compiler is assumed!
