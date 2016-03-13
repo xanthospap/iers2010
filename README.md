@@ -26,14 +26,17 @@ make install
 
 | Chapter | (Sub)Routine | Translated | Tested | Version  | Comments |
 |:--------|:-------------|:----------:|:------:|:---------|:---------|
-| 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
+| 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | [see ngpt car2ell](https://github.com/xanthospap/ngpt/blob/master/src/car2ell.hpp)|
 | 5       | [PMSDNUT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F) |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 13.11.2011 | see [pmsdnut2](#pmsdnut2-cmp) |
-|         | [UTLIBR](http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 23.06.2010 | |
+|         | [UTLIBR](http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 23.06.2010 | see [utlibr](#utlibr-cmp) |
 |         | [FUNDARG](http://maia.usno.navy.mil/conv2010/chapter5/FUNDARG.F)            |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 25.02.2010 | see [fundarg](#fundarg-cmp) |
 |         | [FCNNUT](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/FCNNUT.F)     |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 19.12.2013 | Needs updating from IERS |
 
 
 ## Test Cases & FORTRAN vs C++ implementations
+
+> The discussion below is only a description of the discrepancies between implementations
+> and does **not** depict the actual precission of the models.
 
 ### fundarg <a id="fundarg-cmp"></a>
 
@@ -48,10 +51,27 @@ are typed using the `D0` format; the results are identical with the C++ implemen
 ### pmsdnut2 <a id="pmsdnut2-cmp"></a>
 
 The test provided shows discrepancies (against the C++ implementation in the order
-of 1e-7 or less. This is because the `DOUBLE PRECISION` float arrays `PER(J), XS(J), XC(J), YS(J) and YC(J)`
-are not explicitely marked with `D0`. If i use the implementation `PMSDNUT2_D0.F` (where
+of 1e-7 or less. This is because the `DOUBLE PRECISION` float arrays `PER, XS, XC, YS and YC`
+are not explicitely marked with `D0` (in `PMSDNUT2.F`). If i use the implementation `PMSDNUT2_D0.F` (where
 the only change from `PMSDNUT2.F` is the declerations of the arrays), then the FORTRAN and C++ 
 results are identical.
+
+Same thing happens with [utlibr](#utlibr-cmp).
+
+## utlibr <a id="utlibr-cmp"></a>
+
+The test provided shows discrepancies (against the C++ implementation in the order
+of 1e-7 or less. This is because the `DOUBLE PRECISION` float arrays `PER, DUT1S, DUT1C, DLODS and DLODC`
+are not explicitely marked with `D0` (in `UTLIBR.F`). If i use the implementation `UTLIBR_D0.F` (where
+the only change from `UTLIBR.F` is the declerations of the arrays), then the FORTRAN and C++
+results are identical.
+
+Same thing happens with [pmsdnut2](#pmsdnut2-cmp).
+
+## fcnnut <a id="fcnnut-cmp"></a>
+
+FORTRAN (i.e. FCNNUT.F) and C++ implementations produce identical results; no discrepancies found
+in running the test case.
 
 ## Prerequisites
 None. This is a standalone library. Of course a C++ compiler is assumed!
