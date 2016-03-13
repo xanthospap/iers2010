@@ -25,13 +25,13 @@ make install
 ## Status
 
 
-| Chapter | (Sub)Routine | Translated | Tested | Comments | Version |
-|:--------|:-------------|:----------:|:------:|:---------|:--------|
-| 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| | |
-| 5       | [PMSDNUT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F) |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| | |
-|         | [UTLIBR](http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| | |
-|         | [FUNDARG](http://maia.usno.navy.mil/conv2010/chapter5/FUNDARG.F)            |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| | |
-|         | [FCNNUT](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/FCNNUT.F)     |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| | |
+| Chapter | (Sub)Routine | Translated | Tested | Version  | Comments |
+|:--------|:-------------|:----------:|:------:|:---------|:---------|
+| 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
+| 5       | [PMSDNUT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F) |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 13.11.2011 | |
+|         | [UTLIBR](http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 23.06.2010 | |
+|         | [FUNDARG](http://maia.usno.navy.mil/conv2010/chapter5/FUNDARG.F)            |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 25.02.2010 | |
+|         | [FCNNUT](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/FCNNUT.F)     |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 19.12.2013 | Needs updating from IERS |
 
 
 ## Prerequisites
