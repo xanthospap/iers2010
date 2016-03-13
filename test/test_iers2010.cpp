@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include "iers2010.hpp"
 
 #define TEST_STATUS_SUCCESS 0
@@ -60,15 +61,21 @@ int main()
     int pmsdnut2_status = TEST_STATUS_SUCCESS;
     int utlibr_status   = TEST_STATUS_SUCCESS;
     int fcnnut_status   = TEST_STATUS_SUCCESS;
+    
+    // format results
+    std::cout.setf(std::ios::fixed/*, std:: ios::floatfield*/);
+    std::cout.precision(15);
+    std::cerr.setf(std::ios::fixed/*, std:: ios::floatfield*/);
+    std::cerr.precision(15);
 
     // testing fundarg
     std::cout<<"Testing routine : fundarg...\n";
     double fargs[5];
     iers2010::fundarg(fundarg_inp, fargs);
     for (int i=0; i<5; ++i) {
-        if (std::fabs(fargs[i]-fundarg_res[i]) > 1e-15) {
-            std::cerr << "\targument[" << i << "] diff: " 
-                    << std::fabs(fargs[i]-fundarg_res[i])<<"\n";
+        double diff = std::fabs(fargs[i]-fundarg_res[i]);
+        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
+        if (diff > 1e-15) {
             fundarg_status = TEST_STATUS_FAILURE;
         }
     }
