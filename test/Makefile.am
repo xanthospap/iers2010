@@ -1,22 +1,41 @@
-check_PROGRAMS    = test
-dist_test_SOURCES = test.cpp
-EXTRA_DIST        = hardisp_results_onsa \
-					hardisp_results_reyk \
-					reyk.blq \
-					onsa.blq
-test_CXXFLAGS     = -I$(top_srcdir)/src -L$(top_srcdir)/src -std=c++11
-test_LDADD        = $(top_srcdir)/src/libiers10++.a
+noinst_PROGRAMS = testIers2010
 
-check_SCRIPTS     = greptest.sh
-TESTS             = $(check_SCRIPTS)
+MCXXFLAGS = \
+	-std=c++14 \
+	-g \
+	-pg \
+	-Wall \
+	-Wextra \
+	-Werror \
+	-pedantic \
+	-W \
+	-Wshadow \
+	-Wdisabled-optimization \
+	-DDEBUG
 
-EXTRA_PROGRAMS            = test-hardisp
-dist_test_hardisp_SOURCES = test-hardisp.cpp
-test_hardisp_CXXFLAGS     = -I$(top_srcdir)/src -L$(top_srcdir)/src -std=c++11
-test_hardisp_LDADD        = $(top_srcdir)/src/libiers10++.a
+testIers2010_SOURCES  = test_iers2010.cpp
+testIers2010_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
+testIers2010_LDADD    = $(top_srcdir)/src/libiers2010.la
 
-greptest.sh:
-	echo './test | grep "Library Status : OK"' > greptest.sh
-	chmod +x greptest.sh
-
-CLEANFILES        = greptest.sh
+#check_PROGRAMS    = test
+#dist_test_SOURCES = test.cpp
+#EXTRA_DIST        = hardisp_results_onsa \
+#					hardisp_results_reyk \
+#					reyk.blq \
+#					onsa.blq
+#test_CXXFLAGS     = -I$(top_srcdir)/src -L$(top_srcdir)/src -std=c++11
+#test_LDADD        = $(top_srcdir)/src/libiers10++.a
+#
+#check_SCRIPTS     = greptest.sh
+#TESTS             = $(check_SCRIPTS)
+#
+#EXTRA_PROGRAMS            = test-hardisp
+#dist_test_hardisp_SOURCES = test-hardisp.cpp
+#test_hardisp_CXXFLAGS     = -I$(top_srcdir)/src -L$(top_srcdir)/src -std=c++11
+#test_hardisp_LDADD        = $(top_srcdir)/src/libiers10++.a
+#
+#greptest.sh:
+#	echo './test | grep "Library Status : OK"' > greptest.sh
+#	chmod +x greptest.sh
+#
+#CLEANFILES        = greptest.sh

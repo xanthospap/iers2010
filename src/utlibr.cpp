@@ -5,7 +5,7 @@
 #endif
 
 /**
- * @details This function evaluates the model of subdiurnal libration
+ * \details This function evaluates the model of subdiurnal libration
  *          in the axial component of rotation, expressed by UT1 and LOD.
  *          This effect is due to the influence of tidal gravitation on the
  *          departures of the Earth's mass distribution from the rotational
@@ -20,71 +20,43 @@
  *          subroutine, found here : 
  *          http://maia.usno.navy.mil/conv2010/software.html
  * 
- * @param[in]  rmjd Time expressed as modified Julian date
- * @param[out] dut1 Incremental UT1 in microseconds
- * @param[out] dlod Incremental LOD in microseconds per day
- * @return          An integer value which can be either 0 (to denote
- *                  that a new value for pm has been computed) or 1 
- *                  (to denote quick return). The returned integer has
- *                  nothing to do with the status of the function and
- *                  has no meaning if the <b>QUICK_EXIT</b> compilation
- *                  flag was not used.
- * 
- * @note
- *      - Status:  Class 3 model
- *      - The procedure FUNDARG is the same as used by the program PMSDNUT2
- *        which implements the corresponding model of the lunisolar 
- *        libration in polar motion.
- * 
- * @verbatim
- *  Test cases:
- *     given input:  rmjd_a = 44239.1 ( January 1, 1980 2:24.00 )
- *                   rmjd_b = 55227.4 ( January 31, 2010 9:35.59 )
+ * \param[in]  rmjd Time expressed as modified Julian date
+ * \param[out] dut1 Incremental UT1 in microseconds
+ * \param[out] dlod Incremental LOD in microseconds per day
+ * \return          An integer value, always 0. 
  *
- *     expected output: dUT1_a =   2.441143834386761746D0 mus;
- *                      dLOD_a = -14.78971247349449492D0 mus / day
- *                      dUT1_b = - 2.655705844335680244D0 mus;
- *                      dLOD_b =  27.39445826599846967D0 mus / day
- * @endverbatim
+ * \note
+ *      - Status:  Class 3 model
  * 
- * @version 2010 June  23
+ * @version 23.06.2010
  * 
  * @cite iers2010
  * 
  */
-int iers2010::utlibr (const double& rmjd,double& dut1,double& dlod) 
-{
-/*
- *         ----------------------------
- *           D E F I N I T I O N S
- *         ----------------------------
- *  iarg   - array defining for each of the 11 trigonometric terms a set
- *           of 6 integer multipliers of the fundamental angular arguments
- *  arg    - vector of the following 6 fundamental arguments used to
- *           compute the angular argument of the trigonometric functions
- *           arg(1:6) = [ GMST+pi, el, elp, f, d, om ]; this vector is
- *           evaluated by the subroutine FUNDARG which is called as an 
- *           external subroutine.  Originally evaluated by the subroutine
- *           PMARGS. 
- *  period - array of periods of the trigonometric terms of expansion, in
- *           mean solar days; only for a check - not used in computations
- *  dUT1s, dUT1c - sine and cosine coefficients of dUT1, in microseconds
- *  dLODs, dLODc - sine and cosine coefficients of dLOD, in microseconds
- *                 per day
- *  angle  - angular argument of the trigonometric functions
- *           angle = Sum(i=1:6) iarg(i,j)*arg(i), for j=1,11
- */
 
-    #ifdef QUICK_EXIT
-        static double rmjd_previous = .0e0;
-        static double dut1_previous = -999.0;
-        static double dlod_previous = -999.0;
-        if ( fabs(rmjd_previous-rmjd) < DATE_MAX_DIFF ) {
-            dut1 = dut1_previous;
-            dlod = dlod_previous;
-            return 1;
-        }
-    #endif
+int
+iers2010::utlibr(double rmjd, double& dut1, double& dlod) 
+{
+    /*
+     *         ----------------------------
+     *           D E F I N I T I O N S
+     *         ----------------------------
+     *  iarg   - array defining for each of the 11 trigonometric terms a set
+     *           of 6 integer multipliers of the fundamental angular arguments
+     *  arg    - vector of the following 6 fundamental arguments used to
+     *           compute the angular argument of the trigonometric functions
+     *           arg(1:6) = [ GMST+pi, el, elp, f, d, om ]; this vector is
+     *           evaluated by the subroutine FUNDARG which is called as an 
+     *           external subroutine.  Originally evaluated by the subroutine
+     *           PMARGS. 
+     *  period - array of periods of the trigonometric terms of expansion, in
+     *           mean solar days; only for a check - not used in computations
+     *  dUT1s, dUT1c - sine and cosine coefficients of dUT1, in microseconds
+     *  dLODs, dLODc - sine and cosine coefficients of dLOD, in microseconds
+     *                 per day
+     *  angle  - angular argument of the trigonometric functions
+     *           angle = Sum(i=1:6) iarg(i,j)*arg(i), for j=1,11
+     */
 
     // Set constants
     #ifdef USE_EXTERNAL_CONSTS
@@ -107,7 +79,7 @@ int iers2010::utlibr (const double& rmjd,double& dut1,double& dlod)
     //+ Source: IERS Conventions (2010), Table 5.1b
     static struct {
         int iarg[6];
-        double per,dut1s,dut1c,dlods,dlodc;
+        double per, dut1s, dut1c, dlods, dlodc;
     } x[] = {
         { { 2, -2,  0, -2,  0, -2 }, 0.5377239,  0.05, -0.03,  -0.3,  -0.6 },
         { { 2,  0,  0, -2, -2, -2 }, 0.5363232,  0.06, -0.03,  -0.4,  -0.7 },
@@ -121,6 +93,8 @@ int iers2010::utlibr (const double& rmjd,double& dut1,double& dlod)
         { { 2,  0,  0,  0,  0,  0 }, 0.4986348,  0.21, -0.12,  -1.5,  -2.6 },
         { { 2,  0,  0,  0,  0, -1 }, 0.4985982,  0.06, -0.04,  -0.4,  -0.8}
     };
+    constexpr int M { sizeof(x) / sizeof(x[0]) };
+    static_assert( M == 11, "Invalid size for quasi semidiurnal terms in utlibr." );
 
     //  Compute the harmonic model of dUT1 and dLOD 
     //+ dUT1 and dLOD are set to zero first
@@ -130,38 +104,36 @@ int iers2010::utlibr (const double& rmjd,double& dut1,double& dlod)
     //+ arg(1:6) = [ GMST+pi, el, elp, f, d, om ] at t = rmjd
 
     // Convert the input epoch to Julian centuries of TDB since J2000
-    double t ( (rmjd-RMJD0) / 36525e0 );
+    double t { (rmjd-RMJD0) / 36525e0 };
 
     // Compute GMST + pi
-    double gmst = fmod (   67310.54841e0 +
+    double gmst { std::fmod(67310.54841e0 +
                     t*( (8640184.812866e0 + 3155760000e0) +
                     t*( 0.093104e0 +
-                    t*( -0.0000062 ))), 86400e0 );
+                    t*( -0.0000062 ))), 86400e0 ) };
 
     // Fundamental arguments
-    double arg[6];
-    iers2010::fundarg (t,arg[1],arg[2],arg[3],arg[4],arg[5]);
-    arg[0] = gmst / RAD2SEC + PI;
-    arg[0] = fmod (arg[0],TWOPI);
+    double fargs[6];
+    iers2010::fundarg(t, fargs+1);
+    fargs[0] = gmst / RAD2SEC + PI;
+    fargs[0] = std::fmod(fargs[0], TWOPI);
 
-    for (int j=0;j<11;j++) {
+    double angle, sina, cosa;
+    for (int j=0; j<M; j++) {
         //  For the j-th term of the trigonometric expansion, compute the angular
         //+ argument angle of sine and cosine functions as a linear integer
         //+ combination of the 6 fundamental arguments
-        double angle (.0e0);
-        for (int i=0;i<6;i++) angle += ( double (x[j].iarg[i]) * arg[i] );
-        angle = fmod (angle,TWOPI);
+        angle = .0e0;
+        for (int i=0; i<6; i++) {
+            angle += ( double(x[j].iarg[i]) * fargs[i] );
+        }
+        angle = std::fmod(angle, TWOPI);
         // Compute contribution from the j-th term of expansion to dUT1 and dLOD
-        double sina ( sin (angle) ), cosa ( cos(angle) );
+        sina = std::sin(angle);
+        cosa = std::cos(angle);
         dut1 += x[j].dut1s * sina + x[j].dut1c * cosa;
         dlod += x[j].dlods * sina + x[j].dlodc * cosa;
     }
-
-    #ifdef QUICK_EXIT
-        rmjd_previous = rmjd;
-        dut1_previous = dut1;
-        dlod_previous = dlod;
-    #endif
 
     // Finished.
     return 0;
