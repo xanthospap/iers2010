@@ -28,9 +28,9 @@
  * \note
  *      - Status:  Class 3 model
  * 
- * @version 23.06.2010
+ * \version 23.06.2010
  * 
- * @cite iers2010
+ * \cite iers2010
  * 
  */
 

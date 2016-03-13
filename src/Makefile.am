@@ -21,4 +21,5 @@ dist_include_HEADERS = \
 dist_libiers2010_la_SOURCES = \
 	fundarg.cpp \
 	pmsdnut2.cpp \
-	utlibr.cpp
+	utlibr.cpp \
+	fcnnut.cpp

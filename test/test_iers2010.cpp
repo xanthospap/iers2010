@@ -41,12 +41,25 @@ double utlibr_res[] = {
     27.39445826599846967e0
 };
 
+/* results and input from FCNNUT;
+ * last update: 2013 December 19
+ */
+double fcnnut_inp = {
+    54790e0 };
+double fcnnut_res[] = {
+    -176.8012290066270680e0,
+    -93.51855308903756736e0,
+    3.745573770491803067e0,
+    3.745573770491803067e0
+};
+
 int main()
 {
     int status          = TEST_STATUS_SUCCESS;
     int fundarg_status  = TEST_STATUS_SUCCESS;
     int pmsdnut2_status = TEST_STATUS_SUCCESS;
     int utlibr_status   = TEST_STATUS_SUCCESS;
+    int fcnnut_status   = TEST_STATUS_SUCCESS;
 
     // testing fundarg
     std::cout<<"Testing routine : fundarg...\n";
@@ -97,6 +110,19 @@ int main()
     }
     std::cout << "status: " << (utlibr_status ? "failed!\n" : "ok\n" );
     status += utlibr_status;
+    
+    // testing fcnnut
+    std::cout<<"Testing routine : fcnnut...\n";
+    iers2010::fcnnut(fcnnut_inp, fargs[0], fargs[1], fargs[2], fargs[3]);
+    for (int i=0; i<4; ++i) {
+        if (std::fabs(fargs[i]-fcnnut_res[i]) > 1e-15) {
+            std::cerr << "\targument[" << i << "] diff: " 
+                        << std::fabs(fargs[i]-fcnnut_res[i])<<"\n";
+            fcnnut_status = TEST_STATUS_FAILURE;
+        }
+    }
+    std::cout << "status: " << (fcnnut_status ? "failed!\n" : "ok\n" );
+    status += fcnnut_status;
     
     return status;    
 }
