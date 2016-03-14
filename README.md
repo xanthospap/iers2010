@@ -40,19 +40,20 @@ make install
 
 ### fundarg <a id="fundarg-cmp"></a>
 
-The test provided for FUNDARG (in the FUNDARG.F header) failed with descripancies
+The test provided for FUNDARG (in the `FUNDARG.F` header) failed with descripancies
 ~1e-13 or less. The same thing happens when i compile and run the FORTRAN implementation
 (see `fortran_impl`). Possibly this is because of the non-use of (explicit) scientific
 format in the input arguments (e.g. `T = 0.07995893223819302` and not `T = 0.07995893223819302D0`).
 
-`fortran_impl/MAIN.F` contains the test case where all `DOUBLE PRECISION` floats
+[MAIN.F](fortran_impl/MAIN.F) contains the test case where all `DOUBLE PRECISION` floats
 are typed using the `D0` format; the results are identical with the C++ implementation.
 
 ### pmsdnut2 <a id="pmsdnut2-cmp"></a>
 
 The test provided shows discrepancies (against the C++ implementation in the order
 of 1e-7 or less. This is because the `DOUBLE PRECISION` float arrays `PER, XS, XC, YS and YC`
-are not explicitely marked with `D0` (in `PMSDNUT2.F`). If i use the implementation `PMSDNUT2_D0.F` (where
+are not explicitely marked with `D0` (in `PMSDNUT2.F`). If i use the implementation 
+[PMSDNUT2_D0.F](fortran_impl/PMSDNUT2_D0.F) (where
 the only change from `PMSDNUT2.F` is the declerations of the arrays), then the FORTRAN and C++ 
 results are identical.
 
@@ -62,7 +63,8 @@ Same thing happens with [utlibr](#utlibr-cmp).
 
 The test provided shows discrepancies (against the C++ implementation in the order
 of 1e-7 or less. This is because the `DOUBLE PRECISION` float arrays `PER, DUT1S, DUT1C, DLODS and DLODC`
-are not explicitely marked with `D0` (in `UTLIBR.F`). If i use the implementation `UTLIBR_D0.F` (where
+are not explicitely marked with `D0` (in `UTLIBR.F`). If i use the implementation 
+[UTLIBR_D0.F](fortran_impl/UTLIBR_D0.F) (where
 the only change from `UTLIBR.F` is the declerations of the arrays), then the FORTRAN and C++
 results are identical.
 
