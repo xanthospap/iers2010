@@ -9,11 +9,12 @@ The FORTRAN subroutines are translated to C++ (standard c++11/c++14) with (as mu
 possible) minor modifications.
 
 ## Compilation / Installation
-Source code is ISO C++14. Compilation should be trivial using any gcc version 
-supporting the c++14 standard (option -std=c++14).
 
-This software is meant to be implemented on Unix-type OSs. No effort will be
-undertaken for compatibility with other OS types.
+Source code is ISO C++14. Compilation should be trivial using any gcc version 
+supporting the c++14 standard (option `-std=c++14`).
+
+> This software is meant to be implemented on Unix-type OSs. No effort will be
+> undertaken for compatibility with other OS types.
 
 To compile the library, just follow the 3 basic steps
 ```
@@ -21,6 +22,15 @@ To compile the library, just follow the 3 basic steps
 make
 make install
 ```
+
+### Tested Compilers & C++ versions
+
+| Compiler | Vesion(s) | C++ ISO |
+|:--------:|:---------:|:-------:|
+| [gcc-c++](https://gcc.gnu.org/) | 5.3.1 | c++11 |
+| [gcc-c++](https://gcc.gnu.org/) | 5.3.1 | c++14 |
+| [clang](http://clang.llvm.org/) | 3.7.0 | c++11 |
+| [clang](http://clang.llvm.org/) | 3.7.0 | c++14 |
 
 ## Status
 
