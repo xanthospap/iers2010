@@ -17,7 +17,7 @@ undertaken for compatibility with other OS types.
 
 To compile the library, just follow the 3 basic steps
 ```
-configure
+./configure
 make
 make install
 ```
@@ -26,7 +26,7 @@ make install
 
 | Chapter | (Sub)Routine | Translated | Tested | Version  | Comments |
 |:--------|:-------------|:----------:|:------:|:---------|:---------|
-| 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | [see ngpt car2ell](https://github.com/xanthospap/ngpt/blob/master/src/car2ell.hpp)|
+| 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | see [ngpt car2ell](https://github.com/xanthospap/ngpt/blob/master/src/car2ell.hpp)|
 | 5       | [PMSDNUT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 13.11.2011 | see [pmsdnut2](#pmsdnut2-cmp) |
 |         | [UTLIBR](http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 23.06.2010 | see [utlibr](#utlibr-cmp) |
 |         | [FUNDARG](http://maia.usno.navy.mil/conv2010/chapter5/FUNDARG.F)            |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 25.02.2010 | see [fundarg](#fundarg-cmp) |
@@ -41,6 +41,19 @@ make install
 
 > The discussion below is only a description of the discrepancies between implementations
 > and does **not** depict the actual precission of the models.
+
+## Test Programs
+
+During the compilation, some programs are compiled to test the implementations of the individual functions in the
+library. These are:
+
+- [testIers2010](test/test_iers2010.cpp) compiled to `test/testIers2010` and
+- [testDehantTide](test/test_dehanttide.cpp) compiled to `test/testDehantTide`
+
+These programs contain source code to run the test cases provided in the FORTRAN implementation files. If needed,
+alternative FORTRAN implementations are provided (in the `fortran_impl` directory) for further testing. These can be
+compiled using the `fortran_impl/Makefile` aka run `make` in the `fortran_impl` folder. Note that you will need the
+IERS source code for this and [gfortran](https://gcc.gnu.org/fortran/).
 
 ### fundarg <a id="fundarg-cmp"></a>
 
