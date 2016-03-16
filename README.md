@@ -50,10 +50,20 @@ library. These are:
 - [testIers2010](test/test_iers2010.cpp) compiled to `test/testIers2010` and
 - [testDehantTide](test/test_dehanttide.cpp) compiled to `test/testDehantTide`
 
-These programs contain source code to run the test cases provided in the FORTRAN implementation files. If needed,
-alternative FORTRAN implementations are provided (in the `fortran_impl` directory) for further testing. These can be
-compiled using the `fortran_impl/Makefile` aka run `make` in the `fortran_impl` folder. Note that you will need the
-IERS source code for this and [gfortran](https://gcc.gnu.org/fortran/).
+These programs contain source code to run the test cases provided in the FORTRAN implementation files.
+
+If needed, alternative FORTRAN implementations are provided (in the `fortran_impl` directory) for further testing.
+These can be compiled using the `fortran_impl/Makefile` aka run `make` in the `fortran_impl` folder.
+Note that you will need the IERS source code (you can use the script [fetch_iers_lib.sh](fortran_impl/fetch_iers_lib.sh))
+and [gfortran](https://gcc.gnu.org/fortran/). Two programs are compiled, `fortran_impl/test_iers` and
+`fortran_impl/test_iers_d0`; the latter uses the alternative FORTRAN implementations (**NOT** the original
+IERS source code) Alternative FORTRAN implementations are provided for:
+
+- PMSDNUT2.F named [PMSDNUT2_D0.F](fortran_impl/PMSDNUT2_D0.F) (see [pmsdnut2](#pmsdnut2-cmp))
+- UTLIBR.F named [UTLIBR_D0.F](fortran_impl/UTLIBR_D0.F) (see [utlibr](#utlibr-cmp))
+
+See the individual (sub)routine chapters below for the reason these files are provided.
+
 
 ### fundarg <a id="fundarg-cmp"></a>
 
