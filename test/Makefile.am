@@ -1,4 +1,5 @@
-noinst_PROGRAMS = testIers2010
+noinst_PROGRAMS = testIers2010 \
+		testDehantTide
 
 MCXXFLAGS = \
 	-std=c++14 \
@@ -16,6 +17,10 @@ MCXXFLAGS = \
 testIers2010_SOURCES  = test_iers2010.cpp
 testIers2010_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
 testIers2010_LDADD    = $(top_srcdir)/src/libiers2010.la
+
+testDehantTide_SOURCES  = test_dehanttd.cpp
+testDehantTide_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
+testDehantTide_LDADD    = $(top_srcdir)/src/libiers2010.la
 
 #check_PROGRAMS    = test
 #dist_test_SOURCES = test.cpp

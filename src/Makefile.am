@@ -22,4 +22,13 @@ dist_libiers2010_la_SOURCES = \
 	fundarg.cpp \
 	pmsdnut2.cpp \
 	utlibr.cpp \
-	fcnnut.cpp
+	fcnnut.cpp \
+	arg2.cpp \
+	cal2jd.cpp \
+	dat.cpp \
+	st1idiu.cpp \
+	st1isem.cpp \
+	st1l1.cpp \
+	step2diu.cpp \
+	step2lon.cpp \
+	dehanttideinel.cpp

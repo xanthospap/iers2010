@@ -1,14 +1,9 @@
-#include "dehanttideinel.hpp"
+#include "iers2010.hpp"
 
 /**
- * @details For a given UTC date, calculate delta(AT) = TAI-UTC. This function 
- *          is closely related to the SOFA function iauDat.
+ * \details For a given UTC date, calculate delta(AT) = TAI-UTC. 
  * 
- * <B>SOFA lib</B> <br>
- * This revision:  2013 August 21 <br>
- * SOFA release 2013-12-02
- * 
- * @attention
+ * \attention
  *    <b>IMPORTANT</b>
  * <hr>
  *        A new version of this function must be
@@ -30,15 +25,15 @@
  *        whenever the function is re-issued,
  *        even if no leap seconds have been
  *        added.<br>
- *        <b>Latest leap second:  2012 June 30</b>
+ *        <b>Latest leap second:  2015 June 30</b>
  * <hr>
  *
- * @param[in]  iy     Year (Notes 1 and 2)
- * @param[in]  im     Month (Note 2) 
- * @param[in]  id     Day (Notes 2 and 3)
- * @param[in]  fd     Fraction of day (Note 4)
- * @param[out] deltat TAI minus UTC, seconds
- * @return            An \c integer denoting the exit status
+ * \param[in]  iy     Year (Notes 1 and 2)
+ * \param[in]  im     Month (Note 2) 
+ * \param[in]  id     Day (Notes 2 and 3)
+ * \param[in]  fd     Fraction of day (Note 4)
+ * \param[out] deltat TAI minus UTC, seconds
+ * \return            An \c integer denoting the exit status
  * Returned Int  | Status (Note 5)
  * ------------- | -------------
  * +1            | Dubious year (Note 1)
@@ -47,8 +42,9 @@
  * -2            | Bad month
  * -3            | Bad day (Note 3)
  * -4            | Bad fraction (Note 4)
+ * -5            | Internal Error (Note 5)
  *
- * @note
+ * \note
  * -# UTC began at 1960 January 1.0 (JD 2436934.5) and it is improper
  *    to call the function with an earlier date.  If this is attempted,
  *    zero is returned together with a warning status.
@@ -83,17 +79,20 @@
  *    will be returned.
  * -# In cases where a valid result is not available, zero is returned.
  *
- * @cite esaa,<br>
+ * \cite esaa,<br>
  * - For dates from 1961 January 1 onwards, the expressions from the
  *    file ftp://maia.usno.navy.mil/ser7/tai-utc.dat are used.
  * - The 5ms timestep at 1961 January 1 is taken from 2.58.1 (p87) of \cite esaa .
  *
+ * \version 27.02.2015 (release 09.02.2015)
+ *
  */
-int iers2010::dtel::dat(const int& iy,const int& im,const int& id,const double& fd,
-  double& deltat)
+
+int
+iers2010::dhtide::dat(int iy, int im, int id, double fd, double& deltat)
 {
     // Release year for this version of iauDat
-    enum { IYV = 2013};
+    enum { IYV = 2015};
 
     // Reference dates (MJD) and drift rates (s/day), pre leap seconds
     static const double drift[][2] = {
@@ -120,7 +119,7 @@ int iers2010::dtel::dat(const int& iy,const int& im,const int& id,const double& 
     static const struct {
         int iyear, month;
         double delat;
-        } changes[] = {
+    } changes[] = {
         { 1960,  1,  1.4178180 },
         { 1961,  1,  1.4228180 },
         { 1961,  8,  1.3728180 },
@@ -160,54 +159,51 @@ int iers2010::dtel::dat(const int& iy,const int& im,const int& id,const double& 
         { 1999,  1, 32.0       },
         { 2006,  1, 33.0       },
         { 2009,  1, 34.0       },
-        { 2012,  7, 35.0       }
-        };
+        { 2012,  7, 35.0       },
+        { 2015,  7, 36.0       }
+    };
 
     // Number of Delta(AT) changes
     const int NDAT = sizeof changes / sizeof changes[0];
 
-    // Miscellaneous local variables 
-    int j, i, m;
-    double da, djm0, djm;
-
     // Initialize the result to zero.
+    double da;
     deltat = da = 0.0e0;
 
     // If invalid fraction of a day, set error status and give up.
-    if (fd < 0.0 || fd > 1.0)
-        return -4;
+    if (fd < 0.0 || fd > 1.0) { return -4; }
 
-    // Convert the date into an MJD. 
-    j = iers2010::dtel::cal2jd (iy,im,id,djm0,djm);
+    // Convert the date into an MJD.
+    double djm0, djm;
+    int j { iers2010::dhtide::cal2jd(iy, im, id, djm0, djm) };
 
     // If invalid year, month, or day, give up. 
-    if (j < 0)
-        return j;
+    if (j < 0) { return j; }
 
     // If pre-UTC year, set warning status and give up. 
-    if (iy < changes[0].iyear)
-        return 1;
+    if (iy < changes[0].iyear) { return 1; }
 
     // If suspiciously late year, set warning status but proceed. 
-    if (iy > IYV + 5)
-        j = 1;
+    if (iy > IYV + 5) { j = 1; }
 
     // Combine year and month to form a date-ordered integer...
-    m = 12*iy + im;
+    int m { 12*iy + im };
 
+    int i { 0 };
     // ...and use it to find the preceding table entry.
     for (i = NDAT-1; i >=0; i--) {
         if (m >= (12 * changes[i].iyear + changes[i].month))
             break;
     }
 
+    // Prevent underflow warnings.
+    if (i < 0) { return -5; }
+
     // Get the Delta(AT).
-    if ( i<0 ) i++; /* not needed; just stop g++ from complaining! */
     da = changes[i].delat;
 
     // If pre-1972, adjust for drift. 
-    if (i < NERA1)
-        da += (djm + fd - drift[i][0]) * drift[i][1];
+    if (i < NERA1) { da += (djm + fd - drift[i][0]) * drift[i][1]; }
 
     // Return the Delta(AT) value. 
     deltat = da;

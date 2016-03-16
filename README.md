@@ -27,10 +27,14 @@ make install
 | Chapter | (Sub)Routine | Translated | Tested | Version  | Comments |
 |:--------|:-------------|:----------:|:------:|:---------|:---------|
 | 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | [see ngpt car2ell](https://github.com/xanthospap/ngpt/blob/master/src/car2ell.hpp)|
-| 5       | [PMSDNUT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F) |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 13.11.2011 | see [pmsdnut2](#pmsdnut2-cmp) |
-|         | [UTLIBR](http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 23.06.2010 | see [utlibr](#utlibr-cmp) |
-|         | [FUNDARG](http://maia.usno.navy.mil/conv2010/chapter5/FUNDARG.F)            |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 25.02.2010 | see [fundarg](#fundarg-cmp) |
-|         | [FCNNUT](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/FCNNUT.F)     |<ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 19.12.2013 | Needs updating from IERS |
+| 5       | [PMSDNUT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 13.11.2011 | see [pmsdnut2](#pmsdnut2-cmp) |
+|         | [UTLIBR](http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 23.06.2010 | see [utlibr](#utlibr-cmp) |
+|         | [FUNDARG](http://maia.usno.navy.mil/conv2010/chapter5/FUNDARG.F)            |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 25.02.2010 | see [fundarg](#fundarg-cmp) |
+|         | [FCNNUT](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/FCNNUT.F)     |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 19.12.2013 | Needs updating from IERS |
+| 7       | [DEHANTTIDEINEL](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/DEHANTTIDEINEL.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 24.04.2015 | see [dehanttideinel](#dehanttideinel-cmp)|
+|         | [HARDISP](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/HARDISP.F) |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
+|         | [ARG2](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/ARG2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 07.10.2011 | see [arg2](#arg2-cmp)|
+|         | [IERS_CMP_2015](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/IERS_CMP_2015.F) | <ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
 
 
 ## Test Cases & FORTRAN vs C++ implementations
@@ -74,6 +78,17 @@ Same thing happens with [pmsdnut2](#pmsdnut2-cmp).
 
 FORTRAN (i.e. FCNNUT.F) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
+
+## arg2 <a id="arg2-cmp"></a>
+
+FORTRAN (i.e. ARG2.F) and C++ implementations produce identical results; no discrepancies found
+in running the test case.
+
+## dehanttideinel <a id="dehanttideinel-cmp"></a>
+
+The function `dehanttideinel` is tested seperately, in the source file [test_dehanttd.cpp](test/test_dehanttd.cpp)
+(build as `testDehantTide` in the `test` directory). Three individual test cases are provided,
+all yieding discrepancies (between the FORTRAN and C++ implementations) smaller than ~1e-17.
 
 ## Prerequisites
 None. This is a standalone library. Of course a C++ compiler is assumed!

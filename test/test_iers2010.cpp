@@ -54,6 +54,23 @@ double fcnnut_res[] = {
     3.745573770491803067e0
 };
 
+/* results and input from ARG2;
+ * last update: 2011 October 07
+ */
+double arg2_res[] = {
+    2.849663065753787805e0,
+    6.28318080000000023e0,
+    4.926040134021299366e0,
+    1.608450491115348768e0,
+    2.375021572352622456e0,
+    0.4746414933980958040e0,
+    3.908159227647345801e0,
+    2.551018561669245344e0,
+    5.041990012540757959e0,
+    4.206816878908014701e0,
+    1.608463638294885811e0
+};
+
 int main()
 {
     int status          = TEST_STATUS_SUCCESS;
@@ -61,6 +78,7 @@ int main()
     int pmsdnut2_status = TEST_STATUS_SUCCESS;
     int utlibr_status   = TEST_STATUS_SUCCESS;
     int fcnnut_status   = TEST_STATUS_SUCCESS;
+    int arg2_status     = TEST_STATUS_SUCCESS;
     double diff;
     
     // format results
@@ -139,6 +157,22 @@ int main()
     }
     std::cout << "status: " << (fcnnut_status ? "failed!\n" : "ok\n" );
     status += fcnnut_status;
+    
+    // testing arg2
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> arg2\n";
+    std::cout<<"----------------------------------------\n";
+    double arg2_array[11];
+    iers2010::arg2(2008, 311.5e0, arg2_array);
+    for (int i=0; i<11; ++i) {
+        diff = std::fabs(arg2_array[i]-arg2_res[i]); 
+        std::cout << "\tdiff: " << diff <<"\n";
+        if (diff > 1e-15) {
+            arg2_status = TEST_STATUS_FAILURE;
+        }
+    }
+    std::cout << "status: " << (arg2_status ? "failed!\n" : "ok\n" );
+    status += arg2_status;
     
     return status;    
 }
