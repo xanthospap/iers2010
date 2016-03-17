@@ -1,4 +1,8 @@
-#include "hardisp.hpp"
+#include <algorithm>
+#include <cassert>
+#include "iers2010.hpp"
+
+constexpr int max_array_size { 20 };
 
 /**
  * @details This function sorts an array x, of length n, sorting upward,
@@ -23,20 +27,25 @@
  * @version 2009 August 19
  * 
  */
-int iers2010::hisp::shells (double* x,int* k,const int& n)
+int
+iers2010::hisp::shells(double* x, int* k, int n)
 {
-    typedef std::vector<std::pair<double,int> > div;
+    assert( n < max_array_size );
+    
+    struct di_pair { double dp; int ip; };
+    static di_pair sarr[max_array_size];
+
+    for (int i=0; i<n; i++) {
+        sarr[i].ip = k[i];
+        sarr[i].dp = x[i];
+    }
+
+    std::sort(&sarr[0], &sarr[n],
+        [](const di_pair& i, const di_pair& j){return i.dp < j.dp;});
   
-    div pairs (n);
-  
-    for (int i=0;i<n;i++)
-        pairs[i] = std::pair<double,int> (x[i],i);
-  
-    std::sort (pairs.begin(),pairs.end());
-  
-    for (int i=0;i<n;i++) {
-        x[i] = pairs[i].first;
-        k[i] = pairs[i].second;
+    for (int i=0; i<n; i++) {
+        x[i] = sarr[i].dp;
+        k[i] = sarr[i].ip;
     }
   
     return 0;

@@ -78,6 +78,12 @@ namespace iers2010
         /// Fill in data x, with sines and cosines of frequencies om.
         int recurs(double* x, int n, const double* hc, int nf, const double* om,
             double* scr);
+
+        /// Sort array x and store index keys in k.
+        int shells(double* x, int* k, int n);
+
+        int admint(const double* ampin, const int idtin[][6], const double* phin,
+            double* amp, double* f, double* p, int nin, int& nout, const int itm[5]);
  
     } // hisp
 

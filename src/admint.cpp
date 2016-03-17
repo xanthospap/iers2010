@@ -1,3 +1,4 @@
+#include <cassert>
 #include "iers2010.hpp"
 
 /**
@@ -38,8 +39,8 @@
  */
 int
 iers2010::hisp::admint(const double* ampin, const int idtin[][6],
-    const double* phin, double* amp,double* f, double* p, const int& nin,
-    int& nout, const int* itm)
+    const double* phin, double* amp, double* f, double* p, int nin,
+    int& nout, const int itm[5])
 {
     /*+----------------------------------------------------------------------
     *  The parameters below set the number of harmonics used in the prediction
@@ -47,7 +48,7 @@ iers2010::hisp::admint(const double* ampin, const int idtin[][6],
     *  constituents whose amp and phase may be specified (ncon)
     *-----------------------------------------------------------------------*/
     constexpr int nt   { 342 };
-    constexpr int ncon { 20  };
+    constexpr int ncon { 20  }; /* function shells depends on this ! */
     
     //  Arrays containing information about the subset whose amp and phase may
     //+ be specified, and scratch arrays for the spline routines for which
@@ -242,22 +243,22 @@ iers2010::hisp::admint(const double* ampin, const int idtin[][6],
     int ndi { 0 };
     int nsd { 0 };
     
-    for (int ll=0;ll<nin;ll++) {
+    for (int ll=0; ll<nin; ll++) {
         int ii;
         
         // See if Doodson numbers match
-        for (int kk=0;kk<nt;kk++) {
+        for (int kk=0; kk<nt; kk++) {
             ii = 0;
         
-            for (int i=0;i<6;i++) {
-                ii += std::abs ( idd[kk][i]-idtin[ll][i] );
+            for (int i=0; i<6; i++) {
+                ii += std::abs( idd[kk][i]-idtin[ll][i] );
             }
         
             // If you have a match, put line into array [5]
             if ( (!ii) && k<ncon ) {
                 
-                rl[k] = ampin[ll] * cos (dtr*phin[ll]) / std::abs (tamp[kk]);
-                aim[k]= ampin[ll] * sin (dtr*phin[ll]) / std::abs (tamp[kk]);
+                rl[k] = ampin[ll] * std::cos(dtr*phin[ll]) / std::abs(tamp[kk]);
+                aim[k]= ampin[ll] * std::sin(dtr*phin[ll]) / std::abs(tamp[kk]);
                 /*------------------------------------------------------------
                  * Now have real and imaginary parts of admittance, scaled by 
                  * Cartwright-Edden amplitude. Admittance phase is whatever was 
@@ -265,7 +266,7 @@ iers2010::hisp::admint(const double* ampin, const int idtin[][6],
                  * relative to some reference, but amplitude is in absolute 
                  * units). Next get frequency.
                  *------------------------------------------------------------*/
-                iers2010::hisp::tdfrph (idd[kk],itm,fr,pr);
+                iers2010::hisp::tdfrph(idd[kk], itm, fr, pr);
                 rf[k] = fr;
                 k++;
             }
@@ -278,26 +279,28 @@ iers2010::hisp::admint(const double* ampin, const int idtin[][6],
      * and separate diurnal and semidiurnal, recopying admittances to get them
      * in order using Shell Sort.
      *----------------------------------------------------------------------*/
-    iers2010::hisp::shells (rf,key,k);
+    iers2010::hisp::shells(rf, key, k);
     
-    for (int i=0;i<k;i++) {
-        if (rf[i]<0.5e0) {
-            nlp+= 1;
-        } else if (rf[i]<1.5e0) {
+    // TODO whay are these three loops independent ??
+    for (int i=0; i<k; i++) {
+        if (rf[i] < 0.5e0) {
+            nlp += 1;
+        } else if (rf[i] < 1.5e0) {
             ndi += 1;
-        } else if (rf[i]<2.5e0) {
+        } else if (rf[i] < 2.5e0) {
             nsd += 1;
         }
         scr[i] = rl[key[i]];
     }
     
-    for (int i=0;i<k;i++) {
+    for (int i=0; i<k; i++) {
         rl[i]  = scr[i];
         scr[i] = aim[key[i]];
     }
     
-    for (int i=0;i<k;i++)
+    for (int i=0; i<k; i++) {
         aim[i] = scr[i];
+    }
 
     /*---------------------------------------------------------------------
      * now set up splines (8 cases - four species, each real and imaginary)
@@ -305,22 +308,21 @@ iers2010::hisp::admint(const double* ampin, const int idtin[][6],
      * for the long-period tides.
      *----------------------------------------------------------------------*/
     if (nlp) {
-        iers2010::hisp::spline (nlp,rf,rl,zdr,scr);
-        iers2010::hisp::spline (nlp,rf,aim,zdi,scr);
+        iers2010::hisp::spline(nlp, rf, rl, zdr, scr);
+        iers2010::hisp::spline(nlp, rf, aim, zdi, scr);
     }
-
-    iers2010::hisp::spline (ndi,rf+nlp,rl+nlp,dr,scr);
-    iers2010::hisp::spline (ndi,rf+nlp,aim+nlp,di,scr);
-    iers2010::hisp::spline (nsd,rf+nlp+ndi,rl+nlp+ndi,sdr,scr);
-    iers2010::hisp::spline (nsd,rf+nlp+ndi,aim+nlp+ndi,sdi,scr);
+    iers2010::hisp::spline(ndi, rf+nlp,     rl+nlp,      dr,  scr);
+    iers2010::hisp::spline(ndi, rf+nlp,     aim+nlp,     di,  scr);
+    iers2010::hisp::spline(nsd, rf+nlp+ndi, rl+nlp+ndi,  sdr, scr);
+    iers2010::hisp::spline(nsd, rf+nlp+ndi, aim+nlp+ndi, sdi, scr);
     
     // Evaluate all harmonics using the interpolated admittance
     int j = 0;
-    for (int i=0;i<nt;i++) {
+    for (int i=0; i<nt; i++) {
         
         if ( idd[i][0] + nlp ) {
             
-            iers2010::hisp::tdfrph (idd[i],itm,f[j],p[j]);
+            iers2010::hisp::tdfrph(idd[i], itm, f[j], p[j]);
             
             //  Compute phase corrections to equilibrium tide using 
             //  function 'eval'
@@ -333,24 +335,26 @@ iers2010::hisp::admint(const double* ampin, const int idtin[][6],
             sf = f[j];
             
             if (idd[i][0] == 0) {
-                iers2010::hisp::eval (sf,nlp,rf,rl,zdr,re);
-                iers2010::hisp::eval (sf,nlp,rf,aim,zdi,am);
+                re = iers2010::hisp::eval(sf, nlp, rf, rl,  zdr);
+                am = iers2010::hisp::eval(sf, nlp, rf, aim, zdi);
             } else if (idd[i][0] == 1) {
-                iers2010::hisp::eval (sf,ndi,rf+nlp,rl+nlp,dr,re);
-                iers2010::hisp::eval (sf,ndi,rf+nlp,aim+nlp,di,am);
+                re = iers2010::hisp::eval(sf, ndi, rf+nlp, rl+nlp,  dr);
+                am = iers2010::hisp::eval(sf, ndi, rf+nlp, aim+nlp, di);
             } else if (idd[i][0] == 2) {
-                iers2010::hisp::eval (sf,nsd,rf+nlp+ndi,rl+nlp+ndi,sdr,re);
-                iers2010::hisp::eval (sf,nsd,rf+nlp+ndi,aim+nlp+ndi,sdi,am);
+                re = iers2010::hisp::eval(sf, nsd, rf+nlp+ndi, rl+nlp+ndi,  sdr);
+                am = iers2010::hisp::eval(sf, nsd, rf+nlp+ndi, aim+nlp+ndi, sdi);
+            } else {
+                am = .0e0;
+                re = .0e0;
+                assert( true == false );
             }
 
-            amp[j] = tamp[i]*sqrt (re*re+am*am);
-            p[j] += atan2(am,re) / dtr;
+            amp[j] = tamp[i]*std::sqrt(re*re+am*am);
+            p[j]  += std::atan2(am, re) / dtr;
         
-            if (p[j] > 180)
-                p[j] -= 360.0e0;
+            if (p[j] > 180) { p[j] -= 360.0e0; }
         
-            j++;
-        
+            ++j;   
         }
     }
 
@@ -358,4 +362,4 @@ iers2010::hisp::admint(const double* ampin, const int idtin[][6],
 
     // Finished
     return 0;
- }
+}

@@ -36,4 +36,7 @@ dist_libiers2010_la_SOURCES = \
 	tdfrph.cpp \
 	spline.cpp \
 	eval.cpp \
-	recurs.cpp
+	recurs.cpp \
+	shells.cpp \
+	admint.cpp \
+	hardisp.cpp
