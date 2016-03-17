@@ -58,4 +58,27 @@ namespace iers2010
     int dehanttideinel(const double* xsta,const double* xsun, const double* xmon,
         int yr, int month, int day, double fhr, double* dxtide);
 
+    namespace hisp {
+
+        /// Compute the difference between Epheremis Time and (UTC).
+        double etutc(double year);
+
+        /// Compute the frequency and phase of a tidal constituent given its 
+        /// Doodson number.
+        int tdfrph(const int idood[6], const int itm[5], double& freq, double& phase);
+
+        /// Find an array s for the spline interpolation.
+        int spline(int n, const double* x, const double* u, double* s, double* a);
+
+        /// Perform cubic spline interpolation of a given function sampled at
+        /// unequally spaced intervals.
+        double eval(double y, int nn, const double* x, const double* u, 
+            const double* s);
+
+        /// Fill in data x, with sines and cosines of frequencies om.
+        int recurs(double* x, int n, const double* hc, int nf, const double* om,
+            double* scr);
+ 
+    } // hisp
+
 } // iers2010

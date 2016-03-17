@@ -2,7 +2,7 @@ lib_LTLIBRARIES = libiers2010.la
 
 ## Only use the following flags for debuging purposes
 libiers2010_la_CXXFLAGS = \
-	-std=c++14 \
+	-std=c++11 \
 	-g \
 	-pg \
 	-Wall \
@@ -31,4 +31,9 @@ dist_libiers2010_la_SOURCES = \
 	st1l1.cpp \
 	step2diu.cpp \
 	step2lon.cpp \
-	dehanttideinel.cpp
+	dehanttideinel.cpp \
+	etutc.cpp \
+	tdfrph.cpp \
+	spline.cpp \
+	eval.cpp \
+	recurs.cpp
