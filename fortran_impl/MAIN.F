@@ -44,6 +44,16 @@ C     ----------------------------------------------
      . 3.745573770491803067D0,
      . 3.745573770491803067D0/
 
+C     ----------------------------------------------
+C     Variables and data for RG_ZONT2
+C     ----------------------------------------------
+      DOUBLE PRECISION ZDUTR, ZDLODR, ZDOMEGAR
+      DOUBLE PRECISION ZDUT,  ZDLOD,  ZDOMEGA
+      DATA ZDUTR, ZDLODR, ZDOMEGAR/
+     . 7.983287678576557467E-002,
+     . 5.035331113978199288E-005,
+     . -4.249711616463017E-014/
+
 C     CALL FUNDARG
       CALL FUNDARG(T, L, LP, F, D, OM)
 C     REPORT RESULTS
@@ -92,6 +102,17 @@ C     REPORT RESULTS
       WRITE(*, FMT1) DABS(FCY-FCYR)
       WRITE(*, FMT1) DABS(FCDX-FCDXR)
       WRITE(*, FMT1) DABS(FCDY-FCDYR)
+
+C     CALL RG_ZONT2
+      T = .07995893223819302D0
+      CALL RG_ZONT2(T, ZDUT, ZDLOD, ZDOMEGA)
+C     REPORT RESULTS
+      PRINT *, '----------------------------------------'
+      PRINT *, '> RG_ZONT2 Results:'
+      PRINT *, '----------------------------------------'
+      WRITE(*, FMT1) DABS(ZDUT-ZDUTR)
+      WRITE(*, FMT1) DABS(ZDLOD-ZDLODR)
+      WRITE(*, FMT1) DABS(ZDOMEGA-ZDOMEGAR)
 
 C     ALL DONE
       END

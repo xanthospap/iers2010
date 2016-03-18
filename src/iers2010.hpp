@@ -99,4 +99,7 @@ namespace iers2010
     /// Parameters from ocean tides.
     int ortho_eop(double time, double& dx, double& dy, double& dut1);
 
+    /// Evaluate the effects of zonal Earth tides on the rotation of the Earth.
+    int rg_zont2(double t, double& dut, double& dlod, double& domega);
+
 } // iers2010

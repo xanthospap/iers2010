@@ -98,6 +98,15 @@ double ortho_eop_res[] = {
     -23.39092370609808214e0
 };
 
+/* results from RG_ZONT2;
+ * last update 2011 December 20
+ */
+double rg_zont2_res[] = {
+    7.983287678576557467E-002,
+    5.035331113978199288E-005,
+    -4.249711616463017E-014
+};
+
 int main()
 {
     int status          = TEST_STATUS_SUCCESS;
@@ -108,6 +117,7 @@ int main()
     int arg2_status     = TEST_STATUS_SUCCESS;
     int cnmtx_status    = TEST_STATUS_SUCCESS;
     int ortho_eop_status= TEST_STATUS_SUCCESS;
+    int rg_zont2_status = TEST_STATUS_SUCCESS;
     double diff;
     
     // format results
@@ -233,6 +243,21 @@ int main()
     }
     std::cout << "status: " << (ortho_eop_status ? "failed!\n" : "ok\n" );
     status += ortho_eop_status;
+    
+    // testing rg_zont2
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> rg_zont2\n";
+    std::cout<<"----------------------------------------\n";
+    iers2010::rg_zont2(.07995893223819302e0, cnmtx_tmp[0], cnmtx_tmp[1], cnmtx_tmp[2]);
+    for (int i=0; i<3; ++i) {
+        diff = std::fabs(cnmtx_tmp[i]-rg_zont2_res[i]);
+        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
+        if (diff > 1e-15) {
+            rg_zont2_status = TEST_STATUS_FAILURE;
+        }
+    }
+    std::cout << "status: " << (rg_zont2_status ? "failed!\n" : "ok\n" );
+    status += rg_zont2_status;
     
     return status;    
 }

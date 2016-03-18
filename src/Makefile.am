@@ -40,4 +40,5 @@ dist_libiers2010_la_SOURCES = \
 	shells.cpp \
 	admint.cpp \
 	cnmtx.cpp \
-	ortho_eop.cpp
+	ortho_eop.cpp \
+	rg_zont2.cpp

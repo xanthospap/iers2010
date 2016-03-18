@@ -47,7 +47,7 @@ make install
 |         | [IERS_CMP_2015](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/IERS_CMP_2015.F) | <ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
 | 8       | [CNMTX](http://maia.usno.navy.mil/conv2010/chapter8/CNMTX.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 17.03.2010 | see [cnmtx](#cnmtx-cmp) |
 |         | [ORTHO_EOP](http://maia.usno.navy.mil/conv2010/chapter8/ORTHO_EOP.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| | see [ortho_eop](#ortho_eop-cmp) |
-|         | [RG_ZONT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter8/RG_ZONT2.F) | <ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|  | see |
+|         | [RG_ZONT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter8/RG_ZONT2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 20.12.2011 | see [rg_zont2](#rg_zont2-cmp) |
 
 
 ## Test Cases & FORTRAN vs C++ implementations
@@ -135,6 +135,12 @@ in running the test case.
 
 FORTRAN (i.e. ORTHO_EOP.F) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
+
+### rg_zont2 <a id="rg_zont2-cmp"></a>
+
+The test case (provided in RG_ZONT2.F) implemented using the C++ function, gives zero discrepancies.
+**However** if i compile and run the FORTRAN source for RG_ZONT2.F, the test fails with
+discrepancies up to ~5.0e-10.
 
 
 ## How to use the library
