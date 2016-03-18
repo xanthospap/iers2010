@@ -39,4 +39,4 @@ dist_libiers2010_la_SOURCES = \
 	recurs.cpp \
 	shells.cpp \
 	admint.cpp \
-	hardisp.cpp
+	cnmtx.cpp

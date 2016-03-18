@@ -71,6 +71,21 @@ double arg2_res[] = {
     1.608463638294885811e0
 };
 
+double cnmtx_res[] = {
+    15.35873641938967360e0,
+    9.784941251812741214e0,
+    -5.520740128266865554e0,
+    3.575314211234633888e0,
+    -13.93717453496387648e0,
+    -9.167400321705855504e0,
+    5.532815475865292321e0,
+    9.558741883500834646e0,
+    -10.22541212627272600e0,
+    0.8367570529461261231e0,
+    1.946355176475630611e0,
+    -13.55702062247304696e0
+};
+
 int main()
 {
     int status          = TEST_STATUS_SUCCESS;
@@ -79,6 +94,7 @@ int main()
     int utlibr_status   = TEST_STATUS_SUCCESS;
     int fcnnut_status   = TEST_STATUS_SUCCESS;
     int arg2_status     = TEST_STATUS_SUCCESS;
+    int cnmtx_status    = TEST_STATUS_SUCCESS;
     double diff;
     
     // format results
@@ -173,6 +189,22 @@ int main()
     }
     std::cout << "status: " << (arg2_status ? "failed!\n" : "ok\n" );
     status += arg2_status;
+
+    // testing cnmtx
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> cnmtx\n";
+    std::cout<<"----------------------------------------\n";
+    double cnmtx_tmp[12];
+    iers2010::oeop::cnmtx(54964.0e0, cnmtx_tmp);
+    for (int i=0; i<12; ++i) {
+        diff = std::fabs(cnmtx_tmp[i]-cnmtx_res[i]);
+        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
+        if (diff > 1e-15) {
+            cnmtx_status = TEST_STATUS_FAILURE;
+        }
+    }
+    std::cout << "status: " << (cnmtx_status ? "failed!\n" : "ok\n" );
+    status += cnmtx_status;
     
     return status;    
 }

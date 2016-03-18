@@ -87,4 +87,12 @@ namespace iers2010
  
     } // hisp
 
+    namespace oeop {
+
+        /// Compute the time dependent part of second degree diurnal and 
+        /// semidiurnal tidal potential.
+        int cnmtx(double dmjd, double* h);
+
+    } // oeop
+
 } // iers2010
