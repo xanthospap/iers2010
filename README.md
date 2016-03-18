@@ -27,6 +27,7 @@ make install
 
 | Compiler | Vesion(s) | C++ ISO |
 |:--------:|:---------:|:-------:|
+| [gcc-c++](https://gcc.gnu.org/) | 4.8.4 | c++11 |
 | [gcc-c++](https://gcc.gnu.org/) | 5.3.1 | c++11 |
 | [gcc-c++](https://gcc.gnu.org/) | 5.3.1 | c++14 |
 | [clang](http://clang.llvm.org/) | 3.7.0 | c++11 |
