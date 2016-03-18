@@ -39,4 +39,5 @@ dist_libiers2010_la_SOURCES = \
 	recurs.cpp \
 	shells.cpp \
 	admint.cpp \
-	cnmtx.cpp
+	cnmtx.cpp \
+	ortho_eop.cpp

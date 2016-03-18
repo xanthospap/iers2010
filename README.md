@@ -45,6 +45,9 @@ make install
 |         | [HARDISP](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/HARDISP.F) |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
 |         | [ARG2](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/ARG2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 07.10.2011 | see [arg2](#arg2-cmp)|
 |         | [IERS_CMP_2015](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/IERS_CMP_2015.F) | <ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
+| 8       | [CNMTX](http://maia.usno.navy.mil/conv2010/chapter8/CNMTX.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 17.03.2010 | see [cnmtx](#cnmtx-cmp) |
+|         | [ORTHO_EOP](http://maia.usno.navy.mil/conv2010/chapter8/ORTHO_EOP.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| | see [ortho_eop](#ortho_eop-cmp) |
+|         | [RG_ZONT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter8/RG_ZONT2.F) | <ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>|  | see |
 
 
 ## Test Cases & FORTRAN vs C++ implementations
@@ -87,7 +90,7 @@ are typed using the `D0` format; the results are identical with the C++ implemen
 
 ### pmsdnut2 <a id="pmsdnut2-cmp"></a>
 
-The test provided shows discrepancies (against the C++ implementation in the order
+The test provided shows discrepancies (against the C++ implementation) in the order
 of 1e-7 or less. This is because the `DOUBLE PRECISION` float arrays `PER, XS, XC, YS and YC`
 are not explicitely marked with `D0` (in `PMSDNUT2.F`). If i use the implementation 
 [PMSDNUT2_D0.F](fortran_impl/PMSDNUT2_D0.F) (where
@@ -96,9 +99,9 @@ results are identical.
 
 Same thing happens with [utlibr](#utlibr-cmp).
 
-## utlibr <a id="utlibr-cmp"></a>
+### utlibr <a id="utlibr-cmp"></a>
 
-The test provided shows discrepancies (against the C++ implementation in the order
+The test provided shows discrepancies (against the C++ implementation) in the order
 of 1e-7 or less. This is because the `DOUBLE PRECISION` float arrays `PER, DUT1S, DUT1C, DLODS and DLODC`
 are not explicitely marked with `D0` (in `UTLIBR.F`). If i use the implementation 
 [UTLIBR_D0.F](fortran_impl/UTLIBR_D0.F) (where
@@ -107,23 +110,49 @@ results are identical.
 
 Same thing happens with [pmsdnut2](#pmsdnut2-cmp).
 
-## fcnnut <a id="fcnnut-cmp"></a>
+### fcnnut <a id="fcnnut-cmp"></a>
 
 FORTRAN (i.e. FCNNUT.F) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
-## arg2 <a id="arg2-cmp"></a>
+### arg2 <a id="arg2-cmp"></a>
 
 FORTRAN (i.e. ARG2.F) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
-## dehanttideinel <a id="dehanttideinel-cmp"></a>
+### dehanttideinel <a id="dehanttideinel-cmp"></a>
 
 The function `dehanttideinel` is tested seperately, in the source file [test_dehanttd.cpp](test/test_dehanttd.cpp)
 (build as `testDehantTide` in the `test` directory). Three individual test cases are provided,
 all yieding discrepancies (between the FORTRAN and C++ implementations) smaller than ~1e-17.
 
+### cnmtx <a id="cnmtx-cmp"></a>
+
+FORTRAN (i.e. CNMTX.F) and C++ implementations produce identical results; no discrepancies found
+in running the test case.
+
+### ortho_eop <a id="ortho_eop-cmp"></a>
+
+FORTRAN (i.e. ORTHO_EOP.F) and C++ implementations produce identical results; no discrepancies found
+in running the test case.
+
+
+## How to use the library
+
+### Namespaces
+
+- namespace `iers2010`
+- namespace `iers2010::dhtide`
+- namespace `iers2010::hisp`
+- namespace `iers2010::oeop`
+
+### Linking
+
+- static
+- dynamic
+
 ## Prerequisites
+
 None. This is a standalone library. Of course a C++ compiler is assumed!
 
 ## Bugs & Maintanance

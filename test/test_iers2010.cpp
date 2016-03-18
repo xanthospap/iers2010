@@ -71,6 +71,9 @@ double arg2_res[] = {
     1.608463638294885811e0
 };
 
+/* results from CNMTX;
+ * last update: 2010 March 17
+ */
 double cnmtx_res[] = {
     15.35873641938967360e0,
     9.784941251812741214e0,
@@ -86,6 +89,15 @@ double cnmtx_res[] = {
     -13.55702062247304696e0
 };
 
+/* results from ORTHO_EOP;
+ * last update 2010 March 19
+ */
+double ortho_eop_res[] = {
+    -162.8386373279636530e0,
+    117.7907525842668974e0,
+    -23.39092370609808214e0
+};
+
 int main()
 {
     int status          = TEST_STATUS_SUCCESS;
@@ -95,6 +107,7 @@ int main()
     int fcnnut_status   = TEST_STATUS_SUCCESS;
     int arg2_status     = TEST_STATUS_SUCCESS;
     int cnmtx_status    = TEST_STATUS_SUCCESS;
+    int ortho_eop_status= TEST_STATUS_SUCCESS;
     double diff;
     
     // format results
@@ -205,6 +218,21 @@ int main()
     }
     std::cout << "status: " << (cnmtx_status ? "failed!\n" : "ok\n" );
     status += cnmtx_status;
+    
+    // testing ortho_eop
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> ortho_eop\n";
+    std::cout<<"----------------------------------------\n";
+    iers2010::ortho_eop(47100.0e0, cnmtx_tmp[0], cnmtx_tmp[1], cnmtx_tmp[2]);
+    for (int i=0; i<3; ++i) {
+        diff = std::fabs(cnmtx_tmp[i]-ortho_eop_res[i]);
+        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
+        if (diff > 1e-15) {
+            ortho_eop_status = TEST_STATUS_FAILURE;
+        }
+    }
+    std::cout << "status: " << (ortho_eop_status ? "failed!\n" : "ok\n" );
+    status += ortho_eop_status;
     
     return status;    
 }

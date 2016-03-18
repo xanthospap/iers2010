@@ -95,4 +95,8 @@ namespace iers2010
 
     } // oeop
 
+    /// Compute the diurnal and semi-diurnal variations in Earth Orientation
+    /// Parameters from ocean tides.
+    int ortho_eop(double time, double& dx, double& dy, double& dut1);
+
 } // iers2010
