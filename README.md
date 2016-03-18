@@ -46,7 +46,7 @@ make install
 |         | [ARG2](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/ARG2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 07.10.2011 | see [arg2](#arg2-cmp)|
 |         | [IERS_CMP_2015](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/IERS_CMP_2015.F) | <ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
 | 8       | [CNMTX](http://maia.usno.navy.mil/conv2010/chapter8/CNMTX.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 17.03.2010 | see [cnmtx](#cnmtx-cmp) |
-|         | [ORTHO_EOP](http://maia.usno.navy.mil/conv2010/chapter8/ORTHO_EOP.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| | see [ortho_eop](#ortho_eop-cmp) |
+|         | [ORTHO_EOP](http://maia.usno.navy.mil/conv2010/chapter8/ORTHO_EOP.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 19.05.2010 | see [ortho_eop](#ortho_eop-cmp) |
 |         | [RG_ZONT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter8/RG_ZONT2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 20.12.2011 | see [rg_zont2](#rg_zont2-cmp) |
 
 
@@ -143,7 +143,7 @@ The test case (provided in RG_ZONT2.F) implemented using the C++ function, gives
 discrepancies up to ~5.0e-10.
 
 
-## How to use the library
+## How to use the library (TODO)
 
 ### Namespaces
 
