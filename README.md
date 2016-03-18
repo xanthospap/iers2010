@@ -157,6 +157,10 @@ discrepancies up to ~5.0e-10.
 - static
 - dynamic
 
+## Documentation & Library API (TODO)
+
+- build dox with doxygen (or link to dox)
+
 ## Prerequisites
 
 None. This is a standalone library. Of course a C++ compiler is assumed!
