@@ -107,6 +107,25 @@ double rg_zont2_res[] = {
     -4.249711616463017E-014
 };
 
+/* results from FCUL_A;
+ * last update 2009 August 13
+ */
+double fcul_a_res = 3.800243667312344087e0;
+
+/* results from FCUL_B;
+ * last update 2009 August 14
+ */
+double fcul_b_res = 3.800758725284345996e0;
+
+/* results from FCULZD_HPA;
+ * last update 2009 August 14
+ */
+double fculzd_hap_res[] = {
+    1.935225924846803114e0,
+    1.932992176591644462e0,
+    0.2233748255158703871e-02
+};
+
 int main()
 {
     int status          = TEST_STATUS_SUCCESS;
@@ -118,6 +137,9 @@ int main()
     int cnmtx_status    = TEST_STATUS_SUCCESS;
     int ortho_eop_status= TEST_STATUS_SUCCESS;
     int rg_zont2_status = TEST_STATUS_SUCCESS;
+    int fcul_a_status   = TEST_STATUS_SUCCESS;
+    int fcul_b_status   = TEST_STATUS_SUCCESS;
+    int fculzd_hpa_status = TEST_STATUS_SUCCESS;
     double diff;
     
     // format results
@@ -258,6 +280,48 @@ int main()
     }
     std::cout << "status: " << (rg_zont2_status ? "failed!\n" : "ok\n" );
     status += rg_zont2_status;
+    
+    // testing fcul_a
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> fcul_a\n";
+    std::cout<<"----------------------------------------\n";
+    cnmtx_tmp[0] = iers2010::fcul_a(30.67166667e0, 2075e0, 300.15e0, 15e0);
+    diff = std::fabs(cnmtx_tmp[0]-fcul_a_res);
+    std::cout << "\targument[" << 0 << "] diff: " << diff <<"\n";
+    if (diff > 1e-15) {
+        fcul_a_status = TEST_STATUS_FAILURE;
+    }
+    std::cout << "status: " << (fcul_a_status ? "failed!\n" : "ok\n" );
+    status += fcul_a_status;
+    
+    // testing fcul_b
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> fcul_b\n";
+    std::cout<<"----------------------------------------\n";
+    cnmtx_tmp[0] = iers2010::fcul_b(30.67166667e0, 2075e0, 224e0, 15e0);
+    diff = std::fabs(cnmtx_tmp[0]-fcul_b_res);
+    std::cout << "\targument[" << 0 << "] diff: " << diff <<"\n";
+    if (diff > 1e-15) {
+        fcul_b_status = TEST_STATUS_FAILURE;
+    }
+    std::cout << "status: " << (fcul_b_status ? "failed!\n" : "ok\n" );
+    status += fcul_b_status;
+    
+    // testing fculzd_hpa
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> fculzd_hpa\n";
+    std::cout<<"----------------------------------------\n";
+    iers2010::fculzd_hpa(30.67166667e0, 2010.344e0, 798.4188e0, 14.322e0, 0.532e0,
+        cnmtx_tmp[0], cnmtx_tmp[1], cnmtx_tmp[2]);
+    for (int i=0; i<3; ++i) {
+        diff = std::fabs(cnmtx_tmp[i]-fculzd_hap_res[i]);
+        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
+        if (diff > 1e-15) {
+            fculzd_hpa_status = TEST_STATUS_FAILURE;
+        }
+    }
+    std::cout << "status: " << (fculzd_hpa_status ? "failed!\n" : "ok\n" );
+    status += fculzd_hpa_status;
     
     return status;    
 }

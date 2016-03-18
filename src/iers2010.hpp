@@ -102,4 +102,14 @@ namespace iers2010
     /// Evaluate the effects of zonal Earth tides on the rotation of the Earth.
     int rg_zont2(double t, double& dut, double& dlod, double& domega);
 
+    /// Compute the global total FCULa mapping function.
+    double fcul_a(double dlat, double dhgt, double t, double elev);
+
+    /// Computes the global total FCULb mapping function.
+    double fcul_b(double dlat, double dhgt, double doy, double elev);
+
+    /// Determines the total zenith delay following (Mendes and Pavlis, 2004).
+    int fculzd_hpa(double dlat, double dhgt, double pres, double wvp, 
+        double lambda, double& f_ztd, double& f_zhd, double& f_zwd);
+
 } // iers2010

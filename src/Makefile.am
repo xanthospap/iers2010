@@ -41,4 +41,7 @@ dist_libiers2010_la_SOURCES = \
 	admint.cpp \
 	cnmtx.cpp \
 	ortho_eop.cpp \
-	rg_zont2.cpp
+	rg_zont2.cpp \
+	fcul_a.cpp \
+	fcul_b.cpp \
+	fculzd_hpa.cpp

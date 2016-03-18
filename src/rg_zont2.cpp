@@ -245,8 +245,6 @@ iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
     dut    = 0.0e0;
     dlod   = 0.0e0;
     domega = 0.0e0;
-    std::cout.setf(std::ios::fixed/*, std:: ios::floatfield*/);
-    std::cout.precision(15);
 
     //  Sum zonal tide terms.
     double arg, dsinarg, dcosarg;
