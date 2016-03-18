@@ -33,6 +33,10 @@ make install
 | [clang](http://clang.llvm.org/) | 3.7.0 | c++11 |
 | [clang](http://clang.llvm.org/) | 3.7.0 | c++14 |
 
+For a complete list of C++11/14 support on various compilers, see the [cppreference entry](http://en.cppreference.com/w/cpp/compiler_support).
+
+To change between ISO C++ versions, (e.g. if your compiler does not support C++14), change the `-std=c++14` flag to `-std=c++11` in the files [src/Makefile.am](src/Makefile.am) and [test/Makefile.am](test/Makefile.am).
+
 ## Status
 
 | Chapter | (Sub)Routine | Translated | Tested | Version  | Comments |
