@@ -5,46 +5,33 @@
 #endif
 
 /**
- * @details  This subroutine determines the Vienna Mapping Function 1 (VMF1).
+ * \details  This subroutine determines the Vienna Mapping Function 1 (VMF1).
  *           This function is a translation/wrapper for the fortran VMF1_HT.F
  *           subroutine, found here : 
  *           http://maia.usno.navy.mil/conv2010/software.html
  * 
- * @param[in]  ah    Hydrostatic coefficient a (Note 1)
- * @param[in]  aw    Wet coefficient a (Note 1)
- * @param[in]  dmjd  Modified Julian Date
- * @param[in]  dlat  Ellipsoidal latitude given in radians
- * @param[in]  ht    Ellipsoidal height given in meters
- * @param[in]  zd    Zenith distance in radians
- * @param[out] vmf1h Hydrostatic mapping function (Note 2)
- * @param[out] vmf1w Wet mapping function (Note 2)
- * @return           An integer, always zero
+ * \param[in]  ah    Hydrostatic coefficient a (Note 1)
+ * \param[in]  aw    Wet coefficient a (Note 1)
+ * \param[in]  dmjd  Modified Julian Date
+ * \param[in]  dlat  Ellipsoidal latitude given in radians
+ * \param[in]  ht    Ellipsoidal height given in meters
+ * \param[in]  zd    Zenith distance in radians
+ * \param[out] vmf1h Hydrostatic mapping function (Note 2)
+ * \param[out] vmf1w Wet mapping function (Note 2)
+ * \return           An integer, always zero
  * 
- * @note
+ * \note
  *    -# The coefficients can be obtained from the website
  *       http://ggosatm.hg.tuwien.ac.at/DELAY/GRID/
  *    -# The mapping functions are dimensionless scale factors
  *    -# Status: Class 1 model
  *
- * @warning This version uses height correction! It has to be used with the VMF
+ * \warning This version uses height correction! It has to be used with the VMF
  *          Grid located at the website mentioned in the Notes.
- *
- * @verbatim
- * Test case:
- *      given input: AH   = 0.00127683D0 
- *                   AW   = 0.00060955D0
- *                   DMJD = 55055D0
- *                   DLAT = 0.6708665767D0 radians (NRAO, Green Bank, WV)
- *                   HT   = 824.17D0 meters
- *                   ZD   = 1.278564131D0 radians
  * 
- *      expected output: VMF1H = 3.425088087972572470D0
- *                       VMF1W = 3.448299714692572238D0
- * @endverbatim
+ * \version 12.01.2012
  * 
- * @version 2012 January 12
- * 
- * @cite iers2010
+ * \cite iers2010
  *  Boehm, J., Werl, B., and Schuh, H., (2006), 
  *     "Troposhere mapping functions for GPS and very long baseline
  *     interferometry from European Centre for Medium-Range Weather
@@ -56,18 +43,18 @@
  *     http://ggosatm.hg.tuwien.ac.at/DOCS/PAPERS/2006Boehm_etal_VMF1.pdf
  * 
  */
-int iers2010::vmf1_ht (const double& ah,const double& aw,const double& dmjd,
-        const double& dlat,const double& ht,const double& zd,double& vmf1h,
-        double& vmf1w)
+
+int
+iers2010::vmf1_ht(double ah, double aw, double dmjd, double dlat, double ht,
+    double zd, double& vmf1h, double& vmf1w)
 {
-    #ifdef USE_EXTERNAL_CONSTS
+#ifdef USE_EXTERNAL_CONSTS
         constexpr double TWOPI   (D2PI);
         constexpr double PI      (DPI);
-    #else
+#else
         constexpr double PI    (3.1415926535897932384626433e0);
         constexpr double TWOPI (6.283185307179586476925287e0);
-    #endif
-
+#endif
 
     // Reference day is 28 January 1980
     // This is taken from Niell (1996) to be consistent (See References)
@@ -87,8 +74,8 @@ int iers2010::vmf1_ht (const double& ah,const double& aw,const double& dmjd,
         c10h = .001e0;
     }
 
-    double ch { c0h + ((cos(doy/365.25e0*TWOPI + phh)+1e0)*c11h/2e0 + c10h)
-            *(1e0-cos(dlat)) };
+    double ch { c0h + ((std::cos(doy/365.25e0*TWOPI + phh)+1e0)*c11h/2e0 + c10h)
+            *(1e0-std::cos(dlat)) };
 
     double sine  { sin(PI/2e0 - zd)  };
     double beta  { bh/( sine + ch  ) };

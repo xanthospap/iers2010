@@ -5,50 +5,60 @@
     #include "gencon.hpp"
 #endif
 
+/* for C++14 we will use 'constexpr' shit ... */
+#if __cplusplus >= 201402L
+#define USE_CNSTXPR 1
+#endif
+
+#ifdef USE_CNSTXPR
+/// A compile time array containing factorial values, for n=0, ... , N-1
+/// \warning This only works for c++14
+///
+template<typename T, int N>
+    struct fact_array {
+        T array[N];
+        constexpr fact_array() : array {}
+        {
+            array[0] = array[1] = 1.0e0;
+            for (int i=2; i<N; i++) { array[i] = static_cast<T>(i) * array[i-1]; }
+        }
+};
+#endif
+
 /**
- * @details  This function determines the Global Mapping Functions GMF 
+ * \details  This function determines the Global Mapping Functions GMF 
  *           (Boehm et al. 2006).
  *           This function is a translation/wrapper for the fortran GPT
  *           subroutine, found here : 
  *           http://maia.usno.navy.mil/conv2010/software.html
  * 
- * @param[in]  dmjd  Modified Julian Date
- * @param[in]  dlat  Latitude given in radians (North Latitude)
- * @param[in]  dlon  Longitude given in radians (East Longitude)
- * @param[in]  dhgt  Ellipsoidal height in meters
- * @param[in]  zd    Zenith distance in radians
- * @param[out] gmfh  Hydrostatic mapping function (Note 1)
- * @param[out] gmfw  Wet mapping function (Note 1)
- * @return           An integer,  always zero
+ * \param[in]  dmjd  Modified Julian Date
+ * \param[in]  dlat  Latitude given in radians (North Latitude)
+ * \param[in]  dlon  Longitude given in radians (East Longitude)
+ * \param[in]  dhgt  Ellipsoidal height in meters
+ * \param[in]  zd    Zenith distance in radians
+ * \param[out] gmfh  Hydrostatic mapping function (Note 1)
+ * \param[out] gmfw  Wet mapping function (Note 1)
+ * \return           An integer,  always zero
  * 
- * @note
+ * \note
  *    -# The mapping functions are dimensionless scale factors.
  *    -# This is from a 9x9 Earth Gravitational Model (EGM).
  *    -# Status: Class 1 model
- *
- * @verbatim
- *  Test case:
- *     given input: DMJD = 55055D0
- *                  DLAT = 0.6708665767D0 radians (NRAO, Green Bank, WV)
- *                  DLON = -1.393397187D0 radians
- *                  DHGT = 844.715D0 meters
- *                  ZD   = 1.278564131D0 radians
- *
- *     expected output: GMFH = 3.425245519339138678D0
- *                      GMFW = 3.449589116182419257D0
- * @endverbatim
  * 
- * @version 2009 August 12
+ * \version 12.08.2009
  * 
- * @cite iers2010
+ * \cite iers2010
  *     Boehm, J., Niell, A., Tregoning, P. and Schuh, H., (2006), 
  *     "Global Mapping Functions (GMF): A new empirical mapping
  *     function based on numerical weather model data",
  *     Geophy. Res. Lett., Vol. 33, L07304, doi:10.1029/2005GL025545.
  * 
  */
-int iers2010::gmf (const double& dmjd,const double& dlat,const double& dlon,
-    const double& dhgt,const double& zd,double& gmfh,double& gmfw)
+
+int
+iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
+    double& gmfh, double& gmfw)
 {
     #ifdef USE_EXTERNAL_CONSTS
         constexpr double TWOPI   (D2PI);
@@ -58,27 +68,29 @@ int iers2010::gmf (const double& dmjd,const double& dlat,const double& dlon,
         constexpr double PI      (3.1415926535897932384626433e0);
     #endif
     
+#ifndef USE_CNSTXPR
     // if this variable is true, the factorial array has already 
     // been initialized (i.e. computed)
     static bool fact_initialized = false;
+#endif
     
     // Reference day is 28 January 1980
     // This is taken from Niell (1996) to be consistent (See References)
     // For constant values use: doy = 91.3125
-    double doy ( dmjd - 44239e0 + 1e0 - 28e0 );
+    double doy { dmjd - 44239e0 + 1e0 - 28e0 };
     
     static constexpr double ah_mean[] = {
         +1.2517e+02, +8.503e-01, +6.936e-02, -6.760e+00, +1.771e-01,
-        +1.130e-02, +5.963e-01, +1.808e-02, +2.801e-03, -1.414e-03,
-        -1.212e+00, +9.300e-02, +3.683e-03, +1.095e-03, +4.671e-05,
-        +3.959e-01, -3.867e-02, +5.413e-03, -5.289e-04, +3.229e-04,
-        +2.067e-05, +3.000e-01, +2.031e-02, +5.900e-03, +4.573e-04,
-        -7.619e-05, +2.327e-06, +3.845e-06, +1.182e-01, +1.158e-02,
-        +5.445e-03, +6.219e-05, +4.204e-06, -2.093e-06, +1.540e-07,
-        -4.280e-08, -4.751e-01, -3.490e-02, +1.758e-03, +4.019e-04,
-        -2.799e-06, -1.287e-06, +5.468e-07, +7.580e-08, -6.300e-09,
-        -1.160e-01, +8.301e-03, +8.771e-04, +9.955e-05, -1.718e-06,
-        -2.012e-06, +1.170e-08, +1.790e-08, -1.300e-09, +1.000e-10
+        +1.130e-02,  +5.963e-01, +1.808e-02, +2.801e-03, -1.414e-03,
+        -1.212e+00,  +9.300e-02, +3.683e-03, +1.095e-03, +4.671e-05,
+        +3.959e-01,  -3.867e-02, +5.413e-03, -5.289e-04, +3.229e-04,
+        +2.067e-05,  +3.000e-01, +2.031e-02, +5.900e-03, +4.573e-04,
+        -7.619e-05,  +2.327e-06, +3.845e-06, +1.182e-01, +1.158e-02,
+        +5.445e-03,  +6.219e-05, +4.204e-06, -2.093e-06, +1.540e-07,
+        -4.280e-08,  -4.751e-01, -3.490e-02, +1.758e-03, +4.019e-04,
+        -2.799e-06,  -1.287e-06, +5.468e-07, +7.580e-08, -6.300e-09,
+        -1.160e-01,  +8.301e-03, +8.771e-04, +9.955e-05, -1.718e-06,
+        -2.012e-06,  +1.170e-08, +1.790e-08, -1.300e-09, +1.000e-10
     };
 
     static constexpr double bh_mean[] = {
@@ -180,78 +192,92 @@ int iers2010::gmf (const double& dmjd,const double& dlat,const double& dlon,
     };
 
     //  Define parameter t
-    double t ( sin (dlat) );
+    double t { std::sin(dlat) };
 
     // Define degree n and order m,  EGM
-    constexpr int n = 9;
-    constexpr int m = 9;
+    constexpr int n { 9 };
+    constexpr int m { 9 };
 
+    int i {0}, j {1};
+#ifdef USE_CNSTXPR
+    constexpr fact_array<double, 2*n+2> dfac_{};
+    const double* dfac = &dfac_.array[0];
+    // make sure we computed the actorial at compile-time
+    static_assert( dfac_.array[2] == 2, 
+        "Shit! Factorial array not computed at compile-time." );
+#else
     // Determine n! (factorial) NOT moved by 1
+    // \todo Compute this at compile time!
     static double dfac[2*n+2];
     dfac[0] = 1e0;
-    int i(0),j(1);
-    if ( !fact_initialized )
-        std::generate (dfac+1, dfac+(2*n+2), [&]{
+    if ( !fact_initialized ) {
+        std::generate(dfac+1, dfac+(2*n+2), 
+            [&]{ 
                 j = i+1;
-                return dfac[i++]*j;} );
+                return dfac[i++]*j;
+                });
+    }
+#endif
 
     // Determine Legendre functions (Heiskanen and Moritz,
     // Physical Geodesy, 1967, eq. 1-62)
     // this depends on parameter t, i.e. latitude of station
     double p[n+1][m+1];
-    for (i=0;i<=n;i++) {
-        int jmin ( std::min (i,m) );
-        for (j=0;j<=jmin;j++) {
-            int ir ( (i-j)/2 );
-            double sum ( 0e0 );
-            for (int k=0;k<=ir;k++) {
-                sum += pow((-1),k)*dfac[2*i-2*k]/dfac[k]/dfac[i-k]/
-                dfac[i-j-2*k]*pow(t,(i-j-2*k));
-              }
+    int    jmin, ir;
+    double sum;
+    for (i=0; i<=n; i++) {
+        jmin = std::min(i, m);
+        for (j=0;j <=jmin; j++) {
+            ir  = (i-j)/2;
+            sum = .0e0;
+            for (int k=0; k<=ir; k++) {
+                sum += std::pow((-1),k) * dfac[2*i-2*k] / dfac[k] / dfac[i-k]/
+                dfac[i-j-2*k] * std::pow(t,(i-j-2*k));
+            }
             //Legendre functions NOT moved by 1
-            p[i][j] = 1.0e0/pow(2,i)*sqrt( pow((1.0e0-t*t),j) )*sum;
-          }
-      }
+            p[i][j] = 1.0e0/std::pow(2,i) * std::sqrt(std::pow((1.0e0-t*t),j))*sum;
+        }
+    }
 
     // Calculate spherical harmonics
-    double ap[55],bp[55];
+    double ap[55], bp[55];
     i = 0;
-    for (int nn=0;nn<=9;nn++) {
-        for (int mm=0;mm<=nn;mm++) {
-            ap[i] = p[nn][mm] * cos (mm*dlon);
-            bp[i] = p[nn][mm] * sin (mm*dlon);
+    for (int nn=0; nn<=9; nn++) {
+        for (int mm=0; mm<=nn; mm++) {
+            ap[i] = p[nn][mm] * std::cos(mm*dlon);
+            bp[i] = p[nn][mm] * std::sin(mm*dlon);
             i++;
         }
     }
 
     // Compute hydrostatic mapping function
-    double bh ( .0029e0 );
-    double c0h ( .062e0 );
-    double phh,c11h,c10h;
-    if (dlat<.0e0) { // southern hemisphere
+    double bh  { .0029e0 };
+    double c0h { .062e0 };
+    double phh, c11h, c10h;
+    if ( dlat < .0e0 ) { // southern hemisphere
         phh  = PI;
         c11h = .007e0;
         c10h = .002e0;
-    } else {         // northern hemisphere
+    } else {             // northern hemisphere
         phh  = .0e0;
         c11h = .005e0;
         c10h = .001e0;
     }
-    double ch ( c0h + ((cos(doy/365.25e0*TWOPI + phh)+1e0)*c11h/2e0 + c10h)*
-            (1e0-cos(dlat)) );
+    double ch { c0h + ((std::cos(doy/365.25e0*TWOPI + phh)+1e0)*c11h/2e0
+                + c10h)* (1e0-std::cos(dlat)) };
 
-    double ahm (0e0);
-    double aha (0e0);
-    for (i=0;i<55;i++) {
+    double ahm { 0e0 };
+    double aha { 0e0 };
+    for (i=0; i<55; i++) {
         ahm += (ah_mean[i]*ap[i] + bh_mean[i]*bp[i])*1e-5;
         aha += (ah_amp[i] *ap[i] + bh_amp[i] *bp[i])*1e-5;
     }
-    double ah  ( ahm + aha*cos(doy/365.25e0*TWOPI) );
+    double ah  { ahm + aha*cos(doy/365.25e0*TWOPI) };
 
-    double sine   ( sin(PI/2e0 - zd) );
-    double beta   ( bh/( sine + ch  ) );
-    double gamma  ( ah/( sine + beta) );
-    double topcon ( (1e0 + ah/(1e0 + bh/(1e0 + ch))) );
+    double sine   { sin(PI/2e0 - zd)  };
+    double beta   { bh/( sine + ch  ) };
+    double gamma  { ah/( sine + beta) };
+    double topcon { (1e0 + ah/(1e0 + bh/(1e0 + ch))) };
     gmfh   = topcon/(sine+gamma);
 
     // Height correction for hydrostatic mapping function from Niell (1996)
@@ -268,23 +294,26 @@ int iers2010::gmf (const double& dmjd,const double& dlat,const double& dlon,
     gmfh                = gmfh + ht_corr;
 
     // compute wet mapping function
-    double bw ( .00146e0 );
-    double cw ( .04391e0 );
+    double bw { .00146e0 };
+    double cw { .04391e0 };
 
-    double awm(0e0),awa(0e0);
-    for (i=0;i<55;i++) {
+    double awm {0e0};
+    double awa {0e0};
+    for (i=0; i<55; i++) {
         awm += (aw_mean[i]*ap[i] + bw_mean[i]*bp[i])*1e-5;
         awa += (aw_amp[i] *ap[i] + bw_amp[i] *bp[i])*1e-5;
     }
-    double aw ( awm + awa*cos(doy/365.25e0*TWOPI) );
+    double aw { awm + awa*std::cos(doy/365.25e0*TWOPI) };
 
     beta   = bw/( sine + cw );
     gamma  = aw/( sine + beta);
     topcon = (1e0 + aw/(1e0 + bw/(1e0 + cw)));
     gmfw   = topcon/(sine+gamma);
 
+#ifndef USE_CNSTXPR
     // Factorial array is now set for next runs
     fact_initialized = true;
+#endif
 
     // Finished
     return 0;

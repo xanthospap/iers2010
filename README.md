@@ -56,6 +56,9 @@ To change between ISO C++ versions, (e.g. if your compiler does not support C++1
 | 9       | [FCUL_A](http://maia.usno.navy.mil/conv2010/chapter9/FCUL_A.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 13.08.2009 | see [fcul_a](#fcul_a-cmp) |
 |         | [FCUL_B](http://maia.usno.navy.mil/conv2010/chapter9/FCUL_B.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 14.08.2009 | see [fcul_b](#fcul_b-cmp) |
 |         | [FCUL_ZD_HPA](http://maia.usno.navy.mil/conv2010/chapter9/FCUL_ZD_HPA.F) | <ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 14.08.2009 | see [fculzd_hpa](#fculzd_hpa-cmp) |
+|         | [GMF](http://maia.usno.navy.mil/conv2010/chapter9/GMF.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 12.08.2009 | see [gmf](#gmf-cmp) |
+|         | [VMF1](http://maia.usno.navy.mil/conv2010/chapter9/VMF1.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 12.01.20012 | see [vmf1](#vmf1-cmp) |
+|         | [VMF1_HT](http://maia.usno.navy.mil/conv2010/chapter9/VMF1_HT.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 12.01.20012 | see [vmf1_ht](#vmf1_ht-cmp) |
 
 
 ## Test Cases & FORTRAN vs C++ implementations
@@ -158,6 +161,23 @@ in running the test case.
 ### fcul_b <a id="fcul_b-cmp"></a>
 
 FORTRAN (i.e. FCUL_B.F) and C++ implementations produce identical results; no discrepancies found
+in running the test case.
+
+
+### gmf <a id="gmf-cmp"></a>
+
+FORTRAN (i.e. GMF.F) and C++ implementations produce identical results; no discrepancies found
+in running the test case.
+
+
+### vmf1 <a id="vmf1-cmp"></a>
+
+FORTRAN (i.e. VMF1.F) and C++ implementations produce identical results; no discrepancies found
+in running the test case.
+
+### vmf1_ht <a id="vmf1_ht-cmp"></a>
+
+FORTRAN (i.e. VMF1_HT.F) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
 

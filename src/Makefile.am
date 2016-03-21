@@ -44,4 +44,6 @@ dist_libiers2010_la_SOURCES = \
 	rg_zont2.cpp \
 	fcul_a.cpp \
 	fcul_b.cpp \
-	fculzd_hpa.cpp
+	gmf.cpp \
+	vmf1.cpp \
+	vmf1_ht.cpp

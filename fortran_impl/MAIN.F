@@ -54,6 +54,13 @@ C     ----------------------------------------------
      . 5.035331113978199288E-005,
      . -4.249711616463017E-014/
 
+C     ----------------------------------------------
+C     Variables and data for VMF1
+C     ----------------------------------------------
+      DOUBLE PRECISION VMF1HR, VMF1WR, VMF1H, VMF1W
+      DATA VMF1HR, VMF1WR/ 3.424342122738070593D0,
+     . 3.448299714692572238D0/
+
 C     CALL FUNDARG
       CALL FUNDARG(T, L, LP, F, D, OM)
 C     REPORT RESULTS
@@ -113,6 +120,16 @@ C     REPORT RESULTS
       WRITE(*, FMT1) DABS(ZDUT-ZDUTR)
       WRITE(*, FMT1) DABS(ZDLOD-ZDLODR)
       WRITE(*, FMT1) DABS(ZDOMEGA-ZDOMEGAR)
+
+C     CALL VMF1
+      CALL VMF1(0.00127683D0, 0.00060955D0, 55055D0,
+     .  0.6708665767D0, 1.278564131D0, VMF1H, VMF1W)
+C     REPORT RESULTS
+      PRINT *, '----------------------------------------'
+      PRINT *, '> VMF1 Results:'
+      PRINT *, '----------------------------------------'
+      WRITE(*, FMT1) DABS(VMF1H-VMF1HR)
+      WRITE(*, FMT1) DABS(VMF1W-VMF1WR)
 
 C     ALL DONE
       END

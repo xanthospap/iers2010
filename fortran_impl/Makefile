@@ -18,7 +18,12 @@ IERS_OBS = PMSDNUT2.o \
 	DEHANTTIDEINEL.o \
 	CNMTX.o \
 	ORTHO_EOP.o \
-	RG_ZONT2.o
+	RG_ZONT2.o \
+	FCUL_A.o \
+	FCUL_B.o \
+	FCUL_ZD_HPA.o \
+	GMF.o \
+	VMF1.o
 
 IERS_OBS_D0 = PMSDNUT2_D0.o \
 	UTLIBR_D0.o \
@@ -37,7 +42,12 @@ IERS_OBS_D0 = PMSDNUT2_D0.o \
 	DEHANTTIDEINEL.o \
 	CNMTX.o \
 	ORTHO_EOP.o \
-	RG_ZONT2.o
+	RG_ZONT2.o \
+	FCUL_A.o \
+	FCUL_B.o \
+	FCUL_ZD_HPA.o \
+	GMF.o \
+	VMF1.o
 
 all: test_iers test_iers_d0
 
@@ -86,3 +96,13 @@ ORTHO_EOP.o : ORTHO_EOP.F CNMTX.o
 	$(FC) $(FF) -o $@ ORTHO_EOP.F
 RG_ZONT2.o : RG_ZONT2.F FUNDARG.o
 	$(FC) $(FF) -o $@ RG_ZONT2.F
+FCUL_A.o : FCUL_A.F
+	$(FC) $(FF) -o $@ FCUL_A.F
+FCUL_B.o : FCUL_B.F
+	$(FC) $(FF) -o $@ FCUL_B.F
+FCUL_ZD_HPA.o : FCUL_ZD_HPA.F
+	$(FC) $(FF) -o $@ FCUL_ZD_HPA.F
+GMF.o : GMF.F
+	$(FC) $(FF) -o $@ GMF.F
+VMF1.o : VMF1.F
+	$(FC) $(FF) -o $@ VMF1.F

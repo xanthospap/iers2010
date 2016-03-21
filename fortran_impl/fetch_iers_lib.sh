@@ -19,7 +19,12 @@ for f in http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F \
     ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ZERO_VEC8.F \
     http://maia.usno.navy.mil/conv2010/chapter8/ORTHO_EOP.F \
     http://maia.usno.navy.mil/conv2010/chapter8/CNMTX.F \
-    http://maia.usno.navy.mil/conv2010/convupdt/chapter8/RG_ZONT2.F
+    http://maia.usno.navy.mil/conv2010/convupdt/chapter8/RG_ZONT2.F \
+    http://maia.usno.navy.mil/conv2010/chapter9/FCUL_A.F \
+    http://maia.usno.navy.mil/conv2010/chapter9/FCUL_B.F \
+    http://maia.usno.navy.mil/conv2010/chapter9/FCUL_ZD_HPA.F \
+    http://maia.usno.navy.mil/conv2010/chapter9/GMF.F \
+    http://maia.usno.navy.mil/conv2010/convupdt/chapter9/VMF1.F
     do
         fr=$(basename $f)
         if ! test -f $fr

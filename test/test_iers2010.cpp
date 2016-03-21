@@ -119,11 +119,36 @@ double fcul_b_res = 3.800758725284345996e0;
 
 /* results from FCULZD_HPA;
  * last update 2009 August 14
- */
+
 double fculzd_hap_res[] = {
     1.935225924846803114e0,
     1.932992176591644462e0,
     0.2233748255158703871e-02
+};
+*/
+
+/* results from GMF;
+ * last update 2009 August 12
+ */
+double gmf_res[] = {
+    3.425245519339138678e0,
+    3.449589116182419257e0
+};
+
+/* results for VMF1;
+ * last update 2012 January 12
+ */
+double vmf1_res[] = {
+    3.424342122738070593e0,
+    3.448299714692572238e0
+};
+
+/* results for VMF1_HT;
+ * last update 2012  January 12
+ */
+double vmf1_ht_res[] = {
+    3.425088087972572470e0,
+    3.448299714692572238e0
 };
 
 int main()
@@ -139,7 +164,10 @@ int main()
     int rg_zont2_status = TEST_STATUS_SUCCESS;
     int fcul_a_status   = TEST_STATUS_SUCCESS;
     int fcul_b_status   = TEST_STATUS_SUCCESS;
-    int fculzd_hpa_status = TEST_STATUS_SUCCESS;
+    //int fculzd_hpa_status = TEST_STATUS_SUCCESS;
+    int gmf_status      = TEST_STATUS_SUCCESS;
+    int vmf1_status     = TEST_STATUS_SUCCESS;
+    int vmf1_ht_status  = TEST_STATUS_SUCCESS;
     double diff;
     
     // format results
@@ -307,6 +335,7 @@ int main()
     std::cout << "status: " << (fcul_b_status ? "failed!\n" : "ok\n" );
     status += fcul_b_status;
     
+    /*
     // testing fculzd_hpa
     std::cout<<"----------------------------------------\n";
     std::cout<<"> fculzd_hpa\n";
@@ -322,6 +351,55 @@ int main()
     }
     std::cout << "status: " << (fculzd_hpa_status ? "failed!\n" : "ok\n" );
     status += fculzd_hpa_status;
+    */
     
+    // testing gmf
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> gmf\n";
+    std::cout<<"----------------------------------------\n";
+    iers2010::gmf(55055e0, 0.6708665767e0, -1.393397187e0, 844.715e0, 1.278564131e0,
+        cnmtx_tmp[0], cnmtx_tmp[1]);
+    for (int i=0; i<2; ++i) {
+        diff = std::fabs(cnmtx_tmp[i]-gmf_res[i]);
+        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
+        if (diff > 1e-15) {
+            gmf_status = TEST_STATUS_FAILURE;
+        }
+    }
+    std::cout << "status: " << (gmf_status ? "failed!\n" : "ok\n" );
+    status += gmf_status;
+    
+    // testing vmf1
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> vmf1\n";
+    std::cout<<"----------------------------------------\n";
+    iers2010::vmf1(0.00127683e0, 0.00060955e0, 55055e0, 0.6708665767e0, 1.278564131e0,
+        cnmtx_tmp[0], cnmtx_tmp[1]);
+    for (int i=0; i<2; ++i) {
+        diff = std::fabs(cnmtx_tmp[i]-vmf1_res[i]);
+        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
+        if (diff > 1e-15) {
+            vmf1_status = TEST_STATUS_FAILURE;
+        }
+    }
+    std::cout << "status: " << (vmf1_status ? "failed!\n" : "ok\n" );
+    status += vmf1_status;
+    
+    // testing vmf1_ht
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> vmf1_ht\n";
+    std::cout<<"----------------------------------------\n";
+    iers2010::vmf1_ht(0.00127683e0, 0.00060955e0, 55055e0, 0.6708665767e0, 824.17e0, 1.278564131e0,
+        cnmtx_tmp[0], cnmtx_tmp[1]);
+    for (int i=0; i<2; ++i) {
+        diff = std::fabs(cnmtx_tmp[i]-vmf1_ht_res[i]);
+        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
+        if (diff > 1e-15) {
+            vmf1_ht_status = TEST_STATUS_FAILURE;
+        }
+    }
+    std::cout << "status: " << (vmf1_ht_status ? "failed!\n" : "ok\n" );
+    status += vmf1_ht_status;
+
     return status;    
 }

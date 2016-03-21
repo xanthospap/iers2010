@@ -112,4 +112,18 @@ namespace iers2010
     int fculzd_hpa(double dlat, double dhgt, double pres, double wvp, 
         double lambda, double& f_ztd, double& f_zhd, double& f_zwd);
 
+    /// Compute the Global Mapping Functions (GMF).
+    int gmf(double mjd, double lat, double lon, double hgt, double zd,
+        double& gmfh, double& gmfw);
+
+    /// Compute the Vienna Mapping Functions 1 (VMF1), to be used with "a" 
+    /// coefficients computed for a given site.
+    int vmf1(double ah, double aw, double dmjd, double dlat, double zd,
+        double& vmf1h, double& vmf1w);
+
+    /// Compute the Vienna Mapping Functions 1 (VMF1), with height corrections,
+    /// to be used with "a" coefficients computed for a grid.
+    int vmf1_ht(double ah, double aw, double dmjd, double dlat, double ht,
+        double zd, double& vmf1h, double& vmf1w);
+
 } // iers2010
