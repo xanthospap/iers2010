@@ -53,6 +53,9 @@ To change between ISO C++ versions, (e.g. if your compiler does not support C++1
 | 8       | [CNMTX](http://maia.usno.navy.mil/conv2010/chapter8/CNMTX.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 17.03.2010 | see [cnmtx](#cnmtx-cmp) |
 |         | [ORTHO_EOP](http://maia.usno.navy.mil/conv2010/chapter8/ORTHO_EOP.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 19.05.2010 | see [ortho_eop](#ortho_eop-cmp) |
 |         | [RG_ZONT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter8/RG_ZONT2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 20.12.2011 | see [rg_zont2](#rg_zont2-cmp) |
+| 9       | [FCUL_A](http://maia.usno.navy.mil/conv2010/chapter9/FCUL_A.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 13.08.2009 | see [fcul_a](#fcul_a-cmp) |
+|         | [FCUL_B](http://maia.usno.navy.mil/conv2010/chapter9/FCUL_B.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 14.08.2009 | see [fcul_b](#fcul_b-cmp) |
+|         | [FCUL_ZD_HPA](http://maia.usno.navy.mil/conv2010/chapter9/FCUL_ZD_HPA.F) | <ul><li>- [x] </li></ul>|<ul><li>- [ ] </li></ul>| 14.08.2009 | see [fculzd_hpa](#fculzd_hpa-cmp) |
 
 
 ## Test Cases & FORTRAN vs C++ implementations
@@ -146,6 +149,16 @@ in running the test case.
 The test case (provided in RG_ZONT2.F) implemented using the C++ function, gives zero discrepancies.
 **However** if i compile and run the FORTRAN source for RG_ZONT2.F, the test fails with
 discrepancies up to ~5.0e-10.
+
+### fcul_a <a id="fcul_a-cmp"></a>
+
+FORTRAN (i.e. FCUL_A.F) and C++ implementations produce identical results; no discrepancies found
+in running the test case.
+
+### fcul_b <a id="fcul_b-cmp"></a>
+
+FORTRAN (i.e. FCUL_B.F) and C++ implementations produce identical results; no discrepancies found
+in running the test case.
 
 
 ## How to use the library (TODO)
