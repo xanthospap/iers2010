@@ -151,6 +151,15 @@ double vmf1_ht_res[] = {
     3.448299714692572238e0
 };
 
+/* results for GPT.F;
+ * last update 2011 October 18
+ */
+double gpt_res[] = {
+    918.0710638757363995e0,
+    19.31914181012882992e0,
+    -42.19185643717770517e0
+};
+
 int main()
 {
     int status          = TEST_STATUS_SUCCESS;
@@ -168,6 +177,7 @@ int main()
     int gmf_status      = TEST_STATUS_SUCCESS;
     int vmf1_status     = TEST_STATUS_SUCCESS;
     int vmf1_ht_status  = TEST_STATUS_SUCCESS;
+    int gpt_status      = TEST_STATUS_SUCCESS;
     double diff;
     
     // format results
@@ -400,6 +410,22 @@ int main()
     }
     std::cout << "status: " << (vmf1_ht_status ? "failed!\n" : "ok\n" );
     status += vmf1_ht_status;
+    
+    // testing gpt
+    std::cout<<"----------------------------------------\n";
+    std::cout<<"> gpt\n";
+    std::cout<<"----------------------------------------\n";
+    iers2010::gpt(55055e0, 0.6708665767e0, -1.393397187e0, 812.546e0,
+        cnmtx_tmp[0], cnmtx_tmp[1], cnmtx_tmp[2]);
+    for (int i=0; i<3; ++i) {
+        diff = std::fabs(cnmtx_tmp[i]-gpt_res[i]);
+        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
+        if (diff > 1e-15) {
+            gpt_status = TEST_STATUS_FAILURE;
+        }
+    }
+    std::cout << "status: " << (gpt_status ? "failed!\n" : "ok\n" );
+    status += gpt_status;
 
     return status;    
 }

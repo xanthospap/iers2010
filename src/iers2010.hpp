@@ -126,4 +126,9 @@ namespace iers2010
     int vmf1_ht(double ah, double aw, double dmjd, double dlat, double ht,
         double zd, double& vmf1h, double& vmf1w);
 
+    /// Compute the Global Pressure and Temperature (GPT), based on spherical 
+    /// harmonics up to degree and order 9. 
+    int gpt(double dmjd, double dlat, double dlon, double dhgt, double& pres,
+        double& temp, double& undu);
+
 } // iers2010

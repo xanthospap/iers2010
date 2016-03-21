@@ -5,53 +5,44 @@
 #endif
 
 /**
- * @details  This function determines Global Pressure and Temperature 
+ * \details  This function determines Global Pressure and Temperature 
  *           (Boehm et al. 2007) based on Spherical Harmonics up to degree 
  *           and order 9.
  *           This function is a translation/wrapper for the fortran GPT
  *           subroutine, found here : 
  *           http://maia.usno.navy.mil/conv2010/software.html
  * 
- * @param[in]  dmjd  Modified Julian Date
- * @param[in]  dlat  Latitude given in radians (North Latitude)
- * @param[in]  dlon  Longitude given in radians (East Longitude)
- * @param[in]  dhgt  Ellipsoidal height in meters
- * @param[out] pres  Pressure given in hPa
- * @param[out] temp  Temperature in degrees Celsius
- * @param[out] undu  Geoid undulation in meters (Note 1)
- * @return           An integer 
+ * \param[in]  dmjd  Modified Julian Date
+ * \param[in]  dlat  Latitude given in radians (North Latitude)
+ * \param[in]  dlon  Longitude given in radians (East Longitude)
+ * \param[in]  dhgt  Ellipsoidal height in meters
+ * \param[out] pres  Pressure given in hPa
+ * \param[out] temp  Temperature in degrees Celsius
+ * \param[out] undu  Geoid undulation in meters (Note 1)
+ * \return           An integer, always 0.
  * 
- * @note
+ * \note
  *    -# This is from a 9x9 Earth Gravitational Model (EGM).
  *    -# Status: Class 1 model
  *
- * @verbatim
- *  Test case:
- *     given input: DMJD = 55055D0
- *                  DLAT = 0.6708665767D0 radians (NRAO, Green Bank, WV)
- *                  DLON = -1.393397187D0 radians
- *                  DHGT = 812.546 meters
- *     expected output: PRES = 918.0710638757363995D0 hPa 
- *                      TEMP = 19.31914181012882992D0 degrees Celsius
- *                      UNDU = -42.19185643717770517D0 meters
- * @endverbatim
+ * \version 18.10.2011
  * 
- * @version 2011 October 18
- * 
- * @cite iers2010
+ * \cite iers2010
  *     Boehm, J., Heinkelmann, R. and Schuh, H., 2007, "Short Note: A 
  *     Global model of pressure and temperature for geodetic applications",
  *     Journal of Geodesy, 81(10), pp. 679-683.
  * 
  */
-int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
-    const double& dhgt,double& pres,double& temp,double& undu)
+
+int
+iers2010::gpt(double dmjd, double dlat, double dlon, double dhgt, double& pres,
+    double& temp, double& undu)
 {
-    #ifdef USE_EXTERNAL_CONSTS
+#ifdef USE_EXTERNAL_CONSTS
         constexpr double TWOPI   (D2PI);
-    #else
+#else
         constexpr double TWOPI   (6.283185307179586476925287e0);
-    #endif
+#endif
 
     static constexpr double a_geoid [] = {
         -5.6195e-001,-6.0794e-002,-2.0125e-001,-6.4180e-002,-3.6997e-002,
@@ -196,44 +187,58 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
     // Reference day is 28 January 1980
     // This is taken from Niell (1996) to be consistent (See References)
     // For constant values use: doy = 91.3125
-    double doy ( dmjd - 44239e0 + 1e0 - 28e0 );
+    double doy { dmjd - 44239e0 + 1e0 - 28e0 };
 
     // Define degree n and order m EGM
-    constexpr int nmax (9);
-    constexpr int mmax (9);
+    constexpr int nmax { 9 };
+    constexpr int mmax { 9 };
 
     // Define unit vector
-    double x ( cos (dlat) * cos (dlon) );
-    double y ( cos (dlat) * sin (dlon) );
-    double z ( sin (dlat) );
+    double coslat { std::cos(dlat) };
+    double sinlat { std::sin(dlat) };
+    double coslon { std::cos(dlon) };
+    double sinlon { std::sin(dlon) };
+    double x      { coslat * coslon };
+    double y      { coslat * sinlon };
+    double z      { sinlat };
 
     // Legendre polynomials
-    double v[10][10], w[10][10];
+    double v[10][10],
+           w[10][10];
     v[0][0] = 1e0;
     w[0][0] = 0e0;
     v[1][0] = z * v[0][0];
     w[1][0] = 0e0;
 
-    for (int n=1;n<nmax;n++) {
-        int N ( n + 1 );
-        v[n+1][0] = ( (2*N-1) * z * v[n][0] - (N-1) * v[n-1][0] ) / (double) N;
+    int N;
+    for (int n = 1; n < nmax; n++) {
+        N = n + 1;
+        v[n+1][0] = ( (2*N-1) * z * v[n][0] - (N-1) * v[n-1][0] ) / (double)N;
         w[n+1][0] = 0e0;
     }
 
-    for (int m=0;m<mmax;m++) {
-        int M ( m + 1 );
-        v[m+1][m+1] = (double) (2*M-1) * ( x*v[m][m] - y*w[m][m] );
-        w[m+1][m+1] = (double) (2*M-1) * ( x*w[m][m] + y*v[m][m] );
-        if (m<mmax-1) {
+    /* -----------------------------------------------------------------------
+     * TODO (optimization)
+     * -----------------------------------------------------------------------
+     * the following three loops depend only on (input) z; they could be
+     * optimised so that they are NOT recomputed in case successive calls
+     * to the function are for the same z (or very close z values).
+     */
+    int M;
+    for (int m = 0; m < mmax; m++) {
+        M = m + 1;
+        v[m+1][m+1] = (double)(2*M-1) * ( x*v[m][m] - y*w[m][m] );
+        w[m+1][m+1] = (double)(2*M-1) * ( x*w[m][m] + y*v[m][m] );
+        if (m < mmax-1) {
             v[m+2][m+1] = (2*M+1) * z* v[m+1][m+1];
             w[m+2][m+1] = (2*M+1) * z* w[m+1][m+1];
         }
-        int N = M + 2;
-        for (int n=m+2;n<nmax;n++) {
+        N = M + 2;
+        for (int n = m+2; n < nmax; n++) {
             v[n+1][m+1] = ( (2*N-1)*z*v[n][m+1] - (N+M-1)*v[n-1][m+1] ) 
-              / (double) (N-M);
+                / (double)(N-M);
             w[n+1][m+1] = ( (2*N-1)*z*w[n][m+1] - (N+M-1)*w[n-1][m+1] ) 
-              / (double) (N-M);
+                / (double)(N-M);
             N++;
         }
     }
@@ -241,44 +246,44 @@ int iers2010::gpt (const double& dmjd,const double& dlat,const double& dlon,
     // Geoidal height
     undu = 0e0;
     int i = 0;
-    for (int n=0;n<=nmax;n++) {
-      for (int m=0;m<=n;m++) {
-        undu += ( a_geoid[i] * v[n][m] + b_geoid[i] * w[n][m] );
-            i++;
-      }
+    for (int n = 0; n <= nmax; n++) {
+        for (int m = 0; m <= n; m++) {
+            undu += ( a_geoid[i] * v[n][m] + b_geoid[i] * w[n][m] );
+            ++i;
+        }
     }
 
     // orthometric height
-    double hort ( dhgt - undu );
+    double hort { dhgt - undu };
 
     // Surface pressure on the geoid
-    double apm (0e0);
-    double apa (0e0);
+    double apm { 0e0 };
+    double apa { 0e0 };
     i = 0;
-    for (int n=0;n<=nmax;n++) {
-      for (int m=0;m<=n;m++) {
-        apm += ( ap_mean[i] * v[n][m] + bp_mean[i] * w[n][m] );
-        apa += ( ap_amp[i] * v[n][m] + bp_amp[i] * w[n][m] );
-            i++;
-      }
+    for (int n = 0; n <= nmax; n++) {
+        for (int m = 0; m <= n; m++) {
+            apm += ( ap_mean[i] * v[n][m] + bp_mean[i] * w[n][m] );
+            apa += ( ap_amp[i]  * v[n][m] + bp_amp[i]  * w[n][m] );
+            ++i;
+        }
     }
-    double pres0 ( apm + apa * cos (doy/365.25e0*TWOPI) );
+    double pres0 { apm + apa * std::cos(doy/365.25e0*TWOPI) };
 
     // Height correction for pressure
-    pres = pres0 * pow( (1e0-0.0000226e0*hort), 5.225e0 );
+    pres = pres0 * std::pow( (1e0-0.0000226e0*hort), 5.225e0 );
 
     // Surface temperature on the geoid
-    double atm (0e0);
-    double ata (0e0);
+    double atm { 0e0 };
+    double ata { 0e0 };
     i = 0;
-    for (int n=0;n<=nmax;n++) {
-      for (int m=0;m<=n;m++) {
-        atm += ( at_mean[i] * v[n][m] + bt_mean[i] * w[n][m] );
-        ata += ( at_amp[i] * v[n][m] + bt_amp[i] * w[n][m] );
-            i++;
-      }
+    for (int n = 0; n <= nmax; n++) {
+        for (int m = 0; m <= n; m++) {
+            atm += ( at_mean[i] * v[n][m] + bt_mean[i] * w[n][m] );
+            ata += ( at_amp[i]  * v[n][m] + bt_amp[i]  * w[n][m] );
+            ++i;
+        }
     }
-    double temp0 ( atm + ata * cos (doy/365.25e0*TWOPI) );
+    double temp0 { atm + ata * std::cos(doy/365.25e0*TWOPI) };
 
     // Height correction for temperature
     temp = temp0 - .0065e0 * hort;

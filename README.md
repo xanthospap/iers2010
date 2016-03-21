@@ -59,6 +59,7 @@ To change between ISO C++ versions, (e.g. if your compiler does not support C++1
 |         | [GMF](http://maia.usno.navy.mil/conv2010/chapter9/GMF.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 12.08.2009 | see [gmf](#gmf-cmp) |
 |         | [VMF1](http://maia.usno.navy.mil/conv2010/chapter9/VMF1.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 12.01.20012 | see [vmf1](#vmf1-cmp) |
 |         | [VMF1_HT](http://maia.usno.navy.mil/conv2010/chapter9/VMF1_HT.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 12.01.20012 | see [vmf1_ht](#vmf1_ht-cmp) |
+|         | [GPT](http://maia.usno.navy.mil/conv2010/chapter9/GPT.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 18.10.2011 | see [gpt](#gpt-cmp) |
 
 
 ## Test Cases & FORTRAN vs C++ implementations
@@ -180,6 +181,10 @@ in running the test case.
 FORTRAN (i.e. VMF1_HT.F) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
+### gpt <a id="gpt-cmp"></a>
+
+FORTRAN (i.e. GPT.F) and C++ implementations produce identical results; no discrepancies found
+in running the test case.
 
 ## How to use the library (TODO)
 
