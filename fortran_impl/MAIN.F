@@ -143,31 +143,31 @@ C     CALL GPT2
      .  156.D0, 1, 0, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
      .  GPT_AW, GPT_UNDU)
 C     REPORT RESULTS
-      PRINT *, '----------------------------------------'
-      PRINT *, '> GPT2 Results: (Test A)'
-      PRINT *, '----------------------------------------'
-      WRITE(*, FMT2) GPT_P
-      WRITE(*, FMT1) GPT_T
-      WRITE(*, FMT1) GPT_DT
-      WRITE(*, FMT1) GPT_E
-      WRITE(*, FMT1) GPT_AH
-      WRITE(*, FMT1) GPT_AW
-      WRITE(*, FMT1) GPT_UNDU
+C      PRINT *, '----------------------------------------'
+C      PRINT *, '> GPT2 Results: (Test A)'
+C      PRINT *, '----------------------------------------'
+C      WRITE(*, FMT2) GPT_P
+C      WRITE(*, FMT1) GPT_T
+C      WRITE(*, FMT1) GPT_DT
+C      WRITE(*, FMT1) GPT_E
+C      WRITE(*, FMT1) GPT_AH
+C      WRITE(*, FMT1) GPT_AW
+C      WRITE(*, FMT1) GPT_UNDU
 C     CALL GPT2
-      CALL GPT2(56141.d0,0.8412486994612668D0,0.28571039855147173D0,
-     .  156.D0, 1, 1, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
-     .  GPT_AW, GPT_UNDU)
+C      CALL GPT2(56141.d0,0.8412486994612668D0,0.28571039855147173D0,
+C     .  156.D0, 1, 1, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
+C     .  GPT_AW, GPT_UNDU)
 C     REPORT RESULTS
-      PRINT *, '----------------------------------------'
-      PRINT *, '> GPT2 Results: (Test B)'
-      PRINT *, '----------------------------------------'
-      WRITE(*, FMT2) GPT_P
-      WRITE(*, FMT1) GPT_T
-      WRITE(*, FMT1) GPT_DT
-      WRITE(*, FMT1) GPT_E
-      WRITE(*, FMT1) GPT_AH
-      WRITE(*, FMT1) GPT_AW
-      WRITE(*, FMT1) GPT_UNDU
+C      PRINT *, '----------------------------------------'
+C      PRINT *, '> GPT2 Results: (Test B)'
+C      PRINT *, '----------------------------------------'
+C      WRITE(*, FMT2) GPT_P
+C      WRITE(*, FMT1) GPT_T
+C      WRITE(*, FMT1) GPT_DT
+C      WRITE(*, FMT1) GPT_E
+C      WRITE(*, FMT1) GPT_AH
+C      WRITE(*, FMT1) GPT_AW
+C      WRITE(*, FMT1) GPT_UNDU
 
 C     ALL DONE
       END

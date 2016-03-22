@@ -6,6 +6,7 @@
 #endif
 
 #include <iostream>
+#include <cstdio>
 
 /** \brief  Define the path to the gpt2_5.grd file (including the filename)
  */
@@ -298,12 +299,15 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
                 double p0 = pgrid[indxl][0] +
                             pgrid[indxl][1] * cosfy + pgrid[indxl][2] * sinfy +
                             pgrid[indxl][3] * coshy + pgrid[indxl][4] * sinhy;
+                printf("\nT0  = %20.15f", t0);
+                printf("\nP0  = %20.15f", p0);
 
                 // humidity
                 ql[l] = qgrid[indxl][0] +
                         qgrid[indxl][1] * cosfy + qgrid[indxl][2] * sinfy +
                         qgrid[indxl][3] * coshy + qgrid[indxl][4] * sinhy;
                 ql[l] /= 1000.0e0;
+                printf("\nQL  = %20.15f", ql[l]);
 
                 // reduction = stationheight - gridheight
                 double hs1  { hs[indxl] };
@@ -314,13 +318,17 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
                          dtgrid[indxl][1] * cosfy + dtgrid[indxl][2] * sinfy +
                          dtgrid[indxl][3] * coshy + dtgrid[indxl][4] * sinhy;
                 dtl[l] /= 1000.0e0;
+                printf("\nDTL = %20.15f", dtl[l]);
 
                 // temperature reduction to station height
                 tl[l] = t0 + dtl[l]*redh - 273.15e0;
+                printf("\nTL = %20.15f", tl[l]);
 
                 // virtual temperature
                 double tv { t0 * (1e0 + 0.6077e0 * ql[l]) };
                 double c  { GM*DMTR/(RG*tv) };
+                printf("\nTV  = %20.15f", tv);
+                printf("\nC   = %20.15f", c);
 
                 // pressure in hPa
                 pl[l] = (p0*exp(-c*redh))/100e0;
