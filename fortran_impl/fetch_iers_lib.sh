@@ -24,7 +24,10 @@ for f in http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F \
     http://maia.usno.navy.mil/conv2010/chapter9/FCUL_B.F \
     http://maia.usno.navy.mil/conv2010/chapter9/FCUL_ZD_HPA.F \
     http://maia.usno.navy.mil/conv2010/chapter9/GMF.F \
-    http://maia.usno.navy.mil/conv2010/convupdt/chapter9/VMF1.F
+    http://maia.usno.navy.mil/conv2010/convupdt/chapter9/VMF1.F \
+    http://maia.usno.navy.mil/conv2010/convupdt/chapter9/VMF1_HT.F \
+    http://maia.usno.navy.mil/conv2010/convupdt/chapter9/GPT.F \
+    ftp://maia.usno.navy.mil/conv2010/convupdt/chapter9/GPT2.F
     do
         fr=$(basename $f)
         if ! test -f $fr

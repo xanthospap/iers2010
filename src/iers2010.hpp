@@ -131,4 +131,10 @@ namespace iers2010
     int gpt(double dmjd, double dlat, double dlon, double dhgt, double& pres,
         double& temp, double& undu);
 
+    /// Compute the Global Pressure and Temperature 2 model (GPT2), 
+    /// and the "a" coefficients for vmf1_ht.
+    int gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
+        int it, double* p, double* t, double* dt, double* e, double* ah, double* aw,
+        double* undu, const char* ifile=nullptr);
+
 } // iers2010

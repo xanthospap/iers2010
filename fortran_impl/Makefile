@@ -23,7 +23,9 @@ IERS_OBS = PMSDNUT2.o \
 	FCUL_B.o \
 	FCUL_ZD_HPA.o \
 	GMF.o \
-	VMF1.o
+	VMF1.o \
+	GPT.o \
+	GPT2.o
 
 IERS_OBS_D0 = PMSDNUT2_D0.o \
 	UTLIBR_D0.o \
@@ -47,7 +49,9 @@ IERS_OBS_D0 = PMSDNUT2_D0.o \
 	FCUL_B.o \
 	FCUL_ZD_HPA.o \
 	GMF.o \
-	VMF1.o
+	VMF1.o \
+	GPT.o \
+	GPT2.o
 
 all: test_iers test_iers_d0
 
@@ -106,3 +110,7 @@ GMF.o : GMF.F
 	$(FC) $(FF) -o $@ GMF.F
 VMF1.o : VMF1.F
 	$(FC) $(FF) -o $@ VMF1.F
+GPT.o : GPT.F
+	$(FC) $(FF) -o $@ GPT.F
+GPT2.o : GPT2.F
+	$(FC) $(FF) -o $@ GPT2.F

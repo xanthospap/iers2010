@@ -47,4 +47,5 @@ dist_libiers2010_la_SOURCES = \
 	gmf.cpp \
 	vmf1.cpp \
 	vmf1_ht.cpp \
-	gpt.cpp
+	gpt.cpp \
+	gpt2.cpp

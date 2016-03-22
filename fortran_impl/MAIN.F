@@ -2,6 +2,7 @@
 
 C     RESULT REPORTING
       CHARACTER(LEN=*), PARAMETER  :: FMT1 = "(F18.15)"
+      CHARACTER(LEN=*), PARAMETER  :: FMT2 = "(F20.15)"
 
 C     ----------------------------------------------
 C     Variables and data for FUNDARG
@@ -60,6 +61,12 @@ C     ----------------------------------------------
       DOUBLE PRECISION VMF1HR, VMF1WR, VMF1H, VMF1W
       DATA VMF1HR, VMF1WR/ 3.424342122738070593D0,
      . 3.448299714692572238D0/
+
+C     ----------------------------------------------
+C     Variables and data for GPT2 
+C     ----------------------------------------------
+      DOUBLE PRECISION GPT_P, GPT_T, GPT_DT, GPT_E,
+     . GPT_AH, GPT_AW, GPT_UNDU
 
 C     CALL FUNDARG
       CALL FUNDARG(T, L, LP, F, D, OM)
@@ -130,6 +137,37 @@ C     REPORT RESULTS
       PRINT *, '----------------------------------------'
       WRITE(*, FMT1) DABS(VMF1H-VMF1HR)
       WRITE(*, FMT1) DABS(VMF1W-VMF1WR)
+
+C     CALL GPT2
+      CALL GPT2(56141.d0,0.8412486994612668D0,0.28571039855147173D0,
+     .  156.D0, 1, 0, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
+     .  GPT_AW, GPT_UNDU)
+C     REPORT RESULTS
+      PRINT *, '----------------------------------------'
+      PRINT *, '> GPT2 Results: (Test A)'
+      PRINT *, '----------------------------------------'
+      WRITE(*, FMT2) GPT_P
+      WRITE(*, FMT1) GPT_T
+      WRITE(*, FMT1) GPT_DT
+      WRITE(*, FMT1) GPT_E
+      WRITE(*, FMT1) GPT_AH
+      WRITE(*, FMT1) GPT_AW
+      WRITE(*, FMT1) GPT_UNDU
+C     CALL GPT2
+      CALL GPT2(56141.d0,0.8412486994612668D0,0.28571039855147173D0,
+     .  156.D0, 1, 1, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
+     .  GPT_AW, GPT_UNDU)
+C     REPORT RESULTS
+      PRINT *, '----------------------------------------'
+      PRINT *, '> GPT2 Results: (Test B)'
+      PRINT *, '----------------------------------------'
+      WRITE(*, FMT2) GPT_P
+      WRITE(*, FMT1) GPT_T
+      WRITE(*, FMT1) GPT_DT
+      WRITE(*, FMT1) GPT_E
+      WRITE(*, FMT1) GPT_AH
+      WRITE(*, FMT1) GPT_AW
+      WRITE(*, FMT1) GPT_UNDU
 
 C     ALL DONE
       END

@@ -28,7 +28,6 @@
  *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
  * 
  */
-
 void
 iers2010::dhtide::step2lon(const double* xsta, double t, double* xcorsta)
 {
