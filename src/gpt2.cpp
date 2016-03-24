@@ -1,5 +1,6 @@
-#include "iers2010.hpp"
 #include <fstream>
+#include <cassert>
+#include "iers2010.hpp"
 
 #ifdef USE_EXTERNAL_CONSTS
     #include "gencon.hpp"
@@ -189,18 +190,23 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
         double ppod { (-dlat[k] + PI/2e0) * d2r };
 
         // find the index (line in the grid file) of the nearest point
-        int ipod { (int)std::floor((ppod+5e0)/5e0) };
-        int ilon { (int)std::floor((plon+5e0)/5e0) };
+        // ipod and ilon are (IPOD-1) and (ILON-1)
+        int ipod { (int)std::floor((ppod+5e0)/5e0) - 1 };
+        int ilon { (int)std::floor((plon+5e0)/5e0) - 1 };
+        printf("ipod = %4i and ilon = %4i", ipod, ilon);
 
         // normalized (to one) differences, can be positive or negative
-        double diffpod { (ppod - ( ipod*5e0 - 2.5e0))/5e0 };
-        double difflon { (plon - ( ilon*5e0 - 2.5e0))/5e0 };
+        double diffpod { (ppod - ( (ipod+1)*5e0 - 2.5e0))/5e0 };
+        double difflon { (plon - ( (ilon+1)*5e0 - 2.5e0))/5e0 };
+        printf("\ndiffpod = %15.10f and difflon = %15.10f",diffpod, difflon);
 
         if (ipod == 36) { --ipod; }
 
-        // get the number of the corresponding line
-        indx[0] = (ipod-1)*72 + ilon;
-        if ( indx[0] > 0 ) { --indx[0]; }
+        // get the number of the corresponding line; again all elements of
+        // indx[] are -1 from INDX(...)
+        indx[0] = ipod*72 + ilon;
+        assert( indx[0] >= 0 && indx[0] < maxl );
+        printf("\nindx[0] = %4i", indx[0]);
 
         // near the poles: nearest neighbour interpolation, otherwise: bilinear
         bool ibilinear { false };
@@ -272,16 +278,14 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
 
             int ipod1 { ipod + sgn<double>(diffpod) };
             int ilon1 { ilon + sgn<double>(difflon) };
-            if (ilon1 == 73) { ilon1 = 1; }
-            if ( !ilon )     { ilon1 = 72;}
+            printf("\nipod1 = %4i and ilon1 = %4i",ipod1, ilon1);
+            if (ilon1 == 72) { ilon1 = 0; }
+            if ( !ilon )     { ilon1 = 71;}
 
             // get the number of the line
-            indx[1] = (ipod1 - 1)*72 + ilon;  // along same logtitude
-            indx[2] = (ipod  - 1)*72 + ilon1; // along same polar distance
-            indx[3] = (ipod1 - 1)*72 + ilon1; // diagonal
-            if ( indx[1] > 0) { --indx[1]; }
-            if ( indx[2] > 0) { --indx[2]; }
-            if ( indx[3] > 0) { --indx[3]; }
+            indx[1] = ipod1*72 + ilon;  // along same logtitude
+            indx[2] = ipod *72 + ilon1; // along same polar distance
+            indx[3] = ipod1*72 + ilon1; // diagonal
 
             for (int l = 0; l < 4; l++) {
 
@@ -299,15 +303,19 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
                 double p0 = pgrid[indxl][0] +
                             pgrid[indxl][1] * cosfy + pgrid[indxl][2] * sinfy +
                             pgrid[indxl][3] * coshy + pgrid[indxl][4] * sinhy;
+                printf("\nIndexl = %5i", indxl);
+                printf("\n%20.15f + %20.15f  * %20.15f + %20.15f * %20.15f + %20.15f * %20.15f + %20.15f * %20.15f", 
+                    tgrid[indxl][0], tgrid[indxl][1], cosfy, tgrid[indxl][2], sinfy,
+                    tgrid[indxl][3], coshy, tgrid[indxl][4], sinhy);
                 printf("\nT0  = %20.15f", t0);
-                printf("\nP0  = %20.15f", p0);
+                //printf("\nP0  = %20.15f", p0);
 
                 // humidity
                 ql[l] = qgrid[indxl][0] +
                         qgrid[indxl][1] * cosfy + qgrid[indxl][2] * sinfy +
                         qgrid[indxl][3] * coshy + qgrid[indxl][4] * sinhy;
                 ql[l] /= 1000.0e0;
-                printf("\nQL  = %20.15f", ql[l]);
+                //printf("\nQL  = %20.15f", ql[l]);
 
                 // reduction = stationheight - gridheight
                 double hs1  { hs[indxl] };
@@ -318,17 +326,17 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
                          dtgrid[indxl][1] * cosfy + dtgrid[indxl][2] * sinfy +
                          dtgrid[indxl][3] * coshy + dtgrid[indxl][4] * sinhy;
                 dtl[l] /= 1000.0e0;
-                printf("\nDTL = %20.15f", dtl[l]);
+                //printf("\nDTL = %20.15f", dtl[l]);
 
                 // temperature reduction to station height
                 tl[l] = t0 + dtl[l]*redh - 273.15e0;
-                printf("\nTL = %20.15f", tl[l]);
+                //printf("\nTL = %20.15f", tl[l]);
 
                 // virtual temperature
                 double tv { t0 * (1e0 + 0.6077e0 * ql[l]) };
                 double c  { GM*DMTR/(RG*tv) };
-                printf("\nTV  = %20.15f", tv);
-                printf("\nC   = %20.15f", c);
+                //printf("\nTV  = %20.15f", tv);
+                //printf("\nC   = %20.15f", c);
 
                 // pressure in hPa
                 pl[l] = (p0*exp(-c*redh))/100e0;

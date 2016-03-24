@@ -20,7 +20,7 @@ C     .  1, 0, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
 C     .  GPT_AW, GPT_UNDU)
 
       CALL GPT2(56141.d0,0.8412486994612668D0,0.28571039855147173D0,
-     .  156.D0, 1, 0, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
+     .  156.D0, 1, 1, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
      .  GPT_AW, GPT_UNDU)
 C     REPORT RESULTS
 C      PRINT *, '----------------------------------------'
@@ -271,12 +271,15 @@ C     ALL DONE
         ! find the index (line in the grid file) of the nearest point
         IPOD = FLOOR((PPOD+5.D0)/5.D0) 
         ILON = FLOOR((PLON+5.D0)/5.D0)
+        WRITE(*,'(A,I4,A,I4)') 'ipod = ', IPOD, 'and ilon = ', ILON
 C       WRITE(*,'(A,I4)') 'Index of nearest point ipod=',IPOD
 C       WRITE(*,'(A,I4)') 'Index of nearest point ilon=',ILON
     
         ! normalized (to one) differences, can be positive or negative
         DIFFPOD = (PPOD - (IPOD*5.D0 - 2.5D0))/5.D0
         DIFFLON = (PLON - (ILON*5.D0 - 2.5D0))/5.D0
+        WRITE(*,'(A,F15.10,A,F15.10)') 'diffpod = ',DIFFPOD,
+     .  ' and difflon = ', DIFFLON
 
         ! added by HCY
         IF (IPOD.EQ.37) THEN
@@ -285,6 +288,7 @@ C       WRITE(*,'(A,I4)') 'Index of nearest point ilon=',ILON
 
         ! get the number of the corresponding line
         INDX(1) = (IPOD - 1)*72 + ILON 
+        WRITE(*,'(A,I4)') 'indx[0] = ',INDX(1)
 
         ! near the poles: nearest neighbour interpolation, otherwise: bilinear
         IBILINEAR = 0
@@ -359,6 +363,7 @@ C       WRITE(*,'(A,I4)') 'Index of nearest point ilon=',ILON
           IF (ILON1.EQ.0) THEN
             ILON1 = 72
           END IF
+          WRITE(*,'(A,I4,A,I4)') 'ipod1 = ',IPOD1,' and ilon1 = ',ILON1
         
           ! get the number of the line
           INDX(2) = (IPOD1 - 1)*72 + ILON   !% along same longitude
@@ -379,15 +384,24 @@ C       WRITE(*,'(A,I4)') 'Index of nearest point ilon=',ILON
             P0 = PGRID(INDX(L),1) + 
      .           PGRID(INDX(L),2)*COSFY + PGRID(INDX(L),3)*SINFY + 
      .           PGRID(INDX(L),4)*COSHY + PGRID(INDX(L),5)*SINHY
-
+            WRITE(*, '(A,I5)') 'Indexl = ',INDX(L)
+            WRITE(*,'(F20.15, A, F20.15, A, F20.15,
+     .       A, F20.15, A, F20.15,
+     .       A, F20.15, A, F20.15,
+     .       A, F20.15, A, F20.15)')
+     .       TGRID(INDX(L),1), 
+     .       ' + ', TGRID(INDX(L),2), ' * ', COSFY, 
+     .       ' + ', TGRID(INDX(L),3), ' * ', SINFY,
+     .       ' + ', TGRID(INDX(L),4), ' * ', COSHY,
+     .       ' + ', TGRID(INDX(L),5), ' * ', SINHY
             WRITE (*,"(A,F20.15)")"T0  = ",T0
-            WRITE (*,"(A,F25.15)")"P0  = ",P0
+C            WRITE (*,"(A,F25.15)")"P0  = ",P0
 
             ! humidity 
             QL(L) = QGRID(INDX(L),1) + 
      .              QGRID(INDX(L),2)*COSFY + QGRID(INDX(L),3)*SINFY + 
      .              QGRID(INDX(L),4)*COSHY + QGRID(INDX(L),5)*SINHY
-            WRITE(*,'(A,F20.15)')'QL  = ', QL(L)
+C            WRITE(*,'(A,F20.15)')'QL  = ', QL(L)
  
             ! reduction = stationheight - gridheight
             HS1 = HS(INDX(L))
@@ -397,17 +411,17 @@ C       WRITE(*,'(A,I4)') 'Index of nearest point ilon=',ILON
             DTL(L) = DTGRID(INDX(L),1) + 
      .               DTGRID(INDX(L),2)*COSFY + DTGRID(INDX(L),3)*SINFY +
      .               DTGRID(INDX(L),4)*COSHY + DTGRID(INDX(L),5)*SINHY 
-            WRITE(*,'(A,F20.15)') 'DTL = ', DTL(L)
+C            WRITE(*,'(A,F20.15)') 'DTL = ', DTL(L)
 
             ! temperature reduction to station height
             TL(L) = T0 + DTL(L)*REDH - 273.15D0
-            WRITE(*,'(A,F20.15)') 'TL  = ',TL(L)
+C            WRITE(*,'(A,F20.15)') 'TL  = ',TL(L)
 
             ! virtual temperature
             TV = T0*(1.D0+0.6077D0*QL(L))  
             C = GM*DMTR/(RG*TV)
-            WRITE(*,'(A,F20.15)') 'TV  = ', TV
-            WRITE(*,'(A,F20.15)') 'C   = ', C
+C            WRITE(*,'(A,F20.15)') 'TV  = ', TV
+C            WRITE(*,'(A,F20.15)') 'C   = ', C
             
             ! pressure in hPa
             PL(L) = (P0*EXP(-C*REDH))/100.D0

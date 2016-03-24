@@ -68,6 +68,16 @@ C     ----------------------------------------------
       DOUBLE PRECISION GPT_P, GPT_T, GPT_DT, GPT_E,
      . GPT_AH, GPT_AW, GPT_UNDU
 
+C      DOUBLE PRECISION GPT_PR, GPT_TR, GPT_DTR, GPT_ER,
+C     . GPT_AHR, GPT_AWR, GPT_UNDUR
+C      GPT_PR  = 1002.555031899637015D0
+C      GPT_TR  = 22.121274188593230D0
+C      GPT_DTR = -6.525262725051438D0
+C      GPT_ER  = 15.625300656392879D0
+C      GPT_AHR = 0.001264668783781D0
+C      GPT_AWR = 0.000572557214095D0
+C      GPT_UNDUR = 44.05609719704228D0
+
 C     CALL FUNDARG
       CALL FUNDARG(T, L, LP, F, D, OM)
 C     REPORT RESULTS
@@ -143,31 +153,31 @@ C     CALL GPT2
      .  156.D0, 1, 0, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
      .  GPT_AW, GPT_UNDU)
 C     REPORT RESULTS
-C      PRINT *, '----------------------------------------'
-C      PRINT *, '> GPT2 Results: (Test A)'
-C      PRINT *, '----------------------------------------'
-C      WRITE(*, FMT2) GPT_P
-C      WRITE(*, FMT1) GPT_T
-C      WRITE(*, FMT1) GPT_DT
-C      WRITE(*, FMT1) GPT_E
-C      WRITE(*, FMT1) GPT_AH
-C      WRITE(*, FMT1) GPT_AW
-C      WRITE(*, FMT1) GPT_UNDU
-C     CALL GPT2
-C      CALL GPT2(56141.d0,0.8412486994612668D0,0.28571039855147173D0,
-C     .  156.D0, 1, 1, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
-C     .  GPT_AW, GPT_UNDU)
+      PRINT *, '----------------------------------------'
+      PRINT *, '> GPT2 Results: (Test A)'
+      PRINT *, '----------------------------------------'
+      WRITE(*, FMT2) GPT_P
+      WRITE(*, FMT1) GPT_T
+      WRITE(*, FMT1) GPT_DT
+      WRITE(*, FMT1) GPT_E
+      WRITE(*, FMT1) GPT_AH
+      WRITE(*, FMT1) GPT_AW
+      WRITE(*, FMT1) GPT_UNDU
+     CALL GPT2
+      CALL GPT2(56141.d0,0.8412486994612668D0,0.28571039855147173D0,
+     .  156.D0, 1, 1, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
+     .  GPT_AW, GPT_UNDU)
 C     REPORT RESULTS
-C      PRINT *, '----------------------------------------'
-C      PRINT *, '> GPT2 Results: (Test B)'
-C      PRINT *, '----------------------------------------'
-C      WRITE(*, FMT2) GPT_P
-C      WRITE(*, FMT1) GPT_T
-C      WRITE(*, FMT1) GPT_DT
-C      WRITE(*, FMT1) GPT_E
-C      WRITE(*, FMT1) GPT_AH
-C      WRITE(*, FMT1) GPT_AW
-C      WRITE(*, FMT1) GPT_UNDU
+      PRINT *, '----------------------------------------'
+      PRINT *, '> GPT2 Results: (Test B)'
+      PRINT *, '----------------------------------------'
+      WRITE(*, FMT2) GPT_P
+      WRITE(*, FMT1) GPT_T
+      WRITE(*, FMT1) GPT_DT
+      WRITE(*, FMT1) GPT_E
+      WRITE(*, FMT1) GPT_AH
+      WRITE(*, FMT1) GPT_AW
+      WRITE(*, FMT1) GPT_UNDU
 
 C     ALL DONE
       END

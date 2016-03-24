@@ -473,6 +473,7 @@ int main()
     }
     std::cout << "status: " << (gpt2_status ? "failed!\n" : "ok\n" );
     status += gpt2_status;
+
     // testing gpt2
     std::cout<<"----------------------------------------\n";
     std::cout<<"> gpt2 (Test Case B)\n";
