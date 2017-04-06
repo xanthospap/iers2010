@@ -1,9 +1,9 @@
 #include "iers2010.hpp"
 
 /**
- * \details For a given UTC date, calculate delta(AT) = TAI-UTC. 
+ * @details For a given UTC date, calculate delta(AT) = TAI-UTC. 
  * 
- * \attention
+ * @attention
  *    <b>IMPORTANT</b>
  * <hr>
  *        A new version of this function must be
@@ -25,15 +25,15 @@
  *        whenever the function is re-issued,
  *        even if no leap seconds have been
  *        added.<br>
- *        <b>Latest leap second:  2015 June 30</b>
+ *        <b>Latest leap second:  2016 December 31</b>
  * <hr>
  *
- * \param[in]  iy     Year (Notes 1 and 2)
- * \param[in]  im     Month (Note 2) 
- * \param[in]  id     Day (Notes 2 and 3)
- * \param[in]  fd     Fraction of day (Note 4)
- * \param[out] deltat TAI minus UTC, seconds
- * \return            An \c integer denoting the exit status
+ * @param[in]  iy     Year (Notes 1 and 2)
+ * @param[in]  im     Month (Note 2) 
+ * @param[in]  id     Day (Notes 2 and 3)
+ * @param[in]  fd     Fraction of day (Note 4)
+ * @param[out] deltat TAI minus UTC, seconds
+ * @return            An \c integer denoting the exit status
  * Returned Int  | Status (Note 5)
  * ------------- | -------------
  * +1            | Dubious year (Note 1)
@@ -44,7 +44,7 @@
  * -4            | Bad fraction (Note 4)
  * -5            | Internal Error (Note 5)
  *
- * \note
+ * @note
  * -# UTC began at 1960 January 1.0 (JD 2436934.5) and it is improper
  *    to call the function with an earlier date.  If this is attempted,
  *    zero is returned together with a warning status.
@@ -79,12 +79,12 @@
  *    will be returned.
  * -# In cases where a valid result is not available, zero is returned.
  *
- * \cite esaa,<br>
+ * @cite esaa,<br>
  * - For dates from 1961 January 1 onwards, the expressions from the
  *    file ftp://maia.usno.navy.mil/ser7/tai-utc.dat are used.
  * - The 5ms timestep at 1961 January 1 is taken from 2.58.1 (p87) of \cite esaa .
  *
- * \version 27.02.2015 (release 09.02.2015)
+ * @version 07.07.2016 (release 03.05.2016)
  *
  */
 
@@ -92,7 +92,7 @@ int
 iers2010::dhtide::dat(int iy, int im, int id, double fd, double& deltat)
 {
     // Release year for this version of iauDat
-    enum { IYV = 2015};
+    enum { IYV = 2016};
 
     // Reference dates (MJD) and drift rates (s/day), pre leap seconds
     static const double drift[][2] = {
@@ -160,7 +160,8 @@ iers2010::dhtide::dat(int iy, int im, int id, double fd, double& deltat)
         { 2006,  1, 33.0       },
         { 2009,  1, 34.0       },
         { 2012,  7, 35.0       },
-        { 2015,  7, 36.0       }
+        { 2015,  7, 36.0       },
+        { 2017,  1, 37.0       }
     };
 
     // Number of Delta(AT) changes

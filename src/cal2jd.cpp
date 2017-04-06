@@ -1,15 +1,15 @@
 #include "iers2010.hpp"
 
 /**
- * \details Gregorian Calendar to Julian Date. This function is closely related
+ * @details Gregorian Calendar to Julian Date. This function is closely related
  *          to the SOFA function iauCal2jd. 
  *
- * \param[in]     iy   Year
- * \param[in]     im   Month
- * \param[in]     id   Day
- * \param[out]    djm0 MJD zero-point: always 2400000.5
- * \param[out]    djm  Modified Julian Date for 0 hrs
- * \return             An \c integer denoting the exit status
+ * @param[in]     iy   Year
+ * @param[in]     im   Month
+ * @param[in]     id   Day
+ * @param[out]    djm0 MJD zero-point: always 2400000.5
+ * @param[out]    djm  Modified Julian Date for 0 hrs
+ * @return             An \c integer denoting the exit status
  * Returned Int  | Status
  * ------------- | -------------
  *  0            | OK
@@ -17,7 +17,7 @@
  * -2            | Bad month (JD not computed)
  * -3            | Bad day (JD computed)
  *
- * \note
+ * @note
  *  -# The algorithm used is valid from -4800 March 1, but this
  *     implementation rejects dates before -4799 January 1.
  *  -# The Julian Date is returned in two pieces, in the usual SOFA
@@ -29,9 +29,9 @@
  *     the Gregorian Calendar, nor is the AD/BC numbering convention
  *     observed.
  *
- * \cite esaa , Section 12.92 (p604).
+ * @cite esaa , Section 12.92 (p604).
  *
- * \version 07.08.2013 (release  09.02.2015)
+ * @version 07.11.2014 (release  2016-05-03)
  */
 int
 iers2010::dhtide::cal2jd(int iy, int im, int id, double& djm0,double& djm)
@@ -41,7 +41,7 @@ iers2010::dhtide::cal2jd(int iy, int im, int id, double& djm0,double& djm)
     constexpr int IYMIN { -4799 };
 
     // Month lengths in days
-    static constexpr int mtab[] = {
+    /*static*/ constexpr int mtab[] = {
         31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
     };
 
@@ -66,13 +66,13 @@ iers2010::dhtide::cal2jd(int iy, int im, int id, double& djm0,double& djm)
 
     // Return result.
     int  my    { (im - 14) / 12 };
-    long iypmy { (long) (iy + my) };
-    djm0 = 2400000.5e0/* or DJM0 */;
+    long iypmy { (long)(iy + my) };
+    djm0 = 2400000.5e0; // or DJM0
     djm  = (double)((1461L * (iypmy + 4800L)) / 4L
-        + (367L * (long) (im - 2 - 12 * my)) / 12L
-        - (3L * ((iypmy + 4900L) / 100L)) / 4L
-        + (long) id - 2432076L);
-
+                  + (367L  * (long)(im - 2 - 12*my)) / 12L
+                  - (3L    * ((iypmy + 4900L) / 100L)) / 4L
+                  + (long)id - 2432076L);
+    
     // Return status
     return j;
 }

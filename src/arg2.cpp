@@ -5,7 +5,7 @@
 #endif
 
 /**
- * \details The purpose of the function is to compute the angular astronomical
+ * @details The purpose of the function is to compute the angular astronomical
  *          argument, which depends on time, for 11 tidal argument calculations. 
  *          The order of the 11 angular quantities in vector angle are given
  *          below:
@@ -15,17 +15,17 @@
  *          subroutine, found here : 
  *          http://maia.usno.navy.mil/conv2010/software.html
  * 
- * \param[in]  iyear Four digit year (Note 1)
- * \param[in]  day   Day of Year Greenwich Time (Note 2)
- * \param[out] angle Angular argument for Schwiderski computation, in radians 
+ * @param[in]  iyear Four digit year (Note 1)
+ * @param[in]  day   Day of Year Greenwich Time (Note 2)
+ * @param[out] angle Angular argument for Schwiderski computation, in radians 
  *                   (Notes 3, 4 and 5)
- * \return           An integer value which can be:
+ * @return           An integer value which can be:
  *                   Returned Value | Status
  *                   ---------------|-------------------------------------------
  *                               -1 | Error; Invalid year
  *                                0 | All ok
  *
- * \note 
+ * @note 
  *  -# This subroutine is valid only after 1973 CE.  A validation
  *     test has been added to stop the subroutine if an invalid
  *     year is used.
@@ -57,9 +57,9 @@
  *  -# The input array \c angle must be able to hold at least 11 doubles.
  *  -# Status: Canonical model
  *
- * \version  07.10.2011
+ * @version  07.10.2011
  *
- * \cite iers2010
+ * @cite iers2010
  * Schwiderski, E., 1983, "Atlas of Ocean Tidal Charts and Maps, Part I:
  * The Semidiurnal Principal Lunar Tide M2," Marine Geodesy, 6, pp. 219-256.
  *
@@ -82,15 +82,15 @@ iers2010::arg2(int iyear, double day, double* angle)
     /*  ----------------------------------------------
      *  Speed of all terms given in radians per second
      *  ---------------------------------------------- */
-    static const double speed[] = {
-        1.40519e-4,
-        1.45444e-4,
-        1.37880e-4,
-        1.45842e-4,
-        0.72921e-4,
-        0.67598e-4,
-        0.72523e-4,
-        0.64959e-4,
+    /*static*/ const double speed[] = {
+        1.405190e-4,
+        1.454440e-4,
+        1.378800e-4,
+        1.458420e-4,
+        0.729210e-4,
+        0.675980e-4,
+        0.725230e-4,
+        0.649590e-4,
         0.053234e-4,
         0.026392e-4,
         0.003982e-4,
@@ -110,7 +110,7 @@ iers2010::arg2(int iyear, double day, double* angle)
        const double sigssa = 0.003982e-4;
        */
  
-    static const double angfac[][4] = {
+    /*static*/ const double angfac[][4] = {
         { 0.200e+01, -0.200e+01,  0.000e+00,  0.000e+00 }, 
         { 0.000e+00,  0.000e+00,  0.000e+00,  0.000e+00 }, 
         { 0.200e+01, -0.300e+01,  0.100e+01,  0.000e+00 }, 

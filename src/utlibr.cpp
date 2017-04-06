@@ -5,7 +5,7 @@
 #endif
 
 /**
- * \details This function evaluates the model of subdiurnal libration
+ * @details This function evaluates the model of subdiurnal libration
  *          in the axial component of rotation, expressed by UT1 and LOD.
  *          This effect is due to the influence of tidal gravitation on the
  *          departures of the Earth's mass distribution from the rotational
@@ -20,17 +20,17 @@
  *          subroutine, found here : 
  *          http://maia.usno.navy.mil/conv2010/software.html
  * 
- * \param[in]  rmjd Time expressed as modified Julian date
- * \param[out] dut1 Incremental UT1 in microseconds
- * \param[out] dlod Incremental LOD in microseconds per day
- * \return          An integer value, always 0. 
+ * @param[in]  rmjd Time expressed as modified Julian date
+ * @param[out] dut1 Incremental UT1 in microseconds
+ * @param[out] dlod Incremental LOD in microseconds per day
+ * @return          An integer value, always 0. 
  *
- * \note
+ * @note
  *      - Status:  Class 3 model
  * 
- * \version 23.06.2010
+ * @version 23.06.2010
  * 
- * \cite iers2010
+ * @cite iers2010
  * 
  */
 

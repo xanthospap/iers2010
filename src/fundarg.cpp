@@ -5,7 +5,7 @@
 #endif
 
 /**
- * \details This subroutine computes the lunisolar fundamental arguments.
+ * @details This subroutine computes the lunisolar fundamental arguments.
  *          The model used is from Simon et al. (1994) as recommended by the 
  *          IERS Conventions (2010).  Refer to IERS Conventions (2010) 
  *          Chapter 5 Sections 5.7.1 - 5.7.2 (pp. 57 - 59).
@@ -13,8 +13,8 @@
  *          subroutine, found here : 
  *          http://maia.usno.navy.mil/conv2010/software.html
  * 
- * \param[in]  t     TT, Julian centuries since J2000 (Note 1)
- * \param[out] fargs A 5-element array containing the computed fundamental
+ * @param[in]  t     TT, Julian centuries since J2000 (Note 1)
+ * @param[out] fargs A 5-element array containing the computed fundamental
  *                   arguments, in the following order:
  *                   fargs[0] -> l  : Mean anomaly of the Moon (Note 2)
  *                   fargs[1] -> lp : Mean anomaly of the Sun (Note 2)
@@ -23,9 +23,9 @@
  *                                    (Note 2)
  *                   fargs[4] -> om : Mean longitude of the ascending node of
  *                                    the Moon (Note 2)
- * \return           An integer value always 0.
+ * @return           An integer value always 0.
  * 
- * \note
+ * @note
  *       -# Though T is strictly TDB, it is usually more convenient to use
  *          TT, which makes no significant difference.  Julian centuries since
  *          J2000 is (JD - 2451545.0)/36525.
@@ -35,9 +35,10 @@
  *          Mean longitude of the ascending node of the Moon.
  *       -# Status: Canonical model
  * 
- * \version 25.02.2010
+ * @version 25.02.2010
  * 
- * \cite iers2010, @cite simon94
+ * @cite iers2010
+ * @cite simon94
  * 
  */
 int

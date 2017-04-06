@@ -5,7 +5,7 @@
 #endif
 
 /**
- * \details This function evaluates the model of polar motion for
+ * @details This function evaluates the model of polar motion for
  *          a nonrigid Earth due to tidal gravitation. This polar motion
  *          is equivalent to the so-called "subdiurnal nutation." The model
  *          is a sum of a first order polynomial and 25 trigonometric terms
@@ -15,16 +15,16 @@
  *          subroutine, found here : 
  *          http://maia.usno.navy.mil/conv2010/software.html
  * 
- * \param[in]  rmjd Time expressed as modified Julian date
- * \param[out] dx   The x component of polar motion expressed in 
+ * @param[in]  rmjd Time expressed as modified Julian date
+ * @param[out] dx   The x component of polar motion expressed in 
  *                  microarcseconds.
- * \param[out] dy   The y component of polar motion expressed in 
+ * @param[out] dy   The y component of polar motion expressed in 
  *                  microarcseconds.
- * \return          An integer value, always 0.
+ * @return          An integer value, always 0.
  *
- * \note    Status:  Class 1 model
+ * @note    Status:  Class 1 model
  * 
- * \warning In the present version this subroutine neglects the linear trend
+ * @warning In the present version this subroutine neglects the linear trend
  *          and the long periodic terms of the expansion, for the reasons 
  *          explained in Section 5.5.1.1 of the IERS Conventions (2010). If 
  *          the full expansion is needed, set the parameter iband to 0 instead
@@ -67,8 +67,7 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
      *           angle = Sum(i=1:6) iarg(i,j)*arg(i), for j=1,25
      * 
      */
-  
-    int iband (1);
+    int    iband (1);
     double fargs[6]; /* fundamental arguments: GMST+pi, l, lp, f, d, om */
 
     // Set constants
@@ -88,7 +87,7 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
 
     // Coefficients of the long and quasi diurnal periodic terms in polar motion
     static struct {
-        int iarg[6];
+        int    iarg[6];
         double per, xs, xc, ys, yc;
     } x[] = {
         //  Coefficients of the long periodic terms in polar motion
@@ -135,7 +134,8 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
     dx = dy = .0e0;
 
     //  Evaluate the vector of the fundamental arguments
-    //+ arg(1:6) = [ GMST+pi, el, elp, f, d, om ] at t = rmjd
+    //+ arg(0:5) = [ GMST+pi, el, elp, f, d, om ]
+    //+ at t = rmjd
 
     // Convert the input epoch to Julian centuries of TDB since J2000
     double t { (rmjd-RMJD0) / 36525e0 };
