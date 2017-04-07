@@ -6,22 +6,22 @@
 #endif
 
 /**
- * \details This subroutine computes the effects of the free core nutation.  
+ * @details This subroutine computes the effects of the free core nutation.  
  *          Please note that the table is updated each year (see Note 4).
  *          The parameter N needs to be incremented for each additional
  *          year in the table.
  * 
- * \param[in] mjd   Modified Julian Date, TDB (Note 1)
- * \param[out]  x   CIP offset x component, in microas (Note 2)
- * \param[out]  y   CIP offset y component, in microas (Note 2)
- * \param[out] dx   Uncertainty of x component, in microas (Note 3)
- * \param[out] dy   Uncertainty of y component, in microas (Note 3) 
- * \return          An integer value, always 0.
+ * @param[in] mjd   Modified Julian Date, TDB (Note 1)
+ * @param[out]  x   CIP offset x component, in microas (Note 2)
+ * @param[out]  y   CIP offset y component, in microas (Note 2)
+ * @param[out] dx   Uncertainty of x component, in microas (Note 3)
+ * @param[out] dy   Uncertainty of y component, in microas (Note 3) 
+ * @return          An integer value, always 0.
  *  
- * \warning Contains data table to be updated each year, 
+ * @warning Contains data table to be updated each year, 
  *          see http://syrte.obspm.fr/~lambert/fcn/
  * 
- * \note 
+ * @note 
  *      -#  Though the Modified Julian Date (MJD) is strictly TDB, it is
  *          usually more convenient to use TT, which makes no significant
  *          difference.
@@ -32,9 +32,9 @@
  *          http://syrte.obspm.fr/~lambert/fcn/.
  *      -#  Status: Class 3 model
  * 
- * \version 19.12.2013
+ * @version 19.12.2013
  * 
- * \cite iers2010
+ * @cite iers2010
  * 
  */
 

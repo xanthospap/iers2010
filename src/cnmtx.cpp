@@ -6,7 +6,7 @@
 #endif
 
 /**
- * \details  The purpose of the subroutine is to compute the time dependent 
+ * @details  The purpose of the subroutine is to compute the time dependent 
  *           part of second degree diurnal and semidiurnal tidal potential 
  *           from the dominant spectral lines in the Cartwright-Tayler-Edden 
  *           harmonic decomposition.
@@ -14,19 +14,19 @@
  *           subroutine, found here : 
  *           http://maia.usno.navy.mil/conv2010/software.html
  * 
- * \param[in]   dmjd  Modified Julian Date
- * \param[out]  h     Vector of length 12 with partials of the tidal variation
+ * @param[in]   dmjd  Modified Julian Date
+ * @param[out]  h     Vector of length 12 with partials of the tidal variation
  *                    with respect to the orthoweights (Note 1)
- * \return            An integer, always 0.
+ * @return            An integer, always 0.
  *
- * \note 
+ * @note 
  *     -# The diurnal and semidiurnal orthoweights fit to the 8 constituents 
  *        are listed in Reference Ray et al.
  *     -# Status: Canonical model
  *
- * \version 17.03.2010
+ * @version 17.03.2010
  *
- * \cite iers2010,
+ * @cite iers2010,
  * Ray,R. D., Steinberg, D. J., Chao, B. F., and Cartwright, D. E.,
  *      "Diurnal and Semidiurnal Variations in the Earth's Rotation
  *      Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
@@ -43,7 +43,7 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
     #endif
 
     // Define the orthotide weight factors
-    const static double sp[2][6] = {
+    const /*static*/ double sp[2][6] = {
         {0.0298e0,0.1408e0,+0.0805e0, 0.6002e0,+0.3025e0, 0.1517e0},
         {0.0200e0,0.0905e0,+0.0638e0, 0.3476e0,+0.1645e0, 0.0923e0}
       };
@@ -193,7 +193,7 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
     }
 
     // A final check !
-    assert(j == 11 );
+    assert( j == 11 );
 
     // Finished
     return 0;

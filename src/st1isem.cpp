@@ -7,20 +7,20 @@ inner_product3(const double* x1, const double* x2)
 }
 
 /**
- * \details This function gives the out-of-phase corrections induced by
+ * @details This function gives the out-of-phase corrections induced by
  *          mantle anelasticity in the semi-diurnal band. 
  *          This function is a translation/wrapper for the fortran ST1ISEM
  *          subroutine, found here : 
  *          http://maia.usno.navy.mil/conv2010/software.html
  * 
- * \param[in]  xsta    Geocentric position of the IGS station (Note 1)
- * \param[in]  xsun    Geocentric position of the Sun (Note 2)
- * \param[in]  xmon    Geocentric position of the Moon (Note 2)
- * \param[in]  fac2sun Degree 2 TGP factor for the Sun (Note 3)      
- * \param[in]  fac2mon Degree 2 TGP factor for the Moon (Note 3) 
- * \param[out] xcorsta Out of phase station corrections for semi-diurnal band
+ * @param[in]  xsta    Geocentric position of the IGS station (Note 1)
+ * @param[in]  xsun    Geocentric position of the Sun (Note 2)
+ * @param[in]  xmon    Geocentric position of the Moon (Note 2)
+ * @param[in]  fac2sun Degree 2 TGP factor for the Sun (Note 3)      
+ * @param[in]  fac2mon Degree 2 TGP factor for the Moon (Note 3) 
+ * @param[out] xcorsta Out of phase station corrections for semi-diurnal band
  * 
- * \note
+ * @note
  *     -# The IGS station is in ITRF co-rotating frame. All coordinates are
  *        expressed in meters, as arrays, i.e. [x,y,z].
  *     -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
@@ -31,9 +31,9 @@ inner_product3(const double* x1, const double* x2)
  *     -# This fucnction is part of the package dehanttideinel, see
  *        ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
  *
- * \version 31.07.2009
+ * @version 31.07.2009
  * 
- * \cite iers2010,
+ * @cite iers2010,
  *       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
  *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477
  * 

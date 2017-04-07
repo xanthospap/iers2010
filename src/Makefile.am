@@ -2,7 +2,7 @@ lib_LTLIBRARIES = libiers2010.la
 
 ## Only use the following flags for debuging purposes
 libiers2010_la_CXXFLAGS = \
-	-std=c++11 \
+	-std=c++14 \
 	-g \
 	-pg \
 	-Wall \

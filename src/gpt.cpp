@@ -5,29 +5,29 @@
 #endif
 
 /**
- * \details  This function determines Global Pressure and Temperature 
+ * @details  This function determines Global Pressure and Temperature 
  *           (Boehm et al. 2007) based on Spherical Harmonics up to degree 
  *           and order 9.
  *           This function is a translation/wrapper for the fortran GPT
  *           subroutine, found here : 
  *           http://maia.usno.navy.mil/conv2010/software.html
  * 
- * \param[in]  dmjd  Modified Julian Date
- * \param[in]  dlat  Latitude given in radians (North Latitude)
- * \param[in]  dlon  Longitude given in radians (East Longitude)
- * \param[in]  dhgt  Ellipsoidal height in meters
- * \param[out] pres  Pressure given in hPa
- * \param[out] temp  Temperature in degrees Celsius
- * \param[out] undu  Geoid undulation in meters (Note 1)
- * \return           An integer, always 0.
+ * @param[in]  dmjd  Modified Julian Date
+ * @param[in]  dlat  Latitude given in radians (North Latitude)
+ * @param[in]  dlon  Longitude given in radians (East Longitude)
+ * @param[in]  dhgt  Ellipsoidal height in meters
+ * @param[out] pres  Pressure given in hPa
+ * @param[out] temp  Temperature in degrees Celsius
+ * @param[out] undu  Geoid undulation in meters (Note 1)
+ * @return           An integer, always 0.
  * 
- * \note
+ * @note
  *    -# This is from a 9x9 Earth Gravitational Model (EGM).
  *    -# Status: Class 1 model
  *
- * \version 18.10.2011
+ * @version 18.10.2011
  * 
- * \cite iers2010
+ * @cite iers2010
  *     Boehm, J., Heinkelmann, R. and Schuh, H., 2007, "Short Note: A 
  *     Global model of pressure and temperature for geodetic applications",
  *     Journal of Geodesy, 81(10), pp. 679-683.
@@ -44,6 +44,12 @@ iers2010::gpt(double dmjd, double dlat, double dlon, double dhgt, double& pres,
         constexpr double TWOPI   (6.283185307179586476925287e0);
 #endif
 
+    // TODO
+    // Maybe concatenate all of the arrays into one array, and use ptrs to
+    // specific elements. i.e.
+    // static constexpr all_geoid[] = {...}
+    // const double* a_geoid = all_geoid[m]
+    // ...
     static constexpr double a_geoid [] = {
         -5.6195e-001,-6.0794e-002,-2.0125e-001,-6.4180e-002,-3.6997e-002,
         +1.0098e+001,+1.6436e+001,+1.4065e+001,+1.9881e+000,+6.4414e-001,

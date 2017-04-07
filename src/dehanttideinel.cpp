@@ -9,7 +9,7 @@ sprod(const double* x1, const double* x2, double& r1, double& r2)
 }
 
 /**
- * \details This function computes the station tidal displacement
+ * @details This function computes the station tidal displacement
  *          caused by lunar and solar gravitational attraction (see References).
  *          The computations are calculated by the following steps:<br>
  *          <b>Step 1):</b> General degree 2 and degree 3 corrections 
@@ -23,17 +23,17 @@ sprod(const double* x1, const double* x2, double& r1, double& r2)
  *          DEHANTTIDEINEL subroutine, found here : 
  *          http://maia.usno.navy.mil/conv2010/software.html
  * 
- * \param[in]  xsta   Geocentric position of the station (Note 1)
- * \param[in]  xsun   Geocentric position of the Sun (Note 2)
- * \param[in]  xmon   Geocentric position of the Moon (Note 2)
- * \param[in]  yr     Year (Note 3)
- * \param[in]  month  Month (Note 3)
- * \param[in]  day    Day of Month (Note 3)
- * \param[in]  fhr    Hour in the day (Notes 3 and 4)
- * \param[out] dxtide Displacement vector (Note 5)
- * \return            Always 0.
+ * @param[in]  xsta   Geocentric position of the station (Note 1)
+ * @param[in]  xsun   Geocentric position of the Sun (Note 2)
+ * @param[in]  xmon   Geocentric position of the Moon (Note 2)
+ * @param[in]  yr     Year (Note 3)
+ * @param[in]  month  Month (Note 3)
+ * @param[in]  day    Day of Month (Note 3)
+ * @param[in]  fhr    Hour in the day (Notes 3 and 4)
+ * @param[out] dxtide Displacement vector (Note 5)
+ * @return            Always 0.
  * 
- * \note
+ * @note
  *     -# The station is in ITRF co-rotating frame.  All coordinates,
  *        X, Y, and Z, are expressed in meters. 
  *     -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
@@ -50,7 +50,7 @@ sprod(const double* x1, const double* x2, double& r1, double& r2)
  *     -# This fucnction is part of the package dehanttideinel, see
  *        ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ 
  * 
- * \version 24.04.2015
+ * @version 19.12.2016
  *
  * @cite iers2010,
  *

@@ -86,7 +86,7 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
     #endif
 
     // Coefficients of the long and quasi diurnal periodic terms in polar motion
-    static struct {
+    /*static*/ struct {
         int    iarg[6];
         double per, xs, xc, ys, yc;
     } x[] = {

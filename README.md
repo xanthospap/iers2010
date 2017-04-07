@@ -7,6 +7,7 @@ IERS Conventions (2010). The functions are available in FORTRAN from the [IERS w
 software found at this website is routinely updated.
 The FORTRAN subroutines are translated to C++ (standard c++11/c++14) with (as much as
 possible) minor modifications.
+__Note that the Software is now (January 2017) available at the [ftp site](ftp://maia.usno.navy.mil/conventions/2010/2010_update/) in the `software` folder per chapter.__ 
 
 ## Compilation / Installation
 
@@ -204,6 +205,12 @@ in running the test case.
 
 - build dox with doxygen (or link to dox)
 
+## TODO
+
+- [x] test compilation against c++17 (gcc)
+- [x] make a python script to check c++ version of each function against the published one
+- [x] the new version of dehanttidenl has a new example test case; use it!
+
 ## Prerequisites
 
 None. This is a standalone library. Of course a C++ compiler is assumed!
@@ -211,3 +218,4 @@ None. This is a standalone library. Of course a C++ compiler is assumed!
 ## Bugs & Maintanance
 Xanthos, xanthos@mail.ntua.gr
 Mitsos, danast@mail.ntua.gr
+

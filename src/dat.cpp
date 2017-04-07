@@ -95,7 +95,7 @@ iers2010::dhtide::dat(int iy, int im, int id, double fd, double& deltat)
     enum { IYV = 2016};
 
     // Reference dates (MJD) and drift rates (s/day), pre leap seconds
-    static const double drift[][2] = {
+    /*static*/ const double drift[][2] = {
         { 37300.0, 0.0012960 },
         { 37300.0, 0.0012960 },
         { 37300.0, 0.0012960 },

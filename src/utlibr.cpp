@@ -77,7 +77,7 @@ iers2010::utlibr(double rmjd, double& dut1, double& dlod)
 
     //  Coefficients of the quasi semidiurnal terms in dUT1, dLOD 
     //+ Source: IERS Conventions (2010), Table 5.1b
-    static struct {
+    /*static*/ struct {
         int iarg[6];
         double per, dut1s, dut1c, dlods, dlodc;
     } x[] = {

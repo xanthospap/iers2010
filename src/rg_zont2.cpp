@@ -5,7 +5,7 @@
 #endif
 
 /**
- * \details This function evaluates the effects of zonal Earth tides on the
+ * @details This function evaluates the effects of zonal Earth tides on the
  *          rotation of the Earth.  The model used is a combination of Yoder
  *          et al. (1981) elastic body tide, Wahr and Bergen (1986) inelastic
  *          body tide, and Kantha et al. (1998) ocean tide models 
@@ -16,13 +16,13 @@
  *          subroutine, found here : 
  *          http://maia.usno.navy.mil/conv2010/software.html
  * 
- * \param[in]  t      Julian centuries since J2000 (Note 1)
- * \param[out] dut    Effect on UT1 (Note 2)
- * \param[out] dlod   Effect on excess length of day (LOD) (Note 3)
- * \param[out] domega Effect on rotational speed (Note 4)
- * \return            An integer value always 0.
+ * @param[in]  t      Julian centuries since J2000 (Note 1)
+ * @param[out] dut    Effect on UT1 (Note 2)
+ * @param[out] dlod   Effect on excess length of day (LOD) (Note 3)
+ * @param[out] domega Effect on rotational speed (Note 4)
+ * @return            An integer value always 0.
  * 
- * \note
+ * @note
  *  -# Though T is strictly TDB, it is usually more convenient to use
  *     TT, which makes no significant difference.  Julian centuries since
  *     J2000 is (JD - 2451545.0)/36525.
@@ -42,9 +42,9 @@
  *     double precision.
  *  -# Status:  Class 3 model
  * 
- * \version 20.12.2011
+ * @version 20.12.2011
  * 
- * \cite iers2010, 
+ * @cite iers2010, 
  *    Yoder, C. F., Williams, J. G., and Parke, M. E., (1981),
  *     "Tidal Variations of Earth Rotation," J. Geophys. Res., 86,
  *     pp. 881 - 891.
@@ -81,7 +81,7 @@ iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
     *  ----------------------*/
 
     // Number of terms in the zonal Earth tide model  
-    static constexpr int nzont = 62;
+    /*static*/ constexpr int nzont = 62;
 
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      *  --------------------------------------------------
@@ -256,9 +256,7 @@ iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
             + (double)( nfund[i][2] ) * f 
             + (double)( nfund[i][3] ) * d 
             + (double)( nfund[i][4] ) * om, TWOPI );
-
         while (arg < .0e0) { arg += TWOPI; }
-        // std::cout<<"\nARG["<<i+1<<"] = " << arg;
 
         // Evaluate zonal tidal terms.
         dsinarg = std::sin(arg);

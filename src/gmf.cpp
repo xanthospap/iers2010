@@ -5,12 +5,6 @@
     #include "gencon.hpp"
 #endif
 
-/* for C++14 we will use 'constexpr' shit ... */
-#if __cplusplus >= 201402L
-#define USE_CNSTXPR 1
-#endif
-
-#ifdef USE_CNSTXPR
 /// A compile time array containing factorial values, for n=0, ... , N-1
 /// \warning This only works for c++14
 ///
@@ -20,35 +14,36 @@ template<typename T, int N>
         constexpr fact_array() : array {}
         {
             array[0] = array[1] = 1.0e0;
-            for (int i=2; i<N; i++) { array[i] = static_cast<T>(i) * array[i-1]; }
+            for (int i=2; i<N; i++) { 
+                array[i] = static_cast<T>(i) * array[i-1];
+            }
         }
 };
-#endif
 
 /**
- * \details  This function determines the Global Mapping Functions GMF 
+ * @details  This function determines the Global Mapping Functions GMF 
  *           (Boehm et al. 2006).
  *           This function is a translation/wrapper for the fortran GPT
  *           subroutine, found here : 
  *           http://maia.usno.navy.mil/conv2010/software.html
  * 
- * \param[in]  dmjd  Modified Julian Date
- * \param[in]  dlat  Latitude given in radians (North Latitude)
- * \param[in]  dlon  Longitude given in radians (East Longitude)
- * \param[in]  dhgt  Ellipsoidal height in meters
- * \param[in]  zd    Zenith distance in radians
- * \param[out] gmfh  Hydrostatic mapping function (Note 1)
- * \param[out] gmfw  Wet mapping function (Note 1)
- * \return           An integer,  always zero
+ * @param[in]  dmjd  Modified Julian Date
+ * @param[in]  dlat  Latitude given in radians (North Latitude)
+ * @param[in]  dlon  Longitude given in radians (East Longitude)
+ * @param[in]  dhgt  Ellipsoidal height in meters
+ * @param[in]  zd    Zenith distance in radians
+ * @param[out] gmfh  Hydrostatic mapping function (Note 1)
+ * @param[out] gmfw  Wet mapping function (Note 1)
+ * @return           An integer,  always zero
  * 
- * \note
+ * @note
  *    -# The mapping functions are dimensionless scale factors.
  *    -# This is from a 9x9 Earth Gravitational Model (EGM).
  *    -# Status: Class 1 model
  * 
- * \version 12.08.2009
+ * @version 12.08.2009
  * 
- * \cite iers2010
+ * @cite iers2010
  *     Boehm, J., Niell, A., Tregoning, P. and Schuh, H., (2006), 
  *     "Global Mapping Functions (GMF): A new empirical mapping
  *     function based on numerical weather model data",
@@ -67,12 +62,6 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
         constexpr double TWOPI   (6.283185307179586476925287e0);
         constexpr double PI      (3.1415926535897932384626433e0);
     #endif
-    
-#ifndef USE_CNSTXPR
-    // if this variable is true, the factorial array has already 
-    // been initialized (i.e. computed)
-    static bool fact_initialized = false;
-#endif
     
     // Reference day is 28 January 1980
     // This is taken from Niell (1996) to be consistent (See References)
@@ -199,13 +188,15 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     constexpr int m { 9 };
 
     int i {0}, j {1};
-#ifdef USE_CNSTXPR
     constexpr fact_array<double, 2*n+2> dfac_{};
     const double* dfac = &dfac_.array[0];
     // make sure we computed the actorial at compile-time
     static_assert( dfac_.array[2] == 2, 
         "Shit! Factorial array not computed at compile-time." );
-#else
+ 
+    /* Not needed anymore; the factorial array is already computed at compile
+     * time
+     *
     // Determine n! (factorial) NOT moved by 1
     // \todo Compute this at compile time!
     static double dfac[2*n+2];
@@ -217,7 +208,7 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
                 return dfac[i++]*j;
                 });
     }
-#endif
+    */
 
     // Determine Legendre functions (Heiskanen and Moritz,
     // Physical Geodesy, 1967, eq. 1-62)
@@ -251,8 +242,8 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     }
 
     // Compute hydrostatic mapping function
-    double bh  { .0029e0 };
-    double c0h { .062e0 };
+    const double bh  { .0029e0 };
+    const double c0h { .062e0 };
     double phh, c11h, c10h;
     if ( dlat < .0e0 ) { // southern hemisphere
         phh  = PI;
@@ -281,10 +272,10 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     gmfh   = topcon/(sine+gamma);
 
     // Height correction for hydrostatic mapping function from Niell (1996)
-    double a_ht  ( 2.53e-5 );
-    double b_ht  ( 5.49e-3 );
-    double c_ht  ( 1.14e-3 );
-    double hs_km ( dhgt/1000e0 );
+    const double a_ht  { 2.53e-5 };
+    const double b_ht  { 5.49e-3 };
+    const double c_ht  { 1.14e-3 };
+    const double hs_km { dhgt/1000e0 };
 
     beta                = b_ht/( sine + c_ht );
     gamma               = a_ht/( sine + beta);
@@ -294,8 +285,8 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     gmfh                = gmfh + ht_corr;
 
     // compute wet mapping function
-    double bw { .00146e0 };
-    double cw { .04391e0 };
+    const double bw { .00146e0 };
+    const double cw { .04391e0 };
 
     double awm {0e0};
     double awa {0e0};
@@ -309,11 +300,6 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     gamma  = aw/( sine + beta);
     topcon = (1e0 + aw/(1e0 + bw/(1e0 + cw)));
     gmfw   = topcon/(sine+gamma);
-
-#ifndef USE_CNSTXPR
-    // Factorial array is now set for next runs
-    fact_initialized = true;
-#endif
 
     // Finished
     return 0;

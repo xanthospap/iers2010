@@ -29,9 +29,10 @@
  *     the Gregorian Calendar, nor is the AD/BC numbering convention
  *     observed.
  *
+ * @version 07.11.2014 (release  2016-05-03)
+ *
  * @cite esaa , Section 12.92 (p604).
  *
- * @version 07.11.2014 (release  2016-05-03)
  */
 int
 iers2010::dhtide::cal2jd(int iy, int im, int id, double& djm0,double& djm)

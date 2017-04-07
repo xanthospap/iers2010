@@ -6,17 +6,17 @@
     #include "gencon.hpp"
 #endif
 
-/* Only for debuging
+#ifdef DEBUG
 #include <iostream>
 #include <cstdio>
-*/
+#endif
 
 /// Define the path to the gpt2_5.grd file (including the filename)
 #define PATH_TO_GRD25_GRD "/usr/local/share/libiers10/gpt2_5.grd"
 
-/** \brief         sign function or signum function; extracts the sign of a real number
- *  \param[in] val Template parameter
- *  \return        -1 if val < 0, <br>
+/** @brief         sign function or signum function; extracts the sign of a real number
+ *  @param[in] val Template parameter
+ *  @return        -1 if val < 0, <br>
  *                  0 if val = 0, <br>
  *                  1 if val > 0
  */
@@ -24,7 +24,7 @@ template <typename T>
 inline int sgn(T val) noexcept { return (T(0) < val) - (val < T(0)); }
 
 /**
- * \details  This function determines pressure, temperature, temperature lapse
+ * @details  This function determines pressure, temperature, temperature lapse
  *           rate, water vapour pressure, hydrostatic and wet mapping function 
  *           coefficients ah and aw, and geoid undulation for specific sites 
  *           near the Earth surface. It is based on a 5 x 5 degree external 
@@ -35,44 +35,44 @@ inline int sgn(T val) noexcept { return (T(0) < val) - (val < T(0)); }
  *           subroutine, found here : 
  *           http://maia.usno.navy.mil/conv2010/software.html
  * 
- * \param[in]  dmjd  Modified Julian Date
- * \param[in]  dlat  Ellipsoidal latitude given in radians [-pi/2:+pi/2] 
+ * @param[in]  dmjd  Modified Julian Date
+ * @param[in]  dlat  Ellipsoidal latitude given in radians [-pi/2:+pi/2] 
  *                   (vector)
- * \param[in]  dlon  Longitude given in radians [-pi:pi] or [0:2pi] (vector)
- * \param[in]  hell  Ellipsoidal height in meters (vector)
- * \param[in]  nstat Number of stations in DLAT, DLON, and HELL (i.e. size of
+ * @param[in]  dlon  Longitude given in radians [-pi:pi] or [0:2pi] (vector)
+ * @param[in]  hell  Ellipsoidal height in meters (vector)
+ * @param[in]  nstat Number of stations in DLAT, DLON, and HELL (i.e. size of
  *                   arrays)
- * \param[in]  it    An integer, deonting:<br>
+ * @param[in]  it    An integer, deonting:<br>
  *                   case 1 : no time variation but static quantities<br>
  *                   case 0 : with time variation (annual and semiannual terms)
- * \param[in]  ifile The name of the input gridfile to read values from. By
+ * @param[in]  ifile The name of the input gridfile to read values from. By
  *                   default, it is set to 'gpt2_5.grd'.
- * \param[out] p     Pressure given in hPa (vector of length nstat)
- * \param[out] t     Temperature in degrees Celsius (vector of length nstat)
- * \param[out] dt    Temperature lapse rate in degrees per km (vector of length
+ * @param[out] p     Pressure given in hPa (vector of length nstat)
+ * @param[out] t     Temperature in degrees Celsius (vector of length nstat)
+ * @param[out] dt    Temperature lapse rate in degrees per km (vector of length
  *                   nstat)
- * \param[out] e     Water vapour pressure in hPa (vector of length nstat)
- * \param[out] ah    Hydrostatic mapping function coefficient at zero height 
+ * @param[out] e     Water vapour pressure in hPa (vector of length nstat)
+ * @param[out] ah    Hydrostatic mapping function coefficient at zero height 
  *                   (VMF1) (vector of length NSTAT)
- * \param[out] aw    Wet mapping function coefficient (VMF1) (vector of length 
+ * @param[out] aw    Wet mapping function coefficient (VMF1) (vector of length 
  *                   NSTAT)
- * \param[out] undu  Geoid undulation in meters (vector of length nstat)
- * \return           An integer which can be:
+ * @param[out] undu  Geoid undulation in meters (vector of length nstat)
+ * @return           An integer which can be:
  *                   Returned Value | Status
  *                   ---------------|-----------------------------------
  *                               -2 | Error reading gridfile
  *                               -1 | Unable to open input gridfile
  *                                0 | Success
  * 
- * \note
+ * @note
  *    -# The hydrostatic mapping function coefficients have to be used with the
  *       height dependent Vienna Mapping Function 1 (vmf_ht.f) because the
  *       coefficients refer to zero height.
  *    -# Status: Class 1 model
  *
- * \version 31.05.2013
+ * @version 31.05.2013
  * 
- * \cite iers2010
+ * @cite iers2010
  *     Lagler, K., Schindelegger, M., Boehm, J., Krasna, H., and Nilsson, T.,
  *     (2013), "GPT2: Empirical slant delay model for radio space geodetic
  *     techniques," Geophys. Res. Lett., Vol. 40, pp. 1069-1073, DOI:
@@ -152,7 +152,7 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
     std::getline (fin,s);
 
     // Loop over grid points
-    // WARNING Qgrid,  dTgrid, ahgrid and awgrid must be / 1000
+    // WARNING Qgrid, dTgrid, ahgrid and awgrid must be / 1000
     float dummy1, dummy2;
     for (int n=0; n < maxl; n++) {
         fin >> dummy1 >> dummy2
@@ -192,12 +192,10 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
         // ipod and ilon are (IPOD-1) and (ILON-1)
         int ipod { (int)std::floor((ppod+5e0)/5e0) - 1 };
         int ilon { (int)std::floor((plon+5e0)/5e0) - 1 };
-        // printf("ipod = %4i and ilon = %4i", ipod, ilon);
 
         // normalized (to one) differences, can be positive or negative
         double diffpod { (ppod - ( (ipod+1)*5e0 - 2.5e0))/5e0 };
         double difflon { (plon - ( (ilon+1)*5e0 - 2.5e0))/5e0 };
-        // printf("\ndiffpod = %15.10f and difflon = %15.10f",diffpod, difflon);
 
         if (ipod == 36) { --ipod; }
 
@@ -205,7 +203,6 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
         // indx[] are -1 from INDX(...)
         indx[0] = ipod*72 + ilon;
         assert( indx[0] >= 0 && indx[0] < maxl );
-        // printf("\nindx[0] = %4i", indx[0]);
 
         // near the poles: nearest neighbour interpolation, otherwise: bilinear
         bool ibilinear { false };
@@ -302,19 +299,12 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
                 double p0 = pgrid[indxl][0] +
                             pgrid[indxl][1] * cosfy + pgrid[indxl][2] * sinfy +
                             pgrid[indxl][3] * coshy + pgrid[indxl][4] * sinhy;
-                // printf("\nIndexl = %5i", indxl);
-                // printf("\n%20.15f + %20.15f  * %20.15f + %20.15f * %20.15f + %20.15f * %20.15f + %20.15f * %20.15f", 
-                //     tgrid[indxl][0], tgrid[indxl][1], cosfy, tgrid[indxl][2], sinfy,
-                //     tgrid[indxl][3], coshy, tgrid[indxl][4], sinhy);
-                // printf("\nT0  = %20.15f", t0);
-                // printf("\nP0  = %20.15f", p0);
 
                 // humidity
                 ql[l] = qgrid[indxl][0] +
                         qgrid[indxl][1] * cosfy + qgrid[indxl][2] * sinfy +
                         qgrid[indxl][3] * coshy + qgrid[indxl][4] * sinhy;
                 ql[l] /= 1000.0e0;
-                // printf("\nQL  = %20.15f", ql[l]);
 
                 // reduction = stationheight - gridheight
                 double hs1  { hs[indxl] };
@@ -325,17 +315,13 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
                          dtgrid[indxl][1] * cosfy + dtgrid[indxl][2] * sinfy +
                          dtgrid[indxl][3] * coshy + dtgrid[indxl][4] * sinhy;
                 dtl[l] /= 1000.0e0;
-                // printf("\nDTL = %20.15f", dtl[l]);
 
                 // temperature reduction to station height
                 tl[l] = t0 + dtl[l]*redh - 273.15e0;
-                // printf("\nTL = %20.15f", tl[l]);
 
                 // virtual temperature
                 double tv { t0 * (1e0 + 0.6077e0 * ql[l]) };
                 double c  { GM*DMTR/(RG*tv) };
-                // printf("\nTV  = %20.15f", tv);
-                // printf("\nC   = %20.15f", c);
 
                 // pressure in hPa
                 pl[l] = (p0*exp(-c*redh))/100e0;

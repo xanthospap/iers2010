@@ -41,7 +41,7 @@
  *                       GRE = 0.4662515377110782594D-1 mm
  * @endverbatim
  * 
- * @version 2010 September 29
+ * @version 29.09.2010
  * 
  * @cite iers2010
  *     Chen, G. and Herring, T. A., 1997, ``Effects of atmospheric azimuthal
@@ -119,27 +119,29 @@ int iers2010::apg (const double& dlat,const double& dlon,const double& az,
     double z = sin(dlat);
     
     // Legendre polynomials
-    double v[10][10], w[10][10];
+    double v[10][10],
+           w[10][10];
     v[0][0] = 1e0;
     w[0][0] = 0e0;
     v[1][0] = z * v[0][0];
     w[1][0] = 0e0;
 
+    int N, M;
     for (int n=1;n<nmax;n++) {
-        int N ( n + 1 );
+        N = n + 1;
         v[n+1][0] = ( (2*N-1) * z * v[n][0] - (N-1) * v[n-1][0] ) / (double) N;
         w[n+1][0] = 0e0;
     }
     
     for (int m=0;m<mmax;m++) {
-        int M ( m + 1 );
+        M = m + 1;
         v[m+1][m+1] = (double) (2*M-1) * ( x*v[m][m] - y*w[m][m] );
         w[m+1][m+1] = (double) (2*M-1) * ( x*w[m][m] + y*v[m][m] );
         if (m<mmax-1) {
             v[m+2][m+1] = (2*M+1) * z* v[m+1][m+1];
             w[m+2][m+1] = (2*M+1) * z* w[m+1][m+1];
         }
-        int N = M + 2;
+        N = M + 2;
         for (int n=m+2;n<nmax;n++) {
             v[n+1][m+1] = ( (2*N-1)*z*v[n][m+1] - (N+M-1)*v[n-1][m+1] ) 
               / (double) (N-M);
