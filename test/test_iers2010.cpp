@@ -8,9 +8,9 @@
 /* results and input from FUNDARG.F;
  * last update: 2010 February 25
  */
-double fundarg_inp { 
-    0.07995893223819302e0 };
-double fundarg_res[] = {
+double fundarg_inp { 0.07995893223819302e0 };
+double fundarg_res[] =
+{
     2.291187512612069099e0,
     6.212931111003726414e0,
     3.658025792050572989e0,
@@ -21,9 +21,9 @@ double fundarg_res[] = {
 /* results and input from PMSDNUT2;
  * last update: 2011 October  13
  */
-double pmsdnut2_inp {
-    54335e0 };
-double pmsdnut2_res[] = {
+double pmsdnut2_inp { 54335e0 };
+double pmsdnut2_res[] = 
+{
     24.83144238273364834e0,
     -14.09240692041837661e0
 };
@@ -32,9 +32,11 @@ double pmsdnut2_res[] = {
  * last update: 2010 June  23
  * (two test-cases)
  */
-double utlibr_inp[] = {
+double utlibr_inp[] = 
+{
     44239.1,           /* test case A */
-    55227.4 };         /* test case B */
+    55227.4            /* test case B */
+};
 double utlibr_res[] = {
     2.441143834386761746e0,  /* test case A */
     -14.78971247349449492e0,
@@ -45,9 +47,9 @@ double utlibr_res[] = {
 /* results and input from FCNNUT;
  * last update: 2013 December 19
  */
-double fcnnut_inp = {
-    54790e0 };
-double fcnnut_res[] = {
+double fcnnut_inp = { 54790e0 };
+double fcnnut_res[] = 
+{
     -176.8012290066270680e0,
     -93.51855308903756736e0,
     3.745573770491803067e0,
@@ -57,7 +59,8 @@ double fcnnut_res[] = {
 /* results and input from ARG2;
  * last update: 2011 October 07
  */
-double arg2_res[] = {
+double arg2_res[] =
+{
     2.849663065753787805e0,
     6.28318080000000023e0,
     4.926040134021299366e0,
@@ -74,7 +77,8 @@ double arg2_res[] = {
 /* results from CNMTX;
  * last update: 2010 March 17
  */
-double cnmtx_res[] = {
+double cnmtx_res[] = 
+{
     15.35873641938967360e0,
     9.784941251812741214e0,
     -5.520740128266865554e0,
@@ -92,7 +96,8 @@ double cnmtx_res[] = {
 /* results from ORTHO_EOP;
  * last update 2010 March 19
  */
-double ortho_eop_res[] = {
+double ortho_eop_res[] = 
+{
     -162.8386373279636530e0,
     117.7907525842668974e0,
     -23.39092370609808214e0
@@ -101,7 +106,8 @@ double ortho_eop_res[] = {
 /* results from RG_ZONT2;
  * last update 2011 December 20
  */
-double rg_zont2_res[] = {
+double rg_zont2_res[] = 
+{
     7.983287678576557467E-002,
     5.035331113978199288E-005,
     -4.249711616463017E-014
@@ -130,7 +136,8 @@ double fculzd_hap_res[] = {
 /* results from GMF;
  * last update 2009 August 12
  */
-double gmf_res[] = {
+double gmf_res[] =
+{
     3.425245519339138678e0,
     3.449589116182419257e0
 };
@@ -138,7 +145,8 @@ double gmf_res[] = {
 /* results for VMF1;
  * last update 2012 January 12
  */
-double vmf1_res[] = {
+double vmf1_res[] =
+{
     3.424342122738070593e0,
     3.448299714692572238e0
 };
@@ -146,7 +154,8 @@ double vmf1_res[] = {
 /* results for VMF1_HT;
  * last update 2012  January 12
  */
-double vmf1_ht_res[] = {
+double vmf1_ht_res[] =
+{
     3.425088087972572470e0,
     3.448299714692572238e0
 };
@@ -154,7 +163,8 @@ double vmf1_ht_res[] = {
 /* results for GPT.F;
  * last update 2011 October 18
  */
-double gpt_res[] = {
+double gpt_res[] =
+{
     918.0710638757363995e0,
     19.31914181012882992e0,
     -42.19185643717770517e0
@@ -163,7 +173,8 @@ double gpt_res[] = {
 /* results for GPT2
  * last update 31 May 2013
  */
-double gpt2_res_a[] = {
+double gpt2_res_a[] =
+{
     1002.555031899637015,
     22.121274188593230,
     -6.525262725051438,
@@ -173,7 +184,8 @@ double gpt2_res_a[] = {
     44.05609719704228
 };
 
-double gpt2_res_b[] = {
+double gpt2_res_b[] =
+{
     1003.487051814098550,
     11.952642050310883,
     -5.469287999554646,
@@ -209,6 +221,9 @@ int main()
     std::cout.precision(15);
     std::cerr.setf(std::ios::fixed/*, std:: ios::floatfield*/);
     std::cerr.precision(15);
+
+    std::cout<<"\nDriver program to test the c++ implementation of the IERS2010"
+    "\n";
 
     // testing fundarg
     std::cout<<"----------------------------------------\n";

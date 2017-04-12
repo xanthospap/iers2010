@@ -40,9 +40,9 @@ inline int sgn(T val) noexcept { return (T(0) < val) - (val < T(0)); }
  *                   (vector)
  * @param[in]  dlon  Longitude given in radians [-pi:pi] or [0:2pi] (vector)
  * @param[in]  hell  Ellipsoidal height in meters (vector)
- * @param[in]  nstat Number of stations in DLAT, DLON, and HELL (i.e. size of
- *                   arrays)
- * @param[in]  it    An integer, deonting:<br>
+ * @param[in]  nstat Number of stations in dlat, dlon, and hell (i.e. size of
+ *                   input arrays)
+ * @param[in]  it    An integer, denoting:<br>
  *                   case 1 : no time variation but static quantities<br>
  *                   case 0 : with time variation (annual and semiannual terms)
  * @param[in]  ifile The name of the input gridfile to read values from. By
@@ -341,7 +341,7 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
             }
 
             double dnpod1 = std::abs(diffpod);  // distance nearer point
-            double dnpod2 = 1.e0 - dnpod1;       // distance to distant point
+            double dnpod2 = 1.e0 - dnpod1;      // distance to distant point
             double dnlon1 = std::abs(difflon);
             double dnlon2 = 1.e0 - dnlon1;
 
