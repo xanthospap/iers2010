@@ -95,33 +95,33 @@ iers2010::dehanttideinel(const double* xsta,const double* xsun,
      * scalar product of station vector with sun/moon vector  
      *----------------------------------------------------------------------*/
     double rsta, rsun, rmon;
-    double scs   { sprod(xsta, xsun, rsta, rsun) };
-    double scm   { sprod(xsta, xmon, rsta, rmon) };
-    double scsun { scs / rsta / rsun };
-    double scmon { scm / rsta / rmon };
+    const double scs   { sprod(xsta, xsun, rsta, rsun) };
+    const double scm   { sprod(xsta, xmon, rsta, rmon) };
+    const double scsun { scs / rsta / rsun };
+    const double scmon { scm / rsta / rmon };
     
     /*----------------------------------------------------------------------   
      * computation of new h2 and l2  
      *----------------------------------------------------------------------*/
-    double cosphi { std::sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1] ) / rsta };
-    double h2     { h20 - 0.0006e0*(1e0-3e0/2e0*cosphi*cosphi) };
-    double l2     { l20 + 0.0002e0*(1e0-3e0/2e0*cosphi*cosphi) };
+    const double cosphi { std::sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1] ) / rsta };
+    const double h2     { h20 - 0.0006e0*(1e0-3e0/2e0*cosphi*cosphi) };
+    const double l2     { l20 + 0.0002e0*(1e0-3e0/2e0*cosphi*cosphi) };
     
     // P2 term  
-    double p2sun { 3e0*(h2/2e0-l2)*scsun*scsun-h2/2e0 };
-    double p2mon { 3e0*(h2/2e0-l2)*scmon*scmon-h2/2e0 };
+    const double p2sun { 3e0*(h2/2e0-l2)*scsun*scsun-h2/2e0 };
+    const double p2mon { 3e0*(h2/2e0-l2)*scmon*scmon-h2/2e0 };
     
     // P3 term  
-    double p3sun { 5e0/2e0*(h3-3e0*l3)*pow(scsun,3)+3e0/2e0*(l3-h3)*scsun };
-    double p3mon { 5e0/2e0*(h3-3e0*l3)*pow(scmon,3)+3e0/2e0*(l3-h3)*scmon };
+    const double p3sun { 5e0/2e0*(h3-3e0*l3)*pow(scsun,3)+3e0/2e0*(l3-h3)*scsun };
+    const double p3mon { 5e0/2e0*(h3-3e0*l3)*pow(scmon,3)+3e0/2e0*(l3-h3)*scmon };
     
     /*----------------------------------------------------------------------  
      * term in direction of sun/moon vector  
      *----------------------------------------------------------------------*/
-    double x2sun { 3e0*l2*scsun };
-    double x2mon { 3e0*l2*scmon };
-    double x3sun { 3e0*l3/2e0*(5e0*scsun*scsun-1e0) };
-    double x3mon { 3e0*l3/2e0*(5e0*scmon*scmon-1e0) };
+    const double x2sun { 3e0*l2*scsun };
+    const double x2mon { 3e0*l2*scmon };
+    const double x3sun { 3e0*l3/2e0*(5e0*scsun*scsun-1e0) };
+    const double x3mon { 3e0*l3/2e0*(5e0*scmon*scmon-1e0) };
     
     /*----------------------------------------------------------------------  
      * factors for sun/moon using iau current best estimates (see references) 
@@ -135,11 +135,11 @@ iers2010::dehanttideinel(const double* xsta,const double* xsun,
     const double fac3mon         { fac2mon*(re/rmon) };
     
     // total displacement
-    for (int i=0; i<3; i++) {
-        dxtide[i] = fac2sun*( x2sun*xsun[i]/rsun + p2sun*xsta[i]/rsta ) +
-                    fac2mon*( x2mon*xmon[i]/rmon + p2mon*xsta[i]/rsta ) +
-                    fac3sun*( x3sun*xsun[i]/rsun + p3sun*xsta[i]/rsta ) +
-                    fac3mon*( x3mon*xmon[i]/rmon + p3mon*xsta[i]/rsta );
+    for (int i = 0; i < 3; i++) {
+        dxtide[i] = fac2sun*(x2sun*xsun[i]/rsun + p2sun*xsta[i]/rsta) +
+                    fac2mon*(x2mon*xmon[i]/rmon + p2mon*xsta[i]/rsta) +
+                    fac3sun*(x3sun*xsun[i]/rsun + p3sun*xsta[i]/rsta) +
+                    fac3mon*(x3mon*xmon[i]/rmon + p3mon*xsta[i]/rsta);
     }
     
     /*+---------------------------------------------------------------------  

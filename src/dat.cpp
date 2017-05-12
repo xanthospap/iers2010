@@ -116,8 +116,8 @@ iers2010::dhtide::dat(int iy, int im, int id, double fd, double& deltat)
     enum { NERA1 = (int) (sizeof drift / sizeof (double) / 2) };
 
     // Dates and Delta(AT)s
-    static const struct {
-        int iyear, month;
+    /*static*/ const struct {
+        int    iyear, month;
         double delat;
     } changes[] = {
         { 1960,  1,  1.4178180 },

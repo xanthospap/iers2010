@@ -39,7 +39,7 @@ iers2010::dhtide::step2lon(const double* xsta, double t, double* xcorsta)
         constexpr double DEG2RAD( D2PI / 360e0 );                // degrees to radians
     #endif
 
-    static const double datdi[][9] = {
+    /*static*/ const double datdi[][9] = {
         {0e0, 0e0, 0e0, 1e0, 0e0,   0.47e0,  0.23e0,  0.16e0,  0.07e0},
         {0e0, 2e0, 0e0, 0e0, 0e0,  -0.20e0, -0.12e0, -0.11e0, -0.05e0},
         {1e0, 0e0,-1e0, 0e0, 0e0,  -0.11e0, -0.08e0, -0.09e0, -0.04e0},
@@ -97,12 +97,13 @@ iers2010::dhtide::step2lon(const double* xsta, double t, double* xcorsta)
     zns = std::fmod(zns, 360e0);
     ps  = std::fmod(ps,  360e0);
 
-    double rsta   { std::sqrt(std::inner_product(xsta, xsta+3, xsta, .0e0)) };
-    double sinphi { xsta[2] / rsta };
-    double cosphi { std::sqrt( xsta[0]*xsta[0] + xsta[1]*xsta[1] ) / rsta };
+    const double rsta   { std::sqrt(std::inner_product(
+        xsta, xsta+3, xsta, .0e0)) };
+    const double sinphi { xsta[2]/rsta };
+    const double cosphi { std::sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1])/rsta };
 
-    double cosla  { xsta[0] / cosphi / rsta };
-    double sinla  { xsta[1] / cosphi / rsta };
+    const double cosla  { xsta[0]/cosphi/rsta };
+    const double sinla  { xsta[1]/cosphi/rsta };
 
     double dr_tot { .0e0 },
            dn_tot { .0e0 };
@@ -110,7 +111,7 @@ iers2010::dhtide::step2lon(const double* xsta, double t, double* xcorsta)
     xcorsta[0] = xcorsta[1] = xcorsta[2] = .0e0;
 
     double thetaf, dr, dn, de;
-    for (int j=0; j<5; j++) {
+    for (int j = 0; j < 5; j++) {
 
         thetaf = (datdi[j][0]*s+datdi[j][1]*h+datdi[j][2]*p+
                 datdi[j][3]*zns+datdi[j][4]*ps)*DEG2RAD;

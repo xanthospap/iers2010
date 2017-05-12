@@ -19,6 +19,7 @@ inner_product3(const double* x1, const double* x2)
  * @param[in]  fac2sun Degree 2 TGP factor for the Sun (Note 3)      
  * @param[in]  fac2mon Degree 2 TGP factor for the Moon (Note 3) 
  * @param[out] xcorsta Out of phase station corrections for diurnal band
+ *                     (3d vector)
  * 
  * @note
  *   -# The (IGS) station is in ITRF co-rotating frame. All coordinates are
@@ -47,40 +48,40 @@ iers2010::dhtide::st1idiu(const double* xsta,const double* xsun,
                      dli { -0.0007e0 };
 
     // Compute the normalized position vector of the IGS station.
-    double rsta    { std::sqrt(inner_product3(xsta, xsta)) };
-    double sinphi  { xsta[2] / rsta };
-    double cosphi  { std::sqrt(xsta[0]*xsta[0] + xsta[1]*xsta[1]) / rsta };
-    double cos2phi { cosphi * cosphi - sinphi * sinphi };
-    double sinla   { xsta[1] / cosphi / rsta };
-    double cosla   { xsta[0] / cosphi / rsta };
+    const double rsta    { std::sqrt(inner_product3(xsta, xsta)) };
+    const double sinphi  { xsta[2]/rsta };
+    const double cosphi  { std::sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1])/rsta };
+    const double cos2phi { cosphi*cosphi-sinphi*sinphi };
+    const double sinla   { xsta[1]/cosphi/rsta };
+    const double cosla   { xsta[0]/cosphi/rsta };
 
     // Compute the normalized position vector of the Moon.
-    double rmon2   { inner_product3(xmon, xmon) };
+    const double rmon2   { inner_product3(xmon, xmon) };
 
     // Compute the normalized position vector of the Sun.
-    double rsun2   { inner_product3(xsun, xsun) };
+    const double rsun2   { inner_product3(xsun, xsun) };
 
-    double drsun   { -3e0*dhi*sinphi*cosphi*fac2sun*xsun[2]*(xsun[0]*
+    const double drsun   { -3e0*dhi*sinphi*cosphi*fac2sun*xsun[2]*(xsun[0]*
             sinla-xsun[1]*cosla)/rsun2 };
 
-    double drmon   { -3e0*dhi*sinphi*cosphi*fac2mon*xmon[2]*(xmon[0]*
+    const double drmon   { -3e0*dhi*sinphi*cosphi*fac2mon*xmon[2]*(xmon[0]*
             sinla-xmon[1]*cosla)/rmon2 };
 
-    double dnsun   { -3e0*dli*cos2phi*fac2sun*xsun[2]*(xsun[0]*sinla-
+    const double dnsun   { -3e0*dli*cos2phi*fac2sun*xsun[2]*(xsun[0]*sinla-
             xsun[1]*cosla)/rsun2 };
 
-    double dnmon   { -3e0*dli*cos2phi*fac2mon*xmon[2]*(xmon[0]*sinla-
+    const double dnmon   { -3e0*dli*cos2phi*fac2mon*xmon[2]*(xmon[0]*sinla-
             xmon[1]*cosla)/rmon2 };
 
-    double desun   { -3e0*dli*sinphi*fac2sun*xsun[2]*(xsun[0]*cosla+
+    const double desun   { -3e0*dli*sinphi*fac2sun*xsun[2]*(xsun[0]*cosla+
             xsun[1]*sinla)/rsun2 };
 
-    double demon   { -3e0*dli*sinphi*fac2mon*xmon[2]*(xmon[0]*cosla+
+    const double demon   { -3e0*dli*sinphi*fac2mon*xmon[2]*(xmon[0]*cosla+
             xmon[1]*sinla)/rmon2 };
 
-    double dr      { drsun + drmon };
-    double dn      { dnsun + dnmon };
-    double de      { desun + demon };
+    const double dr      { drsun + drmon };
+    const double dn      { dnsun + dnmon };
+    const double de      { desun + demon };
 
     // Compute the corrections for the station.
     xcorsta[0] = dr*cosla*cosphi-de*sinla-dn*sinphi*cosla;

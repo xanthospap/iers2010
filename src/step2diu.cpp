@@ -45,7 +45,7 @@ iers2010::dhtide::step2diu(const double* xsta, double fhr, double t,
         constexpr double DEG2RAD( D2PI / 360e0 );   // degrees to radians
     #endif
 
-    static const double datdi[][9] = {
+    /*static*/ const double datdi[][9] = {
         {-3e0,  0e0,  2e0,  0e0,  0e0, -0.01e0,     0e0,    0e0,    0e0},   
         {-3e0,  2e0,  0e0,  0e0,  0e0, -0.01e0,     0e0,    0e0,    0e0},   
         {-2e0,  0e0,  1e0, -1e0,  0e0, -0.02e0,     0e0,    0e0,    0e0},   
@@ -138,18 +138,19 @@ iers2010::dhtide::step2diu(const double* xsta, double fhr, double t,
     zns = std::fmod(zns, 360e0);
     ps  = std::fmod(ps,  360e0);
 
-    double rsta   { std::sqrt(std::inner_product(xsta, xsta+3, xsta,.0e0)) };
-    double sinphi { xsta[2] / rsta };
-    double cosphi { std::sqrt(xsta[0]*xsta[0] + xsta[1]*xsta[1]) / rsta };
+    const double rsta   { std::sqrt(std::inner_product(
+        xsta, xsta+3, xsta,.0e0)) };
+    const double sinphi { xsta[2]/rsta };
+    const double cosphi { std::sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1])/rsta };
 
-    double cosla  { xsta[0] / cosphi / rsta };
-    double sinla  { xsta[1] / cosphi / rsta };
-    double zla    { std::atan2(xsta[1], xsta[0]) };
+    const double cosla  { xsta[0]/cosphi/rsta };
+    const double sinla  { xsta[1]/cosphi/rsta };
+    const double zla    { std::atan2(xsta[1], xsta[0]) };
 
     xcorsta[0] = xcorsta[1] = xcorsta[2] = .0e0;
 
     double thetaf, dr, dn, de;
-    for (int j=0; j<31; j++) {
+    for (int j = 0; j < 31; j++) {
         // Convert from degrees to radians.
         thetaf = (tau+datdi[j][0]*s+datdi[j][1]*h+datdi[j][2]*p+
                 datdi[j][3]*zns+datdi[j][4]*ps)*DEG2RAD;

@@ -51,20 +51,20 @@ iers2010::dhtide::st1l1(const double* xsta,const double* xsun,
                  l1sd { 0.0024e0 };
 
     // Compute the normalized position vector of the IGS station.
-    double rsta     { sqrt(inner_product3(xsta,xsta)) };
+    const double rsta     { sqrt(inner_product3(xsta,xsta)) };
 
-    double sinphi   { xsta[2] / rsta };
-    double sinphi2  { sinphi * sinphi };
-    double cosphi   { sqrt (xsta[0]*xsta[0] + xsta[1]*xsta[1]) / rsta };
-    double cosphi2  { cosphi * cosphi };
-    double sinla    { xsta[1] / cosphi / rsta };
-    double cosla    { xsta[0] / cosphi / rsta };
+    const double sinphi   { xsta[2]/rsta };
+    const double sinphi2  { sinphi*sinphi };
+    const double cosphi   { sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1])/rsta };
+    const double cosphi2  { cosphi*cosphi };
+    const double sinla    { xsta[1]/cosphi/rsta };
+    const double cosla    { xsta[0]/cosphi/rsta };
 
     // Compute the normalized position vector of the Moon.
-    double rmon2   { inner_product3(xmon, xmon) };
+    const double rmon2   { inner_product3(xmon, xmon) };
 
     // Compute the normalized position vector of the Sun.
-    double rsun2   { inner_product3(xsun, xsun) };
+    const double rsun2   { inner_product3(xsun, xsun) };
 
     // Compute the station corrections for the diurnal band.
     double l1    { l1d };
@@ -85,10 +85,9 @@ iers2010::dhtide::st1l1(const double* xsta,const double* xsun,
     xcorsta[2] =  dn*cosphi;
 
     // Compute the station corrections for the semi-diurnal band.
-
     l1 = l1sd;  
-    double costwola { cosla*cosla-sinla*sinla };
-    double sintwola { 2.e0*cosla*sinla };
+    const double costwola { cosla*cosla-sinla*sinla };
+    const double sintwola { 2.e0*cosla*sinla };
 
     dnsun = -l1/2e0*sinphi*cosphi*fac2sun*((pow(xsun[0],2)-pow(xsun[1],2))*
             costwola+2e0*xsun[0]*xsun[1]*sintwola)/rsun2;
