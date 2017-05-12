@@ -1,9 +1,14 @@
 #! /bin/bash
 
+declare -A months=( ["jan"]="01" ["feb"]="02" ["mar"]="03" ["apr"]="04" \
+["may"]="05" ["jun"]="06" ["jul"]="07" ["aug"]="08" ["sep"]="09" ["oct"]="10" \
+["nov"]="11" ["dec"]="12")
+
 ##
 ##  A function to extract a date stamp of type:
-##+ '2013 December 19' out og a FORTRAN IERS program source file. In these
-##+ files, there is a comment block (at header) of type:
+##+ '2013 December 19' out of a FORTRAN IERS program source file.
+##
+##  In these files, there is a comment block (at header) of type:
 ##  * [...]
 ##  *  Revisions:
 ##  *  2007 August   27 S. Lambert    Original code
@@ -18,13 +23,16 @@
 ##+ so this function will extract the last revision date (in this case the
 ##+ string '2013 December 19'
 ##
-##  Some of the source code, has the date revisions stamps in another format,
+##  Some of the source code, has the date revision stamps in another format,
 ##+ i.e. '2015 16 June'. So, if we get an empty string from the first try, we
 ##+ will re-try getting the date string using this, alternative format.
 ##
 ##  Yet another format, is: 
 ##+ ' * Beth Stetzler, 31 May 2013, Updated reference and added 10 January[...]'
 ##+ so, in case of failure, we also check this one!
+##
+##  In any case, the catpured date string will be returned in the format:
+##+ '2013 December 19'
 ##
 function extract_for_revision_date()
 {
@@ -34,24 +42,28 @@ function extract_for_revision_date()
         sed -n '/*  Revisions:/,/-------/p' | \
         grep '\*  [0-9]\{4\} \w*\s\{1,5\}[0-9]\{1,2\}' | \
         tail -1 | \
-        grep -o '[0-9]\{4\} \w*\s\{1,5\}[0-9]\{1,2\}')
+        grep -o '[0-9]\{4\} \w*\s\{1,5\}[0-9]\{1,2\}' 2>/dev/null)
     ## second try, format is
     ## '*  2015 16 June     N. Stamatakos at[...]'
+    ## Output date stamp as '2015 June 16'
     if  test -z "$stamp" ; then
         stamp=$(cat ${1} | \
             sed -n '/*  Revisions:/,/-------/p' | \
             grep '\*  [0-9]\{4\} [0-9]\{1,2\} \w*' | \
             tail -1 | \
-            grep -o '[0-9]\{4\} [0-9]\{1,2\} \w*')
+            sed -n 's/\*  \([0-9]\{4\}\) \([0-9]\{1,2\}\) \(\w*\).*/\1 \3 \2/p'\
+            2>/dev/null)
     fi
     ## third try, format is
     ## ' * Beth Stetzler, 31 May 2013, Updated reference[...]'
+    ## Output date stamp as '2013 May 31'
     if  test -z "$stamp" ; then
         stamp=$(cat ${1} | \
             sed -n '/*  Revisions:/,/-------/p' | \
             grep '\* \w* \w*, [0-9]\{1,2\} \w* [0-9]\{4\},' | \
             tail -1 | \
-            grep -o '[0-9]\{1,2\} \w* [0-9]\{4\}')
+            sed -n 's/[^0-9]*\([0-9]\{1,2\}\) \(\w*\) \([0-9]\{4\}\).*/\3 \2 \1/p' \
+            2>/dev/null)
     fi
     if  test -z "$stamp" ; then
         echo "[ERROR] Failed to get date stamp from file \"${1}\"."
@@ -66,7 +78,7 @@ function extract_for_revision_date()
 function extract_cpp_revision_date()
 {
     stamp=$(cat ${1} | \
-        grep '\* @version [0-9]\{2\}\.[0-9]\{2\}\.[0-9]\{4\}' | \
+        grep '\* @version\s*[0-9]\{2\}\.[0-9]\{2\}\.[0-9]\{4\}' | \
         tail -1 | \
         grep -o '[0-9]\{2\}\.[0-9]\{2\}\.[0-9]\{4\}')
     if  test -z "$stamp" ; then
@@ -74,6 +86,36 @@ function extract_cpp_revision_date()
         exit 1
     fi
     echo $stamp
+}
+
+##
+##  Compare two date strings of type:
+##+ '2013 December 19' vs '19.12.2013'
+##  If the dates match, 0 is returned, else 1.
+##
+compare_date_str()
+{
+    if ! test "$#" -eq 4 ; then
+        echo "[ERROR] Invalid date strings to compare!"
+        exit 1
+    fi
+
+    local mon=${2,,}
+    if test "${#3}" -lt 2 ; then
+        local day="0$3"
+    else
+        local day=$3
+    fi
+    local for_str=${day}.${months["${mon:0:3}"]}.${1}
+    
+    local cpp_str=${4}
+    
+    if test "$for_str" != "$cpp_str" ; then
+        echo "[WARNING] Dates do not match (\"$for_str\" vs \"$cpp_str\")."
+        return 1
+    fi
+
+    return 0
 }
 
 IERS_FTP_DIR="ftp://maia.usno.navy.mil/conventions/2010/2010_update"
@@ -124,8 +166,8 @@ for p in ${fprogs[@]} ; do
         echo "  [${counter}/${#fprogs[@]}] File \"${f}\" does not exist!"
         exit 1
     else
-        stamp=$(extract_for_revision_date ${f})
-        echo "  [${counter}/${#fprogs[@]}] Last revision for ${f} is at \"$stamp\""
+        for_stamp=$(extract_for_revision_date ${f})
+        # echo "  [${counter}/${#fprogs[@]}] Last revision for ${f} is at \"$for_stamp\""
     fi
     ## cpp
     cppf=$(echo ${f,,} | sed 's/\.f/\.cpp/g')
@@ -133,8 +175,9 @@ for p in ${fprogs[@]} ; do
         echo "  [${counter}/${#fprogs[@]}] File \"${cppf}\" does not exist!"
         # exit 1
     else
-        stamp=$(extract_cpp_revision_date ${CPP_SRC_DIR}/${cppf})
-        echo "  [${counter}/${#fprogs[@]}] Last revision for ${cppf} is at \"$stamp\""
+        cpp_stamp=$(extract_cpp_revision_date ${CPP_SRC_DIR}/${cppf})
+        # echo "  [${counter}/${#fprogs[@]}] Last revision for ${cppf} is at \"$cpp_stamp\""
+        compare_date_str $for_stamp $cpp_stamp || echo "[WARNING] Program name: ${cppf/.cppp/}"
     fi
     let counter=counter+1
 done
