@@ -23,7 +23,7 @@
  *       are listed in Reference 1.
  *    -# Status: Class 1 model
  *
- * @version 19.05.2010
+ * @version 19.03.2010
  *
  * @cite iers2010,
  * Ray, R. D., Steinberg, D. J., Chao, B. F., and Cartwright, D. E.,
@@ -51,7 +51,7 @@ iers2010::ortho_eop(double time, double& dx, double& dy, double& dut1)
     // Compute eop changes
     dx = dy = dut1 = .0e0;
 
-    for (int j=0; j<12; j++) {
+    for (int j = 0; j < 12; j++) {
         dx   += h[j] * orthow[0][j];
         dy   += h[j] * orthow[1][j];
         dut1 += h[j] * orthow[2][j];

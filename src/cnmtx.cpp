@@ -143,11 +143,11 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
     // Compute the time dependent potential matrix
     double dt60, pinm, alpha;
     int    nn, mm;
-    for (int k=-1; k<2; k++) {
+    for (int k = -1; k < 2; k++) {
         dt60 = (dmjd - k*dt) - d1960;
         anm[0][1][k+1] = anm[0][2][k+1] = 0.0e0;
         bnm[0][1][k+1] = bnm[0][2][k+1] = 0.0e0;
-        for (int j=0; j<nlines; j++) {
+        for (int j = 0; j < nlines; j++) {
             nn    = x[j].nj;
             mm    = x[j].mj;
             pinm  = ((double)((nn+mm)%2)) * TWOPI / 4.0e0;
@@ -162,7 +162,7 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
            q[3][2],
            ap, am, bp, bm;
     // orthogonalize the response terms
-    for (int m=0; m<2; m++) {
+    for (int m = 0; m < 2; m++) {
         ap = anm[0][m+1][2] + anm[0][m+1][0];
         am = anm[0][m+1][2] - anm[0][m+1][0];
         bp = bnm[0][m+1][2] + bnm[0][m+1][0];
