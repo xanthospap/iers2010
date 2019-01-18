@@ -34,7 +34,7 @@
  *                      FCUL_ZWD = 0.2233748255158703871D-02 m
  * @endverbatim
  * 
- * @version 2009 August 14
+ * @version 14.08.2009
  *
  * @cite iers2010
  *    Mendes, V.B. and E.C. Pavlis, 2004, 

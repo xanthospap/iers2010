@@ -21,7 +21,8 @@
  *                  1 if val > 0
  */
 template <typename T> 
-inline int sgn(T val) noexcept { return (T(0) < val) - (val < T(0)); }
+inline int
+sgn(T val) noexcept { return (T(0) < val) - (val < T(0)); }
 
 /**
  * @details  This function determines pressure, temperature, temperature lapse
@@ -89,7 +90,6 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
         constexpr double TWOPI   (D2PI);
         constexpr double PI      (DPI);
 #else
-        //constexpr double TWOPI   (6.283185307179586476925287e0);
         constexpr double PI      (3.1415926535897932384626433e0);
         constexpr double TWOPI   ( 2.0e0 * PI );
 #endif
@@ -116,7 +116,7 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
            sinfy { 0e0 },
            sinhy { 0e0 };
     if (it == 1) { // constant parameters
-        ;        // already initialized to zero
+        ;          // already initialized to zero
     } else {
         double fpy  { 2e0 * TWOPI };
         double nom  { dmjd1 / 365.25e0 };

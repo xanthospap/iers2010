@@ -39,6 +39,12 @@ FORCE_DOWNLOAD=""
 ##
 function extract_for_revision_date()
 {
+    if ! test -f "${1}" ; then
+        echo "[ERROR] Failed to get date stamp from file \"${1}\"." 1>&2
+        echo "[ERROR] File does not exist!" 1>&2
+        exit 1
+    fi
+
     ## first try, format is:
     ## '*  2013 December 19 G. Petit      Updated[...]'
     stamp=$(cat ${1} | \
