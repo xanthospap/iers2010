@@ -23,7 +23,7 @@
  *       are listed in Reference 1.
  *    -# Status: Class 1 model
  *
- * @version 19.05.2010
+ * @version 19.03.2010
  *
  * @cite iers2010,
  * Ray, R. D., Steinberg, D. J., Chao, B. F., and Cartwright, D. E.,

@@ -4,6 +4,9 @@ declare -A months=( ["jan"]="01" ["feb"]="02" ["mar"]="03" ["apr"]="04" \
 ["may"]="05" ["jun"]="06" ["jul"]="07" ["aug"]="08" ["sep"]="09" ["oct"]="10" \
 ["nov"]="11" ["dec"]="12")
 
+FORTRAN_DIR=""
+FORCE_DOWNLOAD=""
+
 ##
 ##  A function to extract a date stamp of type:
 ##+ '2013 December 19' out of a FORTRAN IERS program source file.
@@ -65,8 +68,17 @@ function extract_for_revision_date()
             sed -n 's/[^0-9]*\([0-9]\{1,2\}\) \(\w*\) \([0-9]\{4\}\).*/\3 \2 \1/p' \
             2>/dev/null)
     fi
+    ## forth try is
+    ## '*  This revision:  2014 November 7'
+    ## This is used by CAL2JD and DAT (actually the SOFA sw)
     if  test -z "$stamp" ; then
-        echo "[ERROR] Failed to get date stamp from file \"${1}\"."
+        stamp=$(cat ${1} | \
+            grep "This revision:" | \
+            sed -n 's/^\*\s*This revision:\s*\([0-9]\{4\}\) \([a-z,A-Z]*\) \([0-9]\{1,2\}\)/\1 \2 \3/p'
+            2>/dev/null)
+    fi
+    if  test -z "$stamp" ; then
+        echo "[ERROR] Failed to get date stamp from file \"${1}\"." 1>&2
         exit 1
     fi
     echo $stamp
@@ -78,11 +90,11 @@ function extract_for_revision_date()
 function extract_cpp_revision_date()
 {
     stamp=$(cat ${1} | \
-        grep '\* @version\s*[0-9]\{2\}\.[0-9]\{2\}\.[0-9]\{4\}' | \
+        grep -o '\* @version\s*[0-9]\{2\}\.[0-9]\{2\}\.[0-9]\{4\}' | \
         tail -1 | \
         grep -o '[0-9]\{2\}\.[0-9]\{2\}\.[0-9]\{4\}')
     if  test -z "$stamp" ; then
-        echo "[ERROR] Failed to get date stamp from file \"${1}\"."
+        echo "[ERROR] Failed to get date stamp from file \"${1}\"." 1>&2
         exit 1
     fi
     echo $stamp
@@ -96,6 +108,7 @@ function extract_cpp_revision_date()
 compare_date_str()
 {
     if ! test "$#" -eq 4 ; then
+        # for i in "$*" ; do echo "\"$i\""; done
         echo "[ERROR] Invalid date strings to compare!"
         exit 1
     fi
@@ -140,6 +153,19 @@ fprogs=("chapter5/software/FCNNUT.F" \
 "chapter9/software/VMF1.F" \
 "chapter9/software/VMF1_HT.F")
 
+detide_progs=("chapter7/software/dehanttideinel/CAL2JD.F" \
+"chapter7/software/dehanttideinel/DAT.F" \
+"chapter7/software/dehanttideinel/DEHANTTIDEINEL.F" \
+"chapter7/software/dehanttideinel/NORM8.F" \
+"chapter7/software/dehanttideinel/SPROD.F" \
+"chapter7/software/dehanttideinel/ST1IDIU.F" \
+"chapter7/software/dehanttideinel/ST1ISEM.F" \
+"chapter7/software/dehanttideinel/ST1L1.F" \
+"chapter7/software/dehanttideinel/STEP2DIU.F" \
+"chapter7/software/dehanttideinel/STEP2LON.F" \
+"chapter7/software/dehanttideinel/ZERO_VEC8.F")
+
+fprogs+=( "${detide_progs[@]}" )
 echo "1. Downloading IERS source code from ${IERS_FTP_DIR}"
 counter=1
 for p in ${fprogs[@]} ; do
@@ -158,9 +184,11 @@ for p in ${fprogs[@]} ; do
 done
 
 counter=1
-echo "2. Extracting last revision date stamps"
+echo "2. Extracting and comparing last revision date stamps"
+set -e
 for p in ${fprogs[@]} ; do
     f=$(basename $p)
+    # echo "Comparing $f"
     ## fortran
     if ! test -f $f ; then
         echo "  [${counter}/${#fprogs[@]}] File \"${f}\" does not exist!"
@@ -181,5 +209,16 @@ for p in ${fprogs[@]} ; do
     fi
     let counter=counter+1
 done
+set +e
+
+echo "3. Editing FORTRAN programs and needed data"
+##  In DAT.F the call to CAL2JD is: 'call iau_CAL2JD (...)'; this will not work
+##+ it needs to be changed to: 'call CAL2JD (...)'
+sed -i 's/call iau_CAL2JD/call CAL2JD/g' DAT.F
+##  Link the 'data/gpt2_5.grd' in the FORTRAN folder
+ln -s 
+
+echo "4. Compiling FORTRAN programs"
+make || (echo "[ERROR] Failed to compile FORTRAN source code." && exit 1)
 
 exit 0

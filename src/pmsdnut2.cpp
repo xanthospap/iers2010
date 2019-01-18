@@ -32,7 +32,7 @@
  *          PARAMETER ( iband = 1 )
  *          to  PARAMETER ( iband = 0 )
  * 
- * @version 13.11.2011
+ * @version 13.10.2011
  * 
  * @cite iers2010
  * 
