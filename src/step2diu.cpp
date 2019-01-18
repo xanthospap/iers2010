@@ -45,7 +45,7 @@ iers2010::dhtide::step2diu(const double* xsta, double fhr, double t,
         constexpr double DEG2RAD( D2PI / 360e0 );   // degrees to radians
     #endif
 
-    /*static*/ const double datdi[][9] = {
+    constexpr double datdi[][9] = {
         {-3e0,  0e0,  2e0,  0e0,  0e0, -0.01e0,     0e0,    0e0,    0e0},   
         {-3e0,  2e0,  0e0,  0e0,  0e0, -0.01e0,     0e0,    0e0,    0e0},   
         {-2e0,  0e0,  1e0, -1e0,  0e0, -0.02e0,     0e0,    0e0,    0e0},   

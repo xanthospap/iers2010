@@ -39,7 +39,7 @@ iers2010::dhtide::step2lon(const double* xsta, double t, double* xcorsta)
         constexpr double DEG2RAD( D2PI / 360e0 );                // degrees to radians
     #endif
 
-    /*static*/ const double datdi[][9] = {
+    constexpr double datdi[][9] = {
         {0e0, 0e0, 0e0, 1e0, 0e0,   0.47e0,  0.23e0,  0.16e0,  0.07e0},
         {0e0, 2e0, 0e0, 0e0, 0e0,  -0.20e0, -0.12e0, -0.11e0, -0.05e0},
         {1e0, 0e0,-1e0, 0e0, 0e0,  -0.11e0, -0.08e0, -0.09e0, -0.04e0},

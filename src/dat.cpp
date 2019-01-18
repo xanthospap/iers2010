@@ -95,7 +95,7 @@ iers2010::dhtide::dat(int iy, int im, int id, double fd, double& deltat)
     enum { IYV = 2016};
 
     // Reference dates (MJD) and drift rates (s/day), pre leap seconds
-    /*static*/ const double drift[][2] = {
+    constexpr double drift[][2] = {
         { 37300.0, 0.0012960 },
         { 37300.0, 0.0012960 },
         { 37300.0, 0.0012960 },
@@ -116,7 +116,7 @@ iers2010::dhtide::dat(int iy, int im, int id, double fd, double& deltat)
     enum { NERA1 = (int) (sizeof drift / sizeof (double) / 2) };
 
     // Dates and Delta(AT)s
-    /*static*/ const struct {
+    constexpr struct {
         int    iyear, month;
         double delat;
     } changes[] = {
@@ -188,9 +188,9 @@ iers2010::dhtide::dat(int iy, int im, int id, double fd, double& deltat)
     if (iy > IYV + 5) { j = 1; }
 
     // Combine year and month to form a date-ordered integer...
-    int m { 12*iy + im };
+    int m = 12*iy + im;
 
-    int i { 0 };
+    int i = 0;
     // ...and use it to find the preceding table entry.
     for (i = NDAT-1; i >=0; i--) {
         if (m >= (12 * changes[i].iyear + changes[i].month))

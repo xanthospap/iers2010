@@ -44,7 +44,7 @@ void iers2010::dhtide::st1isem(const double* xsta, const double* xsun,
 {
 
     constexpr double dhi { -0.0022e0 },
-                     dli ( -0.0007e0 );
+                     dli { -0.0007e0 };
 
     // Compute the normalized position vector of the IGS station.
     const double rsta     { std::sqrt(inner_product3(xsta, xsta)) };

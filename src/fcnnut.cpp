@@ -56,14 +56,14 @@ iers2010::fcnnut(double mjd, double& x, double& y, double& dx, double& dy)
     double phi { (2e0*PI/per)*(mjd-51544.5e0) };
 
     // Block data of amplitudes for X (microas)
-    static const struct {
+    constexpr struct {
         double date, mxc, mxs, msx;
-        double xc() const { return  mxc; }
-        double xs() const { return  mxs; }
-        double sx() const { return  msx; }    
-        double yc() const { return  mxs; }
-        double ys() const { return -mxc; }
-        double sy() const { return  msx; }
+        double xc() const noexcept { return  mxc; }
+        double xs() const noexcept { return  mxs; }
+        double sx() const noexcept { return  msx; }    
+        double yc() const noexcept { return  mxs; }
+        double ys() const noexcept { return -mxc; }
+        double sy() const noexcept { return  msx; }
     } table [] = {
         {45700.e0,     4.55e0,   -36.58e0,    19.72e0}, /// 1984.0
         {46066.e0,  -141.82e0,  -105.35e0,    11.12e0}, /// 1985.0
@@ -107,10 +107,10 @@ iers2010::fcnnut(double mjd, double& x, double& y, double& dx, double& dy)
 
     int table_index = -1000;
     if ( mjd <= table[0].date ) {
-        axc = table[0].xc();
-        axs = table[0].xs();
-        ayc = table[0].yc();
-        ays = table[0].ys();
+        axc = table[0].xc;
+        axs = table[0].xs;
+        ayc = table[0].yc;
+        ays = table[0].ys;
         table_index = -1;
     } else if ( mjd >= table[N-1].date ) {
         axc = table[N-1].xc();

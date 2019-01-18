@@ -84,7 +84,9 @@ namespace dtel
     int
     cal2jd(const int&,const int&,const int&,double&,double&);
 
-    int dat(const int&,const int&,const int&,const double&,double&);
+    /// For a given UTC date, calculate delta(AT) = TAI-UTC.
+    int
+    dat(const int&,const int&,const int&,const double&,double&);
 
     /**
     * @brief Function to compute the scalar product of two vectors and 

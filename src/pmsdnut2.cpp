@@ -67,7 +67,7 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
      *           angle = Sum(i=1:6) iarg(i,j)*arg(i), for j=1,25
      * 
      */
-    int    iband (1);
+    int    iband = 1;
     double fargs[6]; /* fundamental arguments: GMST+pi, l, lp, f, d, om */
 
     // Set constants
@@ -86,7 +86,7 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
     #endif
 
     // Coefficients of the long and quasi diurnal periodic terms in polar motion
-    /*static*/ struct {
+    constexpr struct {
         int    iarg[6];
         double per, xs, xc, ys, yc;
     } x[] = {
@@ -120,7 +120,6 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
         { { 1,  0, 0,  0,  0, -1 }, 0.9971233,    1.9,  -1.1,    1.1,    1.9 },
         { { 1,  1, 0,  0,  0,  0 }, 0.9624365,    0.8,  -0.4,    0.4,    0.8 }
     };
-
     constexpr int M { sizeof(x) / sizeof(x[0]) };
     static_assert( M == 25, "Invalid quasi diurnal terms in pmsdnut2." );
 
@@ -154,7 +153,7 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
     int jstart { (iband == 1) ? 15 : 0 };
 
     double angle, sina, cosa;
-    for (int j=jstart; j</*25*/M; j++) {
+    for (int j=jstart; j<M; j++) {
         //  For the j-th term of the trigonometric expansion, compute the angular
         //+ argument angle of sine and cosine functions as a linear integer
         //+ combination of the 6 fundamental arguments
@@ -170,7 +169,7 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
         dy += x[j].ys * sina + x[j].yc * cosa;
     }
 
-    if ( iband != 1 ) {
+    if (iband != 1) {
         // Add the secular term of the model
         dx += xrate * (rmjd-RMJD0) / 365.25e0;
         dy += yrate * (rmjd-RMJD0) / 365.25e0;

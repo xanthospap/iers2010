@@ -42,12 +42,10 @@ iers2010::dhtide::cal2jd(int iy, int im, int id, double& djm0,double& djm)
     constexpr int IYMIN { -4799 };
 
     // Month lengths in days
-    /*static*/ constexpr int mtab[] = {
-        31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
-    };
+    constexpr int mtab[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     // Preset status.
-    int j { 0 };
+    int j = 0;
 
     // Validate year and month
     if (iy < IYMIN) { 

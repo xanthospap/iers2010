@@ -35,7 +35,7 @@
 int
 iers2010::ortho_eop(double time, double& dx, double& dy, double& dut1)
 {
-    /*static*/ const double orthow[3][12]= {
+    constexpr double orthow[3][12]= {
         {-6.77832e0,-14.86323e0, 0.47884e0,-1.45303e0, 0.16406e0,  0.42030e0,
           0.09398e0, 25.73054e0,-4.77974e0, 0.28080e0, 1.94539e0, -0.73089e0},
         {14.86283e0, -6.77846e0, 1.45234e0, 0.47888e0,-0.42056e0,  0.16469e0,
@@ -45,13 +45,13 @@ iers2010::ortho_eop(double time, double& dx, double& dy, double& dut1)
     };
 
     // Compute the partials of the tidal variations to the orthoweights
-    /*static*/ double h[12];
+    double h[12];
     iers2010::oeop::cnmtx(time, h);
  
     // Compute eop changes
     dx = dy = dut1 = .0e0;
 
-    for (int j=0; j<12; j++) {
+    for (int j = 0; j < 12; j++) {
         dx   += h[j] * orthow[0][j];
         dy   += h[j] * orthow[1][j];
         dut1 += h[j] * orthow[2][j];

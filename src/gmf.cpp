@@ -6,15 +6,16 @@
 #endif
 
 /// A compile time array containing factorial values, for n=0, ... , N-1
-/// \warning This only works for c++14
+/// \warning This only works for c++ >= 14
 ///
 template<typename T, int N>
     struct fact_array {
         T array[N];
-        constexpr fact_array() : array {}
+        constexpr fact_array()
+        : array {}
         {
             array[0] = array[1] = 1.0e0;
-            for (int i=2; i<N; i++) { 
+            for (int i = 2; i < N; i++) { 
                 array[i] = static_cast<T>(i) * array[i-1];
             }
         }
@@ -68,7 +69,7 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     // For constant values use: doy = 91.3125
     double doy { dmjd - 44239e0 + 1e0 - 28e0 };
     
-    static constexpr double ah_mean[] = {
+    constexpr double ah_mean[] = {
         +1.2517e+02, +8.503e-01, +6.936e-02, -6.760e+00, +1.771e-01,
         +1.130e-02,  +5.963e-01, +1.808e-02, +2.801e-03, -1.414e-03,
         -1.212e+00,  +9.300e-02, +3.683e-03, +1.095e-03, +4.671e-05,
@@ -82,7 +83,7 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
         -2.012e-06,  +1.170e-08, +1.790e-08, -1.300e-09, +1.000e-10
     };
 
-    static constexpr double bh_mean[] = {
+    constexpr double bh_mean[] = {
         +0.000e+00, +0.000e+00, +3.249e-02, +0.000e+00, +3.324e-02,
         +1.850e-02, +0.000e+00, -1.115e-01, +2.519e-02, +4.923e-03,
         +0.000e+00, +2.737e-02, +1.595e-02, -7.332e-04, +1.933e-04,
@@ -96,7 +97,7 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
         +8.451e-07, +4.490e-08, -8.100e-09, -1.500e-09, +2.000e-10
     };
 
-    static constexpr double ah_amp[] = {
+    constexpr double ah_amp[] = {
         -2.738e-01, -2.837e+00, +1.298e-02, -3.588e-01, +2.413e-02,
         +3.427e-02, -7.624e-01, +7.272e-02, +2.160e-02, -3.385e-03,
         +4.424e-01, +3.722e-02, +2.195e-02, -1.503e-03, +2.426e-04,
@@ -110,7 +111,7 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
         +2.475e-07, -8.850e-08, -3.600e-08, -2.900e-09, +0.000e+00
     };
 
-    static constexpr double bh_amp[] = {
+    constexpr double bh_amp[] = {
         +0.000e+00, +0.000e+00, -1.136e-01, +0.000e+00, -1.868e-01,
         -1.399e-02, +0.000e+00, -1.043e-01, +1.175e-02, -2.240e-03,
         +0.000e+00, -3.222e-02, +1.333e-02, -2.647e-03, -2.316e-05,
@@ -124,7 +125,7 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
         +1.162e-06, -1.789e-07, +1.470e-08, -2.400e-09, -4.000e-10
     };
 
-    static constexpr double aw_mean[] = {
+    constexpr double aw_mean[] = {
         +5.640e+01, +1.555e+00, -1.011e+00, -3.975e+00, +3.171e-02,
         +1.065e-01, +6.175e-01, +1.376e-01, +4.229e-02, +3.028e-03,
         +1.688e+00, -1.692e-01, +5.478e-02, +2.473e-02, +6.059e-04,
@@ -138,7 +139,7 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
         +1.269e-05, +1.629e-06, +9.660e-08, -1.015e-07, -5.000e-10
     };
 
-    static constexpr double bw_mean[] = {
+    constexpr double bw_mean[] = {
         +0.000e+00, +0.000e+00, +2.592e-01, +0.000e+00, +2.974e-02,
         -5.471e-01, +0.000e+00, -5.926e-01, -1.030e-01, -1.567e-02,
         +0.000e+00, +1.710e-01, +9.025e-02, +2.689e-02, +2.243e-03,
@@ -152,7 +153,7 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
         -1.686e-06, -1.184e-06, +2.768e-07, +2.730e-08, +5.700e-09
     };
 
-    static constexpr double aw_amp[] = {
+    constexpr double aw_amp[] = {
         +1.023e-01, -2.695e+00, +3.417e-01, -1.405e-01, +3.175e-01,
         +2.116e-01, +3.536e+00, -1.505e-01, -1.660e-02, +2.967e-02,
         +3.819e-01, -1.695e-01, -7.444e-02, +7.409e-03, -6.262e-03,
@@ -166,7 +167,7 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
         +4.539e-06, -3.852e-07, -2.213e-07, -1.370e-08, +5.800e-09
     };
 
-    static constexpr double bw_amp[] = {
+    constexpr double bw_amp[] = {
         +0.000e+00, +0.000e+00, -8.865e-02, +0.000e+00, -4.309e-01,
         +6.340e-02, +0.000e+00, +1.162e-01, +6.176e-02, -4.234e-03,
         +0.000e+00, +2.530e-01, +4.017e-02, -6.204e-03, +4.977e-03,
@@ -187,13 +188,15 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     constexpr int n { 9 };
     constexpr int m { 9 };
 
-    int i {0}, j {1};
+    // Factorial array, up to degrees 2*n+2
     constexpr fact_array<double, 2*n+2> dfac_{};
     const double* dfac = &dfac_.array[0];
     // make sure we computed the actorial at compile-time
     static_assert( dfac_.array[2] == 2, 
         "Shit! Factorial array not computed at compile-time." );
  
+    int i = 0,
+        j = 1;
     /* Not needed anymore; the factorial array is already computed at compile
      * time
      *
@@ -216,12 +219,12 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     double p[n+1][m+1];
     int    jmin, ir;
     double sum;
-    for (i=0; i<=n; i++) {
+    for (i = 0; i <= n; i++) {
         jmin = std::min(i, m);
-        for (j=0;j <=jmin; j++) {
+        for (j = 0; j <= jmin; j++) {
             ir  = (i-j)/2;
             sum = .0e0;
-            for (int k=0; k<=ir; k++) {
+            for (int k = 0; k <= ir; k++) {
                 sum += std::pow((-1),k) * dfac[2*i-2*k] / dfac[k] / dfac[i-k]/
                 dfac[i-j-2*k] * std::pow(t,(i-j-2*k));
             }
@@ -233,8 +236,8 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     // Calculate spherical harmonics
     double ap[55], bp[55];
     i = 0;
-    for (int nn=0; nn<=9; nn++) {
-        for (int mm=0; mm<=nn; mm++) {
+    for (int nn = 0; nn <= 9; nn++) {
+        for (int mm = 0; mm <= nn; mm++) {
             ap[i] = p[nn][mm] * std::cos(mm*dlon);
             bp[i] = p[nn][mm] * std::sin(mm*dlon);
             i++;
@@ -259,17 +262,17 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
 
     double ahm { 0e0 };
     double aha { 0e0 };
-    for (i=0; i<55; i++) {
+    for (i = 0; i < 55; i++) {
         ahm += (ah_mean[i]*ap[i] + bh_mean[i]*bp[i])*1e-5;
         aha += (ah_amp[i] *ap[i] + bh_amp[i] *bp[i])*1e-5;
     }
-    double ah  { ahm + aha*cos(doy/365.25e0*TWOPI) };
+    double ah { ahm + aha*cos(doy/365.25e0*TWOPI) };
 
     double sine   { sin(PI/2e0 - zd)  };
     double beta   { bh/( sine + ch  ) };
     double gamma  { ah/( sine + beta) };
     double topcon { (1e0 + ah/(1e0 + bh/(1e0 + ch))) };
-    gmfh   = topcon/(sine+gamma);
+    gmfh = topcon/(sine+gamma);
 
     // Height correction for hydrostatic mapping function from Niell (1996)
     const double a_ht  { 2.53e-5 };
@@ -290,7 +293,7 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
 
     double awm {0e0};
     double awa {0e0};
-    for (i=0; i<55; i++) {
+    for (i = 0; i < 55; i++) {
         awm += (aw_mean[i]*ap[i] + bw_mean[i]*bp[i])*1e-5;
         awa += (aw_amp[i] *ap[i] + bw_amp[i] *bp[i])*1e-5;
     }

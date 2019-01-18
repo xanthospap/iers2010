@@ -89,12 +89,12 @@ iers2010::vmf1_ht(double ah, double aw, double dmjd, double dlat, double ht,
     constexpr double b_ht { 5.49e-3  };
     constexpr double c_ht { 1.14e-3  };
     double           hs_km{ ht/1000e0};
-    beta              = b_ht/( sine + c_ht);
-    gamma             = a_ht/( sine + beta);
-    topcon            = (1e0 + a_ht/(1e0 + b_ht/(1e0 + c_ht)));
+    beta             = b_ht/( sine + c_ht);
+    gamma            = a_ht/( sine + beta);
+    topcon           = (1e0 + a_ht/(1e0 + b_ht/(1e0 + c_ht)));
     double ht_corr_coef { 1e0/sine - topcon/(sine + gamma) };
-    double ht_corr      { ht_corr_coef * hs_km };
-    vmf1h             = vmf1h + ht_corr;
+    double ht_corr   { ht_corr_coef * hs_km };
+    vmf1h            = vmf1h + ht_corr;
 
     constexpr double bw { 0.00146e0 };
     constexpr double cw { 0.04391e0 };

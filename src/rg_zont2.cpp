@@ -81,7 +81,7 @@ iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
     *  ----------------------*/
 
     // Number of terms in the zonal Earth tide model  
-    /*static*/ constexpr int nzont = 62;
+    constexpr int nzont = 62;
 
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      *  --------------------------------------------------
@@ -90,7 +90,7 @@ iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
      *  Luni-Solar argument multipliers
      *      l   l'  F   D OMEGA
      */
-    static const int nfund[nzont][5] = {
+    constexpr int nfund[nzont][5] = {
         //  DATA ( ( NFUND(I,J), I=1,5 ), J= 1, 20 ) /
         { 1,  0,  2,  2,  2 },
         { 2,  0,  2,  0,  1 }, 
@@ -163,7 +163,7 @@ iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
      *     Multiple of     DUT          DLOD              DOMEGA
      *            sin     cos      cos      sin       cos      sin
      */
-    static const double tide[nzont][6] = {
+    constexpr double tide[nzont][6] = {
         // DATA ( ( TIDE(I,J), I=1,6 ), J = 1,20 ) /
         {-0.0235e0,  0.0000e0, 0.2617e0, 0.0000e0, -0.2209e0, 0.0000e0},
         {-0.0404e0,  0.0000e0, 0.3706e0, 0.0000e0, -0.3128e0, 0.0000e0},
@@ -248,7 +248,7 @@ iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
 
     //  Sum zonal tide terms.
     double arg, dsinarg, dcosarg;
-    for (int i=0; i<nzont; i++) {
+    for (int i = 0; i < nzont; i++) {
         // Formation of multiples of arguments.
         arg = std::fmod(
               (double)( nfund[i][0] ) * l 

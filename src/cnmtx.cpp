@@ -43,17 +43,17 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
     #endif
 
     // Define the orthotide weight factors
-    const /*static*/ double sp[2][6] = {
+    constexpr double sp[2][6] = {
         {0.0298e0,0.1408e0,+0.0805e0, 0.6002e0,+0.3025e0, 0.1517e0},
         {0.0200e0,0.0905e0,+0.0638e0, 0.3476e0,+0.1645e0, 0.0923e0}
-      };
+    };
 
     constexpr double dt {2e0};
     constexpr int nmax  {2  };
 
     // tidal potential model for 71 diurnal and semidiurnal lines
     constexpr double d1960 { 37076.5e0 };
-    static const struct {
+    constexpr struct {
         int    nj, mj;
         double hs, phase, freq;
         char   numarg[8];
@@ -143,11 +143,11 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
     // Compute the time dependent potential matrix
     double dt60, pinm, alpha;
     int    nn, mm;
-    for (int k=-1; k<2; k++) {
+    for (int k = -1; k < 2; k++) {
         dt60 = (dmjd - k*dt) - d1960;
         anm[0][1][k+1] = anm[0][2][k+1] = 0.0e0;
         bnm[0][1][k+1] = bnm[0][2][k+1] = 0.0e0;
-        for (int j=0; j<nlines; j++) {
+        for (int j = 0; j < nlines; j++) {
             nn    = x[j].nj;
             mm    = x[j].mj;
             pinm  = ((double)((nn+mm)%2)) * TWOPI / 4.0e0;
@@ -162,7 +162,7 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
            q[3][2],
            ap, am, bp, bm;
     // orthogonalize the response terms
-    for (int m=0; m<2; m++) {
+    for (int m = 0; m < 2; m++) {
         ap = anm[0][m+1][2] + anm[0][m+1][0];
         am = anm[0][m+1][2] - anm[0][m+1][0];
         bp = bnm[0][m+1][2] + bnm[0][m+1][0];
@@ -183,9 +183,9 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
 
     // fill partials vector
     int j = -1;
-    for (int n=2; n<=nmax; n++) {
-        for (int m=1; m<=n; m++) {
-            for (int k=-1; k<=1; k++) {
+    for (int n = 2; n <= nmax; n++) {
+        for (int m = 1; m <= n; m++) {
+            for (int k = -1; k <= 1; k++) {
                 h[++j] = anm[n-2][m][k+1];
                 h[++j] = bnm[n-2][m][k+1];
             }
