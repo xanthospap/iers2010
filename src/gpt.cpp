@@ -33,7 +33,6 @@
  *     Journal of Geodesy, 81(10), pp. 679-683.
  * 
  */
-
 int
 iers2010::gpt(double dmjd, double dlat, double dlon, double dhgt, double& pres,
     double& temp, double& undu)

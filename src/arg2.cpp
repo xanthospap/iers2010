@@ -64,7 +64,6 @@
  * The Semidiurnal Principal Lunar Tide M2," Marine Geodesy, 6, pp. 219-256.
  *
  */
-
 int 
 iers2010::arg2(int iyear, double day, double* angle)
 {

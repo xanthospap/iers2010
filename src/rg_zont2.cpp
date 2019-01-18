@@ -64,7 +64,6 @@
  *     IERS Technical Note No. 36, BKG (2010)
  * 
  */
-
 int
 iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
 {

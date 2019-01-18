@@ -19,7 +19,8 @@
  *            http://www.ngs.noaa.gov/gps-toolbox/bwr-c.txt
  * 
  */
-int iers2010::hisp::toymd (const int* it1, int* it2)
+int
+iers2010::hisp::toymd (const int* it1, int* it2)
 {
   static long month_day[2][13] = {
     {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365},
@@ -52,7 +53,8 @@ int iers2010::hisp::toymd (const int* it1, int* it2)
  * @version 2009 August 19
  * 
  */
-bool iers2010::hisp::leap (const int& iy)
+bool
+iers2010::hisp::leap (const int& iy)
 {
   int leap ( 1 - ( (iy % 4) + 3 ) / 4 );
 

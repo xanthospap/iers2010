@@ -42,7 +42,6 @@ inner_product3(const double* x1, const double* x2)
  *       96, 8243-8257
  * 
  */
-
 void
 iers2010::dhtide::st1l1(const double* xsta,const double* xsun,
     const double* xmon, double fac2sun, double fac2mon, double* xcorsta)

@@ -106,7 +106,8 @@ int collect_argv (std::ifstream& is)
  * @cite iers2010
  * 
  */
-int iers2010::hardisp (const int* idate,const int& it_size,const int& irnt,
+int
+iers2010::hardisp (const int* idate,const int& it_size,const int& irnt,
         const double& samp,const char* file)
 {
     /*+---------------------------------------------------------------------

@@ -32,7 +32,6 @@
  *      Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
  *
  */
-
 int
 iers2010::oeop::cnmtx(double dmjd, double* h)
 {

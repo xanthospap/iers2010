@@ -29,7 +29,6 @@
  * Res. Lett., 29(10), 1414, doi:10.1029/2001GL014394, 2002
  * 
  */
-
 double
 iers2010::fcul_b(double dlat, double dhgt, double doy, double elev)
 {

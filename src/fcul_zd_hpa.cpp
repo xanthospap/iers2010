@@ -42,7 +42,8 @@
  *     Geophysical Res. Lett., 31, L14602, doi:10.1029/2004GL020308, 2004
  * 
  */
-int iers2010::fcul_zd_hpa (const double& dlat,const double& dhgt,
+int
+iers2010::fcul_zd_hpa (const double& dlat,const double& dhgt,
         const double& pres,const double& wvp,const double& lambda,
         double& f_ztd,double& f_zhd,double& f_zwd)
 {

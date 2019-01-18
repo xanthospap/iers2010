@@ -87,7 +87,6 @@
  * @version 07.07.2016 (release 03.05.2016)
  *
  */
-
 int
 iers2010::dhtide::dat(int iy, int im, int id, double fd, double& deltat)
 {

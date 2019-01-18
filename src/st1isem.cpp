@@ -38,8 +38,8 @@ inner_product3(const double* x1, const double* x2)
  *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477
  * 
  */
-
-void iers2010::dhtide::st1isem(const double* xsta, const double* xsun,
+void
+iers2010::dhtide::st1isem(const double* xsta, const double* xsun,
     const double* xmon, double fac2sun, double fac2mon, double* xcorsta)
 {
 

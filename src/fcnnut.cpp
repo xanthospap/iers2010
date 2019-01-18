@@ -37,7 +37,6 @@
  * @cite iers2010
  * 
  */
-
 int
 iers2010::fcnnut(double mjd, double& x, double& y, double& dx, double& dy) 
 {
@@ -107,10 +106,10 @@ iers2010::fcnnut(double mjd, double& x, double& y, double& dx, double& dy)
 
     int table_index = -1000;
     if ( mjd <= table[0].date ) {
-        axc = table[0].xc;
-        axs = table[0].xs;
-        ayc = table[0].yc;
-        ays = table[0].ys;
+        axc = table[0].xc();
+        axs = table[0].xs();
+        ayc = table[0].yc();
+        ays = table[0].ys();
         table_index = -1;
     } else if ( mjd >= table[N-1].date ) {
         axc = table[N-1].xc();

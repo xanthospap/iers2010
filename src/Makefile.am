@@ -2,7 +2,7 @@ lib_LTLIBRARIES = libiers2010.la
 
 ## Only use the following flags for debuging purposes
 libiers2010_la_CXXFLAGS = \
-	-std=c++14 \
+	-std=c++17 \
 	-g \
 	-pg \
 	-Wall \
@@ -44,6 +44,7 @@ dist_libiers2010_la_SOURCES = \
 	rg_zont2.cpp \
 	fcul_a.cpp \
 	fcul_b.cpp \
+	fcul_zd_hpa.cpp \
 	gmf.cpp \
 	vmf1.cpp \
 	vmf1_ht.cpp \

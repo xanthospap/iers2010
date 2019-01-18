@@ -33,7 +33,6 @@
  * @cite iers2010
  * 
  */
-
 int
 iers2010::utlibr(double rmjd, double& dut1, double& dlod) 
 {

@@ -49,7 +49,8 @@
  *     J. Geophys. Res., 102(B9), pp. 20,489--20,502, doi: 10.1029/97JB01739.
  * 
  */
-int iers2010::apg (const double& dlat,const double& dlon,const double& az,
+int
+iers2010::apg (const double& dlat,const double& dlon,const double& az,
     const double&el,double& d,double& grn,double& gre)
 {
     // degree n and order m

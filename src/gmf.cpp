@@ -51,7 +51,6 @@ template<typename T, int N>
  *     Geophy. Res. Lett., Vol. 33, L07304, doi:10.1029/2005GL025545.
  * 
  */
-
 int
 iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     double& gmfh, double& gmfw)

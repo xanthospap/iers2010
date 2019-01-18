@@ -95,7 +95,6 @@ leap(int iy)
  * returns a delta != 0. The FORTRAN routine however gives delta=0.
  * WTF ??
  */
-
 int
 iers2010::hisp::tdfrph(const int idood[6], const int itm[5], double& freq,
     double& phase)

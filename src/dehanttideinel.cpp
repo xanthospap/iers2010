@@ -74,7 +74,6 @@ sprod(const double* x1, const double* x2, double& r1, double& r2)
  *     of the Earth," Geophys. Res. Lett., 19(6), pp. 529-531
  * 
  */
-
 int
 iers2010::dehanttideinel(const double* xsta,const double* xsun, 
     const double* xmon, int yr, int month, int day, double fhr,

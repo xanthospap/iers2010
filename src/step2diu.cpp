@@ -32,7 +32,6 @@
  *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
  * 
  */
-
 void
 iers2010::dhtide::step2diu(const double* xsta, double fhr, double t,
     double* xcorsta)

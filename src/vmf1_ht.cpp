@@ -43,7 +43,6 @@
  *     http://ggosatm.hg.tuwien.ac.at/DOCS/PAPERS/2006Boehm_etal_VMF1.pdf
  * 
  */
-
 int
 iers2010::vmf1_ht(double ah, double aw, double dmjd, double dlat, double ht,
     double zd, double& vmf1h, double& vmf1w)

@@ -37,7 +37,6 @@
  * @cite iers2010
  * 
  */
-
 int
 iers2010::pmsdnut2(double rmjd, double& dx, double& dy) 
 {

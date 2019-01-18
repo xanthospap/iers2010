@@ -30,7 +30,6 @@
  * \version 19.05.2015
  * 
  */
-
 double
 iers2010::hisp::etutc(double year)
 {
