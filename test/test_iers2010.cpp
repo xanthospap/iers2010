@@ -125,13 +125,13 @@ double fcul_b_res = 3.800758725284345996e0;
 
 /* results from FCULZD_HPA;
  * last update 2009 August 14
+ */
 
 double fculzd_hap_res[] = {
     1.935225924846803114e0,
     1.932992176591644462e0,
     0.2233748255158703871e-02
 };
-*/
 
 /* results from GMF;
  * last update 2009 August 12
@@ -208,7 +208,7 @@ int main()
     int rg_zont2_status = TEST_STATUS_SUCCESS;
     int fcul_a_status   = TEST_STATUS_SUCCESS;
     int fcul_b_status   = TEST_STATUS_SUCCESS;
-    //int fculzd_hpa_status = TEST_STATUS_SUCCESS;
+    int fculzd_hpa_status = TEST_STATUS_SUCCESS;
     int gmf_status      = TEST_STATUS_SUCCESS;
     int vmf1_status     = TEST_STATUS_SUCCESS;
     int vmf1_ht_status  = TEST_STATUS_SUCCESS;
@@ -384,12 +384,11 @@ int main()
     std::cout << "status: " << (fcul_b_status ? "failed!\n" : "ok\n" );
     status += fcul_b_status;
     
-    /*
     // testing fculzd_hpa
     std::cout<<"----------------------------------------\n";
     std::cout<<"> fculzd_hpa\n";
     std::cout<<"----------------------------------------\n";
-    iers2010::fculzd_hpa(30.67166667e0, 2010.344e0, 798.4188e0, 14.322e0, 0.532e0,
+    iers2010::fcul_zd_hpa(30.67166667e0, 2010.344e0, 798.4188e0, 14.322e0, 0.532e0,
         cnmtx_tmp[0], cnmtx_tmp[1], cnmtx_tmp[2]);
     for (int i=0; i<3; ++i) {
         diff = std::fabs(cnmtx_tmp[i]-fculzd_hap_res[i]);
@@ -400,7 +399,6 @@ int main()
     }
     std::cout << "status: " << (fculzd_hpa_status ? "failed!\n" : "ok\n" );
     status += fculzd_hpa_status;
-    */
     
     // testing gmf
     std::cout<<"----------------------------------------\n";
@@ -467,13 +465,14 @@ int main()
     status += gpt_status;
     
     // testing gpt2
+    const char gpt2grd[] = "/usr/local/share/libiers10/gpt2_5.grd";
     double gpt_input[] = { 0.8412486994612668e0,0.28571039855147173e0, 156.e0 };
     std::cout<<"----------------------------------------\n";
     std::cout<<"> gpt2 (Test Case A)\n";
     std::cout<<"----------------------------------------\n";
     int gpt2stat = iers2010::gpt2(56141.e0,gpt_input, gpt_input+1,gpt_input+2, 1, 0,
         cnmtx_tmp, cnmtx_tmp+1, cnmtx_tmp+2, cnmtx_tmp+3, cnmtx_tmp+4,
-        cnmtx_tmp+5, cnmtx_tmp+6, "data/gpt2_5.grd");
+        cnmtx_tmp+5, cnmtx_tmp+6, gpt2grd);
     if  ( gpt2stat != 0) {
         std::cerr<<"\ngpt2 (case A) failed with status=" << gpt2stat;
         gpt2_status = TEST_STATUS_FAILURE;
@@ -495,7 +494,7 @@ int main()
     std::cout<<"----------------------------------------\n";
     gpt2stat = iers2010::gpt2(56141.e0,gpt_input, gpt_input+1,gpt_input+2, 1, 1,
         cnmtx_tmp, cnmtx_tmp+1, cnmtx_tmp+2, cnmtx_tmp+3, cnmtx_tmp+4,
-        cnmtx_tmp+5, cnmtx_tmp+6, "data/gpt2_5.grd");
+        cnmtx_tmp+5, cnmtx_tmp+6, gpt2grd);
     if ( gpt2stat != 0 ) {
         std::cerr<<"\ngpt2 (case B) failed with status=" << gpt2stat;
         gpt2_status = TEST_STATUS_FAILURE;

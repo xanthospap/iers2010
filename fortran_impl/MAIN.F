@@ -91,6 +91,16 @@ C     ----------------------------------------------
       DATA (XMON1(I),I=1,3) /-179996231.920342D0,
      . -312468450.131567D0, -169288918.592160D0/
 
+C     ----------------------------------------------
+C     Variables and data for FCUL_ZD_HPA
+C     ----------------------------------------------
+      DOUBLE PRECISION FCUL_ZTD, FCUL_ZHD, FCUL_ZWD
+
+C     ----------------------------------------------
+C     Variables and data for GPT2
+C     ----------------------------------------------
+      DOUBLE PRECISION P, DT, E, AH, AW, UNDU
+
 C      DOUBLE PRECISION GPT_PR, GPT_TR, GPT_DTR, GPT_ER,
 C     . GPT_AHR, GPT_AWR, GPT_UNDUR
 C      GPT_PR  = 1002.555031899637015D0
@@ -193,7 +203,7 @@ C     REPORT RESULTS
       PRINT *, '----------------------------------------'
       PRINT *, '> GPT2 Results: (Test B)'
       PRINT *, '----------------------------------------'
-      WRITE(*, FMT2) GPT_P
+      WRITE(*, FMT1) GPT_P
       WRITE(*, FMT1) GPT_T
       WRITE(*, FMT1) GPT_DT
       WRITE(*, FMT1) GPT_E
@@ -208,16 +218,57 @@ C     REPORT RESULTS
       PRINT *, '> DEHANTTIDEINEL Results: (Test A)'
       PRINT *, '----------------------------------------'
       WRITE(*, FMT2) DABS(DXTIDE(1)-0.7700420357108125891D-01)
-      WRITE(*, FMT1) DABS(DXTIDE(2)-0.6304056321824967613D-01)
-      WRITE(*, FMT1) DABS(DXTIDE(3)-0.5516568152597246810D-01)
+      WRITE(*, FMT2) DABS(DXTIDE(2)-0.6304056321824967613D-01)
+      WRITE(*, FMT2) DABS(DXTIDE(3)-0.5516568152597246810D-01)
       CALL DEHANTTIDEINEL(XSTA4,2017,1,15,0D0,XSUN4,XMON4,DXTIDE)
 C     REPORT RESULTS
       PRINT *, '----------------------------------------'
       PRINT *, '> DEHANTTIDEINEL Results: (Test D)'
       PRINT *, '----------------------------------------'
       WRITE(*, FMT2) DABS(DXTIDE(1)-.0050957086917236384D0)
-      WRITE(*, FMT1) DABS(DXTIDE(2)-.082866302598352870D0)
-      WRITE(*, FMT1) DABS(DXTIDE(3)+.063663492540418962D0)
+      WRITE(*, FMT2) DABS(DXTIDE(2)-.082866302598352870D0)
+      WRITE(*, FMT2) DABS(DXTIDE(3)+.063663492540418962D0)
+
+C     CALL FCUL_ZD_HPA
+      CALL FCULZD_HPA(30.67166667D0, 2010.344D0, 798.4188D0,
+     . 14.322D0, 0.532D0, FCUL_ZTD, FCUL_ZHD, FCUL_ZWD)
+C     REPORT RESULTS
+      PRINT *, '----------------------------------------'
+      PRINT *, '> FCULZD_HPA  Results:'
+      PRINT *, '----------------------------------------'
+      WRITE(*, FMT2) DABS(FCUL_ZTD-1.935225924846803114D0)
+      WRITE(*, FMT2) DABS(FCUL_ZHD-1.932992176591644462D0)
+      WRITE(*, FMT2) DABS(FCUL_ZWD-0.2233748255158703871D-02)
+
+C     CALL GPT2
+      CALL GPT2(56141.D0, 0.8412486994612668D0,
+     . 0.28571039855147173e0, 156.D0, 1, 0, 
+     . P,T,DT,E,AH,AW,UNDU)
+C     REPORT RESULTS
+      PRINT *, '----------------------------------------'
+      PRINT *, '> GPT2 Results: (Test a)'
+      PRINT *, '----------------------------------------'
+      WRITE(*, FMT2) DABS(P-1002.56D0)
+      WRITE(*, FMT2) DABS(T-22.12D0)
+      WRITE(*, FMT2) DABS(DT+6.53D0)
+      WRITE(*, FMT2) DABS(E-15.63D0)
+      WRITE(*, FMT2) DABS(AH-0.0012647D0)
+      WRITE(*, FMT2) DABS(AW-0.0005726D0)
+      WRITE(*, FMT2) DABS(UNDU-44.06D0)
+      CALL GPT2(56141.D0, 0.8412486994612668D0,
+     . 0.28571039855147173e0, 156.D0, 1, 1, 
+     . P,T,DT,E,AH,AW,UNDU)
+C     REPORT RESULTS
+      PRINT *, '----------------------------------------'
+      PRINT *, '> GPT2 Results: (Test b)'
+      PRINT *, '----------------------------------------'
+      WRITE(*, FMT2) DABS(P-1003.49D0)
+      WRITE(*, FMT2) DABS(T-11.95D0)
+      WRITE(*, FMT2) DABS(DT+5.47D0)
+      WRITE(*, FMT2) DABS(E-9.58D0)
+      WRITE(*, FMT2) DABS(AH-0.0012395D0)
+      WRITE(*, FMT2) DABS(AW-0.0005560D0)
+      WRITE(*, FMT2) DABS(UNDU-44.06D0)
 
 C     ALL DONE
       END
