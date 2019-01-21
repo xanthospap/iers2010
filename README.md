@@ -11,8 +11,8 @@ __Note that the Software is now (January 2017) available at the [ftp site](ftp:/
 
 ## Compilation / Installation
 
-Source code is ISO C++14. Compilation should be trivial using any gcc version 
-supporting the c++14 standard (option `-std=c++14`).
+Source code is ISO C++14/17. Compilation should be trivial using any gcc version 
+supporting the c++14/17 standard (option `-std=c++14`).
 
 > This software is meant to be implemented on Unix-type OSs. No effort will be
 > undertaken for compatibility with other OS types.
@@ -24,7 +24,7 @@ make
 make install
 ```
 
-### Tested Compilers & C++ versions
+### Tested Compilers & C++ versions (obsolete, need to check again)
 
 | Compiler | Vesion(s) | C++ ISO |
 |:--------:|:---------:|:-------:|
@@ -34,7 +34,7 @@ make install
 | [clang](http://clang.llvm.org/) | 3.7.0 | c++11 |
 | [clang](http://clang.llvm.org/) | 3.7.0 | c++14 |
 
-For a complete list of C++11/14 support on various compilers, see the [cppreference entry](http://en.cppreference.com/w/cpp/compiler_support).
+For a complete list of C++ support on various compilers, see the [cppreference entry](http://en.cppreference.com/w/cpp/compiler_support).
 
 To change between ISO C++ versions, (e.g. if your compiler does not support C++14), change the `-std=c++14` flag to `-std=c++11` in the files [src/Makefile.am](src/Makefile.am) and [test/Makefile.am](test/Makefile.am).
 
@@ -43,11 +43,11 @@ To change between ISO C++ versions, (e.g. if your compiler does not support C++1
 | Chapter | (Sub)Routine | Translated | Tested | Version  | Comments |
 |:--------|:-------------|:----------:|:------:|:---------|:---------|
 | 4       | [GCONV2](http://maia.usno.navy.mil/conv2010/chapter4/GCONV2.F)              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | see [ngpt car2ell](https://github.com/xanthospap/ngpt/blob/master/src/car2ell.hpp)|
-| 5       | [PMSDNUT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 13.11.2011 | see [pmsdnut2](#pmsdnut2-cmp) |
-|         | [UTLIBR](http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 23.06.2010 | see [utlibr](#utlibr-cmp) |
-|         | [FUNDARG](http://maia.usno.navy.mil/conv2010/chapter5/FUNDARG.F)            |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 25.02.2010 | see [fundarg](#fundarg-cmp) |
+| 5       | [PMSDNUT2](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/PMSDNUT2.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 13.11.2011 | see [pmsdnut2](#pmsdnut2-cmp) Discrepancies between FORTRAN and C+++ implementation ~1e-7 or less; this is due to the D0 decleration|
+|         | [UTLIBR](http://maia.usno.navy.mil/conv2010/chapter5/UTLIBR.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 23.06.2010 | see [utlibr](#utlibr-cmp) Discrepancies between FORTRAN and C+++ implementation ~1e-7 or less; this is due to the     D0 decleration|
+|         | [FUNDARG](http://maia.usno.navy.mil/conv2010/chapter5/FUNDARG.F)            |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 25.02.2010 | see [fundarg](#fundarg-cmp) Discrepancies between FORTRAN and C+++ implementation ~1e-13 or less; this is due to the D0 decleration|
 |         | [FCNNUT](http://maia.usno.navy.mil/conv2010/convupdt/chapter5/FCNNUT.F)     |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 19.12.2013 | Needs updating from IERS |
-| 7       | [DEHANTTIDEINEL](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/DEHANTTIDEINEL.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 24.04.2015 | see [dehanttideinel](#dehanttideinel-cmp)|
+| 7       | [DEHANTTIDEINEL](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/DEHANTTIDEINEL.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 24.04.2015 | see [dehanttideinel](#dehanttideinel-cmp). One test case does not produce the expected results, both in the FORTRAN and the C++ implementation; that is test case 4, as privided in the source code|
 |         | [HARDISP](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/hardisp/HARDISP.F) |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
 |         | [ARG2](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/ARG2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 07.10.2011 | see [arg2](#arg2-cmp)|
 |         | [IERS_CMP_2015](http://maia.usno.navy.mil/conv2010/convupdt/chapter7/IERS_CMP_2015.F) | <ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
@@ -138,6 +138,9 @@ in running the test case.
 The function `dehanttideinel` is tested seperately, in the source file [test_dehanttd.cpp](test/test_dehanttd.cpp)
 (build as `testDehantTide` in the `test` directory). Three individual test cases are provided,
 all yieding discrepancies (between the FORTRAN and C++ implementations) smaller than ~1e-17.
+
+> A fourth test case is provided in the FORTRAN source code which fails misserably (both 
+> in the FORTRAN and the C++ implementation).
 
 ### cnmtx <a id="cnmtx-cmp"></a>
 

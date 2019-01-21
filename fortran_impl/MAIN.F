@@ -68,6 +68,29 @@ C     ----------------------------------------------
       DOUBLE PRECISION GPT_P, GPT_T, GPT_DT, GPT_E,
      . GPT_AH, GPT_AW, GPT_UNDU
 
+C     ----------------------------------------------
+C     Variables and data for DEHANT (test 4)
+C     ----------------------------------------------
+      DOUBLE PRECISION XSTA4(3), XSUN4(3), XMON4(3),
+     . DXTIDE(3)
+      DATA (XSTA4(I),I=1,3) /1112152.8166D0,
+     . -4842857.5435D0, 3985496.1783D0/
+      DATA (XSUN4(I),I=1,3) /8382471154.1312895D0,
+     . 10512408445.356153D0, -5360583240.3763866D0/
+      DATA (XMON4(I),I=1,3) /380934092.93550891D0,
+     . 2871428.1904491195D0, 79015680.553570181D0/
+
+C     ----------------------------------------------
+C     Variables and data for DEHANT (test 1)
+C     ----------------------------------------------
+      DOUBLE PRECISION XSTA1(3), XSUN1(3), XMON1(3)
+      DATA (XSTA1(I),I=1,3) /4075578.385D0,
+     . 931852.890D0, 4801570.154D0/
+      DATA (XSUN1(I),I=1,3) /137859926952.015D0,
+     . 54228127881.4350D0, 23509422341.6960D0/
+      DATA (XMON1(I),I=1,3) /-179996231.920342D0,
+     . -312468450.131567D0, -169288918.592160D0/
+
 C      DOUBLE PRECISION GPT_PR, GPT_TR, GPT_DTR, GPT_ER,
 C     . GPT_AHR, GPT_AWR, GPT_UNDUR
 C      GPT_PR  = 1002.555031899637015D0
@@ -163,7 +186,6 @@ C     REPORT RESULTS
       WRITE(*, FMT1) GPT_AH
       WRITE(*, FMT1) GPT_AW
       WRITE(*, FMT1) GPT_UNDU
-     CALL GPT2
       CALL GPT2(56141.d0,0.8412486994612668D0,0.28571039855147173D0,
      .  156.D0, 1, 1, GPT_P, GPT_T, GPT_DT, GPT_E, GPT_AH,
      .  GPT_AW, GPT_UNDU)
@@ -178,6 +200,24 @@ C     REPORT RESULTS
       WRITE(*, FMT1) GPT_AH
       WRITE(*, FMT1) GPT_AW
       WRITE(*, FMT1) GPT_UNDU
+
+C     CALL DEHANTTIDEINEL
+      CALL DEHANTTIDEINEL(XSTA1,2009,4,13,0D0,XSUN1,XMON1,DXTIDE)
+C     REPORT RESULTS
+      PRINT *, '----------------------------------------'
+      PRINT *, '> DEHANTTIDEINEL Results: (Test A)'
+      PRINT *, '----------------------------------------'
+      WRITE(*, FMT2) DABS(DXTIDE(1)-0.7700420357108125891D-01)
+      WRITE(*, FMT1) DABS(DXTIDE(2)-0.6304056321824967613D-01)
+      WRITE(*, FMT1) DABS(DXTIDE(3)-0.5516568152597246810D-01)
+      CALL DEHANTTIDEINEL(XSTA4,2017,1,15,0D0,XSUN4,XMON4,DXTIDE)
+C     REPORT RESULTS
+      PRINT *, '----------------------------------------'
+      PRINT *, '> DEHANTTIDEINEL Results: (Test D)'
+      PRINT *, '----------------------------------------'
+      WRITE(*, FMT2) DABS(DXTIDE(1)-.0050957086917236384D0)
+      WRITE(*, FMT1) DABS(DXTIDE(2)-.082866302598352870D0)
+      WRITE(*, FMT1) DABS(DXTIDE(3)+.063663492540418962D0)
 
 C     ALL DONE
       END
