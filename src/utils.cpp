@@ -20,9 +20,9 @@
  * 
  */
 int
-iers2010::hisp::toymd (const int* it1, int* it2)
+iers2010::hisp::toymd(const int* it1, int* it2)
 {
-  static long month_day[2][13] = {
+  constexpr long month_day[2][13] = {
     {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365},
     {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366}
   };
@@ -54,7 +54,7 @@ iers2010::hisp::toymd (const int* it1, int* it2)
  * 
  */
 bool
-iers2010::hisp::leap (const int& iy)
+iers2010::hisp::leap(const int& iy)
 {
   int leap ( 1 - ( (iy % 4) + 3 ) / 4 );
 

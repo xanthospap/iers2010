@@ -1,52 +1,11 @@
 #include "iers2010.hpp"
 #include <stdexcept>
 #include <iostream>
+#include <fstream>
     
 constexpr int nl   { 600 };
 constexpr int nt   { 342 };
 constexpr int ntin { 11  };
-    /*+----------------------------------------------------------------------
-     *  Check number of arguments from command line, then read them in
-     *-----------------------------------------------------------------------*/
-    if (argc<8 || argc>9) {
-        printf(" Usage:\n");
-        printf("   hardisp yr [d-of-yr | month day] hr min sec num samp\n");
-        printf(" Where \n");
-        printf("   the UTC date given is the time of the first term output\n");
-        printf("   num is the number of output epochs to be written out\n");
-        printf("   samp is the sample interval (seconds)\n");
-        printf(" The harmonics file (amp and phase of displacement) is \n");
-        printf("   read from standard input in the BLQ format used by  \n");
-        printf("   Scherneck and Bos\n");
-        printf(" Results are written to standard output (units = m):\n");
-        printf("      dU    dS    dW   \n");
-        printf("   using format: 3F14.6 \n");
-        return 1;
-    }
-    int next = 1;
-    int irnt;
-    double samp;
-    try {
-        *it = std::stoi(argv[next++]);
-        if (argc == 7) { /* day of year provided */
-            it[1] = std::stoi(argv[next++]);
-        } else { /* month - day of month provided */
-            int month = std::stoi(argv[next++]);
-            int dom   = std::stoi(argv[next++]);
-            it[1]     = dom + iers2010::hisp::mday(it[0], month);
-        }
-        it[2] = std::stoi(argv[next++]);
-        it[3] = std::stoi(argv[next++]);
-        it[4] = (int) std::stof (argv[next++]);
-        irnt  = std::stoi(argv[next++]);
-        samp  = std::stod(argv[next++]);
-    } catch (std::invalid_argument&) {
-        printf ("Invalid argument while reading input arguments. Fatal.\n");
-        return 1;
-    } catch (std::out_of_range&) {
-        printf ("Invalid argument while reading input arguments. Fatal.\n");
-        return 1;
-    }
 
 int
 read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
@@ -70,7 +29,7 @@ read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
     while ( true ) {
         for (int i=0; i<3; i++) {
             for (int kk=0; kk<ntin; kk++) {
-                if ( !in->std::getline(line, 256) ) {
+                if ( !in->getline(line, 256) ) {
                     return 1;
                 } else { //TODO
                     std::cin >> tamp[i][kk];
@@ -146,15 +105,15 @@ read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
  *     1) Update the nstep variable<br>
  *     2) Update the arrays st and si<br>
  *     3) Change date of latest leap second<br>
- *     <b>Latest leap second:  2012 June 30</b>
+ *     <b>Latest leap second:  2016 December 31</b>
  * 
- * \version 09.06.2015
+ * \version 19.12.2016
  * 
  * \cite iers2010
  * 
  */
 int
-hardisp_impl(int irnt, int samp, double tamp[3][ntin], double tph[3][ntin])
+hardisp_impl(int irnt, double samp, double tamp[3][ntin], double tph[3][ntin])
 {
     /*+---------------------------------------------------------------------
      *
@@ -180,7 +139,7 @@ hardisp_impl(int irnt, int samp, double tamp[3][ntin], double tph[3][ntin])
 
     //  Cartwright-Tayler numbers of tides used in Scherneck lists:
     //+     M2, S2, N2, K2, K1, O1, P1, Q1, Mf, Mm, Ssa
-    static int idt[][6] = {
+    constexpr int idt[][6] = {
         {2, 0, 0, 0, 0, 0},
         {2, 2,-2, 0, 0, 0},
         {2,-1, 0, 1, 0, 0},
@@ -285,3 +244,63 @@ hardisp_impl(int irnt, int samp, double tamp[3][ntin], double tph[3][ntin])
 
     return 0;
 }
+
+int
+main(int argc, char* argv[])
+{
+    /*+----------------------------------------------------------------------
+     *  Check number of arguments from command line, then read them in
+     *-----------------------------------------------------------------------*/
+    if (argc<8 || argc>9) {
+        printf(" Usage:\n");
+        printf("   hardisp yr [d-of-yr | month day] hr min sec num samp\n");
+        printf(" Where \n");
+        printf("   the UTC date given is the time of the first term output\n");
+        printf("   num is the number of output epochs to be written out\n");
+        printf("   samp is the sample interval (seconds)\n");
+        printf(" The harmonics file (amp and phase of displacement) is \n");
+        printf("   read from standard input in the BLQ format used by  \n");
+        printf("   Scherneck and Bos\n");
+        printf(" Results are written to standard output (units = m):\n");
+        printf("      dU    dS    dW   \n");
+        printf("   using format: 3F14.6 \n");
+        return 1;
+    }
+
+    int next = 1;
+    int irnt;
+    double samp;
+    try {
+        *it = std::stoi(argv[next++]);
+        if (argc == 7) { /* day of year provided */
+            it[1] = std::stoi(argv[next++]);
+        } else { /* month - day of month provided */
+            int month = std::stoi(argv[next++]);
+            int dom   = std::stoi(argv[next++]);
+            it[1]     = dom + iers2010::hisp::mday(it[0], month);
+        }
+        it[2] = std::stoi(argv[next++]);
+        it[3] = std::stoi(argv[next++]);
+        it[4] = (int) std::stof (argv[next++]);
+        irnt  = std::stoi(argv[next++]);
+        samp  = std::stod(argv[next++]);
+    } catch (std::invalid_argument&) {
+        std::cerr<<"Invalid argument while reading input arguments. Fatal.\n";
+        return 1;
+    } catch (std::out_of_range&) {
+        std::cerr<<"Invalid argument while reading input arguments. Fatal.\n";
+        return 1;
+    }
+
+    /// Read in ocean loading coefficients from stdin
+    double tamp[3][ntin],
+           tph[3][ntin];
+    if (read_hardisp_args(tamp[3][ntin], tph[3][ntin])) {
+        std::cerr<<"Failed to read harmonics. Fatal.\n";
+        return 1;
+    }
+
+    // Compute & report
+    return hardisp_impl(irnt, samp, tamp, tph);
+}
+

@@ -1,4 +1,5 @@
 lib_LTLIBRARIES = libiers2010.la
+bin_PROGRAMS = hardisp
 
 ## Only use the following flags for debuging purposes
 libiers2010_la_CXXFLAGS = \
@@ -12,6 +13,19 @@ libiers2010_la_CXXFLAGS = \
 	-W \
 	-Wshadow \
 	-Winline \
+	-Wdisabled-optimization \
+	-DDEBUG
+
+MCXXFLAGS = \
+	-std=c++17 \
+	-g \
+	-pg \
+	-Wall \
+	-Wextra \
+	-Werror \
+	-pedantic \
+	-W \
+	-Wshadow \
 	-Wdisabled-optimization \
 	-DDEBUG
 
@@ -50,3 +64,7 @@ dist_libiers2010_la_SOURCES = \
 	vmf1_ht.cpp \
 	gpt.cpp \
 	gpt2.cpp
+
+hardisp_SOURCES  = hardisp.cpp
+hardisp_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
+hardisp_LDADD    = $(top_srcdir)/src/libiers2010.la

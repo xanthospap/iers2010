@@ -53,25 +53,34 @@ namespace iers2010 {
 
     namespace hisp {
 
-        int toymd (const int*,int*);
+        int
+        toymd(const int*,int*);
 
-        bool leap (const int&);
+        bool
+        leap(const int&);
 
-        double etutc (const double&);
+        double
+        etutc(const double&);
 
-        int eval (const double&,const int&,const double*,const double*,
+        int
+        eval(const double&,const int&,const double*,const double*,
                 const double*,double&);
 
-        int recurs (double*,const int&,const double*,const int&,const double*,
+        int
+        recurs(double*,const int&,const double*,const int&,const double*,
                 double*);
 
-        int shells (double*,int*,const int&);
+        int
+        shells(double*,int*,const int&);
 
-        int spline (const int&,const double*,const double*,double*,double*);
+        int
+        spline(const int&,const double*,const double*,double*,double*);
 
-        int tdfrph (const int*,const int*,double&,double&);
+        int
+        tdfrph(const int*,const int*,double&,double&);
 
-        int admint (const double*,const int [][6],const double*,double*,
+        int
+        admint(const double*,const int [][6],const double*,double*,
                 double*,double*,const int&,int&,const int*);
 
         /**
@@ -87,7 +96,8 @@ namespace iers2010 {
          * @version 2009 July  29
          * 
          */
-        inline int mday (const int& iy,const int& m)
+        inline int
+        mday(const int& iy,const int& m)
         {
             int leap ( iers2010::hisp::leap (iy) );
             return (((367*(m-2-12*((m-14)/12)))/12+29) % (365)) + 
@@ -113,7 +123,8 @@ namespace iers2010 {
          * (cf Comm CACM, 11, 657 (1968) and 15, 918 (1972)), p. 604
          *
          */
-        inline int juldat (const int* it)
+        inline int
+        juldat(const int* it)
         {
             return (1461*(it[0]+4800+(it[1]-14)/12))/4 + 
                 (367*(it[1]-2-12*((it[1]-14)/12)))/12 - 
