@@ -34,6 +34,11 @@ iers2010::hisp::recurs(double* x, int n, const double* hc, int nf,
         scr[3*i-1] = hc[2*i-2]*cos(om[i-1])-hc[2*i-1]*sin(om[i-1]);
         scr[3*i-1] = 2.e0*cos(om[i-1]);
     }
+    for (int i=0; i<nf; i++) {
+        scr[3*i]   = hc[2*i-2];
+        scr[3*i+1] = hc[2*i-2]*cos(om[i-1])-hc[2*i-1]*sin(om[i-1]);
+        scr[3*i+2] = 2.e0*cos(om[i-1]);
+    }
     
     // Do recursion over data
     for (int i=0; i<n; i++) {

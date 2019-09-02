@@ -1,55 +1,68 @@
 #include "iers2010.hpp"
+#include "hardisp.hpp"
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
     
-constexpr int nl   { 600 };
-constexpr int nt   { 342 };
-constexpr int ntin { 11  };
+using hisp::ntin;
+using hisp::nl;
+using hisp::nt;
 
+/*
+ * @brief Read in amplitudes and phases, in standard "Scherneck" form
+ *
+ * @param[in] tamp Matrix of size 3xNTIN; the first three lines of the
+ *                 coefficients will be read in here (aka the amplitudes)
+ * @param[in] tph  Matrix of size 3xNTIN; lines 4 to 6 will be read in here
+ *                 (aka the phase coefficients)
+ * @filename       The filename of the BLQ file to be read in; if none is given,
+ *                 then the function expects to read in from STDIN
+ * @return         Anything other than 0 denotes an error
+ */
 int
 read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
     const char* filename=nullptr)
 {
-    std::istream* in;
-    std::ifstream ifn;
-    char line[256];
+  std::istream* in;
+  std::ifstream ifn;
+  int sta2read = 1;
 
-    if ( !filename ) {
-        in = &std::cin;
-    } else {
-        ifn.open( filename );
-        in = &ifn;
+  if ( !filename ) {
+    in = &std::cin;
+  } else {
+    ifn.open( filename );
+    in = &ifn;
+    if (!ifn.is_open()) {
+      std::cerr<<"\n[ERROR] Failed to open file \""<<filename<<"\"";
+      return 1;
     }
+  }
 
-    /*---------------------------------------------------------------------
-     *  Read in amplitudes and phases, in standard "Scherneck" form, from
-     *  standard input
-     *----------------------------------------------------------------------*/
-    while ( true ) {
-        for (int i=0; i<3; i++) {
-            for (int kk=0; kk<ntin; kk++) {
-                if ( !in->getline(line, 256) ) {
-                    return 1;
-                } else { //TODO
-                    std::cin >> tamp[i][kk];
-                }
-            }
-        }
+  //
+  //  Read in amplitudes and phases, in standard "Scherneck" form, from
+  //  standard input
+  //
+  while ( sta2read>0 && in->good() ) {
+    for (int i=0; i<3; i++) {
+      for (int kk=0; kk<ntin; kk++) {
+        *in >> tamp[i][kk];
+      }
+    }
 
     for (int i=0; i<3; i++) {
-        for (int kk=0; kk<ntin; kk++) {
-            std::cin >> tph[i][kk];
-        }
-        // Change sign for phase, to be negative for lags
-        for (int kk=0; kk<ntin; kk++) {
-            tph[i][kk] = -tph[i][kk];
-        }
+      for (int kk=0; kk<ntin; kk++) {
+        *in >> tph[i][kk];
+      }
+      // Change sign for phase, to be negative for lags
+      for (int kk=0; kk<ntin; kk++) {
+        tph[i][kk] = -tph[i][kk];
+      }
     }
-    if ( !std::cin || std::cin.fail() ) {
-        printf ("\nError reading data lines. Exiting ...\n");
-        return 1;
-    }
+
+    --sta2read;
+  }
+
+  return !in->good();
 }
 
 /**
@@ -115,86 +128,55 @@ read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
 int
 hardisp_impl(int irnt, double samp, double tamp[3][ntin], double tph[3][ntin])
 {
-    /*+---------------------------------------------------------------------
-     *
-     *  Parameters below set the buffer size for computing the tides
-     *  recursively (nl), the number of harmonics used in the prediction
-     *  (nt; this must also be set in the subroutine admint) and the number
-     *  of harmonics read in (ntin)
-     *
-     *----------------------------------------------------------------------*/
-    constexpr int nl   ( 600 );
-    constexpr int nt   ( 342 );
-    constexpr int ntin ( 11 );
+  constexpr double dr ( 0.01745329252e0 );
+  int irli  ( 1 );
+  int it[5];
 
-    constexpr double dr ( 0.01745329252e0 );
-    int irli  ( 1 );
-    int it[5];
+#ifdef USE_EXTERNAL_CONSTS
+  constexpr double PI (DPI);
+#else
+  constexpr double PI ( 3.1415926535897932384626433e0 );
+#endif
 
-    #ifdef USE_EXTERNAL_CONSTS
-        constexpr double PI (DPI);
-    #else
-        constexpr double PI ( 3.1415926535897932384626433e0 );
-    #endif
+  /*+---------------------------------------------------------------------
+   *  Find amplitudes and phases for all constituents, for each of the
+   *  three displacements. Note that the same frequencies are returned 
+   *  each time.
+   *
+   *  BLQ format order is vertical, horizontal EW, horizontal NS
+   *----------------------------------------------------------------------*/
+  double az[nt], pz[nt], f[nt], aw[nt], pw[nt], as[nt], ps[nt];
+  int    ntout;
+  double amp[ntin], phase[ntin];
 
-    //  Cartwright-Tayler numbers of tides used in Scherneck lists:
-    //+     M2, S2, N2, K2, K1, O1, P1, Q1, Mf, Mm, Ssa
-    constexpr int idt[][6] = {
-        {2, 0, 0, 0, 0, 0},
-        {2, 2,-2, 0, 0, 0},
-        {2,-1, 0, 1, 0, 0},
-        {2, 2, 0, 0, 0, 0},
-        {1, 1, 0, 0, 0, 0},
-        {1,-1, 0, 0, 0, 0},
-        {1, 1,-2, 0, 0, 0},
-        {1,-2, 0, 1, 0, 0},
-        {0, 2, 0, 0, 0, 0},
-        {0, 1, 0,-1, 0, 0},
-        {0, 0, 2, 0, 0, 0}
-    };
+  for (int i=0; i<ntin; i++) {
+    amp[i]   = tamp[0][i];
+    phase[i] = tph[0][i];
+  }
+  iers2010::hisp::admint(amp, idt, phase, az, f, pz, ntin, ntout, it);
 
-    
-    /*+---------------------------------------------------------------------
-     *
-     *  Find amplitudes and phases for all constituents, for each of the
-     *  three displacements. Note that the same frequencies are returned 
-     *  each time.
-     *
-     *  BLQ format order is vertical, horizontal EW, horizontal NS
-     *
-     *----------------------------------------------------------------------*/
-    double az[nt],pz[nt],f[nt],aw[nt],pw[nt],as[nt],ps[nt];
-    int    ntout;
-    double amp[ntin], phase[ntin];
-    
-    for (int i=0;i<ntin;i++) {
-        amp[i]   = tamp[0][i];
-        phase[i] = tph[0][i];
-    }
-    iers2010::hisp::admint (amp,idt,phase,az,f,pz,ntin,ntout,it);
+  for (int i=0; i<ntin; i++) {
+    amp[i] = tamp[1][i];
+    phase[i] = tph[1][i];
+  }
+  iers2010::hisp::admint(amp,idt,phase,aw,f,pw,ntin,ntout,it);
 
-    for (int i=0;i<ntin;i++) {
-        amp[i] = tamp[1][i];
-        phase[i] = tph[1][i];
-    }
-    iers2010::hisp::admint (amp,idt,phase,aw,f,pw,ntin,ntout,it);
+  for (int i=0; i<ntin; i++) {
+    amp[i] = tamp[2][i];
+    phase[i] = tph[2][i];
+  }
+  iers2010::hisp::admint(amp,idt,phase,as,f,ps,ntin,ntout,it);
 
-    for (int i=0;i<ntin;i++) {
-        amp[i] = tamp[2][i];
-        phase[i] = tph[2][i];
-    }
-    iers2010::hisp::admint (amp,idt,phase,as,f,ps,ntin,ntout,it);
-
-    // set up for recursion, by normalizing frequencies, and converting
-    // phases to radians
-    double wf[nt];
-    for (int i=0;i<ntout;i++) {
-        pz[i] = dr * pz[i];
-        ps[i] = dr * ps[i];
-        pw[i] = dr * pw[i];
-        f[i]  = samp * PI * f[i]/43200.e0;
-        wf[i] = f[i];
-    }
+  // set up for recursion, by normalizing frequencies, and converting
+  // phases to radians
+  double wf[nt];
+  for (int i=0; i<ntout; i++) {
+    pz[i] = dr * pz[i];
+    ps[i] = dr * ps[i];
+    pw[i] = dr * pw[i];
+    f[i]  = samp * PI * f[i]/43200.e0;
+    wf[i] = f[i];
+  }
     
     /*+---------------------------------------------------------------------
      *
@@ -270,6 +252,7 @@ main(int argc, char* argv[])
     int next = 1;
     int irnt;
     double samp;
+    double it[10];
     try {
         *it = std::stoi(argv[next++]);
         if (argc == 7) { /* day of year provided */
@@ -281,7 +264,7 @@ main(int argc, char* argv[])
         }
         it[2] = std::stoi(argv[next++]);
         it[3] = std::stoi(argv[next++]);
-        it[4] = (int) std::stof (argv[next++]);
+        it[4] = (int) std::stof(argv[next++]);
         irnt  = std::stoi(argv[next++]);
         samp  = std::stod(argv[next++]);
     } catch (std::invalid_argument&) {
