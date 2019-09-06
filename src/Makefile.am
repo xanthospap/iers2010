@@ -29,8 +29,9 @@ MCXXFLAGS = \
 	-Wdisabled-optimization \
 	-DDEBUG
 
-dist_include_HEADERS = \
-	iers2010.hpp
+pkginclude_HEADERS = \
+	iers2010.hpp \
+	hardisp.hpp
 
 dist_libiers2010_la_SOURCES = \
 	fundarg.cpp \
@@ -38,15 +39,11 @@ dist_libiers2010_la_SOURCES = \
 	utlibr.cpp \
 	fcnnut.cpp \
 	arg2.cpp \
-	cal2jd.cpp \
-	dat.cpp \
 	st1idiu.cpp \
 	st1isem.cpp \
 	st1l1.cpp \
 	step2diu.cpp \
 	step2lon.cpp \
-	dehanttideinel.cpp \
-	etutc.cpp \
 	tdfrph.cpp \
 	spline.cpp \
 	eval.cpp \
@@ -63,8 +60,9 @@ dist_libiers2010_la_SOURCES = \
 	vmf1.cpp \
 	vmf1_ht.cpp \
 	gpt.cpp \
-	gpt2.cpp
+	gpt2.cpp \
+	hardisp_impl.cpp
 
 hardisp_SOURCES  = hardisp.cpp
 hardisp_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
-hardisp_LDADD    = $(top_srcdir)/src/libiers2010.la
+hardisp_LDADD    = libiers2010.la /usr/local/lib/libggdatetime.a

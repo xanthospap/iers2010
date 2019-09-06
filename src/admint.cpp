@@ -39,8 +39,9 @@
  * 
  */
 int
-iers2010::hisp::admint(const double* ampin, const double* phin, double* amp, 
-  double* f, double* p, int nin, int& nout, const int itm[5])
+iers2010::hisp::admint(const double* ampin, const double* phin, 
+  ngpt::datetime<ngpt::seconds> epoch, double* amp, double* f, double* p, 
+  int nin, int& nout)
 {
    // The parameters below set the number of harmonics used in the prediction
    // (nt; This must also be set in the main program) and the number of
@@ -276,7 +277,7 @@ iers2010::hisp::admint(const double* ampin, const double* phin, double* amp,
          * relative to some reference, but amplitude is in absolute 
          * units). Next get frequency.
          *------------------------------------------------------------*/
-        iers2010::hisp::tdfrph(idd[kk], itm, fr, pr);
+        iers2010::hisp::tdfrph(idd[kk], epoch, fr, pr);
         rf[k] = fr;
         k++;
       }
@@ -330,7 +331,7 @@ iers2010::hisp::admint(const double* ampin, const double* phin, double* amp,
   int j = 0;
   for (int i=0; i<nt; i++) {
     if ( idd[i][0] + nlp ) {
-      iers2010::hisp::tdfrph(idd[i], itm, f[j], p[j]);
+      iers2010::hisp::tdfrph(idd[i], epoch, f[j], p[j]);
       //  Compute phase corrections to equilibrium tide using 
       //  function 'eval'
       if (idd[i][0] == 0) {
@@ -355,7 +356,7 @@ iers2010::hisp::admint(const double* ampin, const double* phin, double* amp,
       }
       amp[j] = tamp[i]*std::sqrt(re*re+am*am);
       p[j]  += std::atan2(am, re) / dtr;
-      if (p[j] > 180) { p[j] -= 360.0e0; }
+      if (p[j] > 180) { p[j] -= 360e0; }
       ++j;   
     }
   }

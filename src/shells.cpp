@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include "iers2010.hpp"
+#include "hardisp.hpp"
 
 constexpr int max_array_size { 20 };
 

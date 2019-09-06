@@ -1,5 +1,6 @@
 #ifndef _IERS_1010_HARDISP_
 #define _IERS_1010_HARDISP_
+#include "ggdatetime/dtcalendar.hpp"
 
 /**
  * @file      hardisp.hpp
@@ -63,35 +64,44 @@ namespace iers2010 {
     
     // ntin: the number of harmonics read in
     constexpr int ntin { 11  };
-
+    
+    /*
     int
     toymd(const int*,int*);
 
     double
     etutc(const double&);
+    */
 
     int
-    eval(const double&,const int&,const double*,const double*,
+    eval(const double&,int,const double*,const double*,
           const double*,double&);
 
     int
-    recurs(double*,const int&,const double*,const int&,const double*,
+    recurs(double*,int,const double*,int,const double*,
           double*);
 
     int
-    shells(double*,int*,const int&);
+    shells(double*,int*,int);
 
     int
-    spline(const int&,const double*,const double*,double*,double*);
+    spline(int,const double*,const double*,double*,double*);
 
     int
-    tdfrph(const int*,const int*,double&,double&);
+    tdfrph(const int*,ngpt::datetime<ngpt::seconds>,double&,double&);
     
     int
-    admint(const double*,const int [][6],const double*,double*,
-          double*,double*,const int&,int&,const int*);
+    admint(const double*,const double*, ngpt::datetime<ngpt::seconds>,double*,
+          double*,double*,int,int&);  
 
+    int
+    read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
+          const char* filename=nullptr);
 
+    int
+    hardisp_impl(int irnt, double samp, double tamp[3][ntin], double tph[3][ntin], 
+          ngpt::datetime<ngpt::seconds> epoch);
+    /*
     inline bool
     leap(int y) noexcept
     {
@@ -99,6 +109,7 @@ namespace iers2010 {
       if ( !(y%100) && (y%400) ) leap = 0;
       return leap;
     }
+    */
 
     /**
      * @details This function finds the day number of days before start of 
@@ -113,6 +124,7 @@ namespace iers2010 {
      * @version 2009 July  29
      * 
      */
+    /*
     inline int
     mday(int iy, int m) noexcept
     {
@@ -120,6 +132,7 @@ namespace iers2010 {
       return (((367*(m-2-12*((m-14)/12)))/12+29) % (365)) + 
         isleap*((9+m)/12);
     }
+    */
 
     /**
      * @details This function converts a Gregorian date to a Julian date.
@@ -140,6 +153,7 @@ namespace iers2010 {
      * (cf Comm CACM, 11, 657 (1968) and 15, 918 (1972)), p. 604
      *
      */
+    /*
     inline int
     juldat(int y, int m, int d) noexcept
     {
@@ -147,6 +161,7 @@ namespace iers2010 {
           (367*(m-2-12*((m-14)/12)))/12 - 
           (3*((y+4900+(m-14)/12)/100))/4+d-32075;
     }
+    */
 
   } /* end namespace hisp */
 

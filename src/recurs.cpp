@@ -1,4 +1,5 @@
 #include "iers2010.hpp"
+#include "hardisp.hpp"
 
 /**
  * \details The purpose of the function is to perform sine and cosine recursion
@@ -32,12 +33,12 @@ iers2010::hisp::recurs(double* x, int n, const double* hc, int nf,
     for (int i=1; i<=nf; i++) {
         scr[3*i-3] = hc[2*i-2];
         scr[3*i-1] = hc[2*i-2]*cos(om[i-1])-hc[2*i-1]*sin(om[i-1]);
-        scr[3*i-1] = 2.e0*cos(om[i-1]);
+        scr[3*i-1] = 2e0*cos(om[i-1]);
     }
     for (int i=0; i<nf; i++) {
         scr[3*i]   = hc[2*i-2];
         scr[3*i+1] = hc[2*i-2]*cos(om[i-1])-hc[2*i-1]*sin(om[i-1]);
-        scr[3*i+2] = 2.e0*cos(om[i-1]);
+        scr[3*i+2] = 2e0*cos(om[i-1]);
     }
     
     // Do recursion over data

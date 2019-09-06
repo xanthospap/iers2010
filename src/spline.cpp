@@ -1,9 +1,10 @@
 #include "iers2010.hpp"
+#include "hardisp.hpp"
 
 inline double
-q(double u1, double x1, double u2, double x2)
+q(double u1, double x1, double u2, double x2) noexcept
 {
-  return ( u1/std::pow(x1,2) - u2/std::pow(x2,2) ) / ( 1.0e0/x1 - 1.0e0/x2 );
+  return ( u1/std::pow(x1,2) - u2/std::pow(x2,2) ) / ( 1e0/x1 - 1e0/x2 );
 }
 
 /**
@@ -43,7 +44,7 @@ iers2010::hisp::spline(int nn, const double* x, const double* u,
     if (n <= 3) {
         // series too short for cubic spline - use straight lines.
         for (int i=0; i<n; i++) {
-            s[i] = 0.0e0;
+            s[i] = 0e0;
         }
         return 0;
     }
@@ -56,29 +57,29 @@ iers2010::hisp::spline(int nn, const double* x, const double* u,
         qn = s[1];
     }
     
-    s[0] = 6.0e0*((u[1]-u[0])/(x[1]-x[0]) - q1);
+    s[0] = 6e0*((u[1]-u[0])/(x[1]-x[0]) - q1);
     int n1 { n - 1 };
     
     for (int i=1; i<n1; i++) {
         s[i] =   (u[i-1]/(x[i]-x[i-1])
-                - u[i]*(1.0e0/(x[i]-x[i-1]) + 1.0e0/(x[i+1]-x[i])) 
-                + u[i+1]/(x[i+1]-x[i]))*6.0e0;
+                - u[i]*(1e0/(x[i]-x[i-1]) + 1e0/(x[i+1]-x[i])) 
+                + u[i+1]/(x[i+1]-x[i]))*6e0;
     }
 
-    s[n-1] = 6.0e0*(qn + (u[n1-1]-u[n-1])/(x[n-1]-x[n1-1]));
-    a[0]   = 2.0e0*(x[1]-x[0]);
-    a[1]   = 1.5e0*(x[1]-x[0]) + 2.0e0*(x[2]-x[1]);
+    s[n-1] = 6e0*(qn + (u[n1-1]-u[n-1])/(x[n-1]-x[n1-1]));
+    a[0]   = 2e0*(x[1]-x[0]);
+    a[1]   = 1.5e0*(x[1]-x[0]) + 2e0*(x[2]-x[1]);
     s[1]   = s[1] - 0.5e0*s[0];
     
     double c;
     for (int i=2; i<n1; i++) {
         c     = (x[i]-x[i-1])/a[i-1];
-        a[i]  = 2.0e0*(x[i+1]-x[i-1]) - c*(x[i]-x[i-1]);
+        a[i]  = 2e0*(x[i+1]-x[i-1]) - c*(x[i]-x[i-1]);
         s[i] -= (c*s[i-1]);
     }
       
     c      = (x[n-1]-x[n1-1]) / a[n1-1];
-    a[n-1] = (2.0e0-c)*(x[n-1]-x[n1-1]);
+    a[n-1] = (2e0-c)*(x[n-1]-x[n1-1]);
     s[n-1] -= (c*s[n1-1]);
     
     // Back substitute

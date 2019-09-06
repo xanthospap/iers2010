@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include "iers2010.hpp"
+#include "hardisp.hpp"
 
 /**
  * \details This function performs cubic spline interpolation of a given 
@@ -31,32 +32,34 @@ double
 iers2010::hisp::eval(double y, int nn, const double* x, const double* u,
     const double* s)
 {
-    std::size_t k;
-    int         k1, k2;
+  std::size_t k;
+  int         k1, k2;
 
-    if ( y <= *x ) {
-        return *u;
-    } else if ( y >= *(x+nn-1) ) {
-        return u[nn-1];
-    } else {
-        // find index k, such that x[k-1] < y <= x[k]
-        k = std::distance(x, std::lower_bound(x, x+nn, y));
-        assert( (int)k > 0 && (int)k < nn-1);
-        k2 = k;
-        k1 = k-1;
-    }
-  
-    //  Evaluate and then interpolate.
-    //+ Note that this can fail if dk is ~0
-    double dy   { x[k2] - y };
-    double dy1  { y - x[k1] };
-    double dk   { x[k2] - x[k1] };
-    double deli { 1.0e0 / (6.0e0 * dk) };
-    double ff1  { s[k1]*dy*dy*dy };
-    double ff2  { s[k2]*dy1*dy1*dy1 };
-    double f1   { (ff1+ff2) * deli };
-    double f2   { dy1*((u[k2]/dk)-(s[k2]*dk)/6.0e0) };
-    double f3   { dy*((u[k1]/dk)-(s[k1]*dk)/6.0e0) };
+  if ( y <= x[0] ) {
+    return u[0];
+  } else if ( y >= x[nn-1] ) {
+    return u[nn-1];
+  } else {
+    // find index k, such that x[k-1] < y <= x[k]
+    k = std::distance(x, std::lower_bound(x, x+nn, y));
+    k2 = k;
+    k1 = k-1;
+#ifdef DEBUG
+    assert( (int)k > 0 && (int)k <= nn-1);
+#endif
+  }
 
-    return f1 + f2 + f3;
+  //  Evaluate and then interpolate.
+  //+ Note that this can fail if dk is ~0
+  double dy   { x[k2] - y };
+  double dy1  { y - x[k1] };
+  double dk   { x[k2] - x[k1] };
+  double deli { 1e0 / (6e0 * dk) };
+  double ff1  { s[k1]*dy*dy*dy };
+  double ff2  { s[k2]*dy1*dy1*dy1 };
+  double f1   { (ff1+ff2) * deli };
+  double f2   { dy1*((u[k2]/dk)-(s[k2]*dk)/6e0) };
+  double f3   { dy*((u[k1]/dk)-(s[k1]*dk)/6e0) };
+
+  return f1 + f2 + f3;
 }

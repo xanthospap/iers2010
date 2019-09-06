@@ -27,14 +27,6 @@ namespace iers2010
     /// Functions needed by dehanttideinel.
     namespace dhtide
     {    
-        /// Gregorian Calendar to Julian Date.
-        int
-        cal2jd(int iy, int im, int id, double& djm0, double& djm);
-
-        /// For a given UTC date, calculate delta(AT) = TAI-UTC.
-        int
-        dat(int iy, int im, int id, double fd, double& deltat);
-
         /// Compute out-of-phase corrections induced by mantle anelasticity in
         /// the diurnal band. 
         void
