@@ -28,32 +28,36 @@ int
 iers2010::hisp::recurs(double* x, int n, const double* hc, int nf, 
     const double* om, double* scr)
 {
-    //  Set up for start of recursion by computing harmonic values
-    //+ at starting point and just before it
-    for (int i=1; i<=nf; i++) {
-        scr[3*i-3] = hc[2*i-2];
-        scr[3*i-1] = hc[2*i-2]*cos(om[i-1])-hc[2*i-1]*sin(om[i-1]);
-        scr[3*i-1] = 2e0*cos(om[i-1]);
-    }
-    for (int i=0; i<nf; i++) {
-        scr[3*i]   = hc[2*i-2];
-        scr[3*i+1] = hc[2*i-2]*cos(om[i-1])-hc[2*i-1]*sin(om[i-1]);
-        scr[3*i+2] = 2e0*cos(om[i-1]);
-    }
+  //  Set up for start of recursion by computing harmonic values
+  //+ at starting point and just before it
+  double cos_omi, sin_omi;
+  for (int i=0; i<nf; i++) {
+    cos_omi    = std::cos(om[i]);
+    sin_omi    = std::sin(om[i]);
+    scr[3*i]   = hc[2*i];
+    scr[3*i+1] = hc[2*i]*cos_omi - hc[2*i+1]*sin_omi;
+    scr[3*i+2] = 2e0*cos_omi;
+#ifdef DEBUG
+    assert(3*i+2<3*nf && 2*i+1<2*nf);
+#endif
+  }
     
-    // Do recursion over data
-    for (int i=0; i<n; i++) {
-        x[i] = .0e0;
-        // Then do recursive computation for each harmonic
-        double sc;
-        for (int j=0; j<nf; j++) {
-            sc    = scr[3*j-3];
-            x[i] += sc;
-            scr[3*j-3] = scr[3*j-1]*sc-scr[3*j-2];
-            scr[3*j-2] = sc;
-        }
+  // Do recursion over data
+  double sc;
+  for (int i=0; i<n; i++) {
+    x[i] = .0e0;
+    // Then do recursive computation for each harmonic
+    for (int j=0; j<nf; j++) {
+      sc = scr[3*j];
+      x[i] += sc;
+      scr[3*j]   = scr[3*j+2]*sc - scr[3*j+1];
+      scr[3*j+1] = sc;
+#ifdef DEBUG
+    assert(3*j+2<3*nf);
+#endif
     }
+  }
     
-    // Finished
-    return 0;
+  // Finished
+  return 0;
 }
