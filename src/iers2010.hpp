@@ -63,6 +63,7 @@ namespace iers2010
     dehanttideinel(const double* xsta,const double* xsun, const double* xmon,
         int yr, int month, int day, double fhr, double* dxtide);
 
+    /*
     namespace hisp
     {
 
@@ -99,6 +100,7 @@ namespace iers2010
             double* amp, double* f, double* p, int nin, int& nout, const int itm[5]);
  
     } // hisp
+    */
 
     namespace oeop
     {

@@ -65,23 +65,6 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
     {0, 0, 2, 0, 0, 0}
   };
 
-  //  Arrays containing information about the subset whose amp and phase may
-  //+ be specified, and scratch arrays for the spline routines for which
-  //+ at most ncon constituents may be specified. 
-  constexpr double dtr { .01745329252e0 };
-  int    key[ncon];
-  double rl [ncon],
-  aim[ncon],
-  rf [ncon],
-  scr[ncon],
-  zdi[ncon],
-  zdr[ncon],
-  di [ncon],
-  dr [ncon],
-  sdi[ncon],
-  sdr[ncon];
-  double fr, pr, re, am, sf;
-    
   // Arrays containing information about all stored constituents
   constexpr int idd[nt][6] = {
     {2, 0, 0, 0, 0, 0},  { 2, 2,-2, 0, 0, 0},  { 2,-1, 0, 1, 0, 0},
@@ -252,6 +235,23 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
     -.000062e0, .000060e0, .000059e0,-.000056e0, .000055e0,-.000051
   };
     
+  //  Arrays containing information about the subset whose amp and phase may
+  //+ be specified, and scratch arrays for the spline routines for which
+  //+ at most ncon constituents may be specified. 
+  constexpr double dtr { .01745329252e0 };
+  int    key[ncon];
+  double rl [ncon],
+         aim[ncon],
+         rf [ncon],
+         scr[ncon],
+         zdi[ncon],
+         zdr[ncon],
+         di[ncon],
+         dr[ncon],
+         sdi[ncon],
+         sdr[ncon];
+  double fr, pr, re, am, sf;
+    
   // Initialize variables.
   int k   { 0 };
   int nlp { 0 };
@@ -267,7 +267,8 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
         ii += std::abs(idd[kk][i]-idtin[ll][i]);
       }
       // If you have a match, put line into array [5]
-      if ( (!ii) && k<ncon ) {
+      if ( (!ii) && k<ncon-1 ) {
+        //printf("\nk=%2d, ll=%2d, phin=%15.10f tamp=%15.10f",k,ll,phin[ll],tamp[kk]);
         rl[k] = ampin[ll] * std::cos(dtr*phin[ll]) / std::abs(tamp[kk]);
         aim[k]= ampin[ll] * std::sin(dtr*phin[ll]) / std::abs(tamp[kk]);
         /*------------------------------------------------------------
@@ -291,6 +292,7 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
    * in order using Shell Sort.
    *----------------------------------------------------------------------*/
   iers2010::hisp::shells(rf, key, k);
+  //for (int i=0; i<k; i++) printf("\nrf=%15.10f key=%3d",rf[i], key[i]);
 
   // TODO whay are these three loops independent ??
   for (int i=0; i<k; i++) {
@@ -304,10 +306,12 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
     scr[i] = rl[key[i]];
   }
 
+  //for (int i=0;i<ncon;i++) printf("\nrl[%2d]=%15.10f",i,rl[i]);
   for (int i=0; i<k; i++) {
     rl[i]  = scr[i];
     scr[i] = aim[key[i]];
   }
+  //for (int i=0;i<ncon;i++) printf("\nrl[%2d]=%15.10f",i,rl[i]);
 
   for (int i=0; i<k; i++) {
     aim[i] = scr[i];
@@ -322,10 +326,15 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
     iers2010::hisp::spline(nlp, rf, rl, zdr, scr);
     iers2010::hisp::spline(nlp, rf, aim, zdi, scr);
   }
+  //printf("\nCall to spline with nlp=%3d", nlp);
+  //printf("\nCall to spline with ndi=%3d", ndi);
+  //for (int i=0; i<ncon; i++) printf("\nx[%2d]=%15.10f", i, *(rf+i));
+  //for (int i=0; i<ncon; i++) printf("\ny[%2d]=%15.10f", i, *(rl+i));
   iers2010::hisp::spline(ndi, rf+nlp,     rl+nlp,      dr,  scr);
   iers2010::hisp::spline(ndi, rf+nlp,     aim+nlp,     di,  scr);
   iers2010::hisp::spline(nsd, rf+nlp+ndi, rl+nlp+ndi,  sdr, scr);
   iers2010::hisp::spline(nsd, rf+nlp+ndi, aim+nlp+ndi, sdi, scr);
+  //for (int i=0; i<ncon; i++) printf("\nsdr[%3i] = %15.10f", i, sdr[i]);
     
   // Evaluate all harmonics using the interpolated admittance
   int j = 0;
@@ -335,34 +344,38 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
       //  Compute phase corrections to equilibrium tide using 
       //  function 'eval'
       if (idd[i][0] == 0) {
-        p[j] += 180.0e0;
+        p[j] += 180e0;
       } else if (idd[i][0] == 1) {
-        p[j] += 90.0e0;
+        p[j] += 90e0;
       }
       sf = f[j];
       if (idd[i][0] == 0) {
+      //printf("\nidd=%2d", idd[i][0]);
         re = iers2010::hisp::eval(sf, nlp, rf, rl,  zdr);
         am = iers2010::hisp::eval(sf, nlp, rf, aim, zdi);
       } else if (idd[i][0] == 1) {
+      //printf("\nidd=%2d", idd[i][0]);
         re = iers2010::hisp::eval(sf, ndi, rf+nlp, rl+nlp,  dr);
         am = iers2010::hisp::eval(sf, ndi, rf+nlp, aim+nlp, di);
       } else if (idd[i][0] == 2) {
+      //printf("\nidd=%2d", idd[i][0]);
         re = iers2010::hisp::eval(sf, nsd, rf+nlp+ndi, rl+nlp+ndi,  sdr);
         am = iers2010::hisp::eval(sf, nsd, rf+nlp+ndi, aim+nlp+ndi, sdi);
       } else {
-        am = .0e0;
-        re = .0e0;
+        am = 0e0;
+        re = 0e0;
         assert( true == false );
       }
       amp[j] = tamp[i]*std::sqrt(re*re+am*am);
       p[j]  += std::atan2(am, re) / dtr;
-      if (p[j] > 180) { p[j] -= 360e0; }
+      //printf(" j=%4d p=%15.10f %15.10f %15.10f", j, am, re, dtr);
+      if (p[j] > 180e0) { p[j] -= 360e0; }
       ++j;   
     }
   }
 
-    nout = j-1;
+  nout = j-1;
 
-    // Finished
-    return 0;
+  // Finished
+  return 0;
 }

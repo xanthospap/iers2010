@@ -34,16 +34,20 @@ iers2010::hisp::eval(double y, int nn, const double* x, const double* u,
 {
   std::size_t k;
   int         k1, k2;
+  //printf("eval called with nn=%2d and y=%15.10f", nn, y);
 
   if ( y <= x[0] ) {
+    //printf(" returning u[0]\n");
     return u[0];
   } else if ( y >= x[nn-1] ) {
+    //printf(" returning u[nn]\n");
     return u[nn-1];
   } else {
     // find index k, such that x[k-1] < y <= x[k]
     k = std::distance(x, std::lower_bound(x, x+nn, y));
     k2 = k;
     k1 = k-1;
+    //printf(" [%15.10f - %15.10f] aka [%2d - %2d]", x[k1], x[k2], k1, k2);
 #ifdef DEBUG
     assert( (int)k > 0 && (int)k <= nn-1);
 #endif
@@ -60,6 +64,9 @@ iers2010::hisp::eval(double y, int nn, const double* x, const double* u,
   double f1   { (ff1+ff2) * deli };
   double f2   { dy1*((u[k2]/dk)-(s[k2]*dk)/6e0) };
   double f3   { dy*((u[k1]/dk)-(s[k1]*dk)/6e0) };
+  //printf(" result=%15.10f\n", f1+f2+f3);
+  //printf("\ndy=%15.10f dy1=%15.10f dk=%15.10f\nf1=%15.10f f2=%15.10f f3=%15.10f", dy, dy1, dk, f1,f2,f3);
+  //printf("\nsk1=%15.10f sk2=%15.10f", s[k1], s[k2]);
 
   return f1 + f2 + f3;
 }

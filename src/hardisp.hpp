@@ -73,16 +73,16 @@ namespace iers2010 {
     etutc(const double&);
     */
 
-    int
-    eval(const double&,int,const double*,const double*,
-          const double*,double&);
+    double
+    eval(double y, int nn, const double* x, const double* u,
+    const double* s);
 
     int
     recurs(double*,int,const double*,int,const double*,
           double*);
 
     int
-    shells(double*,int*,int);
+    shells(double*,int*,int) noexcept;
 
     int
     spline(int,const double*,const double*,double*,double*);

@@ -1,5 +1,6 @@
 #include "iers2010.hpp"
 #include "hardisp.hpp"
+#include "ggdatetime/datetime_write.hpp"
 
 /**
  * \details This subroutine returns the frequency and phase of a tidal
@@ -32,24 +33,30 @@
  * WTF ??
  */
 int
-iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> epoch, 
+iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> iepoch, 
   double& freq, double& phase)
 {
   static ngpt::datetime<ngpt::seconds> last_epoch;
   static double  d[6];
   static double dd[6];
+  //double tt {-999};
     
   /*------------------------------------------------------------------------
    *  Test to see if time has changed; if so, set the phases and frequencies
    *  for each of the Doodson arguments
    *------------------------------------------------------------------------*/
   // bool reset_date { false };
-  if (   epoch != last_epoch ) {
+  if (iepoch != last_epoch) {
+    auto epoch = iepoch;
+    //std::cout<<"\nRecomputing epoch with epoch="<<ngpt::strftime_ymd_hms(iepoch)<<" last-epoch="<<ngpt::strftime_ymd_hms(last_epoch);
     // Convert times to Julian days (UT) then to Julian centuries 
     // from J2000.0 (ET)
     int dat = ngpt::dat(epoch.mjd());
     epoch.add_seconds(ngpt::seconds(dat));
-    double t = (epoch.as_mjd() + ngpt::mjd0_jd - ngpt::j2000_jd) / 365.25e0;
+    double t = (epoch.as_mjd() + ngpt::mjd0_jd - ngpt::j2000_jd) / 36525e0;
+    //tt = t;
+    t = 0.0947994496e0;
+    //printf("DJD %15.5f t %15.10f", epoch.as_mjd() + ngpt::mjd0_jd, t);
 
      // IERS expressions for the Delaunay arguments, in degrees
     double f1 {     134.9634025100e0 +
@@ -111,7 +118,8 @@ iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> epoch,
     dd[5] = dd[2] - fd2;
     
     // copy the just used date to the static one for next use of function
-    last_epoch = epoch;
+    last_epoch = iepoch;
+    //std::cout<<" new last-epoch="<<ngpt::strftime_ymd_hms(last_epoch)<<" equal to "<<ngpt::strftime_ymd_hms(iepoch)<<"\n";
 
   } // End of intialization (likely to be called only once)
     
@@ -126,6 +134,7 @@ iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> epoch,
   // Adjust phases so that they fall in the positive range 0 to 360
   phase = std::fmod(phase, 360e0);
   if ( phase < 0e0 ) { phase += 360e0; }
+  //printf("tdfrph: %15.10f %15.10f %15.10f\n", tt, phase, freq);
     
   // Finished
   return 0;
