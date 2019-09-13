@@ -45,51 +45,51 @@ int
 iers2010::fundarg(double t, double* fargs)
 {
 
-    // Set constants
-    #ifndef USE_EXTERNAL_CONSTS
-        // Arcseconds to radians
-        constexpr double DAS2R   (4.848136811095359935899141e-6);
-        // Arcseconds in a full circle
-        constexpr double TURNAS  (1296000e0);
-    #endif
+// Set constants
+#ifndef USE_EXTERNAL_CONSTS
+  // Arcseconds to radians
+  constexpr double DAS2R   (4.848136811095359935899141e-6);
+  // Arcseconds in a full circle
+  constexpr double TURNAS  (1296000e0);
+#endif
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-    //  Compute the fundamental argument L.
-    fargs[0] = std::fmod(485868.249036e0 +
-            t*( 1717915923.2178e0 +
-            t*(         31.8792e0 +
-            t*(          0.051635e0 +
-            t*(        - 0.00024470e0 )))), TURNAS ) * DAS2R;
+  //  Compute the fundamental argument L.
+  fargs[0] = std::fmod(485868.249036e0 +
+          t*( 1717915923.2178e0 +
+          t*(         31.8792e0 +
+          t*(          0.051635e0 +
+          t*(        - 0.00024470e0 )))), TURNAS ) * DAS2R;
 
-    // Compute the fundamental argument LP.
-    fargs[1] = std::fmod(1287104.79305e0 +
-                t*( 129596581.0481e0 +
-                t*(       - 0.5532e0 +
-                t*(         0.000136e0 +
-                t*(       - 0.00001149e0 )))), TURNAS ) * DAS2R;
+  // Compute the fundamental argument LP.
+  fargs[1] = std::fmod(1287104.79305e0 +
+              t*( 129596581.0481e0 +
+              t*(       - 0.5532e0 +
+              t*(         0.000136e0 +
+              t*(       - 0.00001149e0 )))), TURNAS ) * DAS2R;
 
-    // Compute the fundamental argument F.
-    fargs[2] = std::fmod(335779.526232e0 +
-                t*( 1739527262.8478e0 +
-                t*(       - 12.7512e0 +
-                t*(       -  0.001037e0 +
-                t*(          0.00000417e0 )))), TURNAS ) * DAS2R;
+  // Compute the fundamental argument F.
+  fargs[2] = std::fmod(335779.526232e0 +
+              t*( 1739527262.8478e0 +
+              t*(       - 12.7512e0 +
+              t*(       -  0.001037e0 +
+              t*(          0.00000417e0 )))), TURNAS ) * DAS2R;
 
-    // Compute the fundamental argument D.
-    fargs[3] = std::fmod(1072260.70369e0 +
-                t*( 1602961601.2090e0 +
-                t*(        - 6.3706e0 +
-                t*(          0.006593e0 +
-                t*(        - 0.00003169e0 )))), TURNAS ) * DAS2R;
+  // Compute the fundamental argument D.
+  fargs[3] = std::fmod(1072260.70369e0 +
+              t*( 1602961601.2090e0 +
+              t*(        - 6.3706e0 +
+              t*(          0.006593e0 +
+              t*(        - 0.00003169e0 )))), TURNAS ) * DAS2R;
 
-    // Compute the fundamental argument OM.
-    fargs[4] = std::fmod(450160.398036e0 +
-                t*( - 6962890.5431e0 +
-                t*(         7.4722e0 +
-                t*(         0.007702e0 +
-                t*(       - 0.00005939e0 )))), TURNAS ) * DAS2R;
+  // Compute the fundamental argument OM.
+  fargs[4] = std::fmod(450160.398036e0 +
+              t*( - 6962890.5431e0 +
+              t*(         7.4722e0 +
+              t*(         0.007702e0 +
+              t*(       - 0.00005939e0 )))), TURNAS ) * DAS2R;
 
-    // Finished.
-    return 0;
+  // Finished.
+  return 0;
 }

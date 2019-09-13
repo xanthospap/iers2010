@@ -47,65 +47,65 @@ iers2010::fcul_zd_hpa (const double& dlat,const double& dhgt,
         const double& pres,const double& wvp,const double& lambda,
         double& f_ztd,double& f_zhd,double& f_zwd)
 {
-    #ifdef USE_EXTERNAL_CONSTS
-        constexpr double PI   (DPI);
-        //constexpr double C    (DC);
-    #else
-        constexpr double PI   (3.14159265358979323846e0);
-        // speed of light in vacuum (m/s)
-        //constexpr double C    (2.99792458e8);
-    #endif
+#ifdef USE_EXTERNAL_CONSTS
+  constexpr double PI   (DPI);
+  //constexpr double C    (DC);
+#else
+  constexpr double PI   (3.14159265358979323846e0);
+  // speed of light in vacuum (m/s)
+  //constexpr double C    (2.99792458e8);
+#endif
+
+  // CO2 content in ppm
+  constexpr double xc ( 375e0 );
+  // constant values to be used in Equation (20)
+  // k1 and k3 are k1* and k3* 
+  constexpr double k0 ( 238.0185e0  );
+  constexpr double k1 ( 19990.975e0 );
+  constexpr double k2 ( 57.362e0    );
+  constexpr double k3 ( 579.55174e0 );
     
-    // CO2 content in ppm
-    constexpr double xc ( 375.0e0 );
-    // constant values to be used in Equation (20)
-    // k1 and k3 are k1* and k3* 
-    constexpr double k0 ( 238.0185e0  );
-    constexpr double k1 ( 19990.975e0 );
-    constexpr double k2 ( 57.362e0    );
-    constexpr double k3 ( 579.55174e0 );
+  // constant values to be used in Equation (32)
+  constexpr double w0 ( 295.235e0   );
+  constexpr double w1 ( 2.6422e0    );
+  constexpr double w2 ( -0.032380e0 );
+  constexpr double w3 ( 0.004028e0  );
+
+  //  Wave number
+  double sigma ( 1e0/lambda );
+
+  // correction factor - Equation (24)
+  double f ( 1e0 - 0.00266e0*cos(2e0*PI/180e0*dlat) - 0.00028e-3*dhgt );
+
+  // correction for CO2 content
+  double corr ( 1e0 + 0.534e-6*(xc-450e0) );
     
-    // constant values to be used in Equation (32)
-    constexpr double w0 ( 295.235e0   );
-    constexpr double w1 ( 2.6422e0    );
-    constexpr double w2 ( -0.032380e0 );
-    constexpr double w3 ( 0.004028e0  );
+  // dispersion equation for the hydrostatic component - Equation (20)
+  double sigma2 ( sigma * sigma );
+  double fh ( 
+      0.01e0*corr*(
+        (k1*(k0+sigma2))
+        /(pow((k0-sigma2),2)) +
+        k3*(k2+sigma2)
+        /(pow((k2-sigma2),2)) 
+        )
+      );
     
-    //  Wave number
-    double sigma ( 1e0/lambda );
+  // computation of the hydrostatic component - Equation (26)
+  // caution: pressure in hectoPascal units
+  f_zhd = 2.416579e-3*fh*pres/f;
+
+  // dispersion equation for the non-hydrostatic component - Equation (32)
+  double fnh ( 0.003101e0*(w0+3e0*w1*sigma2 +
+        5e0*w2*(sigma2*sigma2)+7e0*w3*pow(sigma,6)) );
     
-    // correction factor - Equation (24)
-    double f ( 1e0 - 0.00266e0*cos(2e0*PI/180e0*dlat) - 0.00028e-3*dhgt );
-    
-    // correction for CO2 content
-    double corr ( 1.0e0 + 0.534e-6*(xc-450e0) );
-    
-    // dispersion equation for the hydrostatic component - Equation (20)
-    double sigma2 ( sigma * sigma );
-    double fh ( 
-            0.01e0*corr*(
-                (k1*(k0+sigma2))
-                /(pow((k0-sigma2),2)) +
-                k3*(k2+sigma2)
-                /(pow((k2-sigma2),2)) 
-                )
-            );
-    
-    // computation of the hydrostatic component - Equation (26)
-    // caution: pressure in hectoPascal units
-    f_zhd = 2.416579e-3*fh*pres/f;
-    
-    // dispersion equation for the non-hydrostatic component - Equation (32)
-    double fnh ( 0.003101e0*(w0+3.0e0*w1*sigma2 +
-          5.0e0*w2*(sigma2*sigma2)+7.0e0*w3*pow(sigma,6)) );
-    
-    // computation of the non-hydrostatic component - Equation (38)
-    // caution: pressure in hectoPascal units
-    f_zwd = 1.e-4*(5.316e0*fnh-3.759e0*fh)*wvp/f;
-    
-    // compute the zenith total delay
-    f_ztd = f_zhd + f_zwd;
-    
-    // return
-    return 0;
+  // computation of the non-hydrostatic component - Equation (38)
+  // caution: pressure in hectoPascal units
+  f_zwd = 1.e-4*(5.316e0*fnh-3.759e0*fh)*wvp/f;
+
+  // compute the zenith total delay
+  f_ztd = f_zhd + f_zwd;
+
+  // return
+  return 0;
 }

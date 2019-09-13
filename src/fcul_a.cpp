@@ -33,42 +33,42 @@ double
 iers2010::fcul_a(double dlat, double dhgt, double t, double elev)
 {
 #ifdef USE_EXTERNAL_CONSTS
-        constexpr double PI   (DPI);
+  constexpr double PI   (DPI);
 #else
-        constexpr double PI   (3.14159265358979323846e0);
+  constexpr double PI   (3.14159265358979323846e0);
 #endif
     
-    // Convert elevation angle to radians
-    const double epsilon  { elev * (PI/180e0) };
-    const double sine     { std::sin(epsilon) };
-    // Convert temperature to Celsius
-    const double t_c      { t - 273.15e0 };
-    const double cosphi   { std::cos(dlat * (PI/180e0)) };
+  // Convert elevation angle to radians
+  const double epsilon  { elev * (PI/180e0) };
+  const double sine     { std::sin(epsilon) };
+  // Convert temperature to Celsius
+  const double t_c      { t - 273.15e0 };
+  const double cosphi   { std::cos(dlat * (PI/180e0)) };
 
-    // Define coefficients used in the model
-    constexpr double a10 {  0.121008e-02 };
-    constexpr double a11 {  0.17295e-05  };
-    constexpr double a12 {  0.3191e-04   };
-    constexpr double a13 { -0.18478e-07  };
+  // Define coefficients used in the model
+  constexpr double a10 {  0.121008e-02 };
+  constexpr double a11 {  0.17295e-05  };
+  constexpr double a12 {  0.3191e-04   };
+  constexpr double a13 { -0.18478e-07  };
 
-    constexpr double a20 {  0.304965e-02 };
-    constexpr double a21 {  0.2346e-05   };
-    constexpr double a22 { -0.1035e-03   };
-    constexpr double a23 { -0.1856e-07   };
-    
-    constexpr double a30 {  0.68777e-01 };
-    constexpr double a31 {  0.1972e-04  };
-    constexpr double a32 { -0.3458e-02  };
-    constexpr double a33 {  0.1060e-06  };
+  constexpr double a20 {  0.304965e-02 };
+  constexpr double a21 {  0.2346e-05   };
+  constexpr double a22 { -0.1035e-03   };
+  constexpr double a23 { -0.1856e-07   };
 
-    // a, b, and c in Marini continued fraction (Eq. 5)
-    double a1 { a10+a11*t_c+a12*cosphi+a13*dhgt };
-    double a2 { a20+a21*t_c+a22*cosphi+a23*dhgt };
-    double a3 { a30+a31*t_c+a32*cosphi+a33*dhgt };
+  constexpr double a30 {  0.68777e-01 };
+  constexpr double a31 {  0.1972e-04  };
+  constexpr double a32 { -0.3458e-02  };
+  constexpr double a33 {  0.1060e-06  };
 
-    // numerator in continued fraction
-    double map_zen { (1.0e0 + a1/(1.0e0 + a2/(1.0e0+a3))) };
+  // a, b, and c in Marini continued fraction (Eq. 5)
+  double a1 { a10+a11*t_c+a12*cosphi+a13*dhgt };
+  double a2 { a20+a21*t_c+a22*cosphi+a23*dhgt };
+  double a3 { a30+a31*t_c+a32*cosphi+a33*dhgt };
 
-    // result
-    return map_zen/(sine+a1/(sine+a2/(sine+a3)));
+  // numerator in continued fraction
+  double map_zen { (1e0 + a1/(1e0 + a2/(1e0+a3))) };
+
+  // result
+  return map_zen/(sine+a1/(sine+a2/(sine+a3)));
 }
