@@ -156,6 +156,7 @@ iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin], double
   //for (int i=0; i<ntin; i++) printf("%15.10f %15.10f\n", amp[i], phase[i]);
   iers2010::hisp::admint(amp, phase, epoch, az, f, pz, ntin, ntout);
   //for (int i=0; i<nt; i++) printf("%15.10f %15.10f %15.10f\n", az[i], f[i], pz[i]);
+  //return 5;
 
   for (int i=0; i<ntin; i++) {
     amp[i] = tamp[1][i];

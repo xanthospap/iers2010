@@ -51,12 +51,19 @@ iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> iepoch,
     //std::cout<<"\nRecomputing epoch with epoch="<<ngpt::strftime_ymd_hms(iepoch)<<" last-epoch="<<ngpt::strftime_ymd_hms(last_epoch);
     // Convert times to Julian days (UT) then to Julian centuries 
     // from J2000.0 (ET)
+    //std::cout<<"time: "<<ngpt::strftime_ymd_hms(epoch)<<"\n";
     int dat = ngpt::dat(epoch.mjd());
+    //std::cout<<"time: "<<ngpt::strftime_ymd_hms(epoch)<<"\n";
+    //printf("jd=%15.10f\n", epoch.as_mjd()+ngpt::mjd0_jd);
+    double dayfr = epoch.sec().fractional_days();
+    //printf("dayfr=%15.10f\n", dayfr);
     epoch.add_seconds(ngpt::seconds(dat));
     double t = (epoch.as_mjd() + ngpt::mjd0_jd - ngpt::j2000_jd) / 36525e0;
     //tt = t;
-    t = 0.0947994496e0;
-    //printf("DJD %15.5f t %15.10f", epoch.as_mjd() + ngpt::mjd0_jd, t);
+    //printf("t %20.15f dayfr %20.15f\n", t,dayfr);
+    t = 0.094799449636217e0; 
+    dayfr = 0.049131944444444e0;
+    //printf("t %20.15f dayfr %20.15f\n", t,dayfr);
 
      // IERS expressions for the Delaunay arguments, in degrees
     double f1 {     134.9634025100e0 +
@@ -95,7 +102,6 @@ iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> iepoch,
             };
             
     // Convert to Doodson (Darwin) variables
-    double dayfr = epoch.sec().fractional_days();
     d[0] = 360e0*dayfr - f4;
     d[1] = f3 + f5;
     d[2] = d[1] - f4;
@@ -126,9 +132,12 @@ iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> iepoch,
   //  Compute phase and frequency of the given tidal constituent
   freq  = 0e0;
   phase = 0e0;
+  //double deleteme;
   for (int i=0; i<6; i++) {
     freq  += ((double)idood[i]) * dd[i];
+    //deleteme=phase;
     phase += ((double)idood[i]) * d[i];
+    //printf("\n%20.10f+(%5d*%20.10f)=%20.10f",deleteme,idood[i],d[i],phase);
   }
     
   // Adjust phases so that they fall in the positive range 0 to 360

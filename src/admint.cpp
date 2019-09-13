@@ -341,6 +341,7 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
   for (int i=0; i<nt; i++) {
     if ( idd[i][0] + nlp ) {
       iers2010::hisp::tdfrph(idd[i], epoch, f[j], p[j]);
+      // printf("phase[%3d]=%15.10f\n", j, p[j]);
       //  Compute phase corrections to equilibrium tide using 
       //  function 'eval'
       if (idd[i][0] == 0) {
@@ -368,7 +369,7 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
       }
       amp[j] = tamp[i]*std::sqrt(re*re+am*am);
       p[j]  += std::atan2(am, re) / dtr;
-      //printf(" j=%4d p=%15.10f %15.10f %15.10f", j, am, re, dtr);
+      //printf(" am=%15.10f re=%15.10f\n", am, re);
       if (p[j] > 180e0) { p[j] -= 360e0; }
       ++j;   
     }
