@@ -48,7 +48,6 @@
  */ 
 
 #include <cmath>
-#include <algorithm>
 
 namespace iers2010 {
 
@@ -65,104 +64,32 @@ namespace iers2010 {
     // ntin: the number of harmonics read in
     constexpr int ntin { 11  };
     
-    /*
-    int
-    toymd(const int*,int*);
-
     double
-    etutc(const double&);
-    */
-
-    double
-    eval(double y, int nn, const double* x, const double* u,
-    const double* s);
+    eval(double, int, const double*, const double*, const double*);
 
     int
-    recurs(double*,int,const double*,int,const double*,
-          double*);
+    recurs(double*, int, const double*, int, const double*, double*);
 
     int
-    shells(double*,int*,int) noexcept;
+    shells(double*, int*, int) noexcept;
 
     int
-    spline(int,const double*,const double*,double*,double*);
+    spline(int, const double*, const double*, double*, double*);
 
     int
-    tdfrph(const int*,ngpt::datetime<ngpt::seconds>,double&,double&);
+    tdfrph(const int*, ngpt::datetime<ngpt::seconds>, double&, double&);
     
     int
-    admint(const double*,const double*, ngpt::datetime<ngpt::seconds>,double*,
-          double*,double*,int,int&);  
+    admint(const double*, const double*, ngpt::datetime<ngpt::seconds>, double*,
+      double*, double*, int, int&);
 
     int
     read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
-          const char* filename=nullptr);
+      const char* filename=nullptr);
 
     int
-    hardisp_impl(int irnt, double samp, double tamp[3][ntin], double tph[3][ntin], 
-          ngpt::datetime<ngpt::seconds> epoch);
-    /*
-    inline bool
-    leap(int y) noexcept
-    {
-      int leap = 1 - ((y%4)+3)/4;
-      if ( !(y%100) && (y%400) ) leap = 0;
-      return leap;
-    }
-    */
-
-    /**
-     * @details This function finds the day number of days before start of 
-     *          month m, of year iy, in Gregorian intercalation.
-     * 
-     * @param[in]  iy Given year
-     * @param[in]  m  Given month
-     * @return        Day number of day before start of a month
-     * 
-     * @note Status: Canonical model
-     * 
-     * @version 2009 July  29
-     * 
-     */
-    /*
-    inline int
-    mday(int iy, int m) noexcept
-    {
-      int isleap = leap(iy);
-      return (((367*(m-2-12*((m-14)/12)))/12+29) % (365)) + 
-        isleap*((9+m)/12);
-    }
-    */
-
-    /**
-     * @details This function converts a Gregorian date to a Julian date.
-     * 
-     * @param[in] it A Gregorian date (Note 1)
-     * @return       The corresponding Julian date (Note 2)
-     * 
-     * @note
-     *     -# The format of the Gregorian date should be yyyy-mm-dd (i.e a
-     *       3-dimensional array of ints)
-     *     -# The date is valid for all positive values.
-     *     -# Status: Canonical model
-     * 
-     * @version 2009 August 19
-     * 
-     * @cite iers2010, 
-     * Explanatory Supplement American Ephemeris & Nautical Almanac
-     * (cf Comm CACM, 11, 657 (1968) and 15, 918 (1972)), p. 604
-     *
-     */
-    /*
-    inline int
-    juldat(int y, int m, int d) noexcept
-    {
-      return (1461*(y+4800+(m-14)/12))/4 + 
-          (367*(m-2-12*((m-14)/12)))/12 - 
-          (3*((y+4900+(m-14)/12)/100))/4+d-32075;
-    }
-    */
-
+    hardisp_impl(int, double, double tamp[3][ntin], double tph[3][ntin], 
+      ngpt::datetime<ngpt::seconds> epoch);
   } /* end namespace hisp */
 
 }/* end namespace iers2010 */

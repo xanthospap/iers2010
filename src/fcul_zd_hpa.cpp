@@ -43,9 +43,8 @@
  * 
  */
 int
-iers2010::fcul_zd_hpa (const double& dlat,const double& dhgt,
-        const double& pres,const double& wvp,const double& lambda,
-        double& f_ztd,double& f_zhd,double& f_zwd)
+iers2010::fcul_zd_hpa (double dlat, double dhgt, double pres, double wvp, 
+  double lambda, double& f_ztd,double& f_zhd,double& f_zwd)
 {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double PI   (DPI);

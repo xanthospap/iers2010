@@ -194,6 +194,17 @@ in running the test case.
 FORTRAN (i.e. GPT.F) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
+### hardisp <a id="hardisp-cmp"></a>
+
+There is currently a problem with HARDISP algorithm; a date in UTC is given as input which is then
+converted to ET (aka Ephemeris Time) and used to compute results. However, according to IAU, ET
+is not a time-scale that should be used and is actually not supported (see International Astronomical Union, 
+Standards Of Fundamental Astronomy, SOFA Time Scale and Calendar Tools, Software version 13 - 
+Document revision 1.6). In this document, it is stated that ``ET (ephemeris time): superseded by TT and TDB``
+
+In the c++ implementation instead of ET we use TT. To do that, we use the formula: 
+``UTC + ΔAT + 32.184(sec) = TT``
+
 ## How to use the library (TODO)
 
 ### Namespaces

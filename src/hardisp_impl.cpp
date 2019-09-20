@@ -126,8 +126,8 @@ iers2010::hisp::read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
  * 
  */
 int
-iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin], double tph[3][ntin], 
-  ngpt::datetime<ngpt::seconds> epoch)
+iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin],
+  double tph[3][ntin], ngpt::datetime<ngpt::seconds> epoch)
 {
   constexpr double dr ( 0.01745329252e0 );
   int irli  ( 1 );
@@ -153,23 +153,18 @@ iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin], double
     amp[i]   = tamp[0][i];
     phase[i] = tph[0][i];
   }
-  //for (int i=0; i<ntin; i++) printf("%15.10f %15.10f\n", amp[i], phase[i]);
   iers2010::hisp::admint(amp, phase, epoch, az, f, pz, ntin, ntout);
-  //for (int i=0; i<nt; i++) printf("%15.10f %15.10f %15.10f\n", az[i], f[i], pz[i]);
-  //return 5;
 
   for (int i=0; i<ntin; i++) {
     amp[i] = tamp[1][i];
     phase[i] = tph[1][i];
   }
-  //for (int i=0; i<ntin; i++) printf("%15.10f %15.10f\n", amp[i], phase[i]);
   iers2010::hisp::admint(amp, phase, epoch, aw, f, pw, ntin, ntout);
 
   for (int i=0; i<ntin; i++) {
     amp[i] = tamp[2][i];
     phase[i] = tph[2][i];
   }
-  //for (int i=0; i<ntin; i++) printf("%15.10f %15.10f\n", amp[i], phase[i]);
   iers2010::hisp::admint(amp, phase, epoch, as, f, ps, ntin, ntout);
 
   // set up for recursion, by normalizing frequencies, and converting
@@ -228,5 +223,5 @@ iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin], double
     }
   }
 
-    return 0;
+  return 0;
 }

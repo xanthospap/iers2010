@@ -3,17 +3,17 @@
 #include "ggdatetime/datetime_write.hpp"
 
 /**
- * \details This subroutine returns the frequency and phase of a tidal
+ * @details This subroutine returns the frequency and phase of a tidal
  *          constituent when its Doodson number is given as input. 
  * 
- * \param[in]  idood Doodson number of a tidal constituent (6-element integer array)
- * \param[in]  itm   Date as integer array in UTC. The format should be:
+ * @param[in]  idood Doodson number of a tidal constituent (6-element integer array)
+ * @param[in]  itm   Date as integer array in UTC. The format should be:
  *                   [year, day_of_year, hours, minutes, seconds].
- * \param[out] freq  Frequency of a tidal constituent
- * \param[out] phase Phase of a tidal constituent (Note 1)
- * \return           Always 0.
+ * @param[out] freq  Frequency of a tidal constituent
+ * @param[out] phase Phase of a tidal constituent (Note 1)
+ * @return           Always 0.
  * 
- * \note
+ * @note
  *     -# The phases must be decreased by 90 degrees if the sum of the order 
  *        and the species number is odd (as for the 2nd degree diurnals, and 
  *        3rd degree low frequency and semidiurnals).
@@ -23,9 +23,9 @@
  *        order) = (1,2), (1,3), or (3,3).
  *     -# Status:  Class 1 model
  * 
- * \version 11.09.2013
+ * @version 11.09.2013
  *
- * \cite iers2010
+ * @cite iers2010
  * 
  * @todo There is a bug here! The line: 
  * 'double delta  ( iers2010::hisp::etutc (year) );'
@@ -39,31 +39,23 @@ iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> iepoch,
   static ngpt::datetime<ngpt::seconds> last_epoch;
   static double  d[6];
   static double dd[6];
-  //double tt {-999};
     
   /*------------------------------------------------------------------------
    *  Test to see if time has changed; if so, set the phases and frequencies
    *  for each of the Doodson arguments
    *------------------------------------------------------------------------*/
-  // bool reset_date { false };
   if (iepoch != last_epoch) {
-    auto epoch = iepoch;
-    //std::cout<<"\nRecomputing epoch with epoch="<<ngpt::strftime_ymd_hms(iepoch)<<" last-epoch="<<ngpt::strftime_ymd_hms(last_epoch);
+
+    ngpt::datetime<ngpt::milliseconds> epoch = iepoch.cast_to<ngpt::milliseconds>();
     // Convert times to Julian days (UT) then to Julian centuries 
-    // from J2000.0 (ET)
-    //std::cout<<"time: "<<ngpt::strftime_ymd_hms(epoch)<<"\n";
+    // from J2000.0 (TT)
     int dat = ngpt::dat(epoch.mjd());
-    //std::cout<<"time: "<<ngpt::strftime_ymd_hms(epoch)<<"\n";
-    //printf("jd=%15.10f\n", epoch.as_mjd()+ngpt::mjd0_jd);
     double dayfr = epoch.sec().fractional_days();
-    //printf("dayfr=%15.10f\n", dayfr);
-    epoch.add_seconds(ngpt::seconds(dat));
+    epoch.add_seconds(ngpt::milliseconds(dat*1e3) + ngpt::milliseconds(32184));
     double t = (epoch.as_mjd() + ngpt::mjd0_jd - ngpt::j2000_jd) / 36525e0;
-    //tt = t;
-    //printf("t %20.15f dayfr %20.15f\n", t,dayfr);
-    t = 0.094799449636217e0; 
-    dayfr = 0.049131944444444e0;
-    //printf("t %20.15f dayfr %20.15f\n", t,dayfr);
+    //printf("\ndat=%5d, dayfr=%15.10f, jd=%20.10f t=%15.10f", dat, dayfr, epoch.as_mjd() + ngpt::mjd0_jd, t);
+    //t = 0.094799449636217e0; 
+    //dayfr = 0.049131944444444e0;
 
      // IERS expressions for the Delaunay arguments, in degrees
     double f1 {     134.9634025100e0 +
@@ -125,25 +117,20 @@ iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> iepoch,
     
     // copy the just used date to the static one for next use of function
     last_epoch = iepoch;
-    //std::cout<<" new last-epoch="<<ngpt::strftime_ymd_hms(last_epoch)<<" equal to "<<ngpt::strftime_ymd_hms(iepoch)<<"\n";
 
   } // End of intialization (likely to be called only once)
     
   //  Compute phase and frequency of the given tidal constituent
   freq  = 0e0;
   phase = 0e0;
-  //double deleteme;
   for (int i=0; i<6; i++) {
     freq  += ((double)idood[i]) * dd[i];
-    //deleteme=phase;
     phase += ((double)idood[i]) * d[i];
-    //printf("\n%20.10f+(%5d*%20.10f)=%20.10f",deleteme,idood[i],d[i],phase);
   }
     
   // Adjust phases so that they fall in the positive range 0 to 360
   phase = std::fmod(phase, 360e0);
   if ( phase < 0e0 ) { phase += 360e0; }
-  //printf("tdfrph: %15.10f %15.10f %15.10f\n", tt, phase, freq);
     
   // Finished
   return 0;
