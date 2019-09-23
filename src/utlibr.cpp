@@ -3,35 +3,32 @@
 #include "gencon.hpp"
 #endif
 
-/**
- * @details This function evaluates the model of subdiurnal libration
- *          in the axial component of rotation, expressed by UT1 and LOD.
- *          This effect is due to the influence of tidal gravitation on the
- *          departures of the Earth's mass distribution from the rotational
- *          symmetry, expressed by the non-zonal components of geopotential.
- *          The amplitudes have been computed for an elastic Earth with liquid
- *          core. The adopted truncation level is 0.033 microseconds in UT1
- *          corresponding to the angular displacement of 0.5 microarcseconds
- *          or to 0.015 mm at the planet surface. With this truncation level
- *          the model contains 11 semidiurnal terms. The coefficients of
- *          the model are given in Table 5.1b of the IERS Conventions (2010).
- *          This function is a translation/wrapper for the fortran UTLIBR
- *          subroutine, found here : 
- *          http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  rmjd Time expressed as modified Julian date
- * @param[out] dut1 Incremental UT1 in microseconds
- * @param[out] dlod Incremental LOD in microseconds per day
- * @return          An integer value, always 0. 
- *
- * @note
- *      - Status:  Class 3 model
- * 
- * @version 23.06.2010
- * 
- * @cite iers2010
- * 
- */
+/// @details This function evaluates the model of subdiurnal libration
+///          in the axial component of rotation, expressed by UT1 and LOD.
+///          This effect is due to the influence of tidal gravitation on the
+///          departures of the Earth's mass distribution from the rotational
+///          symmetry, expressed by the non-zonal components of geopotential.
+///          The amplitudes have been computed for an elastic Earth with liquid
+///          core. The adopted truncation level is 0.033 microseconds in UT1
+///          corresponding to the angular displacement of 0.5 microarcseconds
+///          or to 0.015 mm at the planet surface. With this truncation level
+///          the model contains 11 semidiurnal terms. The coefficients of
+///          the model are given in Table 5.1b of the IERS Conventions (2010).
+///          This function is a translation/wrapper for the fortran UTLIBR
+///          subroutine, found here : 
+///          http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  rmjd Time expressed as modified Julian date
+/// @param[out] dut1 Incremental UT1 in microseconds
+/// @param[out] dlod Incremental LOD in microseconds per day
+/// @return          An integer value, always 0. 
+///
+/// @note
+///      - Status:  Class 3 model
+/// 
+/// @version 23.06.2010
+/// 
+/// @cite iers2010
 int
 iers2010::utlibr(double rmjd, double& dut1, double& dlod) 
 {

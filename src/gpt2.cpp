@@ -1,91 +1,87 @@
 #include <fstream>
 #include <cassert>
-#ifdef USE_EXTERNAL_CONSTS
-#include "gencon.hpp"
-#endif
 #ifdef DEBUG
 #include <iostream>
 #include <cstdio>
 #endif
 #include "iers2010.hpp"
+#ifdef USE_EXTERNAL_CONSTS
+#include "gencon.hpp"
+#endif
 
 /// Define the path to the gpt2_5.grd file (including the filename)
 #define PATH_TO_GRD25_GRD "/usr/local/share/libiers10/gpt2_5.grd"
 
-/** @brief         sign function or signum function; extracts the sign of a real number
- *  @param[in] val Template parameter
- *  @return        -1 if val < 0, <br>
- *                  0 if val = 0, <br>
- *                  1 if val > 0
- */
+/// @brief sign function or signum function; extracts the sign of a 
+///        real number
+///  @param[in] val Template parameter
+///  @return        -1 if val < 0, <br>
+///                  0 if val = 0, <br>
+///                  1 if val > 0
 template <typename T> 
   inline int
   sgn(T val) noexcept
-{
-  return (T(0) < val) - (val < T(0));
-}
+{ return (T(0) < val) - (val < T(0)); }
 
-/**
- * @details  This function determines pressure, temperature, temperature lapse
- *           rate, water vapour pressure, hydrostatic and wet mapping function 
- *           coefficients ah and aw, and geoid undulation for specific sites 
- *           near the Earth surface. It is based on a 5 x 5 degree external 
- *           grid file ('gpt2_5.grd') with mean values as well as sine and 
- *           cosine amplitudes for the annual and semiannual variation of the 
- *           coefficients.
- *           This function is a translation/wrapper for the fortran GPT2
- *           subroutine, found here : 
- *           http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  dmjd  Modified Julian Date
- * @param[in]  dlat  Ellipsoidal latitude given in radians [-pi/2:+pi/2] 
- *                   (vector)
- * @param[in]  dlon  Longitude given in radians [-pi:pi] or [0:2pi] (vector)
- * @param[in]  hell  Ellipsoidal height in meters (vector)
- * @param[in]  nstat Number of stations in dlat, dlon, and hell (i.e. size of
- *                   input arrays)
- * @param[in]  it    An integer, denoting:<br>
- *                   case 1 : no time variation but static quantities<br>
- *                   case 0 : with time variation (annual and semiannual terms)
- * @param[in]  ifile The name of the input gridfile to read values from. By
- *                   default, it is set to 'gpt2_5.grd'.
- * @param[out] p     Pressure given in hPa (vector of length nstat)
- * @param[out] t     Temperature in degrees Celsius (vector of length nstat)
- * @param[out] dt    Temperature lapse rate in degrees per km (vector of length
- *                   nstat)
- * @param[out] e     Water vapour pressure in hPa (vector of length nstat)
- * @param[out] ah    Hydrostatic mapping function coefficient at zero height 
- *                   (VMF1) (vector of length NSTAT)
- * @param[out] aw    Wet mapping function coefficient (VMF1) (vector of length 
- *                   NSTAT)
- * @param[out] undu  Geoid undulation in meters (vector of length nstat)
- * @return           An integer which can be:
- *                   Returned Value | Status
- *                   ---------------|-----------------------------------
- *                               -2 | Error reading gridfile
- *                               -1 | Unable to open input gridfile
- *                                0 | Success
- * 
- * @note
- *    -# The hydrostatic mapping function coefficients have to be used with the
- *       height dependent Vienna Mapping Function 1 (vmf_ht.f) because the
- *       coefficients refer to zero height.
- *    -# Status: Class 1 model
- *
- * @version 31.05.2013
- * 
- * @cite iers2010
- *     Lagler, K., Schindelegger, M., Boehm, J., Krasna, H., and Nilsson, T.,
- *     (2013), "GPT2: Empirical slant delay model for radio space geodetic
- *     techniques," Geophys. Res. Lett., Vol. 40, pp. 1069-1073, DOI:
- *     10.1002/grl.50288. 
- *
- * TODO Test some extreme cases
- */
+/// @details  This function determines pressure, temperature, temperature lapse
+///           rate, water vapour pressure, hydrostatic and wet mapping function 
+///           coefficients ah and aw, and geoid undulation for specific sites 
+///           near the Earth surface. It is based on a 5 x 5 degree external 
+///           grid file ('gpt2_5.grd') with mean values as well as sine and 
+///           cosine amplitudes for the annual and semiannual variation of the 
+///           coefficients.
+///           This function is a translation/wrapper for the fortran GPT2
+///           subroutine, found here : 
+///           http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  dmjd  Modified Julian Date
+/// @param[in]  dlat  Ellipsoidal latitude given in radians [-pi/2:+pi/2] 
+///                   (vector)
+/// @param[in]  dlon  Longitude given in radians [-pi:pi] or [0:2pi] (vector)
+/// @param[in]  hell  Ellipsoidal height in meters (vector)
+/// @param[in]  nstat Number of stations in dlat, dlon, and hell (i.e. size of
+///                   input arrays)
+/// @param[in]  it    An integer, denoting:<br>
+///                   case 1 : no time variation but static quantities<br>
+///                   case 0 : with time variation (annual and semiannual terms)
+/// @param[in]  ifile The name of the input gridfile to read values from. By
+///                   default, it is set to 'gpt2_5.grd'.
+/// @param[out] p     Pressure given in hPa (vector of length nstat)
+/// @param[out] t     Temperature in degrees Celsius (vector of length nstat)
+/// @param[out] dt    Temperature lapse rate in degrees per km (vector of length
+///                   nstat)
+/// @param[out] e     Water vapour pressure in hPa (vector of length nstat)
+/// @param[out] ah    Hydrostatic mapping function coefficient at zero height 
+///                   (VMF1) (vector of length NSTAT)
+/// @param[out] aw    Wet mapping function coefficient (VMF1) (vector of length 
+///                   NSTAT)
+/// @param[out] undu  Geoid undulation in meters (vector of length nstat)
+/// @return           An integer which can be:
+///                   Returned Value | Status
+///                   ---------------|-----------------------------------
+///                               -2 | Error reading gridfile
+///                               -1 | Unable to open input gridfile
+///                                0 | Success
+/// 
+/// @note
+///    -# The hydrostatic mapping function coefficients have to be used with the
+///       height dependent Vienna Mapping Function 1 (vmf_ht.f) because the
+///       coefficients refer to zero height.
+///    -# Status: Class 1 model
+///
+/// @version 31.05.2013
+/// 
+/// @cite iers2010
+///     Lagler, K., Schindelegger, M., Boehm, J., Krasna, H., and Nilsson, T.,
+///     (2013), "GPT2: Empirical slant delay model for radio space geodetic
+///     techniques," Geophys. Res. Lett., Vol. 40, pp. 1069-1073, DOI:
+///     10.1002/grl.50288. 
+///
+/// TODO Test some extreme cases
 int
 iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
-    int it, double* p, double* t, double* dt, double* e, double* ah, double* aw,
-    double* undu, const char* ifile)
+  int it, double* p, double* t, double* dt, double* e, double* ah, double* aw,
+  double* undu, const char* ifile)
 {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double TWOPI   (D2PI);
@@ -142,9 +138,9 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
   // http://acc.igs.org/tropo/gpt2_5.grd on 11/6/2012
   std::ifstream fin;
   if ( !ifile ) {
-      fin.open(PATH_TO_GRD25_GRD, std::ifstream::in);
+    fin.open(PATH_TO_GRD25_GRD, std::ifstream::in);
   } else {
-      fin.open(ifile, std::ifstream::in);
+    fin.open(ifile, std::ifstream::in);
   }
   if ( !fin.is_open() ) return -1;
 

@@ -1,34 +1,31 @@
 #include "iers2010.hpp"
 
-/**
- * @details  This function computes the global total FCULa mapping function 
- *           (Mendes et al. 2002). It is dependent on latitude, height, and 
- *           surface temperature.
- *           This function is a translation/wrapper for the fortran FCUL_A
- *           subroutine, found here : 
- *           http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  dlat  Latitude given in degrees (North Latitude)
- * @param[in]  dhgt  Height given in meters (mean sea level)
- * @param[in]  t     Surface temperature given in Kelvin
- * @param[in]  elev  Elevation angle in degrees
- * @return           Mapping function to scale total delay (Note 1)
- * 
- * @note
- *    -# These coefficients are based on a LS adjustment of 87766 (cleaned)
- *    set of traces, based on Ciddor routines to compute refractivity,
- *    according to IUGG recommendations (1999).
- *    -# Status: Class 1 model
- *
- * @version 13.08.2009
- *
- * @cite iers2010
- * Mendes, V.B., G. Prates, E.C. Pavlis, D.E. Pavlis, 
- * and R.B. Langley (2002). "Improved mapping functions for
- * atmospheric refraction correction in SLR", Geophysical 
- * Res. Lett., 29(10), 1414, doi:10.1029/2001GL014394, 2002
- * 
- */
+/// @details  This function computes the global total FCULa mapping function 
+///           (Mendes et al. 2002). It is dependent on latitude, height, and 
+///           surface temperature.
+///           This function is a translation/wrapper for the fortran FCUL_A
+///           subroutine, found here : 
+///           http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  dlat  Latitude given in degrees (North Latitude)
+/// @param[in]  dhgt  Height given in meters (mean sea level)
+/// @param[in]  t     Surface temperature given in Kelvin
+/// @param[in]  elev  Elevation angle in degrees
+/// @return           Mapping function to scale total delay (Note 1)
+/// 
+/// @note
+///    -# These coefficients are based on a LS adjustment of 87766 (cleaned)
+///    set of traces, based on Ciddor routines to compute refractivity,
+///    according to IUGG recommendations (1999).
+///    -# Status: Class 1 model
+///
+/// @version 13.08.2009
+///
+/// @cite iers2010
+/// Mendes, V.B., G. Prates, E.C. Pavlis, D.E. Pavlis, 
+/// and R.B. Langley (2002). "Improved mapping functions for
+/// atmospheric refraction correction in SLR", Geophysical 
+/// Res. Lett., 29(10), 1414, doi:10.1029/2001GL014394, 2002
 double
 iers2010::fcul_a(double dlat, double dhgt, double t, double elev)
 {

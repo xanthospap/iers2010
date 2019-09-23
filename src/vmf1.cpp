@@ -3,42 +3,39 @@
 #include "gencon.hpp"
 #endif
 
-/**
- * @details  This subroutine determines the Vienna Mapping Function 1 (VMF1).
- *           This is the site dependent version.
- *           This function is a translation/wrapper for the fortran VMF1.F
- *           subroutine, found here : 
- *           http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  ah    Hydrostatic coefficient a (Note 1)
- * @param[in]  aw    Wet coefficient a (Note 1)
- * @param[in]  dmjd  Modified Julian Date
- * @param[in]  dlat  Ellipsoidal latitude given in radians
- * @param[in]  zd    Zenith distance in radians
- * @param[out] vmf1h Hydrostatic mapping function (Note 2)
- * @param[out] vmf1w Wet mapping function (Note 2)
- * @return           An integer, always zero
- * 
- * @note
- *    -# The coefficients can be obtained from the website
- *       http://ggosatm.hg.tuwien.ac.at/DELAY/GRID/
- *    -# The mapping functions are dimensionless scale factors
- *    -# Status: Class 1 model
- *
- * @version 12.01.2012
- * 
- * @cite iers2010
- *  Boehm, J., Werl, B., and Schuh, H., (2006), 
- *     "Troposhere mapping functions for GPS and very long baseline
- *     interferometry from European Centre for Medium-Range Weather
- *     Forecasts operational analysis data," J. Geophy. Res., Vol. 111,
- *     B02406, doi:10.1029/2005JB003629
- *
- *     Please mind that the coefficients in this paper are wrong.
- *     The corrected version of the paper can be found at: 
- *     http://ggosatm.hg.tuwien.ac.at/DOCS/PAPERS/2006Boehm_etal_VMF1.pdf
- * 
- */
+/// @details  This subroutine determines the Vienna Mapping Function 1 (VMF1).
+///           This is the site dependent version.
+///           This function is a translation/wrapper for the fortran VMF1.F
+///           subroutine, found here : 
+///           http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  ah    Hydrostatic coefficient a (Note 1)
+/// @param[in]  aw    Wet coefficient a (Note 1)
+/// @param[in]  dmjd  Modified Julian Date
+/// @param[in]  dlat  Ellipsoidal latitude given in radians
+/// @param[in]  zd    Zenith distance in radians
+/// @param[out] vmf1h Hydrostatic mapping function (Note 2)
+/// @param[out] vmf1w Wet mapping function (Note 2)
+/// @return           An integer, always zero
+/// 
+/// @note
+///    -# The coefficients can be obtained from the website
+///       http://ggosatm.hg.tuwien.ac.at/DELAY/GRID/
+///    -# The mapping functions are dimensionless scale factors
+///    -# Status: Class 1 model
+///
+/// @version 12.01.2012
+/// 
+/// @cite iers2010
+///  Boehm, J., Werl, B., and Schuh, H., (2006), 
+///     "Troposhere mapping functions for GPS and very long baseline
+///     interferometry from European Centre for Medium-Range Weather
+///     Forecasts operational analysis data," J. Geophy. Res., Vol. 111,
+///     B02406, doi:10.1029/2005JB003629
+///
+///     Please mind that the coefficients in this paper are wrong.
+///     The corrected version of the paper can be found at: 
+///     http://ggosatm.hg.tuwien.ac.at/DOCS/PAPERS/2006Boehm_etal_VMF1.pdf
 int
 iers2010::vmf1(double ah, double aw, double dmjd, double dlat, double zd,
     double& vmf1h, double& vmf1w)

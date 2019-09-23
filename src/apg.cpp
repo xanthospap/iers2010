@@ -1,57 +1,55 @@
 #include "iers2010.hpp"
 
-/**
- * @details  This subroutine determines the asymmetric delay d in meters caused
- *           by gradients.  The north and east gradients are also provided.
- *           They are based on Spherical Harmonics up to degree and order 9.
- *           If the north and east gradients are used, they should be used
- *           with the gradient model by Chen and Herring (1997). See Reference 1
- *           and last lines of this subroutine.
- *           This function is a translation/wrapper for the fortran APG
- *           subroutine, found here : 
- *           http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  dlat  Latitude given in radians (North Latitude)
- * @param[in]  dlon  Longitude given in radians (East Longitude)
- * @param[in]  az    Azimuth from north in radians
- * @param[in]  el    Elevation angle in radians
- * @param[out] d     Delay in meters
- * @param[out] grn   North gradient in mm
- * @param[out] gre   East gradient in mm
- * @return           An integer 
- * 
- * @note
- *    -# This a priori model cannot replace the (additional) estimation of
- *       gradient parameters, if observations at elevation angles below
- *       15 degrees are analyzed.
- *    -# Status: Class 1 model
- *
- * @verbatim
- * Test case:
- *      Kashima 11 Station information retrieved at:
- *      ftp://ivscc.gsfc.nasa.gov/pub/config/ns/kashim11.config.txt
- * 
- *      given input: DLAT = 0.6274877539940092D0 radians (KASHIMA 11, Japan)
- *                   DLON = 2.454994088489240D0 radians
- *                   AZ   = 0.2617993877991494D0 radians
- *                   EL   = 0.8726646259971648D0 radians
- * 
- *      expected output: D   = -0.9677190006296187757D-4 meters 
- *                       GRN = -0.1042668498001996791D0 mm
- *                       GRE = 0.4662515377110782594D-1 mm
- * @endverbatim
- * 
- * @version 29.09.2010
- * 
- * @cite iers2010
- *     Chen, G. and Herring, T. A., 1997, ``Effects of atmospheric azimuthal
- *     asymmetry on the analysis of space geodetic data,"
- *     J. Geophys. Res., 102(B9), pp. 20,489--20,502, doi: 10.1029/97JB01739.
- * 
- */
+/// @details  This subroutine determines the asymmetric delay d in meters caused
+///           by gradients.  The north and east gradients are also provided.
+///           They are based on Spherical Harmonics up to degree and order 9.
+///           If the north and east gradients are used, they should be used
+///           with the gradient model by Chen and Herring (1997). See Reference 1
+///           and last lines of this subroutine.
+///           This function is a translation/wrapper for the fortran APG
+///           subroutine, found here : 
+///           http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  dlat  Latitude given in radians (North Latitude)
+/// @param[in]  dlon  Longitude given in radians (East Longitude)
+/// @param[in]  az    Azimuth from north in radians
+/// @param[in]  el    Elevation angle in radians
+/// @param[out] d     Delay in meters
+/// @param[out] grn   North gradient in mm
+/// @param[out] gre   East gradient in mm
+/// @return           An integer 
+/// 
+/// @note
+///    -# This a priori model cannot replace the (additional) estimation of
+///       gradient parameters, if observations at elevation angles below
+///       15 degrees are analyzed.
+///    -# Status: Class 1 model
+///
+/// @verbatim
+/// Test case:
+///      Kashima 11 Station information retrieved at:
+///      ftp://ivscc.gsfc.nasa.gov/pub/config/ns/kashim11.config.txt
+/// 
+///      given input: DLAT = 0.6274877539940092D0 radians (KASHIMA 11, Japan)
+///                   DLON = 2.454994088489240D0 radians
+///                   AZ   = 0.2617993877991494D0 radians
+///                   EL   = 0.8726646259971648D0 radians
+/// 
+///      expected output: D   = -0.9677190006296187757D-4 meters 
+///                       GRN = -0.1042668498001996791D0 mm
+///                       GRE = 0.4662515377110782594D-1 mm
+/// @endverbatim
+/// 
+/// @version 29.09.2010
+/// 
+/// @cite iers2010
+///     Chen, G. and Herring, T. A., 1997, ``Effects of atmospheric azimuthal
+///     asymmetry on the analysis of space geodetic data,"
+///     J. Geophys. Res., 102(B9), pp. 20,489--20,502, doi: 10.1029/97JB01739.
+/// 
 int
-iers2010::apg (const double& dlat,const double& dlon,const double& az,
-    const double&el,double& d,double& grn,double& gre)
+iers2010::apg(double dlat, double dlon, double az, double el, 
+  double& d, double& grn, double& gre)
 {
   // degree n and order m
   constexpr int nmax = 9;
@@ -130,14 +128,14 @@ iers2010::apg (const double& dlat,const double& dlon,const double& az,
   int N, M;
   for (int n=1; n<nmax; n++) {
     N = n + 1;
-    v[n+1][0] = ( (2*N-1) * z * v[n][0] - (N-1) * v[n-1][0] ) / (double) N;
+    v[n+1][0] = ( (2*N-1) * z * v[n][0] - (N-1) * v[n-1][0] ) / static_cast<double>(N);
     w[n+1][0] = 0e0;
   }
     
   for (int m=0; m<mmax; m++) {
     M = m + 1;
-    v[m+1][m+1] = (double) (2*M-1) * ( x*v[m][m] - y*w[m][m] );
-    w[m+1][m+1] = (double) (2*M-1) * ( x*w[m][m] + y*v[m][m] );
+    v[m+1][m+1] = static_cast<double>(2*M-1) * ( x*v[m][m] - y*w[m][m] );
+    w[m+1][m+1] = static_cast<double>(2*M-1) * ( x*w[m][m] + y*v[m][m] );
     if (m<mmax-1) {
       v[m+2][m+1] = (2*M+1) * z* v[m+1][m+1];
       w[m+2][m+1] = (2*M+1) * z* w[m+1][m+1];
@@ -145,9 +143,9 @@ iers2010::apg (const double& dlat,const double& dlon,const double& az,
     N = M + 2;
     for (int n=m+2;n<nmax;n++) {
       v[n+1][m+1] = ( (2*N-1)*z*v[n][m+1] - (N+M-1)*v[n-1][m+1] ) 
-        / (double) (N-M);
+        / static_cast<double>(N-M);
       w[n+1][m+1] = ( (2*N-1)*z*w[n][m+1] - (N+M-1)*w[n-1][m+1] ) 
-        / (double) (N-M);
+        / static_cast<double>(N-M);
       N++;
     }
   }

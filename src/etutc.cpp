@@ -1,35 +1,32 @@
 #include "iers2010.hpp"
 
-/**
- * \details The purpose of the function is to compute the difference, delta,
- *          between Epheremis Time (ET) and Coordinated Universal Time (UTC).
- * 
- * \param[in]  year  Decimal year (Note 1)
- * \return           Delta ET - UTC (Note 2)
- * 
- * \note
- *     -# This function is valid only from 1700.-until next leap second.
- *     -# The expression used in given in seconds.
- *     -# Leap second table in GAMIT UTC (and UT) is the time most 
- *        often used (e.g. in time signals)
- *     -# Status: Canonical model
- * 
- * \warning \b IMPORTANT <br>
- *     A new version of this routine must be
- *     produced whenever a new leap second is
- *     announced.  There are three items to
- *     change on each such occasion:<br>
- *     1) Update the nstep variable<br>
- *     2) Update the arrays st and si<br>
- *     3) Change date of latest leap second<br>
- *     <b>Latest leap second: 2016 December 31</b>
- * 
- * \todo Check the case 'For 1820.5 to 1961.5, data is spaced at yearly 
- *       intervals'. There seems to be a mixup of integers and doubles ...
- * 
- * \version 19.12.2016
- * 
- */
+/// \details The purpose of the function is to compute the difference, delta,
+///          between Epheremis Time (ET) and Coordinated Universal Time (UTC).
+/// 
+/// \param[in]  year  Decimal year (Note 1)
+/// \return           Delta ET - UTC (Note 2)
+/// 
+/// \note
+///     -# This function is valid only from 1700.-until next leap second.
+///     -# The expression used in given in seconds.
+///     -# Leap second table in GAMIT UTC (and UT) is the time most 
+///        often used (e.g. in time signals)
+///     -# Status: Canonical model
+/// 
+/// \warning \b IMPORTANT <br>
+///     A new version of this routine must be
+///     produced whenever a new leap second is
+///     announced.  There are three items to
+///     change on each such occasion:<br>
+///     1) Update the nstep variable<br>
+///     2) Update the arrays st and si<br>
+///     3) Change date of latest leap second<br>
+///     <b>Latest leap second: 2016 December 31</b>
+/// 
+/// \todo Check the case 'For 1820.5 to 1961.5, data is spaced at yearly 
+///       intervals'. There seems to be a mixup of integers and doubles ...
+/// 
+/// \version 19.12.2016
 double
 iers2010::hisp::etutc(double year)
 {

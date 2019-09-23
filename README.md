@@ -203,7 +203,9 @@ Standards Of Fundamental Astronomy, SOFA Time Scale and Calendar Tools, Software
 Document revision 1.6). In this document, it is stated that ``ET (ephemeris time): superseded by TT and TDB``
 
 In the c++ implementation instead of ET we use TT. To do that, we use the formula: 
-``UTC + ΔAT + 32.184(sec) = TT``
+``UTC + ΔAT + 32.184(sec) = TT``. The transformation (along with other date/time
+computations) are performed in the function tdfrph. The two implementations (aka
+the FORTRAN and C++) produce differences up to 0.000001 meters.
 
 ## How to use the library (TODO)
 

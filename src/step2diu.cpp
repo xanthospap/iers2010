@@ -1,40 +1,38 @@
 #include <numeric>
-#include "iers2010.hpp"
+#include "dehanttideinel.hpp"
 
-/**
- * @details This function gives the in-phase and out-of-phase corrections
- *          induced by mantle anelasticity in the diurnal band.
- *          This function is a translation/wrapper for the fortran STEP2DIU
- *          subroutine, found here at 
- *          http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  xsta    Geocentric position of the IGS station (Note 1)
- * @param[in]  fhr     Fractional hours in the day (Note 2)
- * @param[in]  t       Centuries since J2000
- * @param[out] xcorsta In phase and out of phase station corrections
- *                     for diurnal band (Note 4) 
- * 
- * @note
- *    -# The IGS station is in ITRF co-rotating frame. All coordinates are
- *       expressed in meters, as arrays, i.e. [x,y,z].
- *    -# The fractional hours in the day is computed as the hour + minutes/60.0
- *       + sec/3600.0.  The unit is expressed in Universal Time (UT).
- *    -# ----
- *    -# All coordinates are expressed in meters.
- *    -# Status: Class 1
- *    -# This fucnction is part of the package dehanttideinel, see
- *       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ 
- * 
- * @version 20.10.2010
- * 
- * @cite iers2010,
- *       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
- *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
- * 
- */
+/// @details This function gives the in-phase and out-of-phase corrections
+///          induced by mantle anelasticity in the diurnal band.
+///          This function is a translation/wrapper for the fortran STEP2DIU
+///          subroutine, found here at 
+///          http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  xsta    Geocentric position of the IGS station (Note 1)
+/// @param[in]  fhr     Fractional hours in the day (Note 2)
+/// @param[in]  t       Centuries since J2000
+/// @param[out] xcorsta In phase and out of phase station corrections
+///                     for diurnal band (Note 4) 
+/// 
+/// @note
+///    -# The IGS station is in ITRF co-rotating frame. All coordinates are
+///       expressed in meters, as arrays, i.e. [x,y,z].
+///    -# The fractional hours in the day is computed as the hour + minutes/60.0
+///       + sec/3600.0.  The unit is expressed in Universal Time (UT).
+///    -# ----
+///    -# All coordinates are expressed in meters.
+///    -# Status: Class 1
+///    -# This fucnction is part of the package dehanttideinel, see
+///       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/ 
+/// 
+/// @version 20.10.2010
+/// 
+/// @cite iers2010,
+///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
+///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
 void
 iers2010::dhtide::step2diu(const double* xsta, double fhr, double t,
-    double* xcorsta)
+  double* xcorsta)
+noexcept
 {
 
   // Set constants
@@ -137,11 +135,9 @@ iers2010::dhtide::step2diu(const double* xsta, double fhr, double t,
   zns = std::fmod(zns, 360e0);
   ps  = std::fmod(ps,  360e0);
 
-  const double rsta   { std::sqrt(std::inner_product(
-        xsta, xsta+3, xsta, 0e0)) };
+  const double rsta   { std::sqrt(std::inner_product(xsta, xsta+3, xsta, 0e0)) };
   const double sinphi { xsta[2]/rsta };
   const double cosphi { std::sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1])/rsta };
-
   const double cosla  { xsta[0]/cosphi/rsta };
   const double sinla  { xsta[1]/cosphi/rsta };
   const double zla    { std::atan2(xsta[1], xsta[0]) };

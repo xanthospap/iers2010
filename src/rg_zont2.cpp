@@ -1,68 +1,65 @@
 #include "iers2010.hpp"
 #ifdef USE_EXTERNAL_CONSTS
-  #include "gencon.hpp"
+#include "gencon.hpp"
 #endif
 
-/**
- * @details This function evaluates the effects of zonal Earth tides on the
- *          rotation of the Earth.  The model used is a combination of Yoder
- *          et al. (1981) elastic body tide, Wahr and Bergen (1986) inelastic
- *          body tide, and Kantha et al. (1998) ocean tide models 
- *          as recommended by the IERS Conventions (2010).  Refer to
- *          Chapter 8 pp. 105 - 106.  The latest version of the model is located
- *          at http://tai.bipm.org/iers/convupdt/convupdt_c8.html.
- *          This function is a translation/wrapper for the fortran RG_ZONT2
- *          subroutine, found here : 
- *          http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  t      Julian centuries since J2000 (Note 1)
- * @param[out] dut    Effect on UT1 (Note 2)
- * @param[out] dlod   Effect on excess length of day (LOD) (Note 3)
- * @param[out] domega Effect on rotational speed (Note 4)
- * @return            An integer value always 0.
- * 
- * @note
- *  -# Though T is strictly TDB, it is usually more convenient to use
- *     TT, which makes no significant difference.  Julian centuries since
- *     J2000 is (JD - 2451545.0)/36525.
- *  -# The expression used is as adopted in IERS Conventions (2010).
- *     DUT is expressed in seconds and is double precision.
- *  -# The expression used is as adopted in IERS Conventions (2010).
- *     DLOD is the excess in LOD and is expressed in seconds per day
- *     and is double precision.  The phrase 'per day' is generally
- *     understood, so it has been omitted commonly in speech and
- *     literature.  
- *     See: Stephenson, F. R., Morrison, L. V., Whitrow, G. J., 1984,
- *     "Long-Term Changes in the Rotation of the Earth: 700 B. C. to
- *     A. D. 1980 [and Discussion]", Phil. Trans. Roy. Soc. of London.
- *     Series A, 313, pp. 47 - 70.
- *  -# The expression used is as adopted in IERS Conventions (2010).
- *     Rotational speed is expressed in radians per second and is
- *     double precision.
- *  -# Status:  Class 3 model
- * 
- * @version 20.12.2011
- * 
- * @cite iers2010, 
- *    Yoder, C. F., Williams, J. G., and Parke, M. E., (1981),
- *     "Tidal Variations of Earth Rotation," J. Geophys. Res., 86,
- *     pp. 881 - 891.
- *
- *     Wahr, J. and Bergen, Z., (1986), "The effects of mantle 
- *     anelasticity on nutations, Earth tides, and tidal variations
- *     in rotation rate," Geophys. J. Roy. astr. Soc., 87, pp. 633 - 668.
- *
- *     Kantha, L. H., Stewart, J. S., and Desai, S. D., (1998), "Long-
- *     period lunar fortnightly and monthly ocean tides," J. Geophys.
- *     Res., 103, pp. 12639 - 12647.
- *
- *     Gross, R. S., (2009), "Ocean tidal effects on Earth rotation,"
- *     J. Geodyn., 48(3-5), pp. 219 - 225.
- * 
- *     Petit, G. and Luzum, B. (eds.), IERS Conventions (2010),
- *     IERS Technical Note No. 36, BKG (2010)
- * 
- */
+/// @details This function evaluates the effects of zonal Earth tides on the
+///          rotation of the Earth.  The model used is a combination of Yoder
+///          et al. (1981) elastic body tide, Wahr and Bergen (1986) inelastic
+///          body tide, and Kantha et al. (1998) ocean tide models 
+///          as recommended by the IERS Conventions (2010).  Refer to
+///          Chapter 8 pp. 105 - 106.  The latest version of the model is located
+///          at http://tai.bipm.org/iers/convupdt/convupdt_c8.html.
+///          This function is a translation/wrapper for the fortran RG_ZONT2
+///          subroutine, found here : 
+///          http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  t      Julian centuries since J2000 (Note 1)
+/// @param[out] dut    Effect on UT1 (Note 2)
+/// @param[out] dlod   Effect on excess length of day (LOD) (Note 3)
+/// @param[out] domega Effect on rotational speed (Note 4)
+/// @return            An integer value always 0.
+/// 
+/// @note
+///  -# Though T is strictly TDB, it is usually more convenient to use
+///     TT, which makes no significant difference.  Julian centuries since
+///     J2000 is (JD - 2451545.0)/36525.
+///  -# The expression used is as adopted in IERS Conventions (2010).
+///     DUT is expressed in seconds and is double precision.
+///  -# The expression used is as adopted in IERS Conventions (2010).
+///     DLOD is the excess in LOD and is expressed in seconds per day
+///     and is double precision.  The phrase 'per day' is generally
+///     understood, so it has been omitted commonly in speech and
+///     literature.  
+///     See: Stephenson, F. R., Morrison, L. V., Whitrow, G. J., 1984,
+///     "Long-Term Changes in the Rotation of the Earth: 700 B. C. to
+///     A. D. 1980 [and Discussion]", Phil. Trans. Roy. Soc. of London.
+///     Series A, 313, pp. 47 - 70.
+///  -# The expression used is as adopted in IERS Conventions (2010).
+///     Rotational speed is expressed in radians per second and is
+///     double precision.
+///  -# Status:  Class 3 model
+/// 
+/// @version 20.12.2011
+/// 
+/// @cite iers2010, 
+///    Yoder, C. F., Williams, J. G., and Parke, M. E., (1981),
+///     "Tidal Variations of Earth Rotation," J. Geophys. Res., 86,
+///     pp. 881 - 891.
+///
+///     Wahr, J. and Bergen, Z., (1986), "The effects of mantle 
+///     anelasticity on nutations, Earth tides, and tidal variations
+///     in rotation rate," Geophys. J. Roy. astr. Soc., 87, pp. 633 - 668.
+///
+///     Kantha, L. H., Stewart, J. S., and Desai, S. D., (1998), "Long-
+///     period lunar fortnightly and monthly ocean tides," J. Geophys.
+///     Res., 103, pp. 12639 - 12647.
+///
+///     Gross, R. S., (2009), "Ocean tidal effects on Earth rotation,"
+///     J. Geodyn., 48(3-5), pp. 219 - 225.
+/// 
+///     Petit, G. and Luzum, B. (eds.), IERS Conventions (2010),
+///     IERS Technical Note No. 36, BKG (2010)
 int
 iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
 {
@@ -74,20 +71,16 @@ iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
   constexpr double TWOPI   (6.283185307179586476925287e0);
 #endif
 
-  /*  ----------------------
-   *  Zonal Earth tide model
-   *  ----------------------*/
-
+  // Zonal Earth tide model
   // Number of terms in the zonal Earth tide model  
   constexpr int nzont = 62;
 
-  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-   *  --------------------------------------------------
-   *  Tables of multiples of arguments and coefficients
-   *  --------------------------------------------------
-   *  Luni-Solar argument multipliers
-   *      l   l'  F   D OMEGA
-   */
+  //  --------------------------------------------------
+  //  Tables of multiples of arguments and coefficients
+  //  --------------------------------------------------
+  //
+  //  Luni-Solar argument multipliers
+  //      l   l'  F   D OMEGA
   constexpr int nfund[nzont][5] = {
     //  DATA ( ( NFUND(I,J), I=1,5 ), J= 1, 20 ) /
     { 1,  0,  2,  2,  2 },
@@ -157,10 +150,8 @@ iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
     { 0,  0,  0,  0,  1 }
   };
 
-  /*
-   *     Multiple of     DUT          DLOD              DOMEGA
-   *            sin     cos      cos      sin       cos      sin
-   */
+  // Multiple of     DUT          DLOD              DOMEGA
+  // sin         cos       cos       sin        cos       sin
   constexpr double tide[nzont][6] = {
     // DATA ( ( TIDE(I,J), I=1,6 ), J = 1,20 ) /
     {-0.0235e0,  0.0000e0, 0.2617e0, 0.0000e0, -0.2209e0, 0.0000e0},

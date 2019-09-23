@@ -3,39 +3,36 @@
 #include "gencon.hpp"
 #endif
 
-/**
- * @details This function evaluates the model of polar motion for
- *          a nonrigid Earth due to tidal gravitation. This polar motion
- *          is equivalent to the so-called "subdiurnal nutation." The model
- *          is a sum of a first order polynomial and 25 trigonometric terms
- *          (15 long periodic and 10 quasi diurnal) with coefficients given
- *          in Table 5.1a of the IERS Conventions (2010).
- *          This function is a translation/wrapper for the fortran PMSDNUT2
- *          subroutine, found here : 
- *          http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  rmjd Time expressed as modified Julian date
- * @param[out] dx   The x component of polar motion expressed in 
- *                  microarcseconds.
- * @param[out] dy   The y component of polar motion expressed in 
- *                  microarcseconds.
- * @return          An integer value, always 0.
- *
- * @note    Status:  Class 1 model
- * 
- * @warning In the present version this subroutine neglects the linear trend
- *          and the long periodic terms of the expansion, for the reasons 
- *          explained in Section 5.5.1.1 of the IERS Conventions (2010). If 
- *          the full expansion is needed, set the parameter iband to 0 instead
- *          of 1, that is, replace the statement
- *          PARAMETER ( iband = 1 )
- *          to  PARAMETER ( iband = 0 )
- * 
- * @version 13.10.2011
- * 
- * @cite iers2010
- * 
- */
+/// @details This function evaluates the model of polar motion for
+///          a nonrigid Earth due to tidal gravitation. This polar motion
+///          is equivalent to the so-called "subdiurnal nutation." The model
+///          is a sum of a first order polynomial and 25 trigonometric terms
+///          (15 long periodic and 10 quasi diurnal) with coefficients given
+///          in Table 5.1a of the IERS Conventions (2010).
+///          This function is a translation/wrapper for the fortran PMSDNUT2
+///          subroutine, found here : 
+///          http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  rmjd Time expressed as modified Julian date
+/// @param[out] dx   The x component of polar motion expressed in 
+///                  microarcseconds.
+/// @param[out] dy   The y component of polar motion expressed in 
+///                  microarcseconds.
+/// @return          An integer value, always 0.
+///
+/// @note    Status:  Class 1 model
+/// 
+/// @warning In the present version this subroutine neglects the linear trend
+///          and the long periodic terms of the expansion, for the reasons 
+///          explained in Section 5.5.1.1 of the IERS Conventions (2010). If 
+///          the full expansion is needed, set the parameter iband to 0 instead
+///          of 1, that is, replace the statement
+///          PARAMETER ( iband = 1 )
+///          to  PARAMETER ( iband = 0 )
+/// 
+/// @version 13.10.2011
+/// 
+/// @cite iers2010
 int
 iers2010::pmsdnut2(double rmjd, double& dx, double& dy) 
 {
@@ -88,35 +85,35 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
     int    iarg[6];
     double per, xs, xc, ys, yc;
   } x[] = {
-      //  Coefficients of the long periodic terms in polar motion
-      //+ Source: IERS Conventions (2010), Table 5.1a
-      { { 0,  0, 0,  0,  0, -1 }, 6798.3837,    0.0,   0.6,   -0.1,   -0.1 },
-      { { 0, -1, 0,  1,  0,  2 }, 6159.1355,    1.5,   0.0,   -0.2,    0.1 },
-      { { 0, -1, 0,  1,  0,  1 }, 3231.4956,  -28.5,  -0.2,    3.4,   -3.9 },
-      { { 0, -1, 0,  1,  0,  0 }, 2190.3501,   -4.7,  -0.1,    0.6,   -0.9 },
-      { { 0,  1, 1, -1,  0,  0 }, 438.35990,   -0.7,   0.2,   -0.2,   -0.7 },
-      { { 0,  1, 1, -1,  0, -1 }, 411.80661,    1.0,   0.3,   -0.3,    1.0 },
-      { { 0,  0, 0,  1, -1,  1 }, 365.24219,    1.2,   0.2,   -0.2,    1.4 },
-      { { 0,  1, 0,  1, -2,  1 }, 193.55971,    1.3,   0.4,   -0.2,    2.9 },
-      { { 0,  0, 0,  1,  0,  2 }, 27.431826,   -0.1,  -0.2,    0.0,   -1.7 },
-      { { 0,  0, 0,  1,  0,  1 }, 27.321582,    0.9,   4.0,   -0.1,   32.4 },
-      { { 0,  0, 0,  1,  0,  0 }, 27.212221,    0.1,   0.6,    0.0,    5.1 },
-      { { 0, -1, 0,  1,  2,  1 }, 14.698136,    0.0,   0.1,    0.0,    0.6 },
-      { { 0,  1, 0,  1,  0,  1 }, 13.718786,   -0.1,   0.3,    0.0,    2.7 },
-      { { 0,  0, 0,  3,  0,  3 }, 9.1071941,   -0.1,   0.1,    0.0,    0.9 },
-      { { 0,  0, 0,  3,  0,  2 }, 9.0950103,   -0.1,   0.1,    0.0,    0.6 },
-      //  Coefficients of the quasi diurnal terms in polar motion
-      //+ Source: IERS Conventions (2010), Table 5.1a
-      { { 1, -1, 0, -2,  0, -1 }, 1.1196992,   -0.4,   0.3,   -0.3,   -0.4 },
-      { { 1, -1, 0, -2,  0, -2 }, 1.1195149,   -2.3,   1.3,   -1.3,   -2.3 },
-      { { 1,  1, 0, -2, -2, -2 }, 1.1134606,   -0.4,   0.3,   -0.3,   -0.4 },
-      { { 1,  0, 0, -2,  0, -1 }, 1.0759762,   -2.1,   1.2,   -1.2,   -2.1 },
-      { { 1,  0, 0, -2,  0, -2 }, 1.0758059,  -11.4,   6.5,   -6.5,  -11.4 },
-      { { 1, -1, 0,  0,  0,  0 }, 1.0347187,    0.8,  -0.5,    0.5,    0.8 },
-      { { 1,  0, 0, -2,  2, -2 }, 1.0027454,   -4.8,   2.7,   -2.7,   -4.8 },
-      { { 1,  0, 0,  0,  0,  0 }, 0.9972696,   14.3,  -8.2,    8.2,   14.3 },
-      { { 1,  0, 0,  0,  0, -1 }, 0.9971233,    1.9,  -1.1,    1.1,    1.9 },
-      { { 1,  1, 0,  0,  0,  0 }, 0.9624365,    0.8,  -0.4,    0.4,    0.8 }
+    //  Coefficients of the long periodic terms in polar motion
+    //+ Source: IERS Conventions (2010), Table 5.1a
+    { { 0,  0, 0,  0,  0, -1 }, 6798.3837,    0.0,   0.6,   -0.1,   -0.1 },
+    { { 0, -1, 0,  1,  0,  2 }, 6159.1355,    1.5,   0.0,   -0.2,    0.1 },
+    { { 0, -1, 0,  1,  0,  1 }, 3231.4956,  -28.5,  -0.2,    3.4,   -3.9 },
+    { { 0, -1, 0,  1,  0,  0 }, 2190.3501,   -4.7,  -0.1,    0.6,   -0.9 },
+    { { 0,  1, 1, -1,  0,  0 }, 438.35990,   -0.7,   0.2,   -0.2,   -0.7 },
+    { { 0,  1, 1, -1,  0, -1 }, 411.80661,    1.0,   0.3,   -0.3,    1.0 },
+    { { 0,  0, 0,  1, -1,  1 }, 365.24219,    1.2,   0.2,   -0.2,    1.4 },
+    { { 0,  1, 0,  1, -2,  1 }, 193.55971,    1.3,   0.4,   -0.2,    2.9 },
+    { { 0,  0, 0,  1,  0,  2 }, 27.431826,   -0.1,  -0.2,    0.0,   -1.7 },
+    { { 0,  0, 0,  1,  0,  1 }, 27.321582,    0.9,   4.0,   -0.1,   32.4 },
+    { { 0,  0, 0,  1,  0,  0 }, 27.212221,    0.1,   0.6,    0.0,    5.1 },
+    { { 0, -1, 0,  1,  2,  1 }, 14.698136,    0.0,   0.1,    0.0,    0.6 },
+    { { 0,  1, 0,  1,  0,  1 }, 13.718786,   -0.1,   0.3,    0.0,    2.7 },
+    { { 0,  0, 0,  3,  0,  3 }, 9.1071941,   -0.1,   0.1,    0.0,    0.9 },
+    { { 0,  0, 0,  3,  0,  2 }, 9.0950103,   -0.1,   0.1,    0.0,    0.6 },
+    //  Coefficients of the quasi diurnal terms in polar motion
+    //+ Source: IERS Conventions (2010), Table 5.1a
+    { { 1, -1, 0, -2,  0, -1 }, 1.1196992,   -0.4,   0.3,   -0.3,   -0.4 },
+    { { 1, -1, 0, -2,  0, -2 }, 1.1195149,   -2.3,   1.3,   -1.3,   -2.3 },
+    { { 1,  1, 0, -2, -2, -2 }, 1.1134606,   -0.4,   0.3,   -0.3,   -0.4 },
+    { { 1,  0, 0, -2,  0, -1 }, 1.0759762,   -2.1,   1.2,   -1.2,   -2.1 },
+    { { 1,  0, 0, -2,  0, -2 }, 1.0758059,  -11.4,   6.5,   -6.5,  -11.4 },
+    { { 1, -1, 0,  0,  0,  0 }, 1.0347187,    0.8,  -0.5,    0.5,    0.8 },
+    { { 1,  0, 0, -2,  2, -2 }, 1.0027454,   -4.8,   2.7,   -2.7,   -4.8 },
+    { { 1,  0, 0,  0,  0,  0 }, 0.9972696,   14.3,  -8.2,    8.2,   14.3 },
+    { { 1,  0, 0,  0,  0, -1 }, 0.9971233,    1.9,  -1.1,    1.1,    1.9 },
+    { { 1,  1, 0,  0,  0,  0 }, 0.9624365,    0.8,  -0.4,    0.4,    0.8 }
   };
   constexpr int M { sizeof(x) / sizeof(x[0]) };
   static_assert( M == 25, "Invalid quasi diurnal terms in pmsdnut2." );

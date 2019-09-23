@@ -1,32 +1,29 @@
 #include "iers2010.hpp"
 #include "hardisp.hpp"
 
-/**
- * \details The purpose of the function is to perform sine and cosine recursion
- *          to fill in data x, of length n, for nf sines and cosines with 
- *          frequencies om.
- * 
- * \param[in]  x    Data provided from a file given as standard input from the
- *                  MAIN  program HARDISP.F (Note 1). This array will change!
- * \param[in]  n    Length of the data file x
- * \param[in]  hc   Array containing alternating cosine and sine coefficients
- * \param[in]  nf   Number of sine and cosine terms
- * \param[in]  om   Sine and cosine frequencies (Note 2)
- * \param[out] scr  Scratch array of length 3 times nf which is returned as 
- *                  the recursion cr
- * \return          Always returns 0
- * 
- * \note
- *   -# See the MAIN program HARDISP header comments for detailed information.
- *   -# The frequencies are normalized so that the Nyquist frequency is pi.
- *   -# Status: Canonical model
- * 
- * \version 19.08.2009
- * 
- */
+/// @details The purpose of the function is to perform sine and cosine recursion
+///          to fill in data x, of length n, for nf sines and cosines with 
+///          frequencies om.
+/// 
+/// @param[in]  x    Data provided from a file given as standard input from the
+///                  MAIN  program HARDISP.F (Note 1). This array will change!
+/// @param[in]  n    Length of the data file x
+/// @param[in]  hc   Array containing alternating cosine and sine coefficients
+/// @param[in]  nf   Number of sine and cosine terms
+/// @param[in]  om   Sine and cosine frequencies (Note 2)
+/// @param[out] scr  Scratch array of length 3 times nf which is returned as 
+///                  the recursion cr
+/// @return          Always returns 0
+/// 
+/// @note
+///   -# See the MAIN program HARDISP header comments for detailed information.
+///   -# The frequencies are normalized so that the Nyquist frequency is pi.
+///   -# Status: Canonical model
+/// 
+/// @version 19.08.2009
 int
 iers2010::hisp::recurs(double* x, int n, const double* hc, int nf, 
-    const double* om, double* scr)
+  const double* om, double* scr)
 {
   //  Set up for start of recursion by computing harmonic values
   //+ at starting point and just before it

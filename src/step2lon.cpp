@@ -1,35 +1,33 @@
 #include <numeric>
-#include "iers2010.hpp"
+#include "dehanttideinel.hpp"
 
-/**
- * @details This function gives the in-phase and out-of-phase corrections
- *          induced by mantle anelasticity in the long period band.
- *          This function is a translation/wrapper for the fortran STEP2LON
- *          subroutine, found here : 
- *          http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  xsta    Geocentric position of the IGS station (Note 1)
- * @param[in]  t       Centuries since J2000
- * @param[out] xcorsta In phase and out of phase station corrections
- *                     for diurnal band (Note 2)
- * 
- * @note
- *    -# The IGS station is in ITRF co-rotating frame. All coordinates are
- *       expressed in meters, as arrays, i.e. [x,y,z].
- *    -# All coordinates are expressed in meters.
- *    -# Status: Class 1
- *    -# This fucnction is part of the package dehanttideinel, see
- *       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
- *
- * @version 20.10.2010
- * 
- * @cite iers2010,
- *       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
- *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
- * 
- */
+/// @details This function gives the in-phase and out-of-phase corrections
+///          induced by mantle anelasticity in the long period band.
+///          This function is a translation/wrapper for the fortran STEP2LON
+///          subroutine, found here : 
+///          http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  xsta    Geocentric position of the IGS station (Note 1)
+/// @param[in]  t       Centuries since J2000
+/// @param[out] xcorsta In phase and out of phase station corrections
+///                     for diurnal band (Note 2)
+/// 
+/// @note
+///    -# The IGS station is in ITRF co-rotating frame. All coordinates are
+///       expressed in meters, as arrays, i.e. [x,y,z].
+///    -# All coordinates are expressed in meters.
+///    -# Status: Class 1
+///    -# This fucnction is part of the package dehanttideinel, see
+///       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
+///
+/// @version 20.10.2010
+/// 
+/// @cite iers2010,
+///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
+///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
 void
 iers2010::dhtide::step2lon(const double* xsta, double t, double* xcorsta)
+noexcept
 {
   // Set constants
 #ifdef USE_EXTERNAL_CONSTS

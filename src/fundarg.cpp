@@ -1,46 +1,42 @@
 #include "iers2010.hpp"
-
 #ifdef USE_EXTERNAL_CONSTS
-  #include "gencon.hpp"
+#include "gencon.hpp"
 #endif
 
-/**
- * @details This subroutine computes the lunisolar fundamental arguments.
- *          The model used is from Simon et al. (1994) as recommended by the 
- *          IERS Conventions (2010).  Refer to IERS Conventions (2010) 
- *          Chapter 5 Sections 5.7.1 - 5.7.2 (pp. 57 - 59).
- *          This function is a translation/wrapper for the fortran FUNDARG
- *          subroutine, found here : 
- *          http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  t     TT, Julian centuries since J2000 (Note 1)
- * @param[out] fargs A 5-element array containing the computed fundamental
- *                   arguments, in the following order:
- *                   fargs[0] -> l  : Mean anomaly of the Moon (Note 2)
- *                   fargs[1] -> lp : Mean anomaly of the Sun (Note 2)
- *                   fargs[2] -> f  : L - OM (Notes 2 and 3)
- *                   fargs[3] -> d  : Mean elongation of the Moon from the Sun
- *                                    (Note 2)
- *                   fargs[4] -> om : Mean longitude of the ascending node of
- *                                    the Moon (Note 2)
- * @return           An integer value always 0.
- * 
- * @note
- *       -# Though T is strictly TDB, it is usually more convenient to use
- *          TT, which makes no significant difference.  Julian centuries since
- *          J2000 is (JD - 2451545.0)/36525.
- *       -# The expression used is as adopted in IERS Conventions (2010) and
- *          is from Simon et al. (1994).  Arguments are in radians.
- *       -# L in this instance is the Mean Longitude of the Moon. OM is the 
- *          Mean longitude of the ascending node of the Moon.
- *       -# Status: Canonical model
- * 
- * @version 25.02.2010
- * 
- * @cite iers2010
- * @cite simon94
- * 
- */
+/// @details This subroutine computes the lunisolar fundamental arguments.
+///          The model used is from Simon et al. (1994) as recommended by the 
+///          IERS Conventions (2010).  Refer to IERS Conventions (2010) 
+///          Chapter 5 Sections 5.7.1 - 5.7.2 (pp. 57 - 59).
+///          This function is a translation/wrapper for the fortran FUNDARG
+///          subroutine, found here : 
+///          http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  t     TT, Julian centuries since J2000 (Note 1)
+/// @param[out] fargs A 5-element array containing the computed fundamental
+///                   arguments, in the following order:
+///                   fargs[0] -> l  : Mean anomaly of the Moon (Note 2)
+///                   fargs[1] -> lp : Mean anomaly of the Sun (Note 2)
+///                   fargs[2] -> f  : L - OM (Notes 2 and 3)
+///                   fargs[3] -> d  : Mean elongation of the Moon from the Sun
+///                                    (Note 2)
+///                   fargs[4] -> om : Mean longitude of the ascending node of
+///                                    the Moon (Note 2)
+/// @return           An integer value always 0.
+/// 
+/// @note
+///       -# Though T is strictly TDB, it is usually more convenient to use
+///          TT, which makes no significant difference.  Julian centuries since
+///          J2000 is (JD - 2451545.0)/36525.
+///       -# The expression used is as adopted in IERS Conventions (2010) and
+///          is from Simon et al. (1994).  Arguments are in radians.
+///       -# L in this instance is the Mean Longitude of the Moon. OM is the 
+///          Mean longitude of the ascending node of the Moon.
+///       -# Status: Canonical model
+/// 
+/// @version 25.02.2010
+/// 
+/// @cite iers2010
+/// @cite simon94
 int
 iers2010::fundarg(double t, double* fargs)
 {

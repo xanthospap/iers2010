@@ -1,37 +1,34 @@
 #include "iers2010.hpp"
 #include "hardisp.hpp"
-#include "ggdatetime/datetime_write.hpp"
 
-/**
- * @details This subroutine returns the frequency and phase of a tidal
- *          constituent when its Doodson number is given as input. 
- * 
- * @param[in]  idood Doodson number of a tidal constituent (6-element integer array)
- * @param[in]  itm   Date as integer array in UTC. The format should be:
- *                   [year, day_of_year, hours, minutes, seconds].
- * @param[out] freq  Frequency of a tidal constituent
- * @param[out] phase Phase of a tidal constituent (Note 1)
- * @return           Always 0.
- * 
- * @note
- *     -# The phases must be decreased by 90 degrees if the sum of the order 
- *        and the species number is odd (as for the 2nd degree diurnals, and 
- *        3rd degree low frequency and semidiurnals).
- *        These phases may need further adjustment to allow for the spherical
- *        harmonic normalization used; e.g. for that used for the potential
- *        by Cartwright and Tayler, 180 degrees must be added for (species,
- *        order) = (1,2), (1,3), or (3,3).
- *     -# Status:  Class 1 model
- * 
- * @version 11.09.2013
- *
- * @cite iers2010
- * 
- * @todo There is a bug here! The line: 
- * 'double delta  ( iers2010::hisp::etutc (year) );'
- * returns a delta != 0. The FORTRAN routine however gives delta=0.
- * WTF ??
- */
+/// @details This subroutine returns the frequency and phase of a tidal
+///          constituent when its Doodson number is given as input. 
+/// 
+/// @param[in]  idood Doodson number of a tidal constituent (6-element integer array)
+/// @param[in]  itm   Date as integer array in UTC. The format should be:
+///                   [year, day_of_year, hours, minutes, seconds].
+/// @param[out] freq  Frequency of a tidal constituent
+/// @param[out] phase Phase of a tidal constituent (Note 1)
+/// @return           Always 0.
+/// 
+/// @note
+///     -# The phases must be decreased by 90 degrees if the sum of the order 
+///        and the species number is odd (as for the 2nd degree diurnals, and 
+///        3rd degree low frequency and semidiurnals).
+///        These phases may need further adjustment to allow for the spherical
+///        harmonic normalization used; e.g. for that used for the potential
+///        by Cartwright and Tayler, 180 degrees must be added for (species,
+///        order) = (1,2), (1,3), or (3,3).
+///     -# Status:  Class 1 model
+/// 
+/// @version 11.09.2013
+///
+/// @cite iers2010
+/// 
+/// @todo There is a bug here! The line: 
+/// 'double delta  ( iers2010::hisp::etutc (year) );'
+/// returns a delta != 0. The FORTRAN routine however gives delta=0.
+/// WTF ??
 int
 iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> iepoch, 
   double& freq, double& phase)
@@ -40,10 +37,8 @@ iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> iepoch,
   static double  d[6];
   static double dd[6];
     
-  /*------------------------------------------------------------------------
-   *  Test to see if time has changed; if so, set the phases and frequencies
-   *  for each of the Doodson arguments
-   *------------------------------------------------------------------------*/
+  //  Test to see if time has changed; if so, set the phases and frequencies
+  //  for each of the Doodson arguments
   if (iepoch != last_epoch) {
 
     ngpt::datetime<ngpt::milliseconds> epoch = iepoch.cast_to<ngpt::milliseconds>();

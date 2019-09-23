@@ -1,50 +1,47 @@
 #include "iers2010.hpp"
 
-/**
- * @details  This function determines the total zenith delay following 
- *           (Mendes and Pavlis, 2004). 
- *           This function is a translation/wrapper for the fortran FCUL_A
- *           subroutine, found here : 
- *           http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  dlat   Geodetic Latitude given in degrees (North Latitude)
- * @param[in]  dhgt   Height above ellipsoid given in meters 
- * @param[in]  pres   Surface pressure given in hPa (mbars) (Note 1)
- * @param[in]  wvp    Water vapor pressure in hPa (mbars) (Note 1)
- * @param[in]  lambda Laser wavelength (micrometers)
- * @param[out] f_ztd  Zenith total delay in meters
- * @param[out] f_zhd  Zenith hydrostatic delay in meters
- * @param[out] f_zwd  Zenith non-hydrostatic delay in meters
- * @return            An integer, always zero
- * 
- * @note
- *    -# The surface pressure provided was converted from inches Hg. 
- *       The water vapor pressure was calculated from the surface 
- *       temperature (Celsius) and Relative Humidity (% R.H.) at the station.
- *    -# Status: Class 1 model
- *
- * @verbatim
- *     given input: LATITUDE  = 30.67166667D0 degrees (McDonald Observatory)
- *                  ELLIP_HT  = 2010.344D0 meters 
- *                  PRESSURE  = 798.4188D0 hPa (August 14, 2009)
- *                  WVP       = 14.322D0 hPa (August 14, 2009)
- *                  LAMBDA_UM = 0.532D0 micrometers (See Mendes et al.)
- *     expected output: FCUL_ZTD = 1.935225924846803114D0 m
- *                      FCUL_ZHD = 1.932992176591644462D0 m
- *                      FCUL_ZWD = 0.2233748255158703871D-02 m
- * @endverbatim
- * 
- * @version 14.08.2009
- *
- * @cite iers2010
- *    Mendes, V.B. and E.C. Pavlis, 2004, 
- *     "High-accuracy zenith delay prediction at optical wavelengths,"
- *     Geophysical Res. Lett., 31, L14602, doi:10.1029/2004GL020308, 2004
- * 
- */
+/// @details  This function determines the total zenith delay following 
+///           (Mendes and Pavlis, 2004). 
+///           This function is a translation/wrapper for the fortran FCUL_A
+///           subroutine, found here : 
+///           http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  dlat   Geodetic Latitude given in degrees (North Latitude)
+/// @param[in]  dhgt   Height above ellipsoid given in meters 
+/// @param[in]  pres   Surface pressure given in hPa (mbars) (Note 1)
+/// @param[in]  wvp    Water vapor pressure in hPa (mbars) (Note 1)
+/// @param[in]  lambda Laser wavelength (micrometers)
+/// @param[out] f_ztd  Zenith total delay in meters
+/// @param[out] f_zhd  Zenith hydrostatic delay in meters
+/// @param[out] f_zwd  Zenith non-hydrostatic delay in meters
+/// @return            An integer, always zero
+/// 
+/// @note
+///    -# The surface pressure provided was converted from inches Hg. 
+///       The water vapor pressure was calculated from the surface 
+///       temperature (Celsius) and Relative Humidity (% R.H.) at the station.
+///    -# Status: Class 1 model
+///
+/// @verbatim
+///     given input: LATITUDE  = 30.67166667D0 degrees (McDonald Observatory)
+///                  ELLIP_HT  = 2010.344D0 meters 
+///                  PRESSURE  = 798.4188D0 hPa (August 14, 2009)
+///                  WVP       = 14.322D0 hPa (August 14, 2009)
+///                  LAMBDA_UM = 0.532D0 micrometers (See Mendes et al.)
+///     expected output: FCUL_ZTD = 1.935225924846803114D0 m
+///                      FCUL_ZHD = 1.932992176591644462D0 m
+///                      FCUL_ZWD = 0.2233748255158703871D-02 m
+/// @endverbatim
+/// 
+/// @version 14.08.2009
+///
+/// @cite iers2010
+///    Mendes, V.B. and E.C. Pavlis, 2004, 
+///     "High-accuracy zenith delay prediction at optical wavelengths,"
+///     Geophysical Res. Lett., 31, L14602, doi:10.1029/2004GL020308, 2004
 int
 iers2010::fcul_zd_hpa (double dlat, double dhgt, double pres, double wvp, 
-  double lambda, double& f_ztd,double& f_zhd,double& f_zwd)
+  double lambda, double& f_ztd, double& f_zhd, double& f_zwd)
 {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double PI   (DPI);
@@ -63,7 +60,7 @@ iers2010::fcul_zd_hpa (double dlat, double dhgt, double pres, double wvp,
   constexpr double k1 ( 19990.975e0 );
   constexpr double k2 ( 57.362e0    );
   constexpr double k3 ( 579.55174e0 );
-    
+
   // constant values to be used in Equation (32)
   constexpr double w0 ( 295.235e0   );
   constexpr double w1 ( 2.6422e0    );

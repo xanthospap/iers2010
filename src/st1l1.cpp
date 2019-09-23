@@ -1,53 +1,45 @@
-#include "iers2010.hpp"
+#include "dehanttideinel.hpp"
 
-inline double
-inner_product3(const double* x1, const double* x2) noexcept
-{
-  return x1[0]*x2[0] + x1[1]*x2[1] + x1[2]*x2[2];
-}
-
-/**
- * @details This function gives the corrections induced by the latitude 
- *          dependence given by L^1 in Mathews et al. 1991 (See References).
- *          This function is a translation/wrapper for the fortran ST1L1
- *          subroutine, found here : 
- *          http://maia.usno.navy.mil/conv2010/software.html
- * 
- * @param[in]  xsta    Geocentric position of the IGS station (Note 1)
- * @param[in]  xsun    Geocentric position of the Sun (Note 2)
- * @param[in]  xmon    Geocentric position of the Moon (Note 2)
- * @param[in]  fac2sun Degree 2 TGP factor for the Sun (Note 3)      
- * @param[in]  fac2mon Degree 2 TGP factor for the Moon (Note 3) 
- * @param[out] xcorsta Out of phase station corrections for semi-diurnal band
- * 
- * @note
- *    -# The IGS station is in ITRF co-rotating frame. All coordinates are
- *       expressed in meters, as arrays, i.e. [x,y,z].
- *    -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
- *       coordinates are expressed in meters, as arrays, i.e. [x,y,z].
- *    -# The expressions are computed in the main program. TGP is the tide
- *       generated potential. The units are inverse meters.
- *    -# Status: Class 1
- *    -# This fucnction is part of the package dehanttideinel, see
- *       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
- *
- * @version 31.07.2009
- * 
- * @cite iers2010,
- *       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
- *       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
- *       Mathews, P. M., Buffett, B. A., Herring, T. A., Shapiro, I. I.,
- *       1991b, Forced nutations of the Earth: Influence of inner core
- *       Dynamics 2. Numerical results and comparisons, J. Geophys. Res.,
- *       96, 8243-8257
- * 
- */
+/// @details This function gives the corrections induced by the latitude 
+///          dependence given by L^1 in Mathews et al. 1991 (See References).
+///          This function is a translation/wrapper for the fortran ST1L1
+///          subroutine, found here : 
+///          http://maia.usno.navy.mil/conv2010/software.html
+/// 
+/// @param[in]  xsta    Geocentric position of the IGS station (Note 1)
+/// @param[in]  xsun    Geocentric position of the Sun (Note 2)
+/// @param[in]  xmon    Geocentric position of the Moon (Note 2)
+/// @param[in]  fac2sun Degree 2 TGP factor for the Sun (Note 3)      
+/// @param[in]  fac2mon Degree 2 TGP factor for the Moon (Note 3) 
+/// @param[out] xcorsta Out of phase station corrections for semi-diurnal band
+/// 
+/// @note
+///    -# The IGS station is in ITRF co-rotating frame. All coordinates are
+///       expressed in meters, as arrays, i.e. [x,y,z].
+///    -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
+///       coordinates are expressed in meters, as arrays, i.e. [x,y,z].
+///    -# The expressions are computed in the main program. TGP is the tide
+///       generated potential. The units are inverse meters.
+///    -# Status: Class 1
+///    -# This fucnction is part of the package dehanttideinel, see
+///       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
+///
+/// @version 31.07.2009
+/// 
+/// @cite iers2010,
+///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
+///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
+///       Mathews, P. M., Buffett, B. A., Herring, T. A., Shapiro, I. I.,
+///       1991b, Forced nutations of the Earth: Influence of inner core
+///       Dynamics 2. Numerical results and comparisons, J. Geophys. Res.,
+///       96, 8243-8257
 void
 iers2010::dhtide::st1l1(const double* xsta,const double* xsun,
     const double* xmon, double fac2sun, double fac2mon, double* xcorsta)
+noexcept
 {
   const double l1d  { 0.0012e0 },
-        l1sd { 0.0024e0 };
+               l1sd { 0.0024e0 };
 
   // Compute the normalized position vector of the IGS station.
   const double rsta     { sqrt(inner_product3(xsta,xsta)) };

@@ -1,57 +1,56 @@
 #ifndef _IERS_1010_HARDISP_
 #define _IERS_1010_HARDISP_
+#include <cmath>
 #include "ggdatetime/dtcalendar.hpp"
 
-/**
- * @file      hardisp.hpp
- * 
- * @version   1.0-1b
- * 
- * @author    xanthos@mail.ntua.gr
- *            danast@mail.ntua.gr
- * 
- * @date      January, 2015
- *
- * @brief     Additional C++ functions and definitions implementing the IERS 
- *            2010 standards; This header file accompanies the hardisp
- *            software.  
- *
- * @note      
- *    -# Original FORTRAN software can be found at 
- *       http://maia.usno.navy.mil/conv2010/software.html
- *    -# The compilation flag <b>QUICK_EXIT</b> can be set to implement a 
- *       quick version but reduced accuracy option. See th readme. file for 
- *       details.
- *    -# For more information, see the iers2010.hpp file at the root directory. 
- * 
- * @attention The FORTRAN subroutines may be updated; see that their C++ 
- *            translations stay updated too.
- * 
- * @todo
- *         -# Translate Fortran's REAL to float and NOT double.
- * 
- * @cite      iers2010
- *
- * @copyright Copyright © 2015 Dionysos Satellite Observatory, <br>
- *            National Technical University of Athens.         <br>
- *            This work is free. You can redistribute it and/or modify it under
- *            the terms of the Do What The Fuck You Want To Public License, 
- *            Version 2, as published by Sam Hocevar. See http://www.wtfpl.net/
- *            for more details.
- * 
- * <b><center><hr>
- * National Technical University of Athens <br>
- *      Dionysos Satellite Observatory     <br>
- *        Higher Geodesy Laboratory        <br>
- *      http://dionysos.survey.ntua.gr
- * </center></b>
- */ 
+/// @file      hardisp.hpp
+/// 
+/// @version   1.0-1b
+/// 
+/// @author    xanthos@mail.ntua.gr
+///            danast@mail.ntua.gr
+/// 
+/// @date      January, 2015
+///
+/// @brief     Additional C++ functions and definitions implementing the IERS 
+///            2010 standards; This header file accompanies the hardisp
+///            software.  
+///
+/// @note      
+///    -# Original FORTRAN software can be found at 
+///       http://maia.usno.navy.mil/conv2010/software.html
+///    -# The compilation flag <b>QUICK_EXIT</b> can be set to implement a 
+///       quick version but reduced accuracy option. See th readme. file for 
+///       details.
+///    -# For more information, see the iers2010.hpp file at the root directory. 
+/// 
+/// @attention The FORTRAN subroutines may be updated; see that their C++ 
+///            translations stay updated too.
+/// 
+/// @todo
+///         -# Translate Fortran's REAL to float and NOT double.
+/// 
+/// @cite      iers2010
+///
+/// @copyright Copyright © 2015 Dionysos Satellite Observatory, <br>
+///            National Technical University of Athens.         <br>
+///            This work is free. You can redistribute it and/or modify it under
+///            the terms of the Do What The Fuck You Want To Public License, 
+///            Version 2, as published by Sam Hocevar. See http://www.wtfpl.net/
+///            for more details.
+/// 
+/// <b><center><hr>
+/// National Technical University of Athens <br>
+///      Dionysos Satellite Observatory     <br>
+///        Higher Geodesy Laboratory        <br>
+///      http://dionysos.survey.ntua.gr
+/// </center></b>
 
-#include <cmath>
+namespace iers2010
+{
 
-namespace iers2010 {
-
-  namespace hisp {
+  namespace hisp
+  {
 
     // Parameters below set the buffer size for computing the tides recursively 
     
