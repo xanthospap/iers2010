@@ -31,7 +31,8 @@ MCXXFLAGS = \
 
 pkginclude_HEADERS = \
 	iers2010.hpp \
-	hardisp.hpp
+	hardisp.hpp \
+	dehanttideinel.hpp
 
 dist_libiers2010_la_SOURCES = \
 	fundarg.cpp \
@@ -61,7 +62,8 @@ dist_libiers2010_la_SOURCES = \
 	vmf1_ht.cpp \
 	gpt.cpp \
 	gpt2.cpp \
-	hardisp_impl.cpp
+	hardisp_impl.cpp \
+	dehanttideinel.cpp
 
 hardisp_SOURCES  = hardisp.cpp
 hardisp_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src

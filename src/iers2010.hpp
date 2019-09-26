@@ -1,6 +1,7 @@
 #ifndef __NGPT_IERS_1010__
 #define __NGPT_IERS_1010__
 #include <cmath>
+#include "ggdatetime/dtcalendar.hpp"
 
 namespace iers2010
 {
@@ -29,8 +30,8 @@ namespace iers2010
   /// Compute tidal corrections of station displacements caused by lunar and
   /// solar gravitational attraction.
   int
-  dehanttideinel(const double* xsta,const double* xsun, const double* xmon,
-      int yr, int month, int day, double fhr, double* dxtide);
+  dehanttideinel(const double*, const double*, const double*, 
+    ngpt::datetime<ngpt::seconds>, double*);
 
   /// Compute the diurnal and semi-diurnal variations in Earth Orientation
   /// Parameters from ocean tides.

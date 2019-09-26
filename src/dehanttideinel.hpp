@@ -1,5 +1,5 @@
-#ifndef _IERS_1010_DEHANTTIDEINEL_
-#define _IERS_1010_DEHANTTIDEINEL_
+#ifndef __IERS_1010_DEHANTTIDEINEL__
+#define __IERS_1010_DEHANTTIDEINEL__
 #include <numeric>
 #include <cmath>
 
@@ -52,41 +52,30 @@ namespace dhtide
   /// Out-of-phase corrections induced by mantle anelasticity in the diurnal
   /// band.
   void
-  st1idiu(const double*,const double*,const double*,const double&,
-    const double&,double*)
+  st1idiu(const double*, const double*, const double*, double, double, double*)
   noexcept;
 
   /// Out-of-phase corrections induced by mantle anelasticity in the
   /// semi-diurnal band. 
   void
-  st1isem(const double*,const double*,const double*,const double&,
-    const double&,double*)
+  st1isem(const double*, const double*, const double*, double, double, double*)
   noexcept;
 
   /// Corrections induced by the latitude dependence given by L^1 in 
   /// Mathews et al. 1991. 
   void
-  st1l1(const double*,const double*,const double*,const double&,
-    const double&,double*)
+  st1l1(const double*, const double*, const double*, double, double, double*)
   noexcept;
 
   /// In-phase and out-of-phase corrections induced by mantle anelasticity
   /// in the diurnal band.
   void
-  step2diu(const double*,const double&,const double&,double*) noexcept;
+  step2diu(const double*, double, double, double*) noexcept;
 
   /// In-phase and out-of-phase corrections induced by mantle anelasticity
   /// in the long period band.
   void
-  step2lon(const double*, const double&, double*) noexcept;
-
-  /// Gregorian Calendar to Julian Date.
-  int
-  cal2jd(int, int, int, double&, double&);
-
-  /// For a given UTC date, calculate delta(AT) = TAI-UTC.
-  int
-  dat(int, int, int, double, double&);
+  step2lon(const double*, double, double*) noexcept;
 
   /// @brief Function to compute the scalar product of two vectors and 
   ///        their norms.
@@ -100,7 +89,7 @@ namespace dhtide
   /// @param[out] r2 (Euclidean) norm of vector y
   /// @return        scalar product of vectors x and y
   inline double
-  _sprod_(const double* x, const double* y, double& r1, double& r2)
+  sprod(const double* x, const double* y, double& r1, double& r2)
   noexcept
   {
     r1 = std::sqrt(std::inner_product(x,x+3,x,.0e0));
@@ -112,7 +101,7 @@ namespace dhtide
   inner_product3(const double* x1, const double* x2) noexcept
   { return x1[0]*x2[0] + x1[1]*x2[1] + x1[2]*x2[2]; }
 
-} // dtel
+} // dhtide
   
 } // iers2010
 #endif

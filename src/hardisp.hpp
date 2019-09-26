@@ -1,5 +1,5 @@
-#ifndef _IERS_1010_HARDISP_
-#define _IERS_1010_HARDISP_
+#ifndef __IERS_1010_HARDISP__
+#define __IERS_1010_HARDISP__
 #include <cmath>
 #include "ggdatetime/dtcalendar.hpp"
 
@@ -49,48 +49,49 @@
 namespace iers2010
 {
 
-  namespace hisp
-  {
+namespace hisp
+{
 
-    // Parameters below set the buffer size for computing the tides recursively 
-    
-    // nl: the number of harmonics used in the prediction
-    constexpr int nl   { 600 };
-    
-    // nt: this must also be set in the subroutine admint
-    constexpr int nt   { 342 };
-    
-    // ntin: the number of harmonics read in
-    constexpr int ntin { 11  };
-    
-    double
-    eval(double, int, const double*, const double*, const double*);
+  // Parameters below set the buffer size for computing the tides recursively 
 
-    int
-    recurs(double*, int, const double*, int, const double*, double*);
+  // nl: the number of harmonics used in the prediction
+  constexpr int nl   { 600 };
 
-    int
-    shells(double*, int*, int) noexcept;
+  // nt: this must also be set in the subroutine admint
+  constexpr int nt   { 342 };
 
-    int
-    spline(int, const double*, const double*, double*, double*);
+  // ntin: the number of harmonics read in
+  constexpr int ntin { 11  };
 
-    int
-    tdfrph(const int*, ngpt::datetime<ngpt::seconds>, double&, double&);
-    
-    int
-    admint(const double*, const double*, ngpt::datetime<ngpt::seconds>, double*,
-      double*, double*, int, int&);
+  double
+  eval(double, int, const double*, const double*, const double*);
 
-    int
-    read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
-      const char* filename=nullptr);
+  int
+  recurs(double*, int, const double*, int, const double*, double*);
 
-    int
-    hardisp_impl(int, double, double tamp[3][ntin], double tph[3][ntin], 
-      ngpt::datetime<ngpt::seconds> epoch);
-  } /* end namespace hisp */
+  int
+  shells(double*, int*, int) noexcept;
 
-}/* end namespace iers2010 */
+  int
+  spline(int, const double*, const double*, double*, double*);
+
+  int
+  tdfrph(const int*, ngpt::datetime<ngpt::seconds>, double&, double&);
+
+  int
+  admint(const double*, const double*, ngpt::datetime<ngpt::seconds>, double*,
+    double*, double*, int, int&);
+
+  int
+  read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
+    const char* filename=nullptr);
+
+  int
+  hardisp_impl(int, double, double tamp[3][ntin], double tph[3][ntin], 
+    ngpt::datetime<ngpt::seconds> epoch);
+
+} // hisp
+
+}// iers2010
 
 #endif

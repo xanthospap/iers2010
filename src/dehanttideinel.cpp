@@ -67,8 +67,10 @@
 /// 
 int
 iers2010::dehanttideinel(const double* xsta,const double* xsun, 
-  const double* xmon, int yr, int month, int day, double fhr, double* dxtide)
+  const double* xmon, ngpt::datetime<ngpt::seconds> iepoch, double* dxtide)
 {
+  using iers2010::dhtide::sprod;
+
   double xcorsta[] = {.0e0,.0e0,.0e0};
 
   // nominal second degree and third degree love numbers and shida numbers  
@@ -148,20 +150,20 @@ iers2010::dehanttideinel(const double* xsta,const double* xsun,
 
   // corrections for the diurnal band:  
   // first, we need to know the date converted in julian centuries 
-  //        
-  // 1) call the subroutine computing the julian date 
-  double jjm0, jjm1;
-  iers2010::dhtide::cal2jd(yr, month, day, jjm0, jjm1);
-  double fhrd { fhr / 24.0e0 };
-  // 17 May 2013 Corrected bug as noted in header
-  double t { ((jjm0-2451545.0e0)+jjm1+fhrd)/36525e0 };
-  // 
-  // 2) call the subroutine computing the correction of utc time  
-  double dtt;
-  iers2010::dhtide::dat(yr, month, day, fhrd, dtt);
-  dtt += 32.184e0;
-  // conversion of t in tt time
-  t += dtt/(3600.0e0*24.0e0*36525e0);
+  // UTC to TT time
+  ngpt::datetime<ngpt::milliseconds> epoch = iepoch.cast_to<ngpt::milliseconds>();
+  /*
+  ngpt::milliseconds _mls (static_cast<ngpt::milliseconds::underlying_type>(
+    fhr * 3600e0 * ngpt::milliseconds::sec_factor<double>())
+  );
+  ngpt::datetime<ngpt::milliseconds> epoch (ngpt::year(yr), ngpt::month(month),
+    ngpt::day_of_month(day), _mls);
+  */
+  double fhr = epoch.sec().to_fractional_seconds();
+  fhr /= 3600e0;
+  int dat = ngpt::dat(epoch.mjd());
+  epoch.add_seconds(ngpt::milliseconds(dat*1e3) + ngpt::milliseconds(32184));
+  double t = (epoch.as_mjd() + ngpt::mjd0_jd - ngpt::j2000_jd) / 36525e0;
     
   //  second, we can call the subroutine step2diu, for the diurnal band
   //+ corrections, (in-phase and out-of-phase frequency dependence):

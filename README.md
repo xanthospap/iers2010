@@ -138,7 +138,7 @@ in running the test case.
 
 The function `dehanttideinel` is tested seperately, in the source file [test_dehanttd.cpp](test/test_dehanttd.cpp)
 (build as `testDehantTide` in the `test` directory). Three individual test cases are provided,
-all yieding discrepancies (between the FORTRAN and C++ implementations) smaller than ~1e-17.
+all yieding discrepancies (between the FORTRAN and C++ implementations) smaller than ~1e-13.
 
 > A fourth test case is provided in the FORTRAN source code which fails misserably (both 
 > in the FORTRAN and the C++ implementation).
