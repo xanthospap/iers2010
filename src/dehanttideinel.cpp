@@ -116,7 +116,7 @@ iers2010::dehanttideinel(const double* xsta,const double* xsun,
   const double fac3mon         { fac2mon*(re/rmon) };
 
   // total displacement
-  for (int i = 0; i < 3; i++) {
+  for (int i=0; i<3; i++) {
     dxtide[i] = fac2sun*(x2sun*xsun[i]/rsun + p2sun*xsta[i]/rsta) +
       fac2mon*(x2mon*xmon[i]/rmon + p2mon*xsta[i]/rsta) +
       fac3sun*(x3sun*xsun[i]/rsun + p3sun*xsta[i]/rsta) +
@@ -152,18 +152,13 @@ iers2010::dehanttideinel(const double* xsta,const double* xsun,
   // first, we need to know the date converted in julian centuries 
   // UTC to TT time
   ngpt::datetime<ngpt::milliseconds> epoch = iepoch.cast_to<ngpt::milliseconds>();
-  /*
-  ngpt::milliseconds _mls (static_cast<ngpt::milliseconds::underlying_type>(
-    fhr * 3600e0 * ngpt::milliseconds::sec_factor<double>())
-  );
-  ngpt::datetime<ngpt::milliseconds> epoch (ngpt::year(yr), ngpt::month(month),
-    ngpt::day_of_month(day), _mls);
-  */
   double fhr = epoch.sec().to_fractional_seconds();
   fhr /= 3600e0;
   int dat = ngpt::dat(epoch.mjd());
   epoch.add_seconds(ngpt::milliseconds(dat*1e3) + ngpt::milliseconds(32184));
   double t = (epoch.as_mjd() + ngpt::mjd0_jd - ngpt::j2000_jd) / 36525e0;
+  // printf("\n[DEHANTTIDEINEL] fhr=%15.10f", fhr);
+  // printf("\n[DEHANTTIDEINEL] t  =%20.10f", t);
     
   //  second, we can call the subroutine step2diu, for the diurnal band
   //+ corrections, (in-phase and out-of-phase frequency dependence):

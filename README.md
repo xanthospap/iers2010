@@ -207,6 +207,20 @@ In the c++ implementation instead of ET we use TT. To do that, we use the formul
 computations) are performed in the function tdfrph. The two implementations (aka
 the FORTRAN and C++) produce differences up to 0.000001 meters.
 
+To test hardisp (the standalone program that is), use e.g.
+```
+src/hardisp 2009 6 25 1 10 45 24 3600 < test/onsa.blq > onsa.tmp
+paste onsa.tmp test/test_onsa_results | awk '{printf "%9.6f %9.6f %9.6f\n", $1-$4, $2-$5, $3-$6}'
+```
+OR
+```
+src/hardisp 2009 6 25 1 10 45 24 3600 < test/reyk.blq > reyk.tmp
+paste reyk.tmp test/test_reyk_results | awk '{printf "%9.6f %9.6f %9.6f\n", $1-$4, $2-$5, $3-$6}'
+```
+
+You should see the differences (per line and column) and they should not exceed
+the value 1e-6.
+
 ## How to use the library (TODO)
 
 ### Namespaces

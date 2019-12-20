@@ -3,6 +3,11 @@
 #include <numeric>
 #include <cmath>
 
+#ifdef DEBUG
+#include <iostream>
+#include <cfenv>
+#endif
+
 /// @file      dehanttideinel.hpp
 /// 
 /// @version   1.0-1b
@@ -96,10 +101,6 @@ namespace dhtide
     r2 = std::sqrt(std::inner_product(y,y+3,y,.0e0));
     return std::inner_product(x, x+3, y, .0e0);
   }
-
-  inline double
-  inner_product3(const double* x1, const double* x2) noexcept
-  { return x1[0]*x2[0] + x1[1]*x2[1] + x1[2]*x2[2]; }
 
 } // dhtide
   

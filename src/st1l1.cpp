@@ -42,7 +42,7 @@ noexcept
                l1sd { 0.0024e0 };
 
   // Compute the normalized position vector of the IGS station.
-  const double rsta     { sqrt(inner_product3(xsta,xsta)) };
+  const double rsta     { sqrt(std::inner_product(xsta,xsta+3,xsta,.0e0)) };
 
   const double sinphi   { xsta[2]/rsta };
   const double sinphi2  { sinphi*sinphi };
@@ -52,10 +52,10 @@ noexcept
   const double cosla    { xsta[0]/cosphi/rsta };
 
   // Compute the normalized position vector of the Moon.
-  const double rmon2   { inner_product3(xmon, xmon) };
+  const double rmon2   { std::inner_product(xmon, xmon+3, xmon,.0e0) };
 
   // Compute the normalized position vector of the Sun.
-  const double rsun2   { inner_product3(xsun, xsun) };
+  const double rsun2   { std::inner_product(xsun, xsun+3, xsun, .0e0) };
 
   // Compute the station corrections for the diurnal band.
   double l1    { l1d };

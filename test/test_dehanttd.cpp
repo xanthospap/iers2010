@@ -62,6 +62,25 @@ double result3[] = {
   -0.0636634925404189617e0
 };
 
+double input4[] = {
+  1112152.8166e0, 
+  3985496.1783e0,
+  8382471154.1312895e0,
+  10512408445.356153e0,
+  -5360583240.3763866e0,
+  380934092.93550891e0,
+  2871428.1904491195e0,
+  79015680.553570181e0
+};
+ngpt::datetime<ngpt::seconds> d4(ngpt::year(2017), ngpt::month(1), 
+  ngpt::day_of_month(15), ngpt::seconds(0));
+
+double result4[] = {
+  0.0050957086917236384e0,
+  0.082866302598352870e0,
+  -0.063663492540418962e0
+};
+
 int main()
 {
   double diff;
@@ -89,6 +108,13 @@ int main()
   iers2010::dehanttideinel(input3, input3+3, input3+6, d3, res);
   for (int i=0; i<3; ++i) {
     diff = std::abs(res[i]-result3[i]);
+    std::cout << "\tdiff = " << diff << "\n";
+  }
+  
+  std::cout << "/* Test d */\n";
+  iers2010::dehanttideinel(input4, input4+3, input4+6, d4, res);
+  for (int i=0; i<3; ++i) {
+    diff = std::abs(res[i]-result4[i]);
     std::cout << "\tdiff = " << diff << "\n";
   }
 
