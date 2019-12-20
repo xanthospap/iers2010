@@ -1,5 +1,6 @@
 noinst_PROGRAMS = testIers2010 \
-		testDehantTide
+		testDehantTide \
+		testBlqIn
 
 MCXXFLAGS = \
 	-std=c++17 \
@@ -22,6 +23,9 @@ testDehantTide_SOURCES  = test_dehanttd.cpp
 testDehantTide_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
 testDehantTide_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 
+testBlqIn_SOURCES  = test_blq.cpp
+testBlqIn_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
+testBlqIn_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 #check_PROGRAMS    = test
 #dist_test_SOURCES = test.cpp
 #EXTRA_DIST        = hardisp_results_onsa \

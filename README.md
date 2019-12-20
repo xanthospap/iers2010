@@ -221,6 +221,11 @@ paste reyk.tmp test/test_reyk_results | awk '{printf "%9.6f %9.6f %9.6f\n", $1-$
 You should see the differences (per line and column) and they should not exceed
 the value 1e-6.
 
+In the official IERS2010 software, HARDISP comes as a standalone routine/program. In
+this implementation, HARDISP comes both as a standalone program as well as a function 
+(see `hisp::hardisp_impl` in file [hardisp_impl.cpp](src/hardisp_impl.cpp)) that can be 
+used by the users in source code.
+
 ## How to use the library (TODO)
 
 ### Namespaces

@@ -26,10 +26,10 @@ iers2010::hisp::read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
   std::ifstream ifn;
   int sta2read = 1;
 
-  if ( !filename ) {
+  if (!filename) {
     in = &std::cin;
   } else {
-    ifn.open( filename );
+    ifn.open(filename);
     in = &ifn;
     if (!ifn.is_open()) {
       std::cerr<<"\n[ERROR] Failed to open file \""<<filename<<"\"";
@@ -37,11 +37,9 @@ iers2010::hisp::read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
     }
   }
 
-  //
   //  Read in amplitudes and phases, in standard "Scherneck" form, from
   //  standard input
-  //
-  while ( sta2read>0 && in->good() ) {
+  while (sta2read>0 && in->good()) {
     for (int i=0; i<3; i++) {
       for (int kk=0; kk<ntin; kk++) {
         *in >> tamp[i][kk];
@@ -181,7 +179,7 @@ iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin],
    *  block is done recursively, since the times are equi-spaced.
    *
    *----------------------------------------------------------------------*/
-  while ( true ) {
+  while (true) {
     int irhi ( std::min (irli+nl-1,irnt) );
     int np   ( irhi - irli + 1 );
 
