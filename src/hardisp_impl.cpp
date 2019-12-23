@@ -18,6 +18,8 @@ using iers2010::hisp::nt;
 ///                then the function expects to read in from STDIN
 /// @return         Anything other than 0 denotes an error
 ///
+/// @warning       Note that the function will change sign for phase, to be 
+///                negative for lags
 int
 iers2010::hisp::read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
     const char* filename)

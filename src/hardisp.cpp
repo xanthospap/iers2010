@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
+#include "ggdatetime/datetime_write.hpp"
 #include "iers2010.hpp"
 #include "hardisp.hpp"
     
@@ -75,5 +76,17 @@ main(int argc, char* argv[])
   }
 
   // Compute & report
+  /*
+  std::cout<<"\nDatetime: "<<ngpt::strftime_ymd_hmfs(epoch);
+  std::cout<<"\n"<<irnt<<", "<<samp;
+  for (int i=0; i<3; i++) {
+    std::cout<<"\n";
+    for (int j=0; j<11; j++) std::cout<<" "<<tamp[i][j];
+  }
+  for (int i=0; i<3; i++) {
+    std::cout<<"\n";
+    for (int j=0; j<11; j++) std::cout<<" "<<tph[i][j];
+  }
+  */
   return iers2010::hisp::hardisp_impl(irnt, samp, tamp, tph, epoch);
 }

@@ -31,12 +31,19 @@ public:
   skip_next_station();
 
   int
-  read_next_station(std::string& sta, double tamp[3][11], double tph[3][11]);
+  read_next_station(std::string& sta, double tamp[3][11], double tph[3][11], 
+    bool change_phase_sign=false);
+
+  bool
+  find_station(const std::string& station);
 private:
   typedef std::ifstream::pos_type pos_type;
 
   int
   read_header();
+
+  void
+  goto_eoh();
 
   std::string    __filename;
   std::ifstream  __istream;

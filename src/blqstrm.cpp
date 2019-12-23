@@ -132,9 +132,11 @@ iers2010::BlqIn::skip_next_station()
   return 0;
 }
 
+/// @warning       Note that the function will change sign for phase, to be 
+///                negative for lags
 int
 iers2010::BlqIn::read_next_station(std::string& sta, double tamp[3][11],
-  double tph[3][11])
+  double tph[3][11], bool change_phase_sign)
 {
   char line[MAX_HEADER_CHARS];
 
@@ -177,8 +179,30 @@ iers2010::BlqIn::read_next_station(std::string& sta, double tamp[3][11],
     }
   }
 
+  if (change_phase_sign) 
+    for (int i=0; i<3; i++) for (int j=0; j<11; j++) tph[i][j] = -tph[i][j];
+
   if (__istream.eof()) return -1;
   if (!__istream.good()) return 1;
   return 0;
 }
 
+void
+iers2010::BlqIn::goto_eoh()
+{
+  __istream.clear();
+  __istream.seekg(__eoheader);
+}
+
+bool
+iers2010::BlqIn::find_station(const std::string& station)
+{
+  this->goto_eoh();
+  std::string cur_sta;
+  while (!peak_next_station(cur_sta)) {
+    if (cur_sta==station) return true;
+    else skip_next_station();
+  }
+
+  return false;
+}
