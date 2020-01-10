@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 #include "iers2010.hpp"
 
 #define TEST_STATUS_SUCCESS 0
@@ -258,6 +259,9 @@ int main()
   // testing utlibr
   std::cout<<"----------------------------------------\n";
   std::cout<<"> utlibr\n";
+  std::cout<<"> Units:\n"; 
+  std::cout<<"    * microseconds\n";
+  std::cout<<"    * microseconds per day\n";
   std::cout<<"----------------------------------------\n";
   // test-case A
   iers2010::utlibr(utlibr_inp[0], fargs[0], fargs[1]);
@@ -294,6 +298,25 @@ int main()
   }
   std::cout << "status: " << (fcnnut_status ? "failed!\n" : "ok\n" );
   status += fcnnut_status;
+
+  double __res1, __res2, __res3, __res4;
+  for (double mjd_t=45650.e0; mjd_t<58858.51; mjd_t+=0.7e0) {
+    iers2010::fcnnut (mjd_t, __res1, __res2, __res3, __res4);
+    iers2010::fcnnut2(mjd_t, fargs[0], fargs[1], fargs[2], fargs[3]);
+    __res1 -= fargs[0];
+    __res2 -= fargs[1];
+    __res3 -= fargs[2];
+    __res4 -= fargs[3];
+    if (std::max({std::abs(__res1),std::abs(__res2),std::abs(__res3),std::abs(__res4)})>1e-15) {
+      std::cout<<"\n ---> ERROR in iers2010::fcnnut for mjd = "<<mjd_t;
+      std::cout<<"\nResults:";
+      std::cout<<"\n"<<__res1<<" -> "<<fargs[0]<<"/"<<__res1+fargs[0];
+      std::cout<<"\n"<<__res2<<" -> "<<fargs[1]<<"/"<<__res2+fargs[1];
+      std::cout<<"\n"<<__res3<<" -> "<<fargs[2]<<"/"<<__res3+fargs[2];
+      std::cout<<"\n"<<__res4<<" -> "<<fargs[3]<<"/"<<__res4+fargs[3];
+      return 5;
+    }
+  }
 
   // testing arg2
   std::cout<<"----------------------------------------\n";

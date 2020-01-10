@@ -23,16 +23,16 @@
 ///      -#  Though the Modified Julian Date (MJD) is strictly TDB, it is
 ///          usually more convenient to use TT, which makes no significant
 ///          difference.
-///      -#  CIP is the Celestial Intermediate Pole.  The expression
+///      -#  CIP is the Celestial Intermediate Pole. The expression
 ///          used is given in microarcseconds.
 ///      -#  The expression used is given in microarcseconds.
 ///      -#  The updated table is maintained at the website
 ///          http://syrte.obspm.fr/~lambert/fcn/.
-///      -#  Status: Class 3 model
 /// 
 /// @version 19.12.2013
 /// 
-/// @cite iers2010
+/// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS 
+///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
 int
 iers2010::fcnnut(double mjd, double& x, double& y, double& dx, double& dy) 
 {
@@ -53,12 +53,12 @@ iers2010::fcnnut(double mjd, double& x, double& y, double& dx, double& dy)
   // Block data of amplitudes for X (microas)
   constexpr struct {
     double date, mxc, mxs, msx;
-    double xc() const noexcept { return  mxc; }
-    double xs() const noexcept { return  mxs; }
-    double sx() const noexcept { return  msx; }    
-    double yc() const noexcept { return  mxs; }
-    double ys() const noexcept { return -mxc; }
-    double sy() const noexcept { return  msx; }
+    double xc() const noexcept {return  mxc;}
+    double xs() const noexcept {return  mxs;}
+    double sx() const noexcept {return  msx;}    
+    double yc() const noexcept {return  mxs;}
+    double ys() const noexcept {return -mxc;}
+    double sy() const noexcept {return  msx;}
   } table [] = {
     {45700.e0,     4.55e0,   -36.58e0,    19.72e0}, /// 1984.0
     {46066.e0,  -141.82e0,  -105.35e0,    11.12e0}, /// 1985.0
@@ -101,13 +101,13 @@ iers2010::fcnnut(double mjd, double& x, double& y, double& dx, double& dy)
          ays {0e0};
 
   int table_index = -1000;
-  if ( mjd <= table[0].date ) {
+  if (mjd <= table[0].date) {
     axc = table[0].xc();
     axs = table[0].xs();
     ayc = table[0].yc();
     ays = table[0].ys();
     table_index = -1;
-  } else if ( mjd >= table[N-1].date ) {
+  } else if (mjd >= table[N-1].date) {
     axc = table[N-1].xc();
     axs = table[N-1].xs();
     ayc = table[N-1].yc();
@@ -115,17 +115,17 @@ iers2010::fcnnut(double mjd, double& x, double& y, double& dx, double& dy)
     table_index = N;
   } else {
     for (int i=0; i<N-2; i++) {
-      if ( mjd >= table[i].date && mjd < table[i+1].date ) {
+      if (mjd >= table[i].date && mjd < table[i+1].date) {
         double t    = mjd - table[i].date;
         double dt   = table[i+1].date - table[i].date;
         double daxc = table[i+1].xc() - table[i].xc();
         double daxs = table[i+1].xs() - table[i].xs();
         double dayc = table[i+1].yc() - table[i].yc();
         double days = table[i+1].ys() - table[i].ys();
-        axc  = table[i].xc() + ( daxc / dt )*t;
-        axs  = table[i].xs() + ( daxs / dt )*t;
-        ayc  = table[i].yc() + ( dayc / dt )*t;
-        ays  = table[i].ys() + ( days / dt )*t;
+        axc  = table[i].xc() + (daxc / dt)*t;
+        axs  = table[i].xs() + (daxs / dt)*t;
+        ayc  = table[i].yc() + (dayc / dt)*t;
+        ays  = table[i].ys() + (days / dt)*t;
         table_index = i;
         break;
       }

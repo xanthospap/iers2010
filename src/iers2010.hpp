@@ -15,12 +15,14 @@ namespace iers2010
 
   /// Compute the subdiurnal librations in UT1.
   int
-  utlibr(double, double&, double&);
+  utlibr(double, double&, double&) noexcept;
 
   /// Compute corrections to the coordinates of the CIP to account for 
   /// Free Core Nutation.
   int
   fcnnut(double, double&, double&, double&, double&);
+  int
+  fcnnut2(double, double&, double&, double&, double&);
 
   /// Compute the angular argument which depends on time for 11 tidal
   /// argument calculations.

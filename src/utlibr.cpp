@@ -34,7 +34,8 @@
 /// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS 
 ///       Technical Note No. 36, BKG (2010); Chapter 5.5.3.3
 int
-iers2010::utlibr(double rmjd, double& dut1, double& dlod) 
+iers2010::utlibr(double rmjd, double& dut1, double& dlod)
+noexcept
 {
   /*
    *         ----------------------------
@@ -128,8 +129,8 @@ iers2010::utlibr(double rmjd, double& dut1, double& dlod)
     // Compute contribution from the j-th term of expansion to dUT1 and dLOD
     sina = std::sin(angle);
     cosa = std::cos(angle);
-    dut1 += x[j].dut1s * sina + x[j].dut1c * cosa;
-    dlod += x[j].dlods * sina + x[j].dlodc * cosa;
+    dut1 += x[j].dut1s*sina + x[j].dut1c*cosa;
+    dlod += x[j].dlods*sina + x[j].dlodc*cosa;
   }
 
   // Finished.
