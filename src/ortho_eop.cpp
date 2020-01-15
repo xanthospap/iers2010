@@ -23,10 +23,11 @@
 ///
 /// @version 19.03.2010
 ///
-/// @cite iers2010,
-/// Ray, R. D., Steinberg, D. J., Chao, B. F., and Cartwright, D. E.,
-/// "Diurnal and Semidiurnal Variations in the Earth's Rotation
-///  Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
+/// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS 
+///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
+/// @cite Ray, R. D., Steinberg, D. J., Chao, B. F., and Cartwright, D. E.,
+///       "Diurnal and Semidiurnal Variations in the Earth's Rotation
+///        Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
 int
 iers2010::ortho_eop(double time, double& dx, double& dy, double& dut1)
 {

@@ -298,7 +298,7 @@ int main()
   }
   std::cout << "status: " << (fcnnut_status ? "failed!\n" : "ok\n" );
   status += fcnnut_status;
-
+  /*
   double __res1, __res2, __res3, __res4;
   for (double mjd_t=45650.e0; mjd_t<58858.51; mjd_t+=0.7e0) {
     iers2010::fcnnut (mjd_t, __res1, __res2, __res3, __res4);
@@ -314,9 +314,10 @@ int main()
       std::cout<<"\n"<<__res2<<" -> "<<fargs[1]<<"/"<<__res2+fargs[1];
       std::cout<<"\n"<<__res3<<" -> "<<fargs[2]<<"/"<<__res3+fargs[2];
       std::cout<<"\n"<<__res4<<" -> "<<fargs[3]<<"/"<<__res4+fargs[3];
-      return 5;
+      // return 5;
     }
   }
+  */
 
   // testing arg2
   std::cout<<"----------------------------------------\n";

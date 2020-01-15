@@ -57,16 +57,19 @@
 ///
 /// @version  07.10.2011
 ///
-/// @cite iers2010
-/// Schwiderski, E., 1983, "Atlas of Ocean Tidal Charts and Maps, Part I:
-/// The Semidiurnal Principal Lunar Tide M2," Marine Geodesy, 6, pp. 219-256.
+/// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS 
+///       Technical Note No. 36, BKG (2010)
+/// @cite Schwiderski, E., 1983, "Atlas of Ocean Tidal Charts and Maps, Part I:
+///       The Semidiurnal Principal Lunar Tide M2," Marine Geodesy, 6,
+///       pp. 219-256.
 int 
 iers2010::arg2(int iyear, double day, double* angle)
+noexcept
 {
   // Constants
-  constexpr int    k     { 11 };
-  constexpr int    iymin { 1974 };
-  constexpr double dtr   { 0.174532925199e-1 };
+  constexpr int    k     (11);
+  constexpr int    iymin (1974);
+  constexpr double dtr   (0.174532925199e-1);
   
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double TWOPI   (D2PI);
@@ -117,9 +120,8 @@ iers2010::arg2(int iyear, double day, double* angle)
     { 0.200e+01,  0.000e+00,  0.000e+00,  0.000e+00 }
   };
 
-
   //  Validate year
-  if (iyear < iymin) { return -1; }
+  if (iyear < iymin) {return -1;}
 
   // Initialize day of year
   double id, fraction;
@@ -127,25 +129,24 @@ iers2010::arg2(int iyear, double day, double* angle)
 
   // Compute fractional part of day in seconds
   // -----------------------------------------
-  double fday { fraction * 86400e0 };
+  double fday (fraction*86400e0);
   // Revision 07 October 2011: ICAPD modified 
-  int    icapd{ (int)id + 365 * (iyear-1975) + ((iyear-1973) /4) };
-  double capt { (27392.500528e0 + 1.000000035e0 * (double)icapd) / 36525e0 };
+  int    icapd ((int)id + 365*(iyear-1975) + ((iyear-1973)/4));
+  double capt ((27392.500528e0 + 1.000000035e0*(double)icapd) / 36525e0);
 
   // Compute mean longitude of Sun at beginning of day
   // --------------------------------------------------
-  double h0 { (279.69668e0 + (36000.768930485e0 + 3.03e-4 * capt) * capt)
-    * dtr };
+  double h0 ((279.69668e0+(36000.768930485e0+3.03e-4*capt)*capt)*dtr);
 
   // Compute mean longitude of Moon at beginning of day 
   // --------------------------------------------------
-  double s0 {(((1.9e-6*capt-.001133e0) * capt + 481267.88314137e0) 
-      * capt +270.434358e0 ) * dtr };
+  double s0 ((((1.9e-6*capt-.001133e0)*capt + 481267.88314137e0) 
+      *capt +270.434358e0)*dtr);
 
   // Compute mean longitude of lunar perigee at beginning of day 
   // -----------------------------------------------------------
-  double p0 {(((-1.2e-5*capt-.010325e0) * capt + 4069.0340329577e0) 
-      * capt + 334.329653e0 ) * dtr };
+  double p0 ((((-1.2e-5*capt-.010325e0)*capt + 4069.0340329577e0) 
+      *capt + 334.329653e0)*dtr);
 
   // Compute the tidal angle arguments
   for (int i=0; i<k; i++) {
@@ -155,7 +156,7 @@ iers2010::arg2(int iyear, double day, double* angle)
       angfac[i][2]*p0 +
       angfac[i][3]*TWOPI;
     angle[i] = std::fmod(angle[i], TWOPI);
-    while (angle[i] < 0e0) angle[i] += TWOPI;
+    while (angle[i]<0e0) angle[i] += TWOPI;
   }
 
   // Finished.

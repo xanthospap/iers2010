@@ -7,11 +7,11 @@ namespace iers2010
 {
   /// Compute the lunisolar fundamental arguments.
   int
-  fundarg(double, double*);
+  fundarg(double, double*) noexcept;
 
   /// Compute the diurnal lunisolar effect on polar motion.
   int
-  pmsdnut2(double, double&, double&);
+  pmsdnut2(double, double&, double&) noexcept;
 
   /// Compute the subdiurnal librations in UT1.
   int
@@ -21,13 +21,11 @@ namespace iers2010
   /// Free Core Nutation.
   int
   fcnnut(double, double&, double&, double&, double&);
-  int
-  fcnnut2(double, double&, double&, double&, double&);
 
   /// Compute the angular argument which depends on time for 11 tidal
   /// argument calculations.
   int
-  arg2(int, double, double*);
+  arg2(int, double, double*) noexcept;
 
   /// Compute tidal corrections of station displacements caused by lunar and
   /// solar gravitational attraction.

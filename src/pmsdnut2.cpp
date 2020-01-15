@@ -20,8 +20,6 @@
 ///                  microarcseconds.
 /// @return          An integer value, always 0.
 ///
-/// @note    Status:  Class 1 model
-/// 
 /// @warning In the present version this subroutine neglects the linear trend
 ///          and the long periodic terms of the expansion, for the reasons 
 ///          explained in Section 5.5.1.1 of the IERS Conventions (2010). If 
@@ -32,9 +30,11 @@
 /// 
 /// @version 13.10.2011
 /// 
-/// @cite iers2010
+/// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS 
+///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
 int
-iers2010::pmsdnut2(double rmjd, double& dx, double& dy) 
+iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
+noexcept
 {
   /*
    *         ----------------------------
@@ -87,41 +87,41 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
   } x[] = {
     //  Coefficients of the long periodic terms in polar motion
     //+ Source: IERS Conventions (2010), Table 5.1a
-    { { 0,  0, 0,  0,  0, -1 }, 6798.3837,    0.0,   0.6,   -0.1,   -0.1 },
-    { { 0, -1, 0,  1,  0,  2 }, 6159.1355,    1.5,   0.0,   -0.2,    0.1 },
-    { { 0, -1, 0,  1,  0,  1 }, 3231.4956,  -28.5,  -0.2,    3.4,   -3.9 },
-    { { 0, -1, 0,  1,  0,  0 }, 2190.3501,   -4.7,  -0.1,    0.6,   -0.9 },
-    { { 0,  1, 1, -1,  0,  0 }, 438.35990,   -0.7,   0.2,   -0.2,   -0.7 },
-    { { 0,  1, 1, -1,  0, -1 }, 411.80661,    1.0,   0.3,   -0.3,    1.0 },
-    { { 0,  0, 0,  1, -1,  1 }, 365.24219,    1.2,   0.2,   -0.2,    1.4 },
-    { { 0,  1, 0,  1, -2,  1 }, 193.55971,    1.3,   0.4,   -0.2,    2.9 },
-    { { 0,  0, 0,  1,  0,  2 }, 27.431826,   -0.1,  -0.2,    0.0,   -1.7 },
-    { { 0,  0, 0,  1,  0,  1 }, 27.321582,    0.9,   4.0,   -0.1,   32.4 },
-    { { 0,  0, 0,  1,  0,  0 }, 27.212221,    0.1,   0.6,    0.0,    5.1 },
-    { { 0, -1, 0,  1,  2,  1 }, 14.698136,    0.0,   0.1,    0.0,    0.6 },
-    { { 0,  1, 0,  1,  0,  1 }, 13.718786,   -0.1,   0.3,    0.0,    2.7 },
-    { { 0,  0, 0,  3,  0,  3 }, 9.1071941,   -0.1,   0.1,    0.0,    0.9 },
-    { { 0,  0, 0,  3,  0,  2 }, 9.0950103,   -0.1,   0.1,    0.0,    0.6 },
+    {{ 0,  0, 0,  0,  0, -1 }, 6798.3837e0,  0.0e0,  0.6e0, -0.1e0, -0.1e0 },
+    {{ 0, -1, 0,  1,  0,  2 }, 6159.1355e0,  1.5e0,  0.0e0, -0.2e0,  0.1e0 },
+    {{ 0, -1, 0,  1,  0,  1 }, 3231.4956e0,-28.5e0, -0.2e0,  3.4e0, -3.9e0 },
+    {{ 0, -1, 0,  1,  0,  0 }, 2190.3501e0, -4.7e0, -0.1e0,  0.6e0, -0.9e0 },
+    {{ 0,  1, 1, -1,  0,  0 }, 438.35990e0, -0.7e0,  0.2e0, -0.2e0, -0.7e0 },
+    {{ 0,  1, 1, -1,  0, -1 }, 411.80661e0,  1.0e0,  0.3e0, -0.3e0,  1.0e0 },
+    {{ 0,  0, 0,  1, -1,  1 }, 365.24219e0,  1.2e0,  0.2e0, -0.2e0,  1.4e0 },
+    {{ 0,  1, 0,  1, -2,  1 }, 193.55971e0,  1.3e0,  0.4e0, -0.2e0,  2.9e0 },
+    {{ 0,  0, 0,  1,  0,  2 }, 27.431826e0, -0.1e0, -0.2e0,  0.0e0, -1.7e0 },
+    {{ 0,  0, 0,  1,  0,  1 }, 27.321582e0,  0.9e0,  4.0e0, -0.1e0, 32.4e0 },
+    {{ 0,  0, 0,  1,  0,  0 }, 27.212221e0,  0.1e0,  0.6e0,  0.0e0,  5.1e0 },
+    {{ 0, -1, 0,  1,  2,  1 }, 14.698136e0,  0.0e0,  0.1e0,  0.0e0,  0.6e0 },
+    {{ 0,  1, 0,  1,  0,  1 }, 13.718786e0, -0.1e0,  0.3e0,  0.0e0,  2.7e0 },
+    {{ 0,  0, 0,  3,  0,  3 }, 9.1071941e0, -0.1e0,  0.1e0,  0.0e0,  0.9e0 },
+    {{ 0,  0, 0,  3,  0,  2 }, 9.0950103e0, -0.1e0,  0.1e0,  0.0e0,  0.6e0 },
     //  Coefficients of the quasi diurnal terms in polar motion
     //+ Source: IERS Conventions (2010), Table 5.1a
-    { { 1, -1, 0, -2,  0, -1 }, 1.1196992,   -0.4,   0.3,   -0.3,   -0.4 },
-    { { 1, -1, 0, -2,  0, -2 }, 1.1195149,   -2.3,   1.3,   -1.3,   -2.3 },
-    { { 1,  1, 0, -2, -2, -2 }, 1.1134606,   -0.4,   0.3,   -0.3,   -0.4 },
-    { { 1,  0, 0, -2,  0, -1 }, 1.0759762,   -2.1,   1.2,   -1.2,   -2.1 },
-    { { 1,  0, 0, -2,  0, -2 }, 1.0758059,  -11.4,   6.5,   -6.5,  -11.4 },
-    { { 1, -1, 0,  0,  0,  0 }, 1.0347187,    0.8,  -0.5,    0.5,    0.8 },
-    { { 1,  0, 0, -2,  2, -2 }, 1.0027454,   -4.8,   2.7,   -2.7,   -4.8 },
-    { { 1,  0, 0,  0,  0,  0 }, 0.9972696,   14.3,  -8.2,    8.2,   14.3 },
-    { { 1,  0, 0,  0,  0, -1 }, 0.9971233,    1.9,  -1.1,    1.1,    1.9 },
-    { { 1,  1, 0,  0,  0,  0 }, 0.9624365,    0.8,  -0.4,    0.4,    0.8 }
+    {{ 1, -1, 0, -2,  0, -1 }, 1.1196992e0, -0.4e0,  0.3e0, -0.3e0, -0.4e0 },
+    {{ 1, -1, 0, -2,  0, -2 }, 1.1195149e0, -2.3e0,  1.3e0, -1.3e0, -2.3e0 },
+    {{ 1,  1, 0, -2, -2, -2 }, 1.1134606e0, -0.4e0,  0.3e0, -0.3e0, -0.4e0 },
+    {{ 1,  0, 0, -2,  0, -1 }, 1.0759762e0, -2.1e0,  1.2e0, -1.2e0, -2.1e0 },
+    {{ 1,  0, 0, -2,  0, -2 }, 1.0758059e0,-11.4e0,  6.5e0, -6.5e0,-11.4e0 },
+    {{ 1, -1, 0,  0,  0,  0 }, 1.0347187e0,  0.8e0, -0.5e0,  0.5e0,  0.8e0 },
+    {{ 1,  0, 0, -2,  2, -2 }, 1.0027454e0, -4.8e0,  2.7e0, -2.7e0, -4.8e0 },
+    {{ 1,  0, 0,  0,  0,  0 }, 0.9972696e0, 14.3e0, -8.2e0,  8.2e0, 14.3e0 },
+    {{ 1,  0, 0,  0,  0, -1 }, 0.9971233e0,  1.9e0, -1.1e0,  1.1e0,  1.9e0 },
+    {{ 1,  1, 0,  0,  0,  0 }, 0.9624365e0,  0.8e0, -0.4e0,  0.4e0,  0.8e0 }
   };
   constexpr int M { sizeof(x) / sizeof(x[0]) };
   static_assert( M == 25, "Invalid quasi diurnal terms in pmsdnut2." );
 
   //  Rate of secular polar motion, in microarcseconds per year
   //+ Source: IERS Conventions (2010), Table 5.1a
-  constexpr double xrate { -3.8e0 },
-                   yrate { -4.3e0 };
+  constexpr double xrate (-3.8e0),
+                   yrate (-4.3e0);
 
   //  Compute the periodical part of the model
   //+ Coordinates of the pole are set to zero first
@@ -132,20 +132,20 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
   //+ at t = rmjd
 
   // Convert the input epoch to Julian centuries of TDB since J2000
-  double t {(rmjd-RMJD0) / 36525e0};
+  double t ((rmjd-RMJD0) / 36525e0);
 
   // Compute GMST + pi
-  double gmst { std::fmod(67310.54841e0 +
+  double gmst (std::fmod(67310.54841e0 +
                   t*((8640184.812866e0 + 3155760000e0) +
                   t*(0.093104e0 +
-                  t*(-0.0000062 ))), 86400e0) };
+                  t*(-0.0000062 ))), 86400e0));
 
   // Fundamental arguments
   iers2010::fundarg(t, fargs+1);
   fargs[0] = gmst / RAD2SEC + PI;
   fargs[0] = std::fmod(fargs[0], TWOPI);
 
-  int jstart { (iband == 1) ? 15 : 0 };
+  int jstart ((iband == 1) ? 15 : 0);
 
   double angle, sina, cosa;
   for (int j=jstart; j<M; j++) {
@@ -153,19 +153,19 @@ iers2010::pmsdnut2(double rmjd, double& dx, double& dy)
     //+ argument angle of sine and cosine functions as a linear integer
     //+ combination of the 6 fundamental arguments
     angle = 0e0;
-    for (int i=0; i<6; i++) angle += ( double(x[j].iarg[i]) * fargs[i] );
+    for (int i=0; i<6; i++) angle += (double(x[j].iarg[i]) * fargs[i]);
     angle = std::fmod(angle, TWOPI);
     // Compute contribution from the j-th term to the polar motion coordinates
     sina = std::sin(angle);
     cosa = std::cos(angle);
-    dx += x[j].xs * sina + x[j].xc * cosa;
-    dy += x[j].ys * sina + x[j].yc * cosa;
+    dx += x[j].xs*sina + x[j].xc*cosa;
+    dy += x[j].ys*sina + x[j].yc*cosa;
   }
 
   if (iband != 1) {
     // Add the secular term of the model
-    dx += xrate * (rmjd-RMJD0) / 365.25e0;
-    dy += yrate * (rmjd-RMJD0) / 365.25e0;
+    dx += xrate*(rmjd-RMJD0) / 365.25e0;
+    dy += yrate*(rmjd-RMJD0) / 365.25e0;
   }
 
   //  Finished

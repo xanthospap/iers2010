@@ -31,14 +31,14 @@
 ///          is from Simon et al. (1994).  Arguments are in radians.
 ///       -# L in this instance is the Mean Longitude of the Moon. OM is the 
 ///          Mean longitude of the ascending node of the Moon.
-///       -# Status: Canonical model
 /// 
 /// @version 25.02.2010
 /// 
-/// @cite iers2010
-/// @cite simon94
+/// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS 
+///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
 int
 iers2010::fundarg(double t, double* fargs)
+noexcept
 {
 
 // Set constants

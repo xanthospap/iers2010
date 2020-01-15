@@ -24,7 +24,8 @@
 ///
 /// @version 17.03.2010
 ///
-/// @cite iers2010,
+/// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS 
+///       Technical Note No. 36, BKG (2010)
 /// Ray,R. D., Steinberg, D. J., Chao, B. F., and Cartwright, D. E.,
 ///      "Diurnal and Semidiurnal Variations in the Earth's Rotation
 ///      Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
@@ -43,11 +44,11 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
     {0.0200e0,0.0905e0,+0.0638e0, 0.3476e0,+0.1645e0, 0.0923e0}
   };
 
-  constexpr double dt {2e0};
-  constexpr int nmax  {2  };
+  constexpr double dt (2e0);
+  constexpr int nmax  (2);
 
   // tidal potential model for 71 diurnal and semidiurnal lines
-  constexpr double d1960 { 37076.5e0 };
+  constexpr double d1960 (37076.5e0);
   constexpr struct {
     int    nj, mj;
     double hs, phase, freq;
@@ -130,7 +131,7 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
     {2, 2,   1.95e0,  7.3254073e0, 12.82972756e0,"285.465"},
     {2, 2,   1.17e0,  9.1574019e0, 13.06071921e0,"295.555"}
   };
-  enum { nlines = sizeof(x) / sizeof(x[0]) };
+  int nlines = sizeof(x) / sizeof(x[0]);
 
   double anm[2][4][3],
          bnm[2][4][3];
@@ -147,9 +148,9 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
       mm    = x[j].mj;
       pinm  = ((double)((nn+mm)%2)) * TWOPI / 4e0;
       alpha = std::fmod(x[j].phase-pinm, TWOPI) +
-        std::fmod(x[j].freq*dt60, TWOPI);
-      anm[nn-2][mm][k+1] += x[j].hs * std::cos(alpha);
-      bnm[nn-2][mm][k+1] -= x[j].hs * std::sin(alpha);
+              std::fmod(x[j].freq*dt60, TWOPI);
+      anm[nn-2][mm][k+1] += x[j].hs*std::cos(alpha);
+      bnm[nn-2][mm][k+1] -= x[j].hs*std::sin(alpha);
     }
   }
 
@@ -188,7 +189,7 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
   }
 
   // A final check !
-  assert( j == 11 );
+  assert(j == 11);
 
   // Finished
   return 0;

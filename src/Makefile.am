@@ -40,7 +40,6 @@ dist_libiers2010_la_SOURCES = \
 	pmsdnut2.cpp \
 	utlibr.cpp \
 	fcnnut.cpp \
-	fcnnut2.cpp \
 	arg2.cpp \
 	st1idiu.cpp \
 	st1isem.cpp \
