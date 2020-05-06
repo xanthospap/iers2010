@@ -99,6 +99,7 @@
 
       IMPLICIT NONE
       DOUBLE PRECISION RMJD, PM(2)
+      CHARACTER(LEN=*), PARAMETER  :: FMT2 = "(F20.15)"
 
 *         ----------------------------
 *           D E F I N I T I O N S
@@ -222,7 +223,10 @@
       ARG(3) = LP
       ARG(4) = F
       ARG(5) = D
-      ARG(6) = OM 
+      ARG(6) = OM
+*     DO 90 I=1,6
+*       WRITE(*, FMT2) ARG(I)
+*  90 CONTINUE
 
       IF (IBAND.EQ.1) THEN
         JSTART = 16
