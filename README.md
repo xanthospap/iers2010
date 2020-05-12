@@ -11,8 +11,8 @@ __Note that the Software is now (January 2017) available at the [ftp site](ftp:/
 
 ## Prerequisites
 
-The C++ library ggdatetime is used in the library functions to handle datetime instances when needed. Hence, you should
-have ggdatetime on your system.
+The C++ library [ggdatetime](https://github.com/xanthospap/ggdatetime) is used in the library functions to handle datetime instances when needed. Hence, you should
+have [ggdatetime](https://github.com/xanthospap/ggdatetime) on your system.
 
 Other than that, you will need a C++ compiler and (at least at this point) the `autoreconf` program which is part of the
 [GNU Autotools](https://en.wikipedia.org/wiki/GNU_Autotools).
@@ -22,7 +22,7 @@ Other than that, you will need a C++ compiler and (at least at this point) the `
 Source code is ISO C++17. Compilation should be trivial using any gcc version 
 supporting the c++17 standard (option `-std=c++17`).
 
-> This software is meant to be implemented on Unix-type OSs. No effort will be
+> This software is meant to be implemented on Unix-type OS's. No effort will be
 > undertaken for compatibility with other OS types.
 
 To compile the library, just follow the basic steps: (*note that the library is still at development phase so users need to configure the project before compiling*)
@@ -52,7 +52,7 @@ make install
 
 For a complete list of C++ support on various compilers, see the [cppreference entry](http://en.cppreference.com/w/cpp/compiler_support).
 
-To change between ISO C++ versions, (e.g. if your compiler does not support C++14), change the `-std=c++14` flag to `-std=c++11` in the files [src/Makefile.am](src/Makefile.am) and [test/Makefile.am](test/Makefile.am).
+To change between ISO C++ versions, (e.g. if your compiler does not support C++17), change the `-std=c++17` flag to `-std=c++14` in the files [src/Makefile.am](src/Makefile.am) and [test/Makefile.am](test/Makefile.am).
 
 ## Status
 
