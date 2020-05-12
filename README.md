@@ -5,20 +5,21 @@ C++ functions and definitions implementing the IERS 2010 standards.
 This project contains a number of functions implementing models defined in
 IERS Conventions (2010). The functions are available in FORTRAN from the [IERS website](http://maia.usno.navy.mil/conv2010/software.html). Note that the
 software found at this website is routinely updated.
-The FORTRAN subroutines are translated to C++ (standard c++11/c++14) with (as much as
+The FORTRAN subroutines are translated to C++ with (as much as
 possible) minor modifications.
 __Note that the Software is now (January 2017) available at the [ftp site](ftp://maia.usno.navy.mil/conventions/2010/2010_update/) in the `software` folder per chapter.__ 
 
 ## Compilation / Installation
 
-Source code is ISO C++14/17. Compilation should be trivial using any gcc version 
-supporting the c++14/17 standard (option `-std=c++14`).
+Source code is ISO C++17. Compilation should be trivial using any gcc version 
+supporting the c++17 standard (option `-std=c++17`).
 
 > This software is meant to be implemented on Unix-type OSs. No effort will be
 > undertaken for compatibility with other OS types.
 
 To compile the library, just follow the 3 basic steps
-```
+`
+autoreconf -if``
 ./configure
 make
 make install
@@ -74,20 +75,33 @@ To change between ISO C++ versions, (e.g. if your compiler does not support C++1
 During the compilation, some programs are compiled to test the implementations of the individual functions in the
 library. These are:
 
-- [testIers2010](test/test_iers2010.cpp) compiled to `test/testIers2010` and
+- [testIers2010](test/test_iers2010.cpp) compiled to `test/testIers2010`
+  This program checks the library functions using the test cases provided in the original
+  FORTRAN routines. Run and check the results; in some cases, the differences (if 
+  present) are expected and reason they appear is documented in the routine-specific
+  blocks below.
+
 - [testDehantTide](test/test_dehanttide.cpp) compiled to `test/testDehantTide`
+  This program checks specifically the library function `dehandtideinel` using the test cases 
+  provided in the original FORTRAN routine.
+
+- [testHardisp](test/test_hardisp.cpp) compiled to `test/testHardisp`
+  This program checks the library hardisp program; to run this, you are going to need
+  a `BLQ` file with records for the GNSS station 'ONSA' (or you could use the file 
+  [NTUA.BLQ](data/NTUA.BLQ))
+
 
 These programs contain source code to run the test cases provided in the FORTRAN implementation files.
 
-If needed, alternative FORTRAN implementations are provided (in the `fortran_impl` directory) for further testing.
+~~If needed, alternative FORTRAN implementations are provided (in the `fortran_impl` directory) for further testing.
 These can be compiled using the `fortran_impl/Makefile` aka run `make` in the `fortran_impl` folder.
 Note that you will need the IERS source code (you can use the script [fetch_iers_lib.sh](fortran_impl/fetch_iers_lib.sh))
 and [gfortran](https://gcc.gnu.org/fortran/). Two programs are compiled, `fortran_impl/test_iers` and
 `fortran_impl/test_iers_d0`; the latter uses the alternative FORTRAN implementations (**NOT** the original
-IERS source code) Alternative FORTRAN implementations are provided for:
+IERS source code) Alternative FORTRAN implementations are provided for:~~
 
-- PMSDNUT2.F named [PMSDNUT2_D0.F](fortran_impl/PMSDNUT2_D0.F) (see [pmsdnut2](#pmsdnut2-cmp))
-- UTLIBR.F named [UTLIBR_D0.F](fortran_impl/UTLIBR_D0.F) (see [utlibr](#utlibr-cmp))
+~~ - PMSDNUT2.F named [PMSDNUT2_D0.F](fortran_impl/PMSDNUT2_D0.F) (see [pmsdnut2](#pmsdnut2-cmp))~~
+~~ - UTLIBR.F named [UTLIBR_D0.F](fortran_impl/UTLIBR_D0.F) (see [utlibr](#utlibr-cmp))~~
 
 See the individual (sub)routine chapters below for the reason these files are provided.
 
