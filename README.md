@@ -9,6 +9,14 @@ The FORTRAN subroutines are translated to C++ with (as much as
 possible) minor modifications.
 __Note that the Software is now (January 2017) available at the [ftp site](ftp://maia.usno.navy.mil/conventions/2010/2010_update/) in the `software` folder per chapter.__ 
 
+## Prerequisites
+
+The C++ library ggdatetime is used in the library functions to handle datetime instances when needed. Hence, you should
+have ggdatetime on your system.
+
+Other than that, you will need a C++ compiler and (at least at this point) the `autoreconf` program which is part of the
+[GNU Autotools](https://en.wikipedia.org/wiki/GNU_Autotools).
+
 ## Compilation / Installation
 
 Source code is ISO C++17. Compilation should be trivial using any gcc version 
@@ -17,9 +25,16 @@ supporting the c++17 standard (option `-std=c++17`).
 > This software is meant to be implemented on Unix-type OSs. No effort will be
 > undertaken for compatibility with other OS types.
 
-To compile the library, just follow the 3 basic steps
-`
-autoreconf -if``
+To compile the library, just follow the basic steps: (*note that the library is still at development phase so users need to configure the project before compiling*)
+
+**If you do not need the DEBUG version** (which most probably you don't), create the `Makefile.am` templates. This means that you
+should rename [Makefile.am.production](src/Makefile.am.production) and [Makefile.am.production](test/Makefile.am.production) to
+`src/Makefile.am` and `test/Makefile.am` respectively.
+
+Then run Autotools and compile:
+
+```
+autoreconf -if
 ./configure
 make
 make install
@@ -100,8 +115,8 @@ and [gfortran](https://gcc.gnu.org/fortran/). Two programs are compiled, `fortra
 `fortran_impl/test_iers_d0`; the latter uses the alternative FORTRAN implementations (**NOT** the original
 IERS source code) Alternative FORTRAN implementations are provided for:~~
 
-~~ - PMSDNUT2.F named [PMSDNUT2_D0.F](fortran_impl/PMSDNUT2_D0.F) (see [pmsdnut2](#pmsdnut2-cmp))~~
-~~ - UTLIBR.F named [UTLIBR_D0.F](fortran_impl/UTLIBR_D0.F) (see [utlibr](#utlibr-cmp))~~
+~~-PMSDNUT2.F named [PMSDNUT2_D0.F](fortran_impl/PMSDNUT2_D0.F) (see [pmsdnut2](#pmsdnut2-cmp))~~
+~~-UTLIBR.F named [UTLIBR_D0.F](fortran_impl/UTLIBR_D0.F) (see [utlibr](#utlibr-cmp))~~
 
 See the individual (sub)routine chapters below for the reason these files are provided.
 
@@ -261,12 +276,7 @@ used by the users in source code.
 ## TODO
 
 - [x] test compilation against c++17 (gcc)
-- [x] make a python script to check c++ version of each function against the published one
 - [x] the new version of dehanttidenl has a new example test case; use it!
-
-## Prerequisites
-
-None. This is a standalone library. Of course a C++ compiler is assumed!
 
 ## Bugs & Maintanance
 Xanthos, xanthos@mail.ntua.gr
