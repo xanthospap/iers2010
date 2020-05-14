@@ -29,8 +29,8 @@ iers2010::hisp::recurs(double* x, int n, const double* hc, int nf,
   //+ at starting point and just before it
   double cos_omi, sin_omi;
   for (int i=0; i<nf; i++) {
-    cos_omi    = std::cos(om[i]);
-    sin_omi    = std::sin(om[i]);
+    cos_omi = std::cos(om[i]);
+    sin_omi = std::sin(om[i]);
     scr[3*i]   = hc[2*i];
     scr[3*i+1] = hc[2*i]*cos_omi - hc[2*i+1]*sin_omi;
     scr[3*i+2] = 2e0*cos_omi;
@@ -47,7 +47,7 @@ iers2010::hisp::recurs(double* x, int n, const double* hc, int nf,
     for (int j=0; j<nf; j++) {
       sc = scr[3*j];
       x[i] += sc;
-      scr[3*j]   = scr[3*j+2]*sc - scr[3*j+1];
+      scr[3*j] = scr[3*j+2]*sc - scr[3*j+1];
       scr[3*j+1] = sc;
 #ifdef DEBUG
     assert(3*j+2<3*nf);

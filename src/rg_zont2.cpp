@@ -240,12 +240,12 @@ iers2010::rg_zont2(double t, double& dut, double& dlod, double& domega)
   for (int i=0; i<nzont; i++) {
     // Formation of multiples of arguments.
     arg = std::fmod(
-        (double)( nfund[i][0] ) * l 
-        + (double)( nfund[i][1] ) * lp 
-        + (double)( nfund[i][2] ) * f 
-        + (double)( nfund[i][3] ) * d 
-        + (double)( nfund[i][4] ) * om, TWOPI );
-    while (arg < 0e0) { arg += TWOPI; }
+        (double)nfund[i][0] * l 
+        + (double)nfund[i][1] * lp 
+        + (double)nfund[i][2] * f 
+        + (double)nfund[i][3] * d 
+        + (double)nfund[i][4] * om, TWOPI );
+    while (arg<0e0) arg += TWOPI;
 
     // Evaluate zonal tidal terms.
     dsinarg = std::sin(arg);

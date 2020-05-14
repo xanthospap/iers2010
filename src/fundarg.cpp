@@ -49,8 +49,6 @@ noexcept
   constexpr double TURNAS  (1296000e0);
 #endif
 
-  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
   //  Compute the fundamental argument L.
   fargs[0] = std::fmod(485868.249036e0 +
           t*( 1717915923.2178e0 +

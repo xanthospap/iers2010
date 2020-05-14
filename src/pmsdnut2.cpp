@@ -145,7 +145,7 @@ noexcept
   fargs[0] = gmst / RAD2SEC + PI;
   fargs[0] = std::fmod(fargs[0], TWOPI);
 
-  int jstart ((iband == 1) ? 15 : 0);
+  int jstart ((iband==1)?15:0);
 
   double angle, sina, cosa;
   for (int j=jstart; j<M; j++) {
@@ -162,7 +162,7 @@ noexcept
     dy += x[j].ys*sina + x[j].yc*cosa;
   }
 
-  if (iband != 1) {
+  if (iband!=1) {
     // Add the secular term of the model
     dx += xrate*(rmjd-RMJD0) / 365.25e0;
     dy += yrate*(rmjd-RMJD0) / 365.25e0;

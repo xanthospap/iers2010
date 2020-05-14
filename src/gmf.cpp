@@ -177,11 +177,11 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
   };
 
   //  Define parameter t
-  double t { std::sin(dlat) };
+  double t {std::sin(dlat)};
 
   // Define degree n and order m,  EGM
-  constexpr int n { 9 };
-  constexpr int m { 9 };
+  constexpr int n {9};
+  constexpr int m {9};
 
   // Factorial array, up to degrees 2*n+2
   constexpr fact_array<double, 2*n+2> dfac_{};
@@ -190,8 +190,8 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
   static_assert( dfac_.array[2] == 2, 
       "Shit! Factorial array not computed at compile-time." );
  
-  int i = 0,
-      j = 1;
+  int i=0,
+      j=1;
   // Determine Legendre functions (Heiskanen and Moritz,
   // Physical Geodesy, 1967, eq. 1-62)
   // this depends on parameter t, i.e. latitude of station
@@ -224,10 +224,10 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
   }
 
   // Compute hydrostatic mapping function
-  const double bh  { .0029e0 };
-  const double c0h { .062e0 };
+  const double bh  {.0029e0};
+  const double c0h {.062e0};
   double phh, c11h, c10h;
-  if ( dlat < .0e0 ) { // southern hemisphere
+  if (dlat<.0e0) { // southern hemisphere
     phh  = PI;
     c11h = .007e0;
     c10h = .002e0;
@@ -236,39 +236,39 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     c11h = .005e0;
     c10h = .001e0;
   }
-  double ch { c0h + ((std::cos(doy/365.25e0*TWOPI + phh)+1e0)*c11h/2e0
-              + c10h)* (1e0-std::cos(dlat)) };
+  double ch {c0h + ((std::cos(doy/365.25e0*TWOPI + phh)+1e0)*c11h/2e0
+              + c10h)* (1e0-std::cos(dlat))};
 
-  double ahm { 0e0 };
-  double aha { 0e0 };
+  double ahm {0e0};
+  double aha {0e0};
   for (i=0; i<55; i++) {
     ahm += (ah_mean[i]*ap[i] + bh_mean[i]*bp[i])*1e-5;
     aha += (ah_amp[i] *ap[i] + bh_amp[i] *bp[i])*1e-5;
   }
-  double ah { ahm + aha*cos(doy/365.25e0*TWOPI) };
+  double ah {ahm + aha*cos(doy/365.25e0*TWOPI)};
 
-  double sine   { sin(PI/2e0 - zd)  };
-  double beta   { bh/( sine + ch  ) };
-  double gamma  { ah/( sine + beta) };
-  double topcon { (1e0 + ah/(1e0 + bh/(1e0 + ch))) };
+  double sine   {sin(PI/2e0 - zd)};
+  double beta   {bh/( sine + ch)};
+  double gamma  {ah/( sine + beta)};
+  double topcon {(1e0 + ah/(1e0 + bh/(1e0 + ch)))};
   gmfh = topcon/(sine+gamma);
 
   // Height correction for hydrostatic mapping function from Niell (1996)
-  const double a_ht  { 2.53e-5 };
-  const double b_ht  { 5.49e-3 };
-  const double c_ht  { 1.14e-3 };
-  const double hs_km { dhgt/1000e0 };
+  const double a_ht  {2.53e-5};
+  const double b_ht  {5.49e-3};
+  const double c_ht  {1.14e-3};
+  const double hs_km {dhgt/1000e0};
 
-  beta                = b_ht/( sine + c_ht );
-  gamma               = a_ht/( sine + beta);
+  beta                = b_ht/(sine + c_ht);
+  gamma               = a_ht/(sine + beta);
   topcon              = (1e0 + a_ht/(1e0 + b_ht/(1e0 + c_ht)));
-  double ht_corr_coef ( 1e0/sine - topcon/(sine + gamma) );
+  double ht_corr_coef (1e0/sine - topcon/(sine + gamma));
   double ht_corr      = ht_corr_coef * hs_km;
   gmfh                = gmfh + ht_corr;
 
   // compute wet mapping function
-  const double bw { .00146e0 };
-  const double cw { .04391e0 };
+  const double bw {.00146e0};
+  const double cw {.04391e0};
 
   double awm {0e0};
   double awa {0e0};
@@ -276,10 +276,10 @@ iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     awm += (aw_mean[i]*ap[i] + bw_mean[i]*bp[i])*1e-5;
     awa += (aw_amp[i] *ap[i] + bw_amp[i] *bp[i])*1e-5;
   }
-  double aw { awm + awa*std::cos(doy/365.25e0*TWOPI) };
+  double aw {awm + awa*std::cos(doy/365.25e0*TWOPI)};
 
-  beta   = bw/( sine + cw );
-  gamma  = aw/( sine + beta);
+  beta   = bw/(sine + cw);
+  gamma  = aw/(sine + beta);
   topcon = (1e0 + aw/(1e0 + bw/(1e0 + cw)));
   gmfw   = topcon/(sine+gamma);
 

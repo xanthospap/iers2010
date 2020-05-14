@@ -112,15 +112,15 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
          coshy {0e0},
          sinfy {0e0},
          sinhy {0e0};
-  if (it == 1) { // constant parameters
+  if (it==1) { // constant parameters
     ;            // already initialized to zero
   } else {
-    double fpy  { 2e0 * TWOPI };
-    double nom  { dmjd1 / 365.25e0 };
-    cosfy = std::cos(nom * TWOPI);
-    coshy = std::cos(nom * fpy);
-    sinfy = std::sin(nom * TWOPI);
-    sinhy = std::sin(nom * fpy);
+    double fpy  {2e0 * TWOPI};
+    double nom  {dmjd1 / 365.25e0};
+    cosfy = std::cos(nom*TWOPI);
+    coshy = std::cos(nom*fpy);
+    sinfy = std::sin(nom*TWOPI);
+    sinhy = std::sin(nom*fpy);
   }
 
   // Declare matrices to hold the grid
@@ -181,36 +181,36 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
   for (int k=0; k<nstat; k++) {
 
     // only positive longitude in degrees
-    double plon { (dlon[k]<0e0) ? ((dlon[k]+TWOPI)/d2r) : (dlon[k]*d2r) };
+    double plon {(dlon[k]<0e0)?((dlon[k]+TWOPI)/d2r):(dlon[k]*d2r)};
     // transform to polar distance in degrees
-    double ppod { (-dlat[k] + PI/2e0) * d2r };
+    double ppod {(-dlat[k] + PI/2e0) * d2r};
 
     // find the index (line in the grid file) of the nearest point
     // ipod and ilon are (IPOD-1) and (ILON-1)
-    int ipod { (int)std::floor((ppod+5e0)/5e0) - 1 };
-    int ilon { (int)std::floor((plon+5e0)/5e0) - 1 };
+    int ipod {(int)std::floor((ppod+5e0)/5e0) - 1};
+    int ilon {(int)std::floor((plon+5e0)/5e0) - 1};
 
     // normalized (to one) differences, can be positive or negative
-    double diffpod { (ppod - ( (ipod+1)*5e0 - 2.5e0))/5e0 };
-    double difflon { (plon - ( (ilon+1)*5e0 - 2.5e0))/5e0 };
+    double diffpod {(ppod - ( (ipod+1)*5e0 - 2.5e0))/5e0};
+    double difflon {(plon - ( (ilon+1)*5e0 - 2.5e0))/5e0};
 
     if (ipod==36) --ipod;
 
     // get the number of the corresponding line; again all elements of
     // indx[] are -1 from INDX(...)
     indx[0] = ipod*72 + ilon;
-    assert( indx[0]>=0 && indx[0]<maxl );
+    assert(indx[0]>=0 && indx[0]<maxl);
 
     // near the poles: nearest neighbour interpolation, otherwise: bilinear
-    bool ibilinear { false };
-    if ( (ppod>2.5e0) && (ppod<177.5e0) ) ibilinear = true;
+    bool ibilinear {false};
+    if ((ppod>2.5e0) && (ppod<177.5e0)) ibilinear = true;
 
     // case of nearest neighbour
-    if ( !ibilinear ) {
-      int ix { indx[0] };
+    if (!ibilinear) {
+      int ix {indx[0]};
       // transforming ellipsoidial height to orthometric height
       undu[k] = u[ix];
-      double hgt { hell[k] - undu[k] };
+      double hgt {hell[k] - undu[k]};
       // pressure, temperature at the height of the grid
       double t0 = tgrid[ix][0] +
         tgrid[ix][1] * cosfy + tgrid[ix][2] * sinfy +
@@ -229,14 +229,14 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
         dtgrid[ix][3] * coshy + dtgrid[ix][4] * sinhy;
       dt[k] /= 1000.0e0;
       // station height - grid height
-      double redh { hgt - hs[ix] };
+      double redh {hgt - hs[ix]};
       // temperature at station height in Celsius
       t[k] = t0 + dt[k]*redh - 273.15e0;
       // temperature lapse rate in degrees / km
       dt[k] *= 1000e0;
       // virtual temperature in Kelvin
-      double tv { t0 * (1e0 + 0.6077e0*q) };
-      double c  { GM * DMTR / (RG * tv) };
+      double tv {t0 * (1e0 + 0.6077e0*q)};
+      double c  {GM * DMTR / (RG * tv)};
       // pressure in hPa
       p[k] = (p0*exp(-c*redh))/100e0;
       // water vapour pressure in hPa
@@ -254,11 +254,10 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
              
       // bilinear interpolation
     } else {
-
-      int ipod1 { ipod + sgn<double>(diffpod) };
-      int ilon1 { ilon + sgn<double>(difflon) };
-      if (ilon1 == 72) ilon1 = 0;
-      if (!ilon) ilon1 = 71;
+      int ipod1 {ipod + sgn<double>(diffpod)};
+      int ilon1 {ilon + sgn<double>(difflon)};
+      if (ilon1 == 72) ilon1=0;
+      if (!ilon) ilon1=71;
       // get the number of the line
       indx[1] = ipod1*72 + ilon;  // along same logtitude
       indx[2] = ipod *72 + ilon1; // along same polar distance
@@ -268,7 +267,7 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
         // transforming ellipsoidial height to orthometric height:
         // Hortho = -N + Hell
         undul[l] = u[indxl];
-        double hgt { hell[k]-undul[l] };
+        double hgt {hell[k]-undul[l]};
         // pressure, temperature at the heigtht of the grid
         double t0 = tgrid[indxl][0] +
           tgrid[indxl][1] * cosfy + tgrid[indxl][2] * sinfy +
@@ -282,8 +281,8 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
           qgrid[indxl][3] * coshy + qgrid[indxl][4] * sinhy;
         ql[l] /= 1000.0e0;
         // reduction = stationheight - gridheight
-        double hs1  { hs[indxl] };
-        double redh { hgt - hs1 };
+        double hs1  {hs[indxl]};
+        double redh {hgt - hs1};
         // lapse rate of the temperature in degree / m
         dtl[l] = dtgrid[indxl][0] +
           dtgrid[indxl][1] * cosfy + dtgrid[indxl][2] * sinfy +
@@ -292,8 +291,8 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
         // temperature reduction to station height
         tl[l] = t0 + dtl[l]*redh - 273.15e0;
         // virtual temperature
-        double tv { t0 * (1e0 + 0.6077e0 * ql[l]) };
-        double c  { GM*DMTR/(RG*tv) };
+        double tv {t0 * (1e0 + 0.6077e0 * ql[l])};
+        double c  {GM*DMTR/(RG*tv)};
         // pressure in hPa
         pl[l] = (p0*exp(-c*redh))/100e0;
         // hydrostatic coefficient ah

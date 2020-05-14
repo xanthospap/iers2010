@@ -75,45 +75,45 @@ iers2010::dehanttideinel(const double* xsta,const double* xsun,
 
   // nominal second degree and third degree love numbers and shida numbers  
   constexpr double
-    h20 { 0.6078e0 },
-    l20 { 0.0847e0 }, 
-    h3  { 0.292e0  },
-    l3  { 0.015e0  };
+    h20 {0.6078e0},
+    l20 {0.0847e0}, 
+    h3  {0.292e0},
+    l3  {0.015e0};
 
   // scalar product of station vector with sun/moon vector  
   double rsta, rsun, rmon;
-  const double scs   { sprod(xsta, xsun, rsta, rsun) };
-  const double scm   { sprod(xsta, xmon, rsta, rmon) };
-  const double scsun { scs / rsta / rsun };
-  const double scmon { scm / rsta / rmon };
+  const double scs   {sprod(xsta, xsun, rsta, rsun)};
+  const double scm   {sprod(xsta, xmon, rsta, rmon)};
+  const double scsun {scs / rsta / rsun};
+  const double scmon {scm / rsta / rmon};
 
   // computation of new h2 and l2  
-  const double cosphi { std::sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1] ) / rsta };
-  const double h2     { h20 - 0.0006e0*(1e0-3e0/2e0*cosphi*cosphi) };
-  const double l2     { l20 + 0.0002e0*(1e0-3e0/2e0*cosphi*cosphi) };
+  const double cosphi {std::sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1] ) / rsta};
+  const double h2     {h20 - 0.0006e0*(1e0-3e0/2e0*cosphi*cosphi)};
+  const double l2     {l20 + 0.0002e0*(1e0-3e0/2e0*cosphi*cosphi)};
 
   // P2 term  
-  const double p2sun { 3e0*(h2/2e0-l2)*scsun*scsun-h2/2e0 };
-  const double p2mon { 3e0*(h2/2e0-l2)*scmon*scmon-h2/2e0 };
+  const double p2sun {3e0*(h2/2e0-l2)*scsun*scsun-h2/2e0};
+  const double p2mon {3e0*(h2/2e0-l2)*scmon*scmon-h2/2e0};
 
   // P3 term  
-  const double p3sun { 5e0/2e0*(h3-3e0*l3)*pow(scsun,3)+3e0/2e0*(l3-h3)*scsun };
-  const double p3mon { 5e0/2e0*(h3-3e0*l3)*pow(scmon,3)+3e0/2e0*(l3-h3)*scmon };
+  const double p3sun {5e0/2e0*(h3-3e0*l3)*pow(scsun,3)+3e0/2e0*(l3-h3)*scsun};
+  const double p3mon {5e0/2e0*(h3-3e0*l3)*pow(scmon,3)+3e0/2e0*(l3-h3)*scmon};
 
   // term in direction of sun/moon vector  
-  const double x2sun { 3e0*l2*scsun };
-  const double x2mon { 3e0*l2*scmon };
-  const double x3sun { 3e0*l3/2e0*(5e0*scsun*scsun-1e0) };
-  const double x3mon { 3e0*l3/2e0*(5e0*scmon*scmon-1e0) };
+  const double x2sun {3e0*l2*scsun};
+  const double x2mon {3e0*l2*scmon};
+  const double x3sun {3e0*l3/2e0*(5e0*scsun*scsun-1e0)};
+  const double x3mon {3e0*l3/2e0*(5e0*scmon*scmon-1e0)};
     
   // factors for sun/moon using iau current best estimates (see references) 
-  const double mass_ratio_sun  { 332946.0482e0  };
-  const double mass_ratio_moon { 0.0123000371e0 };
-  const double re              { 6378136.6e0    };
-  const double fac2sun         { mass_ratio_sun*re*pow(re/rsun,3) };
-  const double fac2mon         { mass_ratio_moon*re*pow(re/rmon,3) };
-  const double fac3sun         { fac2sun*(re/rsun) };
-  const double fac3mon         { fac2mon*(re/rmon) };
+  const double mass_ratio_sun  {332946.0482e0};
+  const double mass_ratio_moon {0.0123000371e0};
+  const double re              {6378136.6e0};
+  const double fac2sun         {mass_ratio_sun*re*pow(re/rsun,3)};
+  const double fac2mon         {mass_ratio_moon*re*pow(re/rmon,3)};
+  const double fac3sun         {fac2sun*(re/rsun)};
+  const double fac3mon         {fac2mon*(re/rmon)};
 
   // total displacement
   for (int i=0; i<3; i++) {
@@ -156,9 +156,7 @@ iers2010::dehanttideinel(const double* xsta,const double* xsun,
   fhr /= 3600e0;
   int dat = ngpt::dat(epoch.mjd());
   epoch.add_seconds(ngpt::milliseconds(dat*1e3) + ngpt::milliseconds(32184));
-  double t = (epoch.as_mjd() + ngpt::mjd0_jd - ngpt::j2000_jd) / 36525e0;
-  // printf("\n[DEHANTTIDEINEL] fhr=%15.10f", fhr);
-  // printf("\n[DEHANTTIDEINEL] t  =%20.10f", t);
+  double t = (epoch.as_mjd()+ngpt::mjd0_jd-ngpt::j2000_jd) / 36525e0;
     
   //  second, we can call the subroutine step2diu, for the diurnal band
   //+ corrections, (in-phase and out-of-phase frequency dependence):

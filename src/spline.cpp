@@ -35,24 +35,24 @@ int
 iers2010::hisp::spline(int nn, const double* x, const double* u, 
   double* s, double* a)
 {
-  const int n ( std::abs(nn) );
+  const int n (std::abs(nn));
 
   if (n <= 3) {
     // series too short for cubic spline - use straight lines.
-    for (int i=0; i<n; i++) s[i] = 0e0;
+    for (int i=0; i<n; i++) s[i]=0e0;
     return 0;
   }
   
   double q1 = q(u[1]-u[0],x[1]-x[0],u[2]-u[0],x[2]-x[0]);
   double qn = q(u[n-2]-u[n-1],x[n-2]-x[n-1],u[n-3]-u[n-1],x[n-3]-x[n-1]);
   
-  if ( nn <= 0 ) {
+  if (nn<=0) {
     q1 = s[0];
     qn = s[1];
   }
 
   s[0] = 6e0*((u[1]-u[0])/(x[1]-x[0]) - q1);
-  int n1 { n - 1 };
+  int n1 {n-1};
 
   for (int i=1; i<n1; i++) {
     s[i] =   (u[i-1]/(x[i]-x[i-1])
@@ -81,7 +81,7 @@ iers2010::hisp::spline(int nn, const double* x, const double* u,
 
   int i;
   for (int j=1; j<=n1; j++) {
-    i    = n - j - 1;
+    i    = n-j-1;
     s[i] = (s[i] - (x[i+1]-x[i])*s[i+1]) / a[i];
   }
 

@@ -53,31 +53,31 @@ iers2010::fcul_zd_hpa (double dlat, double dhgt, double pres, double wvp,
 #endif
 
   // CO2 content in ppm
-  constexpr double xc ( 375e0 );
+  constexpr double xc (375e0);
   // constant values to be used in Equation (20)
   // k1 and k3 are k1* and k3* 
-  constexpr double k0 ( 238.0185e0  );
-  constexpr double k1 ( 19990.975e0 );
-  constexpr double k2 ( 57.362e0    );
-  constexpr double k3 ( 579.55174e0 );
+  constexpr double k0 (238.0185e0);
+  constexpr double k1 (19990.975e0);
+  constexpr double k2 (57.362e0);
+  constexpr double k3 (579.55174e0);
 
   // constant values to be used in Equation (32)
-  constexpr double w0 ( 295.235e0   );
-  constexpr double w1 ( 2.6422e0    );
-  constexpr double w2 ( -0.032380e0 );
-  constexpr double w3 ( 0.004028e0  );
+  constexpr double w0 (295.235e0);
+  constexpr double w1 (2.6422e0);
+  constexpr double w2 (-0.032380e0);
+  constexpr double w3 (0.004028e0);
 
   //  Wave number
-  double sigma ( 1e0/lambda );
+  double sigma (1e0/lambda);
 
   // correction factor - Equation (24)
-  double f ( 1e0 - 0.00266e0*cos(2e0*PI/180e0*dlat) - 0.00028e-3*dhgt );
+  double f (1e0 - 0.00266e0*cos(2e0*PI/180e0*dlat) - 0.00028e-3*dhgt);
 
   // correction for CO2 content
-  double corr ( 1e0 + 0.534e-6*(xc-450e0) );
+  double corr (1e0 + 0.534e-6*(xc-450e0));
     
   // dispersion equation for the hydrostatic component - Equation (20)
-  double sigma2 ( sigma * sigma );
+  double sigma2 (sigma * sigma);
   double fh ( 
       0.01e0*corr*(
         (k1*(k0+sigma2))
@@ -92,8 +92,8 @@ iers2010::fcul_zd_hpa (double dlat, double dhgt, double pres, double wvp,
   f_zhd = 2.416579e-3*fh*pres/f;
 
   // dispersion equation for the non-hydrostatic component - Equation (32)
-  double fnh ( 0.003101e0*(w0+3e0*w1*sigma2 +
-        5e0*w2*(sigma2*sigma2)+7e0*w3*pow(sigma,6)) );
+  double fnh (0.003101e0*(w0+3e0*w1*sigma2 +
+        5e0*w2*(sigma2*sigma2)+7e0*w3*pow(sigma,6)));
     
   // computation of the non-hydrostatic component - Equation (38)
   // caution: pressure in hectoPascal units

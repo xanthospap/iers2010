@@ -50,13 +50,13 @@ iers2010::vmf1(double ah, double aw, double dmjd, double dlat, double zd,
 
   // Reference day is 28 January 1980
   // This is taken from Niell (1996) to be consistent (See References)
-  double doy { dmjd - 44239e0 + 1e0 - 28e0 };
+  double doy {dmjd - 44239e0 + 1e0 - 28e0};
 
   double bh  {.0029e0};
-  double c0h {.062e0 };
+  double c0h {.062e0};
 
   double phh, c11h, c10h;
-  if (dlat < 0e0) { // southern hemisphere
+  if (dlat<0e0) { // southern hemisphere
     phh  = PI;
     c11h = .007e0;
     c10h = .002e0;
@@ -66,18 +66,18 @@ iers2010::vmf1(double ah, double aw, double dmjd, double dlat, double zd,
     c10h = .001e0;
   }
 
-  double ch { c0h + ((std::cos(doy/365.25e0*TWOPI + phh)+1e0)*c11h/2e0 + c10h)
-    *(1e0-std::cos(dlat)) };
+  double ch {c0h + ((std::cos(doy/365.25e0*TWOPI + phh)+1e0)*c11h/2e0 + c10h)
+    *(1e0-std::cos(dlat))};
 
-  double sine   { std::sin(PI/2e0 - zd) };
-  double beta   { bh/( sine + ch  ) };
-  double gamma  { ah/( sine + beta) };
+  double sine   {std::sin(PI/2e0 - zd)};
+  double beta   {bh/( sine + ch)};
+  double gamma  {ah/( sine + beta)};
   // January 10, 2012 Variable TOPCON corrected
-  double topcon { (1e0 + ah/(1e0 + bh/(1e0 + ch))) };
+  double topcon {(1e0 + ah/(1e0 + bh/(1e0 + ch)))};
   vmf1h = topcon / (sine+gamma);
 
-  double bw { 0.00146e0 };
-  double cw { 0.04391e0 };
+  double bw {0.00146e0};
+  double cw {0.04391e0};
   beta   = bw / (sine + cw);
   gamma  = aw / (sine + beta);
   topcon = (1e0 + aw/(1e0 + bw/(1e0 + cw)));

@@ -45,7 +45,7 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
   };
 
   constexpr double dt (2e0);
-  constexpr int nmax  (2);
+  constexpr int nmax (2);
 
   // tidal potential model for 71 diurnal and semidiurnal lines
   constexpr double d1960 (37076.5e0);
@@ -138,15 +138,15 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
 
   // Compute the time dependent potential matrix
   double dt60, pinm, alpha;
-  int    nn, mm;
+  int nn, mm;
   for (int k=-1; k<2; k++) {
-    dt60 = (dmjd - k*dt) - d1960;
+    dt60 = (dmjd-k*dt) - d1960;
     anm[0][1][k+1] = anm[0][2][k+1] = 0e0;
     bnm[0][1][k+1] = bnm[0][2][k+1] = 0e0;
     for (int j=0; j<nlines; j++) {
       nn    = x[j].nj;
       mm    = x[j].mj;
-      pinm  = ((double)((nn+mm)%2)) * TWOPI / 4e0;
+      pinm  = ((double)((nn+mm)%2))*TWOPI/4e0;
       alpha = std::fmod(x[j].phase-pinm, TWOPI) +
               std::fmod(x[j].freq*dt60, TWOPI);
       anm[nn-2][mm][k+1] += x[j].hs*std::cos(alpha);
@@ -189,7 +189,7 @@ iers2010::oeop::cnmtx(double dmjd, double* h)
   }
 
   // A final check !
-  assert(j == 11);
+  assert(j==11);
 
   // Finished
   return 0;

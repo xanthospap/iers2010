@@ -182,8 +182,8 @@ iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin],
    *
    *----------------------------------------------------------------------*/
   while (true) {
-    int irhi ( std::min (irli+nl-1,irnt) );
-    int np   ( irhi - irli + 1 );
+    int irhi (std::min (irli+nl-1,irnt));
+    int np   (irhi - irli + 1);
 
     // Set up harmonic coefficients, compute tide, and write out
     double hcz[2*nt+1],hcs[2*nt+1],hcw[2*nt+1];
@@ -208,13 +208,13 @@ iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin],
 
     if (irhi==irnt) break;
 
-    irli = irhi + 1;
+    irli = irhi+1;
 
     // Reset phases to the start of the new section
     for (int i=0;i<nt;i++) {
-      pz[i] = fmod (pz[i] + np * f[i],2e0*PI);
-      ps[i] = fmod (ps[i] + np * f[i],2e0*PI);
-      pw[i] = fmod (pw[i] + np * f[i],2e0*PI);
+      pz[i] = fmod (pz[i]+np*f[i], 2e0*PI);
+      ps[i] = fmod (ps[i]+np*f[i], 2e0*PI);
+      pw[i] = fmod (pw[i]+np*f[i], 2e0*PI);
     }
   }
 

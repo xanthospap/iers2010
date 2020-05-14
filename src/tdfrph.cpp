@@ -39,7 +39,7 @@ iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> iepoch,
     
   //  Test to see if time has changed; if so, set the phases and frequencies
   //  for each of the Doodson arguments
-  if (iepoch != last_epoch) {
+  if (iepoch!=last_epoch) {
 
     ngpt::datetime<ngpt::milliseconds> epoch = iepoch.cast_to<ngpt::milliseconds>();
     // Convert times to Julian days (UT) then to Julian centuries 
@@ -98,11 +98,11 @@ iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> iepoch,
         
     //  Find frequencies of Delauney variables (in cycles/day), and from
     //+ these the same for the Doodson arguments
-    double fd1 {  0.0362916471e0 + 0.0000000013e0*t };
-    double fd2 {  0.0027377786e0 };
-    double fd3 {  0.0367481951e0 - 0.0000000005e0*t };
-    double fd4 {  0.0338631920e0 - 0.0000000003e0*t };
-    double fd5 { -0.0001470938e0 + 0.0000000003e0*t };
+    double fd1 {0.0362916471e0 + 0.0000000013e0*t};
+    double fd2 {0.0027377786e0};
+    double fd3 {0.0367481951e0 - 0.0000000005e0*t};
+    double fd4 {0.0338631920e0 - 0.0000000003e0*t};
+    double fd5 {-0.0001470938e0 + 0.0000000003e0*t};
     dd[0] = 1e0 - fd4;
     dd[1] = fd3 + fd5;
     dd[2] = dd[1] - fd4;
@@ -125,7 +125,7 @@ iers2010::hisp::tdfrph(const int idood[6], ngpt::datetime<ngpt::seconds> iepoch,
     
   // Adjust phases so that they fall in the positive range 0 to 360
   phase = std::fmod(phase, 360e0);
-  if ( phase < 0e0 ) { phase += 360e0; }
+  if (phase<0e0) phase += 360e0;
     
   // Finished
   return 0;

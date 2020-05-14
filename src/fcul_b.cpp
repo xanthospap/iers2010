@@ -36,40 +36,40 @@ iers2010::fcul_b(double dlat, double dhgt, double doy, double elev)
 #endif
     
   // Convert elevation angle to radians
-  double epsilon  { elev * (PI/180e0) };
-  double sine     { std::sin(epsilon) };
+  double epsilon  {elev*(PI/180e0)};
+  double sine     {std::sin(epsilon)};
   // Add 182.5 to day of year to account for southern hemisphere
-  double doy_c    { (dlat > 0e0) ? doy : doy+(365.25e0/2e0) };
-  double cosdoy   { std::cos((doy_c - 28.0e0) * 2e0 * PI / 365.25e0) };
-  double cosphi   { std::cos(dlat*(PI/180e0)) };
+  double doy_c    {(dlat>0e0)?doy:doy+(365.25e0/2e0)};
+  double cosdoy   {std::cos((doy_c-28.0e0)*2e0*PI / 365.25e0)};
+  double cosphi   {std::cos(dlat*(PI/180e0))};
 
   // Define coefficients used in the model
-  constexpr double a10 {  0.116131e-02 };
-  constexpr double a11 { -0.9338e-5    };
-  constexpr double a12 { -0.5958e-8    };
-  constexpr double a13 { -0.24627e-07  };
-  constexpr double a14 {  0.12864e-03  };
+  constexpr double a10 {0.116131e-02};
+  constexpr double a11 {-0.9338e-5};
+  constexpr double a12 {-0.5958e-8};
+  constexpr double a13 {-0.24627e-07};
+  constexpr double a14 {0.12864e-03};
 
-  constexpr double a20 {  0.298151e-02 };
-  constexpr double a21 { -0.569e-05    };
-  constexpr double a22 { -0.1655e-07   };
-  constexpr double a23 { -0.2725e-07   };
-  constexpr double a24 {  0.3020e-04   };
+  constexpr double a20 {0.298151e-02};
+  constexpr double a21 {-0.569e-05};
+  constexpr double a22 {-0.1655e-07};
+  constexpr double a23 {-0.2725e-07};
+  constexpr double a24 {0.3020e-04};
 
-  constexpr double a30 {  0.681839e-01 };
-  constexpr double a31 {  0.935e-04    };
-  constexpr double a32 { -0.2394e-06   };
-  constexpr double a33 {  0.304e-07    };
-  constexpr double a34 { -0.2308e-02   };
+  constexpr double a30 {0.681839e-01};
+  constexpr double a31 {0.935e-04};
+  constexpr double a32 {-0.2394e-06};
+  constexpr double a33 {0.304e-07};
+  constexpr double a34 {-0.2308e-02};
 
   // a, b, and c in Marini continued fraction (Eq. 5)
-  double dlat2 { dlat * dlat };
-  double a1 { a10 + a11*cosdoy + a12*dlat2*cosdoy + a13 * dhgt + a14*cosphi };
-  double a2 { a20 + a21*cosdoy + a22*dlat2*cosdoy + a23 * dhgt + a24*cosphi };
-  double a3 { a30 + a31*cosdoy + a32*dlat2*cosdoy + a33 * dhgt + a34*cosphi };
+  double dlat2 {dlat*dlat};
+  double a1 {a10 + a11*cosdoy + a12*dlat2*cosdoy + a13 * dhgt + a14*cosphi};
+  double a2 {a20 + a21*cosdoy + a22*dlat2*cosdoy + a23 * dhgt + a24*cosphi};
+  double a3 {a30 + a31*cosdoy + a32*dlat2*cosdoy + a33 * dhgt + a34*cosphi};
 
   // numerator in continued fraction
-  double map_zen { (1e0 + a1/(1e0 + a2/(1e0+a3))) };
+  double map_zen {(1e0 + a1/(1e0 + a2/(1e0+a3)))};
 
   // result
   return map_zen/(sine+a1/(sine+a2/(sine+a3)));

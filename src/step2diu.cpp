@@ -135,12 +135,12 @@ noexcept
   zns = std::fmod(zns, 360e0);
   ps  = std::fmod(ps,  360e0);
 
-  const double rsta   { std::sqrt(std::inner_product(xsta, xsta+3, xsta, 0e0)) };
-  const double sinphi { xsta[2]/rsta };
-  const double cosphi { std::sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1])/rsta };
-  const double cosla  { xsta[0]/cosphi/rsta };
-  const double sinla  { xsta[1]/cosphi/rsta };
-  const double zla    { std::atan2(xsta[1], xsta[0]) };
+  const double rsta   {std::sqrt(std::inner_product(xsta, xsta+3, xsta, 0e0))};
+  const double sinphi {xsta[2]/rsta};
+  const double cosphi {std::sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1])/rsta};
+  const double cosla  {xsta[0]/cosphi/rsta};
+  const double sinla  {xsta[1]/cosphi/rsta};
+  const double zla    {std::atan2(xsta[1], xsta[0])};
 
   xcorsta[0] = xcorsta[1] = xcorsta[2] = 0e0;
 

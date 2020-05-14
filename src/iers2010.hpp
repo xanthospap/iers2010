@@ -1,5 +1,6 @@
 #ifndef __NGPT_IERS_1010__
 #define __NGPT_IERS_1010__
+
 #include <cmath>
 #include "ggdatetime/dtcalendar.hpp"
 
@@ -92,8 +93,8 @@ namespace iers2010
       int
       cnmtx(double dmjd, double* h);
 
-  } // oeop
+  }// oeop
 
-} // iers2010
+}// iers2010
 
 #endif

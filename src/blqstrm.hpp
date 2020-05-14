@@ -5,6 +5,7 @@
 
 namespace iers2010
 {
+
 class BlqIn
 {
 public:
@@ -50,8 +51,8 @@ private:
   std::ifstream  __istream;
   pos_type       __eoheader;
 
-};// class BlqIn
+};// BlqIn
 
-} // namespace iers2010
+}// iers2010
 
 #endif

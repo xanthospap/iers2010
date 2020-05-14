@@ -37,7 +37,7 @@ main(int argc, char* argv[])
     it[0] = std::stoi(argv[next++]);
     if (argc == 7) { /* day of year provided */
       it[1] = std::stoi(argv[next++]);
-    } else { /* month - day of month provided */
+    } else {         /* month - day of month provided */
       it[1] = std::stoi(argv[next++]);
       it[2] = std::stoi(argv[next++]);
     }
@@ -59,7 +59,7 @@ main(int argc, char* argv[])
   ngpt::minutes _m (it[4]);
   ngpt::seconds _s (it[5]);
   ngpt::datetime<ngpt::seconds> epoch;
-  if (argc == 8) {
+  if (argc==8) {
     epoch = ngpt::datetime<ngpt::seconds>{ngpt::year(it[0]), ngpt::day_of_year(it[1]),
       _h, _m, _s};
   } else {

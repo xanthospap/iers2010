@@ -44,7 +44,7 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
   // (nt; This must also be set in the main program) and the number of
   // constituents whose amp and phase may be specified (ncon)
   using hisp::nt;
-  constexpr int ncon { 20  }; /* function shells depends on this ! */
+  constexpr int ncon {20}; /* function shells depends on this ! */
   
   //  Doodson number of tidal constituents (size 6xnin). Note that in the
   //+ original FORTRAN code, this is passed in as an input parameter.
@@ -235,7 +235,7 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
   //  Arrays containing information about the subset whose amp and phase may
   //+ be specified, and scratch arrays for the spline routines for which
   //+ at most ncon constituents may be specified. 
-  constexpr double dtr { .01745329252e0 };
+  constexpr double dtr {.01745329252e0};
   int    key[ncon];
   double rl [ncon],
          aim[ncon],
@@ -260,11 +260,9 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
     // See if Doodson numbers match
     for (int kk=0; kk<nt; kk++) {
       ii = 0;
-      for (int i=0; i<6; i++) {
-        ii += std::abs(idd[kk][i]-idtin[ll][i]);
-      }
+      for (int i=0; i<6; i++) ii += std::abs(idd[kk][i]-idtin[ll][i]);
       // If you have a match, put line into array [5]
-      if ( (!ii) && k<ncon-1 ) {
+      if (!ii && k<ncon-1) {
         rl[k] = ampin[ll] * std::cos(dtr*phin[ll]) / std::abs(tamp[kk]);
         aim[k]= ampin[ll] * std::sin(dtr*phin[ll]) / std::abs(tamp[kk]);
         // Now have real and imaginary parts of admittance, scaled by 
@@ -321,32 +319,32 @@ iers2010::hisp::admint(const double* ampin, const double* phin,
   // Evaluate all harmonics using the interpolated admittance
   int j = 0;
   for (int i=0; i<nt; i++) {
-    if ( idd[i][0] + nlp ) {
+    if (idd[i][0] + nlp) {
       iers2010::hisp::tdfrph(idd[i], epoch, f[j], p[j]);
       //  Compute phase corrections to equilibrium tide using function 'eval'
-      if (idd[i][0] == 0) {
+      if (idd[i][0]==0) {
         p[j] += 180e0;
-      } else if (idd[i][0] == 1) {
+      } else if (idd[i][0]==1) {
         p[j] += 90e0;
       }
       sf = f[j];
-      if (idd[i][0] == 0) {
+      if (idd[i][0]==0) {
         re = iers2010::hisp::eval(sf, nlp, rf, rl,  zdr);
         am = iers2010::hisp::eval(sf, nlp, rf, aim, zdi);
-      } else if (idd[i][0] == 1) {
+      } else if (idd[i][0]==1) {
         re = iers2010::hisp::eval(sf, ndi, rf+nlp, rl+nlp,  dr);
         am = iers2010::hisp::eval(sf, ndi, rf+nlp, aim+nlp, di);
-      } else if (idd[i][0] == 2) {
+      } else if (idd[i][0]==2) {
         re = iers2010::hisp::eval(sf, nsd, rf+nlp+ndi, rl+nlp+ndi,  sdr);
         am = iers2010::hisp::eval(sf, nsd, rf+nlp+ndi, aim+nlp+ndi, sdi);
       } else {
         am = 0e0;
         re = 0e0;
-        assert( true == false );
+        assert(true==false);
       }
       amp[j] = tamp[i]*std::sqrt(re*re+am*am);
       p[j]  += std::atan2(am, re) / dtr;
-      if (p[j] > 180e0) { p[j] -= 360e0; }
+      if (p[j]>180e0) p[j] -= 360e0;
       ++j;   
     }
   }

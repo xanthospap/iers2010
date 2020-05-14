@@ -121,7 +121,7 @@ noexcept
   };
 
   //  Validate year
-  if (iyear < iymin) {return -1;}
+  if (iyear<iymin) return -1;
 
   // Initialize day of year
   double id, fraction;
@@ -131,7 +131,7 @@ noexcept
   // -----------------------------------------
   double fday (fraction*86400e0);
   // Revision 07 October 2011: ICAPD modified 
-  int    icapd ((int)id + 365*(iyear-1975) + ((iyear-1973)/4));
+  int icapd ((int)id + 365*(iyear-1975) + ((iyear-1973)/4));
   double capt ((27392.500528e0 + 1.000000035e0*(double)icapd) / 36525e0);
 
   // Compute mean longitude of Sun at beginning of day

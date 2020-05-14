@@ -55,7 +55,7 @@ iers2010::apg(double dlat, double dlon, double az, double el,
   constexpr int nmax = 9;
   constexpr int mmax = 9;
     
-  static constexpr double a_n[] = {
+  /*static*/ constexpr double a_n[] = {
      2.8959e-02,-4.6440e-01,-8.6531e-03, 1.1836e-01,-2.4168e-02,
     -6.9072e-05, 2.6783e-01,-1.1697e-03,-2.3396e-03,-1.6206e-03,
     -7.4883e-02, 1.3583e-02, 1.7750e-03, 3.2496e-04, 8.8051e-05,
@@ -69,7 +69,7 @@ iers2010::apg(double dlat, double dlon, double az, double el,
     -1.6441e-07,-5.0004e-08, 8.0689e-10,-2.3813e-10,-2.4483e-10
   };
     
-  static constexpr double b_n[] = {
+  /*static*/ constexpr double b_n[] = {
      0.0000e+00, 0.0000e+00,-1.1930e-02, 0.0000e+00, 9.8349e-03,
     -1.6861e-03, 0.0000e+00, 4.3338e-03, 6.1707e-03, 7.4635e-04,
      0.0000e+00, 3.5124e-03, 2.1967e-03, 4.2029e-04, 2.4476e-06,
@@ -83,7 +83,7 @@ iers2010::apg(double dlat, double dlon, double az, double el,
      6.4567e-07,-4.4684e-08,-5.0293e-11, 2.7723e-10, 1.6903e-10
   };
     
-  static constexpr double a_e[] = { 
+  /*static*/ constexpr double a_e[] = { 
     -2.4104e-03, 1.1408e-04,-3.4621e-04, 1.6565e-03,-4.0620e-03,
     -6.8424e-03,-3.3718e-04, 7.3857e-03,-1.3324e-03,-1.5645e-03,
      4.6444e-03, 1.0296e-03, 3.6253e-03, 4.0329e-04, 3.1943e-04,
@@ -97,7 +97,7 @@ iers2010::apg(double dlat, double dlon, double az, double el,
     -2.8308e-07, 1.0305e-07,-6.9026e-09, 1.5523e-10,-1.0395e-10
   };
     
-  static constexpr double b_e[] = {
+  /*static*/ constexpr double b_e[] = {
      0.0000e+00, 0.0000e+00,-2.5396e-03, 0.0000e+00, 9.2146e-03,
     -7.5836e-03, 0.0000e+00, 1.2765e-02,-1.1436e-03, 1.7909e-04,
      0.0000e+00, 2.9318e-03,-6.8541e-04, 9.5775e-04, 2.4596e-05,
@@ -127,24 +127,24 @@ iers2010::apg(double dlat, double dlon, double az, double el,
 
   int N, M;
   for (int n=1; n<nmax; n++) {
-    N = n + 1;
-    v[n+1][0] = ( (2*N-1) * z * v[n][0] - (N-1) * v[n-1][0] ) / static_cast<double>(N);
+    N = n+1;
+    v[n+1][0] = ((2*N-1)*z*v[n][0]-(N-1)*v[n-1][0]) / static_cast<double>(N);
     w[n+1][0] = 0e0;
   }
     
   for (int m=0; m<mmax; m++) {
-    M = m + 1;
-    v[m+1][m+1] = static_cast<double>(2*M-1) * ( x*v[m][m] - y*w[m][m] );
-    w[m+1][m+1] = static_cast<double>(2*M-1) * ( x*w[m][m] + y*v[m][m] );
+    M = m+1;
+    v[m+1][m+1] = static_cast<double>(2*M-1)*(x*v[m][m]-y*w[m][m]);
+    w[m+1][m+1] = static_cast<double>(2*M-1)*(x*w[m][m]+y*v[m][m]);
     if (m<mmax-1) {
-      v[m+2][m+1] = (2*M+1) * z* v[m+1][m+1];
-      w[m+2][m+1] = (2*M+1) * z* w[m+1][m+1];
+      v[m+2][m+1] = (2*M+1)*z*v[m+1][m+1];
+      w[m+2][m+1] = (2*M+1)*z*w[m+1][m+1];
     }
-    N = M + 2;
+    N = M+2;
     for (int n=m+2;n<nmax;n++) {
-      v[n+1][m+1] = ( (2*N-1)*z*v[n][m+1] - (N+M-1)*v[n-1][m+1] ) 
+      v[n+1][m+1] = ((2*N-1)*z*v[n][m+1]-(N+M-1)*v[n-1][m+1]) 
         / static_cast<double>(N-M);
-      w[n+1][m+1] = ( (2*N-1)*z*w[n][m+1] - (N+M-1)*w[n-1][m+1] ) 
+      w[n+1][m+1] = ((2*N-1)*z*w[n][m+1]-(N+M-1)*w[n-1][m+1]) 
         / static_cast<double>(N-M);
       N++;
     }
@@ -156,14 +156,14 @@ iers2010::apg(double dlat, double dlon, double az, double el,
   int i = 0;
   for (int n=0; n<=nmax; n++) {
     for (int m=0; m<=n; m++) {
-      grn += ( a_n[i]*v[n][m] + b_n[i]*w[n][m] );
-      gre += ( a_e[i]*v[n][m] + b_e[i]*w[n][m] );
+      grn += (a_n[i]*v[n][m] + b_n[i]*w[n][m]);
+      gre += (a_e[i]*v[n][m] + b_e[i]*w[n][m]);
       i++;
     }
   }
     
   // calculation of the asymmetric delay in m (Chen and Herring 1997)
-  d = 1e0 / ( sin(el)*tan(el)+0.0031e0 )*( grn*cos(az)+gre*sin(az) ); // mm
+  d = 1e0 / (sin(el)*tan(el)+0.0031e0)*(grn*cos(az)+gre*sin(az)); // mm
   d = d / 1000e0; // m 
 
   // Finished

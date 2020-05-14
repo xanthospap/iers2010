@@ -48,9 +48,9 @@ iers2010::ortho_eop(double time, double& dx, double& dy, double& dut1)
   dx = dy = dut1 = 0e0;
 
   for (int j=0; j<12; j++) {
-    dx   += h[j] * orthow[0][j];
-    dy   += h[j] * orthow[1][j];
-    dut1 += h[j] * orthow[2][j];
+    dx   += h[j]*orthow[0][j];
+    dy   += h[j]*orthow[1][j];
+    dut1 += h[j]*orthow[2][j];
   }
 
   // finished

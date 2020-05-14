@@ -38,38 +38,38 @@ iers2010::dhtide::st1l1(const double* xsta,const double* xsun,
     const double* xmon, double fac2sun, double fac2mon, double* xcorsta)
 noexcept
 {
-  const double l1d  { 0.0012e0 },
-               l1sd { 0.0024e0 };
+  const double l1d  {0.0012e0},
+               l1sd {0.0024e0};
 
   // Compute the normalized position vector of the IGS station.
-  const double rsta     { sqrt(std::inner_product(xsta,xsta+3,xsta,.0e0)) };
+  const double rsta     {sqrt(std::inner_product(xsta,xsta+3,xsta,.0e0))};
 
-  const double sinphi   { xsta[2]/rsta };
-  const double sinphi2  { sinphi*sinphi };
-  const double cosphi   { sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1])/rsta };
-  const double cosphi2  { cosphi*cosphi };
-  const double sinla    { xsta[1]/cosphi/rsta };
-  const double cosla    { xsta[0]/cosphi/rsta };
+  const double sinphi   {xsta[2]/rsta};
+  const double sinphi2  {sinphi*sinphi};
+  const double cosphi   {sqrt(xsta[0]*xsta[0]+xsta[1]*xsta[1])/rsta};
+  const double cosphi2  {cosphi*cosphi};
+  const double sinla    {xsta[1]/cosphi/rsta};
+  const double cosla    {xsta[0]/cosphi/rsta};
 
   // Compute the normalized position vector of the Moon.
-  const double rmon2   { std::inner_product(xmon, xmon+3, xmon,.0e0) };
+  const double rmon2   {std::inner_product(xmon, xmon+3, xmon,.0e0)};
 
   // Compute the normalized position vector of the Sun.
-  const double rsun2   { std::inner_product(xsun, xsun+3, xsun, .0e0) };
+  const double rsun2   {std::inner_product(xsun, xsun+3, xsun, .0e0)};
 
   // Compute the station corrections for the diurnal band.
-  double l1    { l1d };
-  double dnsun { -l1*sinphi2*fac2sun*xsun[2]*(xsun[0]*cosla+xsun[1]*sinla)
-    /rsun2 };
-  double dnmon { -l1*sinphi2*fac2mon*xmon[2]*(xmon[0]*cosla+xmon[1]*sinla)
-    /rmon2 };
-  double desun {  l1*sinphi*(cosphi2-sinphi2)*fac2sun*xsun[2]*
-    (xsun[0]*sinla-xsun[1]*cosla)/rsun2 };
-  double demon {  l1*sinphi*(cosphi2-sinphi2)*fac2mon*xmon[2]*
-    (xmon[0]*sinla-xmon[1]*cosla)/rmon2 };
+  double l1    {l1d};
+  double dnsun {-l1*sinphi2*fac2sun*xsun[2]*(xsun[0]*cosla+xsun[1]*sinla)
+    /rsun2};
+  double dnmon {-l1*sinphi2*fac2mon*xmon[2]*(xmon[0]*cosla+xmon[1]*sinla)
+    /rmon2};
+  double desun {l1*sinphi*(cosphi2-sinphi2)*fac2sun*xsun[2]*
+    (xsun[0]*sinla-xsun[1]*cosla)/rsun2};
+  double demon {l1*sinphi*(cosphi2-sinphi2)*fac2mon*xmon[2]*
+    (xmon[0]*sinla-xmon[1]*cosla)/rmon2};
 
-  double de { 3e0*(desun+demon) };
-  double dn { 3e0*(dnsun+dnmon) };
+  double de {3e0*(desun+demon)};
+  double dn {3e0*(dnsun+dnmon)};
 
   xcorsta[0] = -de*sinla-dn*sinphi*cosla;
   xcorsta[1] =  de*cosla-dn*sinphi*sinla;
@@ -77,8 +77,8 @@ noexcept
 
   // Compute the station corrections for the semi-diurnal band.
   l1 = l1sd;  
-  const double costwola { cosla*cosla-sinla*sinla };
-  const double sintwola { 2.e0*cosla*sinla };
+  const double costwola {cosla*cosla-sinla*sinla};
+  const double sintwola {2.e0*cosla*sinla};
 
   dnsun = -l1/2e0*sinphi*cosphi*fac2sun*((pow(xsun[0],2)-pow(xsun[1],2))*
       costwola+2e0*xsun[0]*xsun[1]*sintwola)/rsun2;
