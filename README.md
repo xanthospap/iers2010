@@ -40,19 +40,18 @@ make
 make install
 ```
 
-### Tested Compilers & C++ versions (obsolete, need to check again)
+### Distributed Data Files
 
-| Compiler | Vesion(s) | C++ ISO |
-|:--------:|:---------:|:-------:|
-| [gcc-c++](https://gcc.gnu.org/) | 4.8.4 | c++11 |
-| [gcc-c++](https://gcc.gnu.org/) | 5.3.1 | c++11 |
-| [gcc-c++](https://gcc.gnu.org/) | 5.3.1 | c++14 |
-| [clang](http://clang.llvm.org/) | 3.7.0 | c++11 |
-| [clang](http://clang.llvm.org/) | 3.7.0 | c++14 |
+> The data file `gpt2_5.grd` is only needed for (i.e. is read by) the function `gpt2`
 
-For a complete list of C++ support on various compilers, see the [cppreference entry](http://en.cppreference.com/w/cpp/compiler_support).
+This repository includes also the data file [gpt2_5.grd](data/gpt2_5.grd) in the
+`data` directory. This file is needed for computations when the function gpt2 in invoked.
+When installing the libary (aka `make install`) this file will be installed in the 
+default `share` directory of the system, under the folder `iers10`. In most X systems, 
+this means that you'll end up with the file: `/usr/local/share/iers10/gpt2_5.grd`.
 
-To change between ISO C++ versions, (e.g. if your compiler does not support C++17), change the `-std=c++17` flag to `-std=c++14` in the files [src/Makefile.am](src/Makefile.am) and [test/Makefile.am](test/Makefile.am).
+If you want to change the data directory path, you will need to alter the respective 
+Makefile template, that is [Makefile.am](data/Makefile.am).
 
 ## Status
 
@@ -78,6 +77,7 @@ To change between ISO C++ versions, (e.g. if your compiler does not support C++1
 |         | [VMF1](http://maia.usno.navy.mil/conv2010/chapter9/VMF1.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 12.01.20012 | see [vmf1](#vmf1-cmp) |
 |         | [VMF1_HT](http://maia.usno.navy.mil/conv2010/chapter9/VMF1_HT.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 12.01.20012 | see [vmf1_ht](#vmf1_ht-cmp) |
 |         | [GPT](http://maia.usno.navy.mil/conv2010/chapter9/GPT.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 18.10.2011 | see [gpt](#gpt-cmp) |
+|         | [GPT2](http://maia.usno.navy.mil/conv2010/chapter9/GPT2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 31.05.2013 | see [gpt2](#gpt2-cmp) |
 
 
 ## Test Cases & FORTRAN vs C++ implementations
@@ -222,6 +222,15 @@ in running the test case.
 
 FORTRAN (i.e. GPT.F) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
+
+### gpt2 <a id="gpt2-cmp"></a>
+
+FORTRAN (i.e. GPT2.F) and C++ implementations produce discrepancies up to (i.e. max value)
+~1e-9; that is way smaller than the accuracy of the model especially for the values 
+P (Pressure given in hPa), T (Temperature in degrees Celsius), dT (Temperature lapse rate in degrees per km), 
+E (Water vapour pressure in hPa) and UNDU (Geoid undulation in meters). For the 
+mapping function coefficient (AH and AW, hydrostatic and wet respectively), the discrepancies are 
+smaller than 5e-14.
 
 ### hardisp <a id="hardisp-cmp"></a>
 

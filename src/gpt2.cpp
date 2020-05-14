@@ -10,7 +10,7 @@
 #endif
 
 /// Define the path to the gpt2_5.grd file (including the filename)
-#define PATH_TO_GRD25_GRD "/usr/local/share/libiers10/gpt2_5.grd"
+#define PATH_TO_GRD25_GRD "/usr/local/share/iers10/gpt2_5.grd"
 
 /// @brief sign function or signum function; extracts the sign of a 
 ///        real number
@@ -21,7 +21,7 @@
 template <typename T> 
   inline int
   sgn(T val) noexcept
-{ return (T(0) < val) - (val < T(0)); }
+{return (T(0)<val) - (val<T(0));}
 
 /// @details  This function determines pressure, temperature, temperature lapse
 ///           rate, water vapour pressure, hydrostatic and wet mapping function 
@@ -88,7 +88,7 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
   constexpr double PI      (DPI);
 #else
   constexpr double PI      (3.1415926535897932384626433e0);
-  constexpr double TWOPI   ( 2.0e0 * PI );
+  constexpr double TWOPI   (2e0*PI);
 #endif
 
   // quick return, if nstat less than 1
@@ -108,12 +108,12 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
   constexpr int maxl    { 2592 };
 
   // Define factors for amplitudes
-  double cosfy { 0e0 },
-         coshy { 0e0 },
-         sinfy { 0e0 },
-         sinhy { 0e0 };
+  double cosfy {0e0},
+         coshy {0e0},
+         sinfy {0e0},
+         sinhy {0e0};
   if (it == 1) { // constant parameters
-    ;          // already initialized to zero
+    ;            // already initialized to zero
   } else {
     double fpy  { 2e0 * TWOPI };
     double nom  { dmjd1 / 365.25e0 };
@@ -137,12 +137,12 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
   // The grid file was obtained from the website
   // http://acc.igs.org/tropo/gpt2_5.grd on 11/6/2012
   std::ifstream fin;
-  if ( !ifile ) {
+  if (!ifile) {
     fin.open(PATH_TO_GRD25_GRD, std::ifstream::in);
   } else {
     fin.open(ifile, std::ifstream::in);
   }
-  if ( !fin.is_open() ) return -1;
+  if (!fin.is_open()) return -1;
 
   std::string s;
   // read the first comment line
@@ -161,7 +161,7 @@ iers2010::gpt2(double dmjd, double* dlat, double* dlon, double* hell, int nstat,
       >>ahgrid[n][0] >>ahgrid[n][1] >>ahgrid[n][2] >>ahgrid[n][3] >>ahgrid[n][4]
       >>awgrid[n][0] >>awgrid[n][1] >>awgrid[n][2] >>awgrid[n][3] >>awgrid[n][4]
       ;
-    if ( fin.fail() ) {
+    if (fin.fail()) {
       fin.close();
       return -2;
     }

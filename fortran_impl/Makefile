@@ -1,5 +1,5 @@
 FC = gfortran 
-FF = -c -O 
+FF = -c -Wall -O 
 
 IERS_OBS = PMSDNUT2.o \
 	UTLIBR.o \

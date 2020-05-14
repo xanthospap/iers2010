@@ -65,8 +65,9 @@ C     ----------------------------------------------
 C     ----------------------------------------------
 C     Variables and data for GPT2 
 C     ----------------------------------------------
-      DOUBLE PRECISION GPT_P, GPT_T, GPT_DT, GPT_E,
-     . GPT_AH, GPT_AW, GPT_UNDU
+      DOUBLE PRECISION GPT_P(1), GPT_T(1), GPT_DT(1), GPT_E(1),
+     . GPT_AH(1), GPT_AW(1), GPT_UNDU(1)
+      DOUBLE PRECISION GPT21LON(1),GPT21LAT(1),GPT21HEL(1)
 
 C     ----------------------------------------------
 C     Variables and data for DEHANT (test 4)
@@ -117,21 +118,6 @@ C     ----------------------------------------------
 C     Variables and data for FCUL_ZD_HPA
 C     ----------------------------------------------
       DOUBLE PRECISION FCUL_ZTD, FCUL_ZHD, FCUL_ZWD
-
-C     ----------------------------------------------
-C     Variables and data for GPT2
-C     ----------------------------------------------
-      DOUBLE PRECISION P, DT, E, AH, AW, UNDU
-
-C      DOUBLE PRECISION GPT_PR, GPT_TR, GPT_DTR, GPT_ER,
-C     . GPT_AHR, GPT_AWR, GPT_UNDUR
-C      GPT_PR  = 1002.555031899637015D0
-C      GPT_TR  = 22.121274188593230D0
-C      GPT_DTR = -6.525262725051438D0
-C      GPT_ER  = 15.625300656392879D0
-C      GPT_AHR = 0.001264668783781D0
-C      GPT_AWR = 0.000572557214095D0
-C      GPT_UNDUR = 44.05609719704228D0
 
 C     CALL FUNDARG
       CALL FUNDARG(T, L, LP, F, D, OM)
@@ -211,7 +197,7 @@ C     REPORT RESULTS
       PRINT *, '----------------------------------------'
       PRINT *, '> GPT2 Results: (Test A)'
       PRINT *, '----------------------------------------'
-      WRITE(*, FMT2) GPT_P
+      WRITE(*, FMT1) GPT_P
       WRITE(*, FMT1) GPT_T
       WRITE(*, FMT1) GPT_DT
       WRITE(*, FMT1) GPT_E
@@ -279,34 +265,38 @@ C     REPORT RESULTS
       WRITE(*, FMT2) DABS(FCUL_ZWD-0.2233748255158703871D-02)
 
 C     CALL GPT2
-      CALL GPT2(56141.D0, 0.8412486994612668D0,
-     . 0.28571039855147173e0, 156.D0, 1, 0, 
-     . P,T,DT,E,AH,AW,UNDU)
+C     GPT21LAT(1)=0.8412486994612668D0
+C     GPT21LON(1)=0.28571039855147173e0
+C     GPT21HEL(1)=156.D0
+C     CALL GPT2(56141.D0,GPT2LAT,GPT2LON,GPT2HEL,1,0, 
+C    . GPT_P,GPT_T,GPT_DT,GPT_E,GPT_AH,GPT_AW,GPT_UNDU)
 C     REPORT RESULTS
-      PRINT *, '----------------------------------------'
-      PRINT *, '> GPT2 Results: (Test a)'
-      PRINT *, '----------------------------------------'
-      WRITE(*, FMT2) DABS(P-1002.56D0)
-      WRITE(*, FMT2) DABS(T-22.12D0)
-      WRITE(*, FMT2) DABS(DT+6.53D0)
-      WRITE(*, FMT2) DABS(E-15.63D0)
-      WRITE(*, FMT2) DABS(AH-0.0012647D0)
-      WRITE(*, FMT2) DABS(AW-0.0005726D0)
-      WRITE(*, FMT2) DABS(UNDU-44.06D0)
-      CALL GPT2(56141.D0, 0.8412486994612668D0,
-     . 0.28571039855147173e0, 156.D0, 1, 1, 
-     . P,T,DT,E,AH,AW,UNDU)
+C     PRINT *, '----------------------------------------'
+C     PRINT *, '> GPT2 Results: (Test a)'
+C     PRINT *, '----------------------------------------'
+C     WRITE(*, FMT2) DABS(GPT_P(1)-1002.56D0)
+C     WRITE(*, FMT2) DABS(GPT_T(1)-22.12D0)
+C     WRITE(*, FMT2) DABS(GPT_DT(1)+6.53D0)
+C     WRITE(*, FMT2) DABS(GPT_E(1)-15.63D0)
+C     WRITE(*, FMT2) DABS(GPT_AH(1)-0.0012647D0)
+C     WRITE(*, FMT2) DABS(GPT_AW(1)-0.0005726D0)
+C     WRITE(*, FMT2) DABS(GPT_UNDU(1)-44.06D0)
+C     GPT21LAT(1)=0.8412486994612668D0
+C     GPT21LON(1)=0.28571039855147173e0
+C     GPT21HEL(1)=156.D0
+C     CALL GPT2(56141.D0,GPT2LAT,GPT2LON,GPT2HEL,1,1, 
+C    . GPT_P,GPT_T,GPT_DT,GPT_E,GPT_AH,GPT_AW,GPT_UNDU)
 C     REPORT RESULTS
-      PRINT *, '----------------------------------------'
-      PRINT *, '> GPT2 Results: (Test b)'
-      PRINT *, '----------------------------------------'
-      WRITE(*, FMT2) DABS(P-1003.49D0)
-      WRITE(*, FMT2) DABS(T-11.95D0)
-      WRITE(*, FMT2) DABS(DT+5.47D0)
-      WRITE(*, FMT2) DABS(E-9.58D0)
-      WRITE(*, FMT2) DABS(AH-0.0012395D0)
-      WRITE(*, FMT2) DABS(AW-0.0005560D0)
-      WRITE(*, FMT2) DABS(UNDU-44.06D0)
+C     PRINT *, '----------------------------------------'
+C     PRINT *, '> GPT2 Results: (Test b)'
+C     PRINT *, '----------------------------------------'
+C     WRITE(*, FMT2) DABS(GPT_P(1)-1003.49D0)
+C     WRITE(*, FMT2) DABS(GPT_T(1)-11.95D0)
+C     WRITE(*, FMT2) DABS(GPT_DT(1)+5.47D0)
+C     WRITE(*, FMT2) DABS(GPT_E(1)-9.58D0)
+C     WRITE(*, FMT2) DABS(GPT_AH(1)-0.0012395D0)
+C     WRITE(*, FMT2) DABS(GPT_AW(1)-0.0005560D0)
+C     WRITE(*, FMT2) DABS(GPT_UNDU(1)-44.06D0)
 
 C     ALL DONE
       END

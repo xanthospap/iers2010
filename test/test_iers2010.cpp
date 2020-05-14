@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <fstream>
 #include "iers2010.hpp"
 
 #define TEST_STATUS_SUCCESS 0
@@ -194,6 +195,18 @@ double gpt2_res_b[] =
   0.000556030804004,
   44.056097197042284
 };
+
+// default location of file: gpt2_5.grd
+const char gpt2grd[] = "/usr/local/share/iers10/gpt2_5.grd";
+bool
+file_exists(const char* str)
+{
+  bool status = true;
+  std::ifstream fin(str);
+  if (!fin.good()) status = false;
+  fin.close();
+  return status;
+}
 
 int main()
 {
@@ -488,23 +501,27 @@ int main()
   status += gpt_status;
 
   // testing gpt2
-  const char gpt2grd[] = "/usr/local/share/libiers10/gpt2_5.grd";
   double gpt_input[] = { 0.8412486994612668e0,0.28571039855147173e0, 156.e0 };
   std::cout<<"----------------------------------------\n";
   std::cout<<"> gpt2 (Test Case A)\n";
   std::cout<<"----------------------------------------\n";
-  int gpt2stat = iers2010::gpt2(56141.e0,gpt_input, gpt_input+1,gpt_input+2, 1, 0,
-      cnmtx_tmp, cnmtx_tmp+1, cnmtx_tmp+2, cnmtx_tmp+3, cnmtx_tmp+4,
-      cnmtx_tmp+5, cnmtx_tmp+6, gpt2grd);
-  if  ( gpt2stat != 0) {
-    std::cerr<<"\ngpt2 (case A) failed with status=" << gpt2stat;
-    gpt2_status = TEST_STATUS_FAILURE;
+  if (!file_exists(gpt2grd)) {
+    std::cerr<<"\n[ERROR] Cannot locate/open the grd file \"gpt2_5.grd\"\n";
+    gpt2_status=1;
   } else {
-    for (int i=0; i<7; ++i) {
-      diff = std::fabs(cnmtx_tmp[i]-gpt2_res_a[i]);
-      std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
-      if (diff > 1e-15) {
-        gpt2_status = TEST_STATUS_FAILURE;
+    int gpt2stat = iers2010::gpt2(56141.e0, gpt_input, gpt_input+1,gpt_input+2, 1, 0,
+        cnmtx_tmp, cnmtx_tmp+1, cnmtx_tmp+2, cnmtx_tmp+3, cnmtx_tmp+4,
+        cnmtx_tmp+5, cnmtx_tmp+6, gpt2grd);
+    if  (gpt2stat != 0) {
+      std::cerr<<"\ngpt2 (case A) failed with status=" << gpt2stat;
+      gpt2_status = TEST_STATUS_FAILURE;
+    } else {
+      for (int i=0; i<7; ++i) {
+        diff = std::fabs(cnmtx_tmp[i]-gpt2_res_a[i]);
+        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
+        if (diff > 1e-15) {
+          gpt2_status = TEST_STATUS_FAILURE;
+        }
       }
     }
   }
@@ -515,18 +532,23 @@ int main()
   std::cout<<"----------------------------------------\n";
   std::cout<<"> gpt2 (Test Case B)\n";
   std::cout<<"----------------------------------------\n";
-  gpt2stat = iers2010::gpt2(56141.e0,gpt_input, gpt_input+1,gpt_input+2, 1, 1,
-      cnmtx_tmp, cnmtx_tmp+1, cnmtx_tmp+2, cnmtx_tmp+3, cnmtx_tmp+4,
-      cnmtx_tmp+5, cnmtx_tmp+6, gpt2grd);
-  if ( gpt2stat != 0 ) {
-    std::cerr<<"\ngpt2 (case B) failed with status=" << gpt2stat;
-    gpt2_status = TEST_STATUS_FAILURE;
-  }  else {
-    for (int i=0; i<7; ++i) {
-      diff = std::fabs(cnmtx_tmp[i]-gpt2_res_b[i]);
-      std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
-      if (diff > 1e-15) {
-        gpt2_status = TEST_STATUS_FAILURE;
+  if (!file_exists(gpt2grd)) {
+    std::cerr<<"\n[ERROR] Cannot locate/open the grd file \"gpt2_5.grd\"\n";
+    gpt2_status=1;
+  } else {
+    int gpt2stat = iers2010::gpt2(56141.e0, gpt_input, gpt_input+1,gpt_input+2, 1, 1,
+        cnmtx_tmp, cnmtx_tmp+1, cnmtx_tmp+2, cnmtx_tmp+3, cnmtx_tmp+4,
+        cnmtx_tmp+5, cnmtx_tmp+6, gpt2grd);
+    if (gpt2stat != 0) {
+      std::cerr<<"\ngpt2 (case B) failed with status=" << gpt2stat;
+      gpt2_status = TEST_STATUS_FAILURE;
+    } else {
+      for (int i=0; i<7; ++i) {
+        diff = std::fabs(cnmtx_tmp[i]-gpt2_res_b[i]);
+        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
+        if (diff > 1e-15) {
+          gpt2_status = TEST_STATUS_FAILURE;
+        }
       }
     }
   }
