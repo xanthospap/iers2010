@@ -25,7 +25,7 @@ public:
   BlqIn& operator=(BlqIn&& b) = default;
 
   int
-  peak_next_station(std::string& sta);
+  peak_next_station(std::string& sta) noexcept;
 
   int
   skip_next_station();
@@ -36,11 +36,12 @@ public:
 
   bool
   find_station(const std::string& station);
+
 private:
   typedef std::ifstream::pos_type pos_type;
 
   int
-  read_header();
+  read_header() noexcept;
 
   void
   goto_eoh();

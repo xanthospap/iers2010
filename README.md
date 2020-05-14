@@ -53,6 +53,22 @@ this means that you'll end up with the file: `/usr/local/share/iers10/gpt2_5.grd
 If you want to change the data directory path, you will need to alter the respective 
 Makefile template, that is [Makefile.am](data/Makefile.am).
 
+### BLQ format files
+
+The library includes a helper class, i.e. `iers2010::BlqIn` (declared in [blqstrm.hpp](src/blqstrm.hpp)) 
+to assist reading records off from a BLQ file. Obviously, users can make use of this 
+code independent of the (rest of the) library.
+
+The file [test_blq.cpp](test/test_blq.cpp) includes a test case usage of the 
+source code for reading and manipulating BLQ files; the source code is compiled to 
+the executable `testBlq`. Should you want to play with it, change the first line 
+of code, aka:
+```
+BlqIn blq("/home/xanthos/Software/iers2010/data/NTUA.BLQ");
+```
+to reflect a valid BLQ file (normaly such a file is distributed within the project 
+under the `/data` directory.
+
 ## Status
 
 | Chapter | (Sub)Routine | Translated | Tested | Version  | Comments |
@@ -240,7 +256,7 @@ is not a time-scale that should be used and is actually not supported (see Inter
 Standards Of Fundamental Astronomy, SOFA Time Scale and Calendar Tools, Software version 13 - 
 Document revision 1.6). In this document, it is stated that ``ET (ephemeris time): superseded by TT and TDB``
 
-In the c++ implementation instead of ET we use TT. To do that, we use the formula: 
+In the C++ implementation instead of ET we use TT. To do that, we use the formula: 
 ``UTC + ΔAT + 32.184(sec) = TT``. The transformation (along with other date/time
 computations) are performed in the function tdfrph. The two implementations (aka
 the FORTRAN and C++) produce differences up to 0.000001 meters.
