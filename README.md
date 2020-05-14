@@ -45,7 +45,7 @@ make install
 > The data file `gpt2_5.grd` is only needed for (i.e. is read by) the function `gpt2`
 
 This repository includes also the data file [gpt2_5.grd](data/gpt2_5.grd) in the
-`data` directory. This file is needed for computations when the function gpt2 in invoked.
+`data` directory. This file is needed for computations when the function [gpt2](#gpt2-cmp) in invoked.
 When installing the libary (aka `make install`) this file will be installed in the 
 default `share` directory of the system, under the folder `iers10`. In most X systems, 
 this means that you'll end up with the file: `/usr/local/share/iers10/gpt2_5.grd`.
