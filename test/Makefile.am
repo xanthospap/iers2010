@@ -17,19 +17,19 @@ MCXXFLAGS = \
 	-DDEBUG
 
 testIers2010_SOURCES  = test_iers2010.cpp
-testIers2010_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
+testIers2010_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src 
 testIers2010_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 
 testDehantTide_SOURCES  = test_dehanttd.cpp
-testDehantTide_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
+testDehantTide_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src 
 testDehantTide_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 
 testBlqIn_SOURCES  = test_blq.cpp
-testBlqIn_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
+testBlqIn_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src 
 testBlqIn_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 
 testHardisp_SOURCES  = test_hardisp.cpp
-testHardisp_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
+testHardisp_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src 
 testHardisp_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 #check_PROGRAMS    = test
 #dist_test_SOURCES = test.cpp

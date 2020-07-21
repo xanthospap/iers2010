@@ -3,56 +3,47 @@
 
 #include <fstream>
 
-namespace iers2010
-{
+namespace iers2010 {
 
-class BlqIn
-{
+class BlqIn {
 public:
   /// Constructor from filesname
-  explicit
-  BlqIn(const char*);
+  explicit BlqIn(const char *);
 
   /// Copy not allowed
-  BlqIn(const BlqIn&) = delete;
+  BlqIn(const BlqIn &) = delete;
 
   /// Assignment not allowed
-  BlqIn& operator=(const BlqIn&) = delete;
+  BlqIn &operator=(const BlqIn &) = delete;
 
   /// Move constructor
-  BlqIn(BlqIn&& b) = default;
+  BlqIn(BlqIn &&b) = default;
 
   /// Move assignment operator
-  BlqIn& operator=(BlqIn&& b) = default;
+  BlqIn &operator=(BlqIn &&b) = default;
 
-  int
-  peak_next_station(std::string& sta) noexcept;
+  int peak_next_station(std::string &sta) noexcept;
 
-  int
-  skip_next_station();
+  int skip_next_station();
 
-  int
-  read_next_station(std::string& sta, double tamp[3][11], double tph[3][11], 
-    bool change_phase_sign=false);
+  int read_next_station(std::string &sta, double tamp[3][11], double tph[3][11],
+                        bool change_phase_sign = false);
 
-  bool
-  find_station(const std::string& station);
+  bool find_station(const std::string &station);
 
 private:
   typedef std::ifstream::pos_type pos_type;
 
-  int
-  read_header() noexcept;
+  int read_header() noexcept;
 
-  void
-  goto_eoh();
+  void goto_eoh();
 
-  std::string    __filename;
-  std::ifstream  __istream;
-  pos_type       __eoheader;
+  std::string __filename;
+  std::ifstream __istream;
+  pos_type __eoheader;
 
-};// BlqIn
+}; // BlqIn
 
-}// iers2010
+} // namespace iers2010
 
 #endif

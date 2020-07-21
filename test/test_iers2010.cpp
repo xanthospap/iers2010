@@ -9,8 +9,7 @@
 
 /* results and input from FUNDARG.F;
  * last update: 2010 February 25
- */
-double fundarg_inp { 0.07995893223819302e0 };
+double    0.126233448598287 { 0.07995893223819302e0 };
 double fundarg_res[] =
 {
   2.291187512612069099e0,
@@ -19,37 +18,37 @@ double fundarg_res[] =
   4.554139562402433228e0,
   -0.5167379217231804489e0
 };
+*/
 
 /* results and input from PMSDNUT2;
  * last update: 2011 October  13
- */
-double pmsdnut2_inp { 54335e0 };
+double 58764.097953069023788 { 54335e0 };
 double pmsdnut2_res[] = 
 {
   24.83144238273364834e0,
   -14.09240692041837661e0
 };
+*/
 
 /* results and input from UTLIBR;
  * last update: 2010 June  23
  * (two test-cases)
- */
-double utlibr_inp[] = 
+double 58764.097953069023788[] = 
 {
-  44239.1,           /* test case A */
-  55227.4            /* test case B */
+  44239.1,           // test case A
+  55227.4            // test case B
 };
 double utlibr_res[] = {
-  2.441143834386761746e0,  /* test case A */
+  2.441143834386761746e0,  // test case A
   -14.78971247349449492e0,
-  -2.655705844335680244e0, /* test case B */
+  -2.655705844335680244e0, // test case B
   27.39445826599846967e0
 };
+*/
 
 /* results and input from FCNNUT;
  * last update: 2013 December 19
- */
-double fcnnut_inp = { 54790e0 };
+double 58764.097953069023788 = { 54790e0 };
 double fcnnut_res[] = 
 {
   -176.8012290066270680e0,
@@ -57,10 +56,10 @@ double fcnnut_res[] =
   3.745573770491803067e0,
   3.745573770491803067e0
 };
+*/
 
 /* results and input from ARG2;
  * last update: 2011 October 07
- */
 double arg2_res[] =
 {
   2.849663065753787805e0,
@@ -75,6 +74,7 @@ double arg2_res[] =
   4.206816878908014701e0,
   1.608463638294885811e0
 };
+*/
 
 /* results from CNMTX;
  * last update: 2010 March 17
@@ -211,11 +211,6 @@ file_exists(const char* str)
 int main()
 {
   int status          = TEST_STATUS_SUCCESS;
-  int fundarg_status  = TEST_STATUS_SUCCESS;
-  int pmsdnut2_status = TEST_STATUS_SUCCESS;
-  int utlibr_status   = TEST_STATUS_SUCCESS;
-  int fcnnut_status   = TEST_STATUS_SUCCESS;
-  int arg2_status     = TEST_STATUS_SUCCESS;
   int cnmtx_status    = TEST_STATUS_SUCCESS;
   int ortho_eop_status= TEST_STATUS_SUCCESS;
   int rg_zont2_status = TEST_STATUS_SUCCESS;
@@ -243,110 +238,40 @@ int main()
   std::cout<<"> fundarg\n";
   std::cout<<"----------------------------------------\n";
   double fargs[5];
-  iers2010::fundarg(fundarg_inp, fargs);
-  for (int i=0; i<5; ++i) {
-    diff = std::fabs(fargs[i]-fundarg_res[i]);
-    std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
-    if (diff > 1e-15) {
-      fundarg_status = TEST_STATUS_FAILURE;
-    }
-  }
-  std::cout << "status: " << (fundarg_status ? "failed!\n" : "ok\n" );
-  status += fundarg_status;
+  iers2010::fundarg(   0.197661819385873, fargs);
+  for (int i=0; i<5; ++i) printf("\t%+20.15f\n", fargs[i]);
 
   // testing pmsdnut2
   std::cout<<"----------------------------------------\n";
   std::cout<<"> pmsdnut2\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::pmsdnut2(pmsdnut2_inp, fargs[0], fargs[1]);
-  for (int i=0; i<2; ++i) {
-    diff = std::fabs(fargs[i]-pmsdnut2_res[i]);
-    std::cout << "\tdiff: " << diff <<"\n";
-    if ( diff > 1e-15) {
-      pmsdnut2_status = TEST_STATUS_FAILURE;
-    }
-  }
-  std::cout << "status: " << (pmsdnut2_status ? "failed!\n" : "ok\n" );
-  status += pmsdnut2_status;
+  iers2010::pmsdnut2(58764.097953069023788, fargs[0], fargs[1]);
+  for (int i=0; i<2; ++i) printf("\t%+20.15f\n", fargs[i]);
 
   // testing utlibr
   std::cout<<"----------------------------------------\n";
   std::cout<<"> utlibr\n";
-  std::cout<<"> Units:\n"; 
-  std::cout<<"    * microseconds\n";
-  std::cout<<"    * microseconds per day\n";
+  // std::cout<<"> Units:\n"; 
+  // std::cout<<"    * microseconds\n";
+  // std::cout<<"    * microseconds per day\n";
   std::cout<<"----------------------------------------\n";
-  // test-case A
-  iers2010::utlibr(utlibr_inp[0], fargs[0], fargs[1]);
-  for (int i=0; i<2; ++i) {
-    diff = std::fabs(fargs[i]-utlibr_res[i]);
-    std::cout << "\tdiff: " << diff <<"\n";
-    if (diff > 1e-15) {
-      utlibr_status = TEST_STATUS_FAILURE;
-    }
-  }
-  // test-case B
-  iers2010::utlibr(utlibr_inp[1], fargs[0], fargs[1]);
-  for (int i=0; i<2; ++i) {
-    diff = std::fabs(fargs[i]-utlibr_res[i+2]); 
-    std::cout << "\tdiff: " << diff <<"\n";
-    if ( diff > 1e-15) {
-      utlibr_status = TEST_STATUS_FAILURE;
-    }
-  }
-  std::cout << "status: " << (utlibr_status ? "failed!\n" : "ok\n" );
-  status += utlibr_status;
+  iers2010::utlibr(58764.097953069023788, fargs[0], fargs[1]);
+  for (int i=0; i<2; ++i) printf("\t%+20.15f\n", fargs[i]);
 
   // testing fcnnut
   std::cout<<"----------------------------------------\n";
   std::cout<<"> fcnnut\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::fcnnut(fcnnut_inp, fargs[0], fargs[1], fargs[2], fargs[3]);
-  for (int i=0; i<4; ++i) {
-    diff = std::fabs(fargs[i]-fcnnut_res[i]); 
-    std::cout << "\tdiff: " << diff <<"\n";
-    if (diff > 1e-15) {
-      fcnnut_status = TEST_STATUS_FAILURE;
-    }
-  }
-  std::cout << "status: " << (fcnnut_status ? "failed!\n" : "ok\n" );
-  status += fcnnut_status;
-  /*
-  double __res1, __res2, __res3, __res4;
-  for (double mjd_t=45650.e0; mjd_t<58858.51; mjd_t+=0.7e0) {
-    iers2010::fcnnut (mjd_t, __res1, __res2, __res3, __res4);
-    iers2010::fcnnut2(mjd_t, fargs[0], fargs[1], fargs[2], fargs[3]);
-    __res1 -= fargs[0];
-    __res2 -= fargs[1];
-    __res3 -= fargs[2];
-    __res4 -= fargs[3];
-    if (std::max({std::abs(__res1),std::abs(__res2),std::abs(__res3),std::abs(__res4)})>1e-15) {
-      std::cout<<"\n ---> ERROR in iers2010::fcnnut for mjd = "<<mjd_t;
-      std::cout<<"\nResults:";
-      std::cout<<"\n"<<__res1<<" -> "<<fargs[0]<<"/"<<__res1+fargs[0];
-      std::cout<<"\n"<<__res2<<" -> "<<fargs[1]<<"/"<<__res2+fargs[1];
-      std::cout<<"\n"<<__res3<<" -> "<<fargs[2]<<"/"<<__res3+fargs[2];
-      std::cout<<"\n"<<__res4<<" -> "<<fargs[3]<<"/"<<__res4+fargs[3];
-      // return 5;
-    }
-  }
-  */
+  iers2010::fcnnut(58764.097953069023788, fargs[0], fargs[1], fargs[2], fargs[3]);
+  for (int i=0; i<4; ++i) printf("\t%+20.15f\n", fargs[i]);
 
   // testing arg2
   std::cout<<"----------------------------------------\n";
   std::cout<<"> arg2\n";
   std::cout<<"----------------------------------------\n";
   double arg2_array[11];
-  iers2010::arg2(2008, 311.5e0, arg2_array);
-  for (int i=0; i<11; ++i) {
-    diff = std::fabs(arg2_array[i]-arg2_res[i]); 
-    std::cout << "\tdiff: " << diff <<"\n";
-    if (diff > 1e-15) {
-      arg2_status = TEST_STATUS_FAILURE;
-    }
-  }
-  std::cout << "status: " << (arg2_status ? "failed!\n" : "ok\n" );
-  status += arg2_status;
+  iers2010::arg2(2019,  281.097953069023788, arg2_array);
+  for (int i=0; i<11; ++i) printf("\t%+20.15f\n", arg2_array[i]);
 
   // testing cnmtx
   std::cout<<"----------------------------------------\n";

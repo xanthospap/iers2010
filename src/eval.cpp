@@ -1,19 +1,20 @@
+#include "hardisp.hpp"
+#include "iers2010.hpp"
 #include <algorithm>
 #include <cassert>
-#include "iers2010.hpp"
-#include "hardisp.hpp"
 
-/// @details This function performs cubic spline interpolation of a given 
+/// @details This function performs cubic spline interpolation of a given
 ///          function sampled at unequally spaced intervals. The function spline
 ///          needs to be called beforehand to set up the array s.
-/// 
-/// @param[in]  y    The coordinate at which a function value is desired (Note 1)
+///
+/// @param[in]  y    The coordinate at which a function value is desired (Note
+/// 1)
 /// @param[in]  nn   Number of samples of the original function
-/// @param[in]  x    Array containing sample coordinates x(1),x(2),...x(nn) 
+/// @param[in]  x    Array containing sample coordinates x(1),x(2),...x(nn)
 ///                  (Note 2)
-/// @param[in]  s    Array containing the 2nd derivatives at the sample points 
+/// @param[in]  s    Array containing the 2nd derivatives at the sample points
 ///                  (Note 3)
-/// @param[in]  u    Array containing samples of a function at the coordinates 
+/// @param[in]  u    Array containing samples of a function at the coordinates
 ///                  x(1),x(2),...x(nn)
 /// @return          The interpolated value of the function at y.
 ///
@@ -23,39 +24,37 @@
 ///     -# The sequence x(1),x(2),...x(nn) must be strictly increasing.
 ///     -# This array is found by the function SPLINE, which must be called
 ///        once before beginning this interpolation.
-/// 
+///
 /// @version 19.08.2009
-double
-iers2010::hisp::eval(double y, int nn, const double* x, const double* u,
-  const double* s)
-{
+double iers2010::hisp::eval(double y, int nn, const double *x, const double *u,
+                            const double *s) {
   std::size_t k;
   int k1, k2;
 
-  if (y<=x[0]) {
+  if (y <= x[0]) {
     return u[0];
-  } else if (y>=x[nn-1]) {
-    return u[nn-1];
+  } else if (y >= x[nn - 1]) {
+    return u[nn - 1];
   } else {
-    k = std::distance(x, std::lower_bound(x, x+nn, y));
+    k = std::distance(x, std::lower_bound(x, x + nn, y));
     k2 = k;
-    k1 = k-1;
+    k1 = k - 1;
 #ifdef DEBUG
-    assert((int)k>0 && (int)k<=nn-1);
+    assert((int)k > 0 && (int)k <= nn - 1);
 #endif
   }
 
   //  Evaluate and then interpolate.
   //+ Note that this can fail if dk is ~0
-  double dy   {x[k2]-y};
-  double dy1  {y-x[k1]};
-  double dk   {x[k2]-x[k1]};
-  double deli {1e0 / (6e0*dk)};
-  double ff1  {s[k1]*dy*dy*dy};
-  double ff2  {s[k2]*dy1*dy1*dy1};
-  double f1   {(ff1+ff2)*deli};
-  double f2   {dy1*((u[k2]/dk)-(s[k2]*dk)/6e0)};
-  double f3   {dy*((u[k1]/dk)-(s[k1]*dk)/6e0)};
+  double dy{x[k2] - y};
+  double dy1{y - x[k1]};
+  double dk{x[k2] - x[k1]};
+  double deli{1e0 / (6e0 * dk)};
+  double ff1{s[k1] * dy * dy * dy};
+  double ff2{s[k2] * dy1 * dy1 * dy1};
+  double f1{(ff1 + ff2) * deli};
+  double f2{dy1 * ((u[k2] / dk) - (s[k2] * dk) / 6e0)};
+  double f3{dy * ((u[k1] / dk) - (s[k1] * dk) / 6e0)};
 
   return f1 + f2 + f3;
 }

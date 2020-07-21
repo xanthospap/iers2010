@@ -68,5 +68,5 @@ dist_libiers2010_la_SOURCES = \
 	blqstrm.cpp
 
 hardisp_SOURCES  = hardisp.cpp
-hardisp_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src -L$(top_srcdir)/src
+hardisp_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src 
 hardisp_LDADD    = libiers2010.la /usr/local/lib/libggdatetime.a
