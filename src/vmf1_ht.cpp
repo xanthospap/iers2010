@@ -40,7 +40,7 @@
 ///     The corrected version of the paper can be found at:
 ///     http://ggosatm.hg.tuwien.ac.at/DOCS/PAPERS/2006Boehm_etal_VMF1.pdf
 int iers2010::vmf1_ht(double ah, double aw, double dmjd, double dlat, double ht,
-                      double zd, double &vmf1h, double &vmf1w) {
+                      double zd, double &vmf1h, double &vmf1w) noexcept {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double TWOPI(D2PI);
   constexpr double PI(DPI);

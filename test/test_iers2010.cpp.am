@@ -76,28 +76,28 @@ int main()
   std::cout<<"> fundarg\n";
   std::cout<<"----------------------------------------\n";
   double fargs[5];
-  iers2010::fundarg(   0.097212536121941, fargs);
+  iers2010::fundarg(fundarg_inp, fargs);
   for (int i=0; i<5; ++i) printf("\t%+20.15f\n", fargs[i]);
 
   // testing pmsdnut2
   std::cout<<"----------------------------------------\n";
   std::cout<<"> pmsdnut2\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::pmsdnut2(55095.187881853897125, fargs[0], fargs[1]);
+  iers2010::pmsdnut2(pmsdnut2_inp, fargs[0], fargs[1]);
   for (int i=0; i<2; ++i) printf("\t%+20.15f\n", fargs[i]);
 
   // testing utlibr
   std::cout<<"----------------------------------------\n";
   std::cout<<"> utlibr\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::utlibr(55095.187881853897125, fargs[0], fargs[1]);
+  iers2010::utlibr(utlibr_inp, fargs[0], fargs[1]);
   for (int i=0; i<2; ++i) printf("\t%+20.15f\n", fargs[i]);
 
   // testing fcnnut
   std::cout<<"----------------------------------------\n";
   std::cout<<"> fcnnut\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::fcnnut(55095.187881853897125, fargs[0], fargs[1], fargs[2], fargs[3]);
+  iers2010::fcnnut(fcnnut_inp, fargs[0], fargs[1], fargs[2], fargs[3]);
   for (int i=0; i<4; ++i) printf("\t%+20.15f\n", fargs[i]);
 
   // testing arg2
@@ -105,7 +105,7 @@ int main()
   std::cout<<"> arg2\n";
   std::cout<<"----------------------------------------\n";
   double arg2_out[11];
-  iers2010::arg2(2009,  264.187881853897125, arg2_out);
+  iers2010::arg2(arg2_inp, arg2_out);
   for (int i=0; i<11; ++i) printf("\t%+20.15f\n", arg2_out[i]);
 
   // testing cnmtx
@@ -113,42 +113,42 @@ int main()
   std::cout<<"> cnmtx\n";
   std::cout<<"----------------------------------------\n";
   double cnmtx_out[12];
-  iers2010::oeop::cnmtx(55095.187881853897125, cnmtx_out);
+  iers2010::oeop::cnmtx(cnmtx_inp, cnmtx_out);
   for (int i=0; i<12; ++i) printf("\t%+20.15f\n", cnmtx_out[i]);
 
   // testing ortho_eop
   std::cout<<"----------------------------------------\n";
   std::cout<<"> ortho_eop\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::ortho_eop(55095.187881853897125, cnmtx_out[0], cnmtx_out[1], cnmtx_out[2]);
+  iers2010::ortho_eop(ortho_eop_inp, cnmtx_out[0], cnmtx_out[1], cnmtx_out[2]);
   for (int i=0; i<3; ++i) printf("\t%+20.15f\n", cnmtx_out[i]);
 
   // testing rg_zont2
   std::cout<<"----------------------------------------\n";
   std::cout<<"> rg_zont2\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::rg_zont2(   0.097212536121941, cnmtx_out[0], cnmtx_out[1], cnmtx_out[2]);
+  iers2010::rg_zont2(rg_zont2_inp, cnmtx_out[0], cnmtx_out[1], cnmtx_out[2]);
   for (int i=0; i<3; ++i) printf("\t%+20.15f\n", cnmtx_out[i]);
 
   // testing fcul_a
   std::cout<<"----------------------------------------\n";
   std::cout<<"> fcul_a\n";
   std::cout<<"----------------------------------------\n";
-  cnmtx_out[0] = iers2010::fcul_a(  30.576398284960717,  -636.0803e0,    300.918e0, 78.04e0);
+  cnmtx_out[0] = iers2010::fcul_a(fcul_a_inp);
   printf("\t%+20.15f\n", cnmtx_out[0]);
 
   // testing fcul_b
   std::cout<<"----------------------------------------\n";
   std::cout<<"> fcul_b\n";
   std::cout<<"----------------------------------------\n";
-  cnmtx_out[0] = iers2010::fcul_b(  30.576398284960717,  -636.0803e0,  264.187881853897125e0, 78.04e0);
+  cnmtx_out[0] = iers2010::fcul_b(fcul_b_inp);
   printf("\t%+20.15f\n", cnmtx_out[0]);
 
   // testing fculzd_hpa
   std::cout<<"----------------------------------------\n";
   std::cout<<"> fculzd_hpa\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::fcul_zd_hpa(  30.576398284960717,  -636.0803e0,  636.90271e0,   28.46009e0,    0.54769e0,
+  iers2010::fcul_zd_hpa(fcul_zd_hpa_inp,
       cnmtx_out[0], cnmtx_out[1], cnmtx_out[2]);
   for (int i=0; i<3; ++i) printf("\t%+20.15f\n", cnmtx_out[i]);
 
@@ -156,7 +156,7 @@ int main()
   std::cout<<"----------------------------------------\n";
   std::cout<<"> gmf\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::gmf(55095.187881853897125,    0.533658823473712,   -0.416959733920350,   -636.080e0,    0.2087427636e0,
+  iers2010::gmf(gmf_inp,
       cnmtx_out[0], cnmtx_out[1]);
   for (int i=0; i<2; ++i) printf("\t%+20.15f\n", cnmtx_out[i]);
 
@@ -164,7 +164,7 @@ int main()
   std::cout<<"----------------------------------------\n";
   std::cout<<"> vmf1\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::vmf1(   0.145915391735760,    0.413168631696726, 55095.187881853897125,    0.533658823473712,    0.2087427636e0,
+  iers2010::vmf1(vmf1_inp,
       cnmtx_out[0], cnmtx_out[1]);
   for (int i=0; i<2; ++i) printf("\t%+20.15f\n", cnmtx_out[i]);
 
@@ -172,7 +172,7 @@ int main()
   std::cout<<"----------------------------------------\n";
   std::cout<<"> vmf1_ht\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::vmf1_ht(   0.145915391735760,    0.413168631696726, 55095.187881853897125,    0.533658823473712,      -636.08031e0,    0.2087427636e0,
+  iers2010::vmf1_ht(vmf1_ht_inp,
       cnmtx_out[0], cnmtx_out[1]);
   for (int i=0; i<2; ++i) printf("\t%+20.15f\n", cnmtx_out[i]);
 

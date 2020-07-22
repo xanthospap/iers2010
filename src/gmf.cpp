@@ -45,7 +45,7 @@ template <typename T, int N> struct fact_array {
 ///     function based on numerical weather model data",
 ///     Geophy. Res. Lett., Vol. 33, L07304, doi:10.1029/2005GL025545.
 int iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
-                  double &gmfh, double &gmfw) {
+                  double &gmfh, double &gmfw) noexcept {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double TWOPI(D2PI);
   constexpr double PI(DPI);
@@ -225,7 +225,7 @@ int iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     ahm += (ah_mean[i] * ap[i] + bh_mean[i] * bp[i]) * 1e-5;
     aha += (ah_amp[i] * ap[i] + bh_amp[i] * bp[i]) * 1e-5;
   }
-  double ah{ahm + aha * cos(doy / 365.25e0 * TWOPI)};
+  double ah{ahm + aha * std::cos(doy / 365.25e0 * TWOPI)};
 
   double sine{sin(PI / 2e0 - zd)};
   double beta{bh / (sine + ch)};

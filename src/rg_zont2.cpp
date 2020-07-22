@@ -60,7 +60,8 @@
 ///
 ///     Petit, G. and Luzum, B. (eds.), IERS Conventions (2010),
 ///     IERS Technical Note No. 36, BKG (2010)
-int iers2010::rg_zont2(double t, double &dut, double &dlod, double &domega) {
+int iers2010::rg_zont2(double t, double &dut, double &dlod,
+                       double &domega) noexcept {
 
   // Set constants
 #ifdef USE_EXTERNAL_CONSTS

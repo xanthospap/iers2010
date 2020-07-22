@@ -26,7 +26,8 @@
 /// and R.B. Langley (2002). "Improved mapping functions for
 /// atmospheric refraction correction in SLR", Geophysical
 /// Res. Lett., 29(10), 1414, doi:10.1029/2001GL014394, 2002
-double iers2010::fcul_b(double dlat, double dhgt, double doy, double elev) {
+double iers2010::fcul_b(double dlat, double dhgt, double doy,
+                        double elev) noexcept {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double PI(DPI);
 #else

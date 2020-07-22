@@ -41,7 +41,7 @@
 ///     Geophysical Res. Lett., 31, L14602, doi:10.1029/2004GL020308, 2004
 int iers2010::fcul_zd_hpa(double dlat, double dhgt, double pres, double wvp,
                           double lambda, double &f_ztd, double &f_zhd,
-                          double &f_zwd) {
+                          double &f_zwd) noexcept {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double PI(DPI);
   // constexpr double C    (DC);

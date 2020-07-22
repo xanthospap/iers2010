@@ -32,32 +32,32 @@ int dehanttideinel(const double *, const double *, const double *,
 int ortho_eop(double, double &, double &, double &);
 
 /// Evaluate the effects of zonal Earth tides on the rotation of the Earth.
-int rg_zont2(double, double &, double &, double &);
+int rg_zont2(double, double &, double &, double &) noexcept;
 
 /// Compute the global total FCULa mapping function.
-double fcul_a(double, double, double, double);
+double fcul_a(double, double, double, double) noexcept;
 
 /// Computes the global total FCULb mapping function.
-double fcul_b(double, double, double, double);
+double fcul_b(double, double, double, double) noexcept;
 
 // Determine the total zenith delay following Mendes and Pavlis, 2004.
 int fcul_zd_hpa(double, double, double, double, double, double &, double &,
-                double &);
+                double &) noexcept;
 
 /// Determines the total zenith delay following (Mendes and Pavlis, 2004).
 int fculzd_hpa(double, double, double, double, double, double &, double &,
-               double &);
+               double &) noexcept;
 
 /// Compute the Global Mapping Functions (GMF).
-int gmf(double, double, double, double, double, double &, double &);
+int gmf(double, double, double, double, double, double &, double &) noexcept;
 
 /// Compute the Vienna Mapping Functions 1 (VMF1), to be used with "a"
 /// coefficients computed for a given site.
-int vmf1(double, double, double, double, double, double &, double &);
+int vmf1(double, double, double, double, double, double &, double &) noexcept;
 
 /// Compute the Vienna Mapping Functions 1 (VMF1), with height corrections,
 /// to be used with "a" coefficients computed for a grid.
-int vmf1_ht(double, double, double, double, double, double, double &, double &);
+int vmf1_ht(double, double, double, double, double, double, double &, double &) noexcept;
 
 /// Compute the Global Pressure and Temperature (GPT), based on spherical
 /// harmonics up to degree and order 9.
