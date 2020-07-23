@@ -30,7 +30,7 @@
 ///     Global model of pressure and temperature for geodetic applications",
 ///     Journal of Geodesy, 81(10), pp. 679-683.
 int iers2010::gpt(double dmjd, double dlat, double dlon, double dhgt,
-                  double &pres, double &temp, double &undu) {
+                  double &pres, double &temp, double &undu) noexcept {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double TWOPI(D2PI);
 #else

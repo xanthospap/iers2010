@@ -21,12 +21,12 @@ if not os.path.isfile(cpp_test_am):
 else:
   copyfile(cpp_test_am, cpp_test)
 
-for_test_am = "fortran_impl/MAIN.F.am"
-for_test = "fortran_impl/MAIN.F"
-if not os.path.isfile(for_test_am):
-  print("[ERROR] Failed to find fortran test file \"{:}\"".format(for_test_am))
-else:
-  copyfile(for_test_am, for_test)
+# for_test_am = "fortran_impl/MAIN.F.am"
+# for_test = "fortran_impl/MAIN.F"
+# if not os.path.isfile(for_test_am):
+#   print("[ERROR] Failed to find fortran test file \"{:}\"".format(for_test_am))
+# else:
+#   copyfile(for_test_am, for_test)
 
 ## generate random parameters
 julian_day = random.uniform(2442413.5e0, 2460676.5e0)
@@ -47,6 +47,7 @@ wvpr = random.uniform(0e0, 30e0)
 lwvl = random.uniform(4.5e-1, 6e-1)
 hfac = random.uniform(0e0, 1e0)
 wfac = random.uniform(0e0, 1e0)
+grbl = random.randint(0, 1)
 
 ## replace fundarg input parameter (julian century)
 replace_inplace(cpp_test, "fundarg_inp", "{:20.15f}".format(julian_century))
@@ -100,3 +101,13 @@ replace_inplace(cpp_test, "vmf1_inp", in_string)
 in_string = "{:20.15f}, {:20.15f}, {:20.15f}, {:20.15f}, {:15.5f}e0, {:15.10f}e0".format(
   hfac, wfac, mjd, math.radians(dlat), dhgt, math.radians(90e0-elev))
 replace_inplace(cpp_test, "vmf1_ht_inp", in_string)
+
+## replace gpt input parameter (mjd, latitude, longtitude, height)
+in_string = "{:20.15f}, {:20.15f}, {:20.15f}, {:10.3f}e0".format(mjd, math.radians(dlat),
+  math.radians(dlon), dhgt)
+replace_inplace(cpp_test, "gpt_inp", in_string)
+
+## replace gpt2 input parameter (mjd, latitude, longtitude, height, nstat, True/False)
+in_string = "{:20.15f}, {:20.15f}, {:20.15f}, {:10.3f}e0, {:1d}".format(mjd, math.radians(dlat),
+  math.radians(dlon), dhgt, grbl)
+replace_inplace(cpp_test, "gpt2_inp", in_string)

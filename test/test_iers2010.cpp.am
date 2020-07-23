@@ -7,44 +7,8 @@
 #define TEST_STATUS_SUCCESS 0
 #define TEST_STATUS_FAILURE 1
 
-
-/* results for GPT.F;
- * last update 2011 October 18
- */
-double gpt_res[] =
-{
-  918.0710638757363995e0,
-  19.31914181012882992e0,
-  -42.19185643717770517e0
-};
-
-/* results for GPT2
- * last update 31 May 2013
- */
-double gpt2_res_a[] =
-{
-  1002.555031899637015,
-  22.121274188593230,
-  -6.525262725051438,
-  15.625300656392879,
-  0.001264668783781,
-  0.000572557214095,
-  44.05609719704228
-};
-
-double gpt2_res_b[] =
-{
-  1003.487051814098550,
-  11.952642050310883,
-  -5.469287999554646,
-  9.578015648003742,
-  0.001239543515998,
-  0.000556030804004,
-  44.056097197042284
-};
-
 // default location of file: gpt2_5.grd
-const char gpt2grd[] = "/usr/local/share/iers10/gpt2_5.grd";
+const char gpt2grd[] = "/usr/local/share/libiers10/gpt2_5.grd";
 bool
 file_exists(const char* str)
 {
@@ -57,17 +21,6 @@ file_exists(const char* str)
 
 int main()
 {
-  int status          = TEST_STATUS_SUCCESS;
-  int gpt_status      = TEST_STATUS_SUCCESS;
-  int gpt2_status     = TEST_STATUS_SUCCESS;
-  double diff;
-
-  // format results
-  std::cout.setf(std::ios::fixed/*, std:: ios::floatfield*/);
-  std::cout.precision(15);
-  std::cerr.setf(std::ios::fixed/*, std:: ios::floatfield*/);
-  std::cerr.precision(15);
-
   std::cout<<"\nDriver program to test the c++ implementation of the IERS2010"
     "\n";
 
@@ -180,72 +133,23 @@ int main()
   std::cout<<"----------------------------------------\n";
   std::cout<<"> gpt\n";
   std::cout<<"----------------------------------------\n";
-  iers2010::gpt(55055e0, 0.6708665767e0, -1.393397187e0, 812.546e0,
+  iers2010::gpt(gpt_inp,
       cnmtx_out[0], cnmtx_out[1], cnmtx_out[2]);
-  for (int i=0; i<3; ++i) {
-    diff = std::fabs(cnmtx_out[i]-gpt_res[i]);
-    std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
-    if (diff > 1e-15) {
-      gpt_status = TEST_STATUS_FAILURE;
-    }
-  }
-  std::cout << "status: " << (gpt_status ? "failed!\n" : "ok\n" );
-  status += gpt_status;
-
-  // testing gpt2
-  double gpt_input[] = { 0.8412486994612668e0,0.28571039855147173e0, 156.e0 };
-  std::cout<<"----------------------------------------\n";
-  std::cout<<"> gpt2 (Test Case A)\n";
-  std::cout<<"----------------------------------------\n";
-  if (!file_exists(gpt2grd)) {
-    std::cerr<<"\n[ERROR] Cannot locate/open the grd file \"gpt2_5.grd\"\n";
-    gpt2_status=1;
-  } else {
-    int gpt2stat = iers2010::gpt2(56141.e0, gpt_input, gpt_input+1,gpt_input+2, 1, 0,
-        cnmtx_out, cnmtx_out+1, cnmtx_out+2, cnmtx_out+3, cnmtx_out+4,
-        cnmtx_out+5, cnmtx_out+6, gpt2grd);
-    if  (gpt2stat != 0) {
-      std::cerr<<"\ngpt2 (case A) failed with status=" << gpt2stat;
-      gpt2_status = TEST_STATUS_FAILURE;
-    } else {
-      for (int i=0; i<7; ++i) {
-        diff = std::fabs(cnmtx_out[i]-gpt2_res_a[i]);
-        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
-        if (diff > 1e-15) {
-          gpt2_status = TEST_STATUS_FAILURE;
-        }
-      }
-    }
-  }
-  std::cout << "status: " << (gpt2_status ? "failed!\n" : "ok\n" );
-  status += gpt2_status;
+  for (int i=0; i<3; ++i) printf("\t%+20.15f\n", cnmtx_out[i]);
 
   // testing gpt2
   std::cout<<"----------------------------------------\n";
-  std::cout<<"> gpt2 (Test Case B)\n";
+  std::cout<<"> gpt2\n";
   std::cout<<"----------------------------------------\n";
   if (!file_exists(gpt2grd)) {
     std::cerr<<"\n[ERROR] Cannot locate/open the grd file \"gpt2_5.grd\"\n";
-    gpt2_status=1;
+    return 1;
   } else {
-    int gpt2stat = iers2010::gpt2(56141.e0, gpt_input, gpt_input+1,gpt_input+2, 1, 1,
-        cnmtx_out, cnmtx_out+1, cnmtx_out+2, cnmtx_out+3, cnmtx_out+4,
-        cnmtx_out+5, cnmtx_out+6, gpt2grd);
-    if (gpt2stat != 0) {
-      std::cerr<<"\ngpt2 (case B) failed with status=" << gpt2stat;
-      gpt2_status = TEST_STATUS_FAILURE;
-    } else {
-      for (int i=0; i<7; ++i) {
-        diff = std::fabs(cnmtx_out[i]-gpt2_res_b[i]);
-        std::cout << "\targument[" << i << "] diff: " << diff <<"\n";
-        if (diff > 1e-15) {
-          gpt2_status = TEST_STATUS_FAILURE;
-        }
-      }
-    }
+    iers2010::gpt2(gpt2_inp,
+        cnmtx_out[0], cnmtx_out[1], cnmtx_out[2], cnmtx_out[3], cnmtx_out[4],
+        cnmtx_out[5], cnmtx_out[6], gpt2grd);
+  for (int i=0; i<7; ++i) printf("\t%+20.15f\n", cnmtx_out[i]);
   }
-  std::cout << "status: " << (gpt2_status ? "failed!\n" : "ok\n" );
-  status += gpt2_status;
 
-  return status;    
+  return 0;    
 }

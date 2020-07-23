@@ -61,12 +61,16 @@ int vmf1_ht(double, double, double, double, double, double, double &, double &) 
 
 /// Compute the Global Pressure and Temperature (GPT), based on spherical
 /// harmonics up to degree and order 9.
-int gpt(double, double, double, double, double &, double &, double &);
+int gpt(double, double, double, double, double &, double &, double &) noexcept;
 
 /// Compute the Global Pressure and Temperature 2 model (GPT2),
 /// and the "a" coefficients for vmf1_ht.
 int gpt2(double, double *, double *, double *, int, int, double *, double *,
          double *, double *, double *, double *, double *,
+         const char *ifile = nullptr);
+int gpt2(double dmjd, double dlat, double dlon, double hell,
+         int it, double &p, double &t, double &dt,
+         double &e, double &ah, double &aw, double &undu,
          const char *ifile = nullptr);
 
 namespace oeop {
