@@ -1,0 +1,11 @@
+language: c++
+dist: bionic
+compiler:
+  - gcc
+  - clang
+
+script:
+ - mv src/Makefile.am.production src/Makefile.am
+ - autoreconf -if
+ - ./configure
+ - make
