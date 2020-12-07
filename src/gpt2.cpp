@@ -330,10 +330,9 @@ int iers2010::gpt2(double dmjd, double *dlat, double *dlon, double *hell,
 }
 
 // simplified version for nstat = 1
-int iers2010::gpt2(double dmjd, double dlat, double dlon, double hell,
-                   int it, double &p, double &t, double &dt,
-                   double &e, double &ah, double &aw, double &undu,
-                   const char *ifile) {
-  return iers2010::gpt2(dmjd, &dlat, &dlon, &hell, 1, it, &p, &t, &dt, &e, &ah, 
+int iers2010::gpt2(double dmjd, double dlat, double dlon, double hell, int it,
+                   double &p, double &t, double &dt, double &e, double &ah,
+                   double &aw, double &undu, const char *ifile) {
+  return iers2010::gpt2(dmjd, &dlat, &dlon, &hell, 1, it, &p, &t, &dt, &e, &ah,
                         &aw, &undu, ifile);
 }

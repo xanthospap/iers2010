@@ -9,7 +9,7 @@
 ///          Chapter 5 Sections 5.7.1 - 5.7.2 (pp. 57 - 59).
 ///          This function is a translation/wrapper for the fortran FUNDARG
 ///          subroutine, found here :
-///          http://maia.usno.navy.mil/conv2010/software.html
+///          https://iers-conventions.obspm.fr/content/chapter5/software/FUNDARG.F
 ///
 /// @param[in]  t     TT, Julian centuries since J2000 (Note 1)
 /// @param[out] fargs A 5-element array containing the computed fundamental

@@ -1,1 +1,1 @@
-SUBDIRS = src test data ##doc script
+SUBDIRS = src test data
