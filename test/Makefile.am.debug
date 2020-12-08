@@ -3,7 +3,9 @@ noinst_PROGRAMS = testIers2010 \
 		testBlqIn \
 		testHardisp
 
-check_PROGRAMS = testFundarg
+check_PROGRAMS = testFundarg \
+	testPmsdnut2 \
+	testUtlibr
 
 MCXXFLAGS = \
 	-std=c++17 \
@@ -37,6 +39,14 @@ testHardisp_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdate
 testFundarg_SOURCES  = test_fundarg.cpp
 testFundarg_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src 
 testFundarg_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testPmsdnut2_SOURCES  = test_pmsdnut2.cpp
+testPmsdnut2_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src 
+testPmsdnut2_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testUtlibr_SOURCES  = test_utlibr.cpp
+testUtlibr_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src 
+testUtlibr_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 #check_PROGRAMS    = test
 #dist_test_SOURCES = test.cpp
 #EXTRA_DIST        = hardisp_results_onsa \

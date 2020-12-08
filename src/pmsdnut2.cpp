@@ -59,8 +59,7 @@ int iers2010::pmsdnut2(double rmjd, double &dx, double &dy) noexcept {
    *           angle = Sum(i=1:6) iarg(i,j)*arg(i), for j=1,25
    *
    */
-  int iband = 1;
-  double fargs[6]; /* fundamental arguments: GMST+pi, l, lp, f, d, om */
+  const int iband = 1;
 
   // Set constants
 #ifdef USE_EXTERNAL_CONSTS
@@ -126,20 +125,21 @@ int iers2010::pmsdnut2(double rmjd, double &dx, double &dy) noexcept {
   //+ at t = rmjd
 
   // Convert the input epoch to Julian centuries of TDB since J2000
-  double t((rmjd - RMJD0) / 36525e0);
+  const double t((rmjd - RMJD0) / 36525e0);
 
   // Compute GMST + pi
-  double gmst(
+  const double gmst(
       std::fmod(67310.54841e0 + t * ((8640184.812866e0 + 3155760000e0) +
-                                     t * (0.093104e0 + t * (-0.0000062))),
+                                     t * (0.093104e0 + t * (-0.0000062e0))),
                 86400e0));
 
   // Fundamental arguments
+  double fargs[6]; /* fundamental arguments: GMST+pi, l, lp, f, d, om */
   iers2010::fundarg(t, fargs + 1);
   fargs[0] = gmst / RAD2SEC + PI;
   fargs[0] = std::fmod(fargs[0], TWOPI);
 
-  int jstart((iband == 1) ? 15 : 0);
+  const int jstart((iband == 1) ? 15 : 0);
 
   double angle, sina, cosa;
   for (int j = jstart; j < M; j++) {

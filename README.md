@@ -74,9 +74,9 @@ under the `/data` directory.
 | Chapter | (Sub)Routine | Translated | Tested | Version  | Comments |
 |:--------|:-------------|:----------:|:------:|:---------|:---------|
 | 4       | [GCONV2](/https://iers-conventions.obspm.fr/content/chapter4/GCONV2.F)              |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | see [ngpt car2ell](https://github.com/xanthospap/ngpt/blob/master/src/car2ell.hpp)|
-| 5       | [PMSDNUT2](/https://iers-conventions.obspm.fr/content/convupdt/chapter5/PMSDNUT2.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 13.11.2011 | see [pmsdnut2](#pmsdnut2-cmp) Discrepancies between FORTRAN and C++ implementation ~1e-7 or less; this is due to the D0 decleration|
+| 5       | [PMSDNUT2](/https://iers-conventions.obspm.fr/content/convupdt/chapter5/PMSDNUT2.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 13.11.2011 | see [pmsdnut2](#pmsdnut2-cmp) Discrepancies between FORTRAN and C++ implementation <1e<sup>-6</sup> mas; this is due to the D0 decleration|
 |         | [UTLIBR](/https://iers-conventions.obspm.fr/content/chapter5/UTLIBR.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 23.06.2010 | see [utlibr](#utlibr-cmp) Discrepancies between FORTRAN and C++ implementation ~1e-7 or less; this is due to the     D0 decleration|
-|         | [FUNDARG](/https://iers-conventions.obspm.fr/content/chapter5/FUNDARG.F)            |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 25.02.2010 | see [fundarg](#fundarg-cmp) Discrepancies between FORTRAN and C++ implementation < 1e-11 or less; this is due to the D0 decleration|
+|         | [FUNDARG](/https://iers-conventions.obspm.fr/content/chapter5/FUNDARG.F)            |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 25.02.2010 | see [fundarg](#fundarg-cmp) C++ and FORTRAN implementations give identical results,which do not agree though with the test case provided |
 |         | [FCNNUT](/https://iers-conventions.obspm.fr/content/convupdt/chapter5/FCNNUT.F)     |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 19.12.2013 | |
 | 7       | [DEHANTTIDEINEL](/https://iers-conventions.obspm.fr/content/convupdt/chapter7/dehanttideinel/DEHANTTIDEINEL.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 24.04.2015 | see [dehanttideinel](#dehanttideinel-cmp). One test case does not produce the expected results, both in the FORTRAN and the C++ implementation; that is test case 4, as privided in the source code|
 |         | [HARDISP](/https://iers-conventions.obspm.fr/content/convupdt/chapter7/hardisp/HARDISP.F) |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
@@ -139,24 +139,22 @@ See the individual (sub)routine chapters below for the reason these files are pr
 
 ### fundarg <a id="fundarg-cmp"></a>
 
-The test provided for FUNDARG (in the `FUNDARG.F` header) failed with descripancies
-~1e-13 or less. The same thing happens when i compile and run the FORTRAN implementation
-(see `fortran_impl`). Possibly this is because of the non-use of (explicit) scientific
-format in the input arguments (e.g. `T = 0.07995893223819302` and not `T = 0.07995893223819302D0`).
+The test provided for FUNDARG (in `FUNDARG.F`) fails with maximum descripancies in the order of 
+1e<sup>-11</sup> radians or less. The same thing happens when i compile and run the FORTRAN implementation
+(see `fortran_impl`) exactly as provided by the IERS website. The tests for this program are coded in 
+[test_fundarg.cpp](src/test_fundarg.cpp) and [test_fundarg.f](fortran_impl/test_fundarg.f).
 
-[MAIN.F](fortran_impl/MAIN.F) contains the test case where all `DOUBLE PRECISION` floats
-are typed using the `D0` format; the results are identical with the C++ implementation.
 
 ### pmsdnut2 <a id="pmsdnut2-cmp"></a>
 
-The test provided shows discrepancies (against the C++ implementation) in the order
-of 1e-7 or less. This is because the `DOUBLE PRECISION` float arrays `PER, XS, XC, YS and YC`
+The test case provided (in `PMSDNUT2.F`) shows discrepancies (against the C++ implementation) in the order
+of 1e<sup>-6</sup> microarcseconds or less. This is because the `DOUBLE PRECISION` float arrays `PER, XS, XC, YS and YC`
 are not explicitely marked with `D0` (in `PMSDNUT2.F`). If i use the implementation 
 [PMSDNUT2_D0.F](fortran_impl/PMSDNUT2_D0.F) (where
 the only change from `PMSDNUT2.F` is the declerations of the arrays), then the FORTRAN and C++ 
 results are identical.
 
-Same thing happens with [utlibr](#utlibr-cmp).
+*Note that the Same thing happens with [utlibr](#utlibr-cmp).*
 
 ### utlibr <a id="utlibr-cmp"></a>
 
