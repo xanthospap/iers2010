@@ -158,8 +158,8 @@ results are identical.
 
 ### utlibr <a id="utlibr-cmp"></a>
 
-The test provided shows discrepancies (against the C++ implementation) in the order
-of 1e-7 or less. This is because the `DOUBLE PRECISION` float arrays `PER, DUT1S, DUT1C, DLODS and DLODC`
+The test cases provided (in `UTLIBR.F`) shows discrepancies (against the C++ implementation) in the order
+of 1e<sup>-6</sup> mas and mas/day or less. This is because the `DOUBLE PRECISION` float arrays `PER, DUT1S, DUT1C, DLODS and DLODC`
 are not explicitely marked with `D0` (in `UTLIBR.F`). If i use the implementation 
 [UTLIBR_D0.F](fortran_impl/UTLIBR_D0.F) (where
 the only change from `UTLIBR.F` is the declerations of the arrays), then the FORTRAN and C++
@@ -169,7 +169,7 @@ Same thing happens with [pmsdnut2](#pmsdnut2-cmp).
 
 ### fcnnut <a id="fcnnut-cmp"></a>
 
-FORTRAN (i.e. FCNNUT.F) and C++ implementations produce identical results; no discrepancies found
+FORTRAN (i.e. `FCNNUT.F`) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
 ### arg2 <a id="arg2-cmp"></a>

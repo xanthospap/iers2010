@@ -1,11 +1,12 @@
 noinst_PROGRAMS = testIers2010 \
-testDehantTide \
 testBlqIn \
 testHardisp
 
 check_PROGRAMS = testFundarg \
 testPmsdnut2 \
-testUtlibr
+testUtlibr \
+testFcnnut \
+testDehanttideinel
 
 MCXXFLAGS = \
 -std=c++17 \
@@ -23,10 +24,6 @@ MCXXFLAGS = \
 testIers2010_SOURCES  = test_iers2010.cpp
 testIers2010_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
 testIers2010_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
-
-testDehantTide_SOURCES  = test_dehanttd.cpp
-testDehantTide_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
-testDehantTide_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 
 testBlqIn_SOURCES  = test_blq.cpp
 testBlqIn_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
@@ -47,6 +44,15 @@ testPmsdnut2_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdat
 testUtlibr_SOURCES  = test_utlibr.cpp
 testUtlibr_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
 testUtlibr_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testFcnnut_SOURCES  = test_fcnnut.cpp
+testFcnnut_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testFcnnut_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testDehanttideinel_SOURCES  = test_dehanttideinel.cpp
+testDehanttideinel_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testDehanttideinel_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
 #check_PROGRAMS    = test
 #dist_test_SOURCES = test.cpp
 #EXTRA_DIST        = hardisp_results_onsa \
