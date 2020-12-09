@@ -78,7 +78,7 @@ under the `/data` directory.
 |         | [UTLIBR](/https://iers-conventions.obspm.fr/content/chapter5/UTLIBR.F)              |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 23.06.2010 | see [utlibr](#utlibr-cmp) Discrepancies between FORTRAN and C++ implementation ~1e-7 or less; this is due to the     D0 decleration|
 |         | [FUNDARG](/https://iers-conventions.obspm.fr/content/chapter5/FUNDARG.F)            |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 25.02.2010 | see [fundarg](#fundarg-cmp) C++ and FORTRAN implementations give identical results,which do not agree though with the test case provided |
 |         | [FCNNUT](/https://iers-conventions.obspm.fr/content/convupdt/chapter5/FCNNUT.F)     |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 19.12.2013 | |
-| 7       | [DEHANTTIDEINEL](/https://iers-conventions.obspm.fr/content/convupdt/chapter7/dehanttideinel/DEHANTTIDEINEL.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 24.04.2015 | see [dehanttideinel](#dehanttideinel-cmp). One test case does not produce the expected results, both in the FORTRAN and the C++ implementation; that is test case 4, as privided in the source code|
+| 7       | [DEHANTTIDEINEL](/https://iers-conventions.obspm.fr/content/convupdt/chapter7/dehanttideinel/DEHANTTIDEINEL.F) |<ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 19.12.2016 | see [dehanttideinel](#dehanttideinel-cmp). One test case does not produce the expected results both in the FORTRAN and the C++ implementation; that is test case 4, as privided in the source code|
 |         | [HARDISP](/https://iers-conventions.obspm.fr/content/convupdt/chapter7/hardisp/HARDISP.F) |<ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
 |         | [ARG2](/https://iers-conventions.obspm.fr/content/convupdt/chapter7/ARG2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 07.10.2011 | see [arg2](#arg2-cmp)|
 |         | [IERS_CMP_2015](/https://iers-conventions.obspm.fr/content/convupdt/chapter7/IERS_CMP_2015.F) | <ul><li>- [ ] </li></ul>|<ul><li>- [ ] </li></ul>| | |
@@ -179,12 +179,12 @@ in running the test case.
 
 ### dehanttideinel <a id="dehanttideinel-cmp"></a>
 
-The function `dehanttideinel` is tested seperately, in the source file [test_dehanttd.cpp](test/test_dehanttd.cpp)
-(build as `testDehantTide` in the `test` directory). Three individual test cases are provided,
-all yieding discrepancies (between the FORTRAN and C++ implementations) smaller than ~1e-13.
-
-> A fourth test case is provided in the FORTRAN source code which fails misserably (both 
-> in the FORTRAN and the C++ implementation).
+There are four test cases available (in `DEHANTTIDEINEL.F`) for this routine. 
+For the first three, they all yield discrepancies < 1e<sup>-13</sup> meters for the C++ 
+implementation, while for the FORTRAN implementation differences are zero. __However, the 
+fourth test case fails misserable, both for the C++ and the FORTRAN implementation__; in this 
+case, discrepancies in the order of tens of meters are found! I do not know what 
+the problem is.
 
 ### cnmtx <a id="cnmtx-cmp"></a>
 
@@ -298,8 +298,9 @@ used by the users in source code.
 
 ## TODO
 
-- [x] test compilation against c++17 (gcc)
-- [x] the new version of dehanttidenl has a new example test case; use it!
+- [x] ~~test compilation against c++17 (gcc)~~
+- [x] ~~the new version of dehanttidenl has a new example test case; use it!~~
+- [x] the fourth case of dehanttideinel fails with large discrepancies; wtf?
 
 ## Bugs & Maintanance
 Xanthos, xanthos@mail.ntua.gr
