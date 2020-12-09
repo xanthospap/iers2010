@@ -45,10 +45,10 @@ int main(int argc, char *argv[]) {
     irnt = std::stoi(argv[next++]);
     samp = std::stod(argv[next++]);
   } catch (std::invalid_argument &) {
-    std::cerr << "Invalid argument while reading input arguments. Fatal.\n";
+    std::cerr << "[ERROR] Invalid argument while reading input arguments. Fatal.\n";
     return 1;
   } catch (std::out_of_range &) {
-    std::cerr << "Invalid argument while reading input arguments. Fatal.\n";
+    std::cerr << "[ERROR] Invalid argument while reading input arguments. Fatal.\n";
     return 1;
   }
 
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
   /// Read in ocean loading coefficients from stdin
   double tamp[3][ntin], tph[3][ntin];
   if (iers2010::hisp::read_hardisp_args(tamp, tph)) {
-    std::cerr << "Failed to read harmonics. Fatal.\n";
+    std::cerr << "[ERROR] Failed to read harmonics. Fatal.\n";
     return 1;
   }
 

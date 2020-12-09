@@ -6,7 +6,9 @@ check_PROGRAMS = testFundarg \
 testPmsdnut2 \
 testUtlibr \
 testFcnnut \
-testDehanttideinel
+testDehanttideinel \
+testArg2 \
+testCnmtx
 
 MCXXFLAGS = \
 -std=c++17 \
@@ -53,6 +55,13 @@ testDehanttideinel_SOURCES  = test_dehanttideinel.cpp
 testDehanttideinel_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
 testDehanttideinel_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 
+testArg2_SOURCES  = test_arg2.cpp
+testArg2_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testArg2_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testCnmtx_SOURCES  = test_cnmtx.cpp
+testCnmtx_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testCnmtx_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 #check_PROGRAMS    = test
 #dist_test_SOURCES = test.cpp
 #EXTRA_DIST        = hardisp_results_onsa \

@@ -25,7 +25,8 @@ IERS_OBS = PMSDNUT2.o \
 	GMF.o \
 	VMF1.o \
 	GPT.o \
-	GPT2.o
+	GPT2.o \
+	ARG2.o
 
 IERS_OBS_D0 = PMSDNUT2_D0.o \
 	UTLIBR_D0.o \
@@ -51,7 +52,8 @@ IERS_OBS_D0 = PMSDNUT2_D0.o \
 	GMF.o \
 	VMF1.o \
 	GPT.o \
-	GPT2.o
+	GPT2.o \
+	ARG2.o
 
 all: test_iers test_iers_d0
 
@@ -73,6 +75,8 @@ testFcnnut: test_fcnnut.f $(IERS_OBS)
 	$(FC) -o $@ test_fcnnut.f $(IERS_OBS)
 testDehanttideinel: test_dehanttideinel.f $(IERS_OBS)
 	$(FC) -o $@ test_dehanttideinel.f $(IERS_OBS)
+testArg2: test_arg2.f $(IERS_OBS)
+	$(FC) -o $@ test_arg2.f $(IERS_OBS)
 
 FUNDARG.o : FUNDARG.F
 	$(FC) $(FF) -o $@ FUNDARG.F

@@ -1,5 +1,7 @@
 #include "iers2010.hpp"
+#ifdef DEBUG
 #include <cassert>
+#endif
 #ifdef USE_EXTERNAL_CONSTS
 #include "gencon.hpp"
 #endif
@@ -180,8 +182,10 @@ int iers2010::oeop::cnmtx(double dmjd, double *h) {
     }
   }
 
+#ifdef DEBUG
   // A final check !
   assert(j == 11);
+#endif
 
   // Finished
   return 0;

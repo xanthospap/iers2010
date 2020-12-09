@@ -174,7 +174,7 @@ in running the test case.
 
 ### arg2 <a id="arg2-cmp"></a>
 
-FORTRAN (i.e. ARG2.F) and C++ implementations produce identical results; no discrepancies found
+FORTRAN (i.e. `ARG2.F`) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
 ### dehanttideinel <a id="dehanttideinel-cmp"></a>
@@ -182,7 +182,7 @@ in running the test case.
 There are four test cases available (in `DEHANTTIDEINEL.F`) for this routine. 
 For the first three, they all yield discrepancies < 1e<sup>-13</sup> meters for the C++ 
 implementation, while for the FORTRAN implementation differences are zero. __However, the 
-fourth test case fails misserable, both for the C++ and the FORTRAN implementation__; in this 
+fourth test case fails misserably, both for the C++ and the FORTRAN implementation__; in this 
 case, discrepancies in the order of tens of meters are found! I do not know what 
 the problem is.
 
@@ -300,7 +300,7 @@ used by the users in source code.
 
 - [x] ~~test compilation against c++17 (gcc)~~
 - [x] ~~the new version of dehanttidenl has a new example test case; use it!~~
-- [x] the fourth case of dehanttideinel fails with large discrepancies; wtf?
+- [ ] the fourth case of dehanttideinel fails with large discrepancies; wtf?
 
 ## Bugs & Maintanance
 Xanthos, xanthos@mail.ntua.gr
