@@ -1,5 +1,8 @@
 # libiers10++
-C++ functions and definitions implementing the IERS 2010 standards.
+
+[![Build Status](https://travis-ci.com/xanthospap/ggeodesy.svg?branch=master)](https://travis-ci.com/xanthospap/ggeodesy)
+
+C++ library implementing the IERS 2010 standards.
 
 ## Introduction
 This project contains a number of functions implementing models defined in

@@ -77,6 +77,8 @@ testDehanttideinel: test_dehanttideinel.f $(IERS_OBS)
 	$(FC) -o $@ test_dehanttideinel.f $(IERS_OBS)
 testArg2: test_arg2.f $(IERS_OBS)
 	$(FC) -o $@ test_arg2.f $(IERS_OBS)
+testCnmtx: test_cnmtx.f $(IERS_OBS)
+	$(FC) -o $@ test_cnmtx.f $(IERS_OBS)
 
 FUNDARG.o : FUNDARG.F
 	$(FC) $(FF) -o $@ FUNDARG.F

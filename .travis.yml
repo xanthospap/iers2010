@@ -4,6 +4,16 @@ compiler:
   - gcc
   - clang
 
+before_script:
+ - echo "> Installing ggdatetime [dependency]" && pwd
+ - git clone https://github.com/xanthospap/ggdatetime.git && cd ggdatetime
+ - mv src/Makefile.am.production src/Makefile.am
+ - autoreconf -if
+ - ./configure
+ - make
+ - make install
+ - sudo ldconfig
+
 script:
  - ./install_setup.py -c production
  - autoreconf -if
