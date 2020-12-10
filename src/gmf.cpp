@@ -57,7 +57,7 @@ int iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
   // Reference day is 28 January 1980
   // This is taken from Niell (1996) to be consistent (See References)
   // For constant values use: doy = 91.3125
-  double doy{dmjd - 44239e0 + 1e0 - 28e0};
+  const double doy{dmjd - 44239e0 + 1e0 - 28e0};
 
   constexpr double ah_mean[] = {
       +1.2517e+02, +8.503e-01, +6.936e-02, -6.760e+00, +1.771e-01, +1.130e-02,
@@ -156,7 +156,7 @@ int iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
       -5.700e-09};
 
   //  Define parameter t
-  double t{std::sin(dlat)};
+  const double t{std::sin(dlat)};
 
   // Define degree n and order m,  EGM
   constexpr int n{9};
@@ -215,7 +215,7 @@ int iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     c11h = .005e0;
     c10h = .001e0;
   }
-  double ch{c0h + ((std::cos(doy / 365.25e0 * TWOPI + phh) + 1e0) * c11h / 2e0 +
+  const double ch{c0h + ((std::cos(doy / 365.25e0 * TWOPI + phh) + 1e0) * c11h / 2e0 +
                    c10h) *
                       (1e0 - std::cos(dlat))};
 
@@ -225,7 +225,7 @@ int iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     ahm += (ah_mean[i] * ap[i] + bh_mean[i] * bp[i]) * 1e-5;
     aha += (ah_amp[i] * ap[i] + bh_amp[i] * bp[i]) * 1e-5;
   }
-  double ah{ahm + aha * std::cos(doy / 365.25e0 * TWOPI)};
+  const double ah{ahm + aha * std::cos(doy / 365.25e0 * TWOPI)};
 
   double sine{sin(PI / 2e0 - zd)};
   double beta{bh / (sine + ch)};

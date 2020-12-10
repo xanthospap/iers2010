@@ -13,7 +13,8 @@ testOrthoeop \
 testRgZont2 \
 testFcula \
 testFculb \
-testFculZdhPa
+testFculZdhPa \
+testGmf
 
 MCXXFLAGS = \
 -std=c++17 \
@@ -87,6 +88,10 @@ testFculb_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdateti
 testFculZdhPa_SOURCES  = test_fculzdhpa.cpp
 testFculZdhPa_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
 testFculZdhPa_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testGmf_SOURCES  = test_gmf.cpp
+testGmf_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testGmf_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 #check_PROGRAMS    = test
 #dist_test_SOURCES = test.cpp
 #EXTRA_DIST        = hardisp_results_onsa \

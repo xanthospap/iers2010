@@ -216,12 +216,12 @@ in running the test case.
 
 ### fcul_zd_hpa <a id="fcul_zd_hpa-cmp"></a>
 
-~~FOFTRAN and C++ implementations produce identical results; however, these show 
-discrepancies up to 4e-6 with the ones provided at the test case (in the header of `FZUL_ZD_HPA.F`).~~
+FOFTRAN and C++ implementations produce identical results; however, these show 
+discrepancies up to 5e<sup>-6</sup> with the ones provided at the test case (in the header of `FZUL_ZD_HPA.F`).
 
 ### gmf <a id="gmf-cmp"></a>
 
-FORTRAN (i.e. GMF.F) and C++ implementations produce identical results; no discrepancies found
+FORTRAN (i.e. `GMF.F`) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
 
