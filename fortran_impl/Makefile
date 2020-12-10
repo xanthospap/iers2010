@@ -91,6 +91,8 @@ testFculZdhPa: test_fcul_zdh_pa.f $(IERS_OBS)
 	$(FC) -o $@ test_fcul_zdh_pa.f $(IERS_OBS)
 testGmf: test_gmf.f $(IERS_OBS)
 	$(FC) -o $@ test_gmf.f $(IERS_OBS)
+testVmf1: test_vmf1.f $(IERS_OBS)
+	$(FC) -o $@ test_vmf1.f $(IERS_OBS)
 
 FUNDARG.o : FUNDARG.F
 	$(FC) $(FF) -o $@ FUNDARG.F

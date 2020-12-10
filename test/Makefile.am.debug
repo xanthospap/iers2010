@@ -14,7 +14,8 @@ check_PROGRAMS = testFundarg \
 	testFcula \
 	testFculb \
 	testFculZdhPa \
-	testGmf
+	testGmf \
+	testVmf1
 
 MCXXFLAGS = \
 	-std=c++17 \
@@ -92,6 +93,10 @@ testFculZdhPa_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggda
 testGmf_SOURCES  = test_gmf.cpp
 testGmf_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src 
 testGmf_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testVmf1_SOURCES  = test_vmf1.cpp
+testVmf1_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src 
+testVmf1_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 #check_PROGRAMS    = test
 #dist_test_SOURCES = test.cpp
 #EXTRA_DIST        = hardisp_results_onsa \

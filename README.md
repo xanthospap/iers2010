@@ -224,7 +224,6 @@ discrepancies up to 5e<sup>-6</sup> with the ones provided at the test case (in 
 FORTRAN (i.e. `GMF.F`) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
-
 ### vmf1 <a id="vmf1-cmp"></a>
 
 FORTRAN (i.e. VMF1.F) and C++ implementations produce identical results; no discrepancies found
