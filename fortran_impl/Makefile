@@ -83,6 +83,12 @@ testOrthoeop: test_orthoeop.f $(IERS_OBS)
 	$(FC) -o $@ test_orthoeop.f $(IERS_OBS)
 testRgZont2: test_rgzont2.f $(IERS_OBS)
 	$(FC) -o $@ test_rgzont2.f $(IERS_OBS)
+testFcula: test_fcula.f $(IERS_OBS)
+	$(FC) -o $@ test_fcula.f $(IERS_OBS)
+testFculb: test_fculb.f $(IERS_OBS)
+	$(FC) -o $@ test_fculb.f $(IERS_OBS)
+testFculZdhPa: test_fcul_zdh_pa.f $(IERS_OBS)
+	$(FC) -o $@ test_fcul_zdh_pa.f $(IERS_OBS)
 
 FUNDARG.o : FUNDARG.F
 	$(FC) $(FF) -o $@ FUNDARG.F

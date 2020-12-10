@@ -67,17 +67,17 @@ int iers2010::fcul_zd_hpa(double dlat, double dhgt, double pres, double wvp,
   constexpr double w3(0.004028e0);
 
   //  Wave number
-  double sigma(1e0 / lambda);
+  const double sigma(1e0 / lambda);
 
   // correction factor - Equation (24)
-  double f(1e0 - 0.00266e0 * cos(2e0 * PI / 180e0 * dlat) - 0.00028e-3 * dhgt);
+  const double f(1e0 - 0.00266e0 * cos(2e0 * PI / 180e0 * dlat) - 0.00028e-3 * dhgt);
 
   // correction for CO2 content
-  double corr(1e0 + 0.534e-6 * (xc - 450e0));
+  const double corr(1e0 + 0.534e-6 * (xc - 450e0));
 
   // dispersion equation for the hydrostatic component - Equation (20)
-  double sigma2(sigma * sigma);
-  double fh(0.01e0 * corr *
+  const double sigma2(sigma * sigma);
+  const double fh(0.01e0 * corr *
             ((k1 * (k0 + sigma2)) / (pow((k0 - sigma2), 2)) +
              k3 * (k2 + sigma2) / (pow((k2 - sigma2), 2))));
 
@@ -86,7 +86,7 @@ int iers2010::fcul_zd_hpa(double dlat, double dhgt, double pres, double wvp,
   f_zhd = 2.416579e-3 * fh * pres / f;
 
   // dispersion equation for the non-hydrostatic component - Equation (32)
-  double fnh(0.003101e0 *
+  const double fnh(0.003101e0 *
              (w0 + 3e0 * w1 * sigma2 + 5e0 * w2 * (sigma2 * sigma2) +
               7e0 * w3 * pow(sigma, 6)));
 
