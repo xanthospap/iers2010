@@ -221,11 +221,11 @@ int iers2010::rg_zont2(double t, double &dut, double &dlod,
   // Computation of fundamental arguments
   double fargs[5]; /* (l, lp, f, d, om) */
   iers2010::fundarg(t, fargs);
-  double l = fargs[0];
-  double lp = fargs[1];
-  double f = fargs[2];
-  double d = fargs[3];
-  double om = fargs[4];
+  const double l = fargs[0];
+  const double lp = fargs[1];
+  const double f = fargs[2];
+  const double d = fargs[3];
+  const double om = fargs[4];
 
   // Set initial values to zero.
   dut = 0e0;

@@ -11,7 +11,7 @@ before_script:
  - autoreconf -if
  - ./configure
  - make
- - make install
+ - sudo make install
  - sudo ldconfig
 
 script:

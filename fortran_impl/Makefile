@@ -79,6 +79,10 @@ testArg2: test_arg2.f $(IERS_OBS)
 	$(FC) -o $@ test_arg2.f $(IERS_OBS)
 testCnmtx: test_cnmtx.f $(IERS_OBS)
 	$(FC) -o $@ test_cnmtx.f $(IERS_OBS)
+testOrthoeop: test_orthoeop.f $(IERS_OBS)
+	$(FC) -o $@ test_orthoeop.f $(IERS_OBS)
+testRgZont2: test_rgzont2.f $(IERS_OBS)
+	$(FC) -o $@ test_rgzont2.f $(IERS_OBS)
 
 FUNDARG.o : FUNDARG.F
 	$(FC) $(FF) -o $@ FUNDARG.F

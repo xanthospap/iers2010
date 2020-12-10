@@ -8,7 +8,9 @@ testUtlibr \
 testFcnnut \
 testDehanttideinel \
 testArg2 \
-testCnmtx
+testCnmtx \
+testOrthoeop \
+testRgZont2
 
 MCXXFLAGS = \
 -std=c++17 \
@@ -62,6 +64,16 @@ testArg2_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetim
 testCnmtx_SOURCES  = test_cnmtx.cpp
 testCnmtx_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
 testCnmtx_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testOrthoeop_SOURCES  = test_orthoeop.cpp
+testOrthoeop_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testOrthoeop_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testRgZont2_SOURCES  = test_rgzont2.cpp
+testRgZont2_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testRgZont2_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+
 #check_PROGRAMS    = test
 #dist_test_SOURCES = test.cpp
 #EXTRA_DIST        = hardisp_results_onsa \

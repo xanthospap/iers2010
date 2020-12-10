@@ -1,6 +1,6 @@
 # libiers10++
 
-[![Build Status](https://travis-ci.com/xanthospap/ggeodesy.svg?branch=master)](https://travis-ci.com/xanthospap/ggeodesy)
+[![Build Status](https://travis-ci.org/xanthospap/iers2010.svg?branch=master)](https://travis-ci.org/xanthospap/iers2010)
 
 C++ library implementing the IERS 2010 standards.
 
@@ -191,19 +191,18 @@ the problem is.
 
 ### cnmtx <a id="cnmtx-cmp"></a>
 
-FORTRAN (i.e. CNMTX.F) and C++ implementations produce identical results; no discrepancies found
+FORTRAN (i.e. `CNMTX.F`) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
 ### ortho_eop <a id="ortho_eop-cmp"></a>
 
-FORTRAN (i.e. ORTHO_EOP.F) and C++ implementations produce identical results; no discrepancies found
+FORTRAN (i.e. `ORTHO_EOP.F`) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
 ### rg_zont2 <a id="rg_zont2-cmp"></a>
 
-The test case (provided in RG_ZONT2.F) implemented using the C++ function, gives zero discrepancies.
-**However** if i compile and run the FORTRAN source for RG_ZONT2.F, the test fails with
-discrepancies up to ~5.0e-10.
+The test case (provided in `RG_ZONT2.F`) implemented using the C++ function, gives max discrepancies 
+in the order of 1e<sup>-19</sup>.
 
 ### fcul_a <a id="fcul_a-cmp"></a>
 
