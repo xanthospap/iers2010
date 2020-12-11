@@ -64,9 +64,10 @@ int iers2010::vmf1(double ah, double aw, double dmjd, double dlat, double zd,
     c10h = .001e0;
   }
 
-  const double ch{c0h + ((std::cos(doy / 365.25e0 * TWOPI + phh) + 1e0) * c11h / 2e0 +
-                   c10h) *
-                      (1e0 - std::cos(dlat))};
+  const double ch{
+      c0h +
+      ((std::cos(doy / 365.25e0 * TWOPI + phh) + 1e0) * c11h / 2e0 + c10h) *
+          (1e0 - std::cos(dlat))};
 
   double sine{std::sin(PI / 2e0 - zd)};
   double beta{bh / (sine + ch)};

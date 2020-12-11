@@ -70,7 +70,8 @@ int iers2010::fcul_zd_hpa(double dlat, double dhgt, double pres, double wvp,
   const double sigma(1e0 / lambda);
 
   // correction factor - Equation (24)
-  const double f(1e0 - 0.00266e0 * cos(2e0 * PI / 180e0 * dlat) - 0.00028e-3 * dhgt);
+  const double f(1e0 - 0.00266e0 * cos(2e0 * PI / 180e0 * dlat) -
+                 0.00028e-3 * dhgt);
 
   // correction for CO2 content
   const double corr(1e0 + 0.534e-6 * (xc - 450e0));
@@ -78,8 +79,8 @@ int iers2010::fcul_zd_hpa(double dlat, double dhgt, double pres, double wvp,
   // dispersion equation for the hydrostatic component - Equation (20)
   const double sigma2(sigma * sigma);
   const double fh(0.01e0 * corr *
-            ((k1 * (k0 + sigma2)) / (pow((k0 - sigma2), 2)) +
-             k3 * (k2 + sigma2) / (pow((k2 - sigma2), 2))));
+                  ((k1 * (k0 + sigma2)) / (pow((k0 - sigma2), 2)) +
+                   k3 * (k2 + sigma2) / (pow((k2 - sigma2), 2))));
 
   // computation of the hydrostatic component - Equation (26)
   // caution: pressure in hectoPascal units
@@ -87,8 +88,8 @@ int iers2010::fcul_zd_hpa(double dlat, double dhgt, double pres, double wvp,
 
   // dispersion equation for the non-hydrostatic component - Equation (32)
   const double fnh(0.003101e0 *
-             (w0 + 3e0 * w1 * sigma2 + 5e0 * w2 * (sigma2 * sigma2) +
-              7e0 * w3 * pow(sigma, 6)));
+                   (w0 + 3e0 * w1 * sigma2 + 5e0 * w2 * (sigma2 * sigma2) +
+                    7e0 * w3 * pow(sigma, 6)));
 
   // computation of the non-hydrostatic component - Equation (38)
   // caution: pressure in hectoPascal units

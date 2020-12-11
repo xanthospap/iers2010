@@ -9,10 +9,8 @@ int main() {
   std::cout << "> orthoeop\n";
   std::cout << "----------------------------------------\n";
 
-  const double result_ref[] = {
--162.8386373279636530e0,
-117.7907525842668974e0,
--23.39092370609808214e0};
+  const double result_ref[] = {-162.8386373279636530e0, 117.7907525842668974e0,
+                               -23.39092370609808214e0};
   double result[3];
 
   iers2010::ortho_eop(47100e0, result[0], result[1], result[2]);

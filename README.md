@@ -226,27 +226,24 @@ in running the test case.
 
 ### vmf1 <a id="vmf1-cmp"></a>
 
-FORTRAN (i.e. VMF1.F) and C++ implementations produce identical results; no discrepancies found
+FORTRAN (i.e. `VMF1.F`) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
 ### vmf1_ht <a id="vmf1_ht-cmp"></a>
 
-FORTRAN (i.e. VMF1_HT.F) and C++ implementations produce identical results; no discrepancies found
+FORTRAN (i.e. `VMF1_HT.F`) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
 ### gpt <a id="gpt-cmp"></a>
 
-FORTRAN (i.e. GPT.F) and C++ implementations produce identical results; no discrepancies found
+FORTRAN (i.e. `GPT.F`) and C++ implementations produce identical results; no discrepancies found
 in running the test case.
 
 ### gpt2 <a id="gpt2-cmp"></a>
 
-FORTRAN (i.e. GPT2.F) and C++ implementations produce discrepancies up to (i.e. max value)
-~1e-9; that is way smaller than the accuracy of the model especially for the values 
-P (Pressure given in hPa), T (Temperature in degrees Celsius), dT (Temperature lapse rate in degrees per km), 
-E (Water vapour pressure in hPa) and UNDU (Geoid undulation in meters). For the 
-mapping function coefficient (AH and AW, hydrostatic and wet respectively), the discrepancies are 
-smaller than 5e-14.
+FORTRAN (i.e. `GPT2.F`) and C++ implementations produce identical results. The test case 
+provided in the FORTRAN source code, is limited to the accuracy actually provided by the 
+algorithm/model; to that accuracy, both implementations produce identical results.
 
 ### hardisp <a id="hardisp-cmp"></a>
 

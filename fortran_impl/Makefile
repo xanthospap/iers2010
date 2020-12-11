@@ -24,6 +24,7 @@ IERS_OBS = PMSDNUT2.o \
 	FCUL_ZD_HPA.o \
 	GMF.o \
 	VMF1.o \
+	VMF1_HT.o \
 	GPT.o \
 	GPT2.o \
 	ARG2.o
@@ -51,6 +52,7 @@ IERS_OBS_D0 = PMSDNUT2_D0.o \
 	FCUL_ZD_HPA.o \
 	GMF.o \
 	VMF1.o \
+	VMF1_HT.o \
 	GPT.o \
 	GPT2.o \
 	ARG2.o
@@ -93,6 +95,12 @@ testGmf: test_gmf.f $(IERS_OBS)
 	$(FC) -o $@ test_gmf.f $(IERS_OBS)
 testVmf1: test_vmf1.f $(IERS_OBS)
 	$(FC) -o $@ test_vmf1.f $(IERS_OBS)
+testVmf1Ht: test_vmf1_ht.f $(IERS_OBS)
+	$(FC) -o $@ test_vmf1_ht.f $(IERS_OBS)
+testGpt: test_gpt.f $(IERS_OBS)
+	$(FC) -o $@ test_gpt.f $(IERS_OBS)
+testGpt2: test_gpt2.f $(IERS_OBS)
+	$(FC) -o $@ test_gpt2.f $(IERS_OBS)
 
 FUNDARG.o : FUNDARG.F
 	$(FC) $(FF) -o $@ FUNDARG.F
@@ -144,6 +152,8 @@ GMF.o : GMF.F
 	$(FC) $(FF) -o $@ GMF.F
 VMF1.o : VMF1.F
 	$(FC) $(FF) -o $@ VMF1.F
+VMF1_HT.o : VMF1_HT.F
+	$(FC) $(FF) -o $@ VMF1_HT.F
 GPT.o : GPT.F
 	$(FC) $(FF) -o $@ GPT.F
 GPT2.o : GPT2.F

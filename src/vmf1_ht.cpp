@@ -51,7 +51,7 @@ int iers2010::vmf1_ht(double ah, double aw, double dmjd, double dlat, double ht,
 
   // Reference day is 28 January 1980
   // This is taken from Niell (1996) to be consistent (See References)
-  double doy{dmjd - 44239e0 + 1e0 - 28e0};
+  const double doy{dmjd - 44239e0 + 1e0 - 28e0};
 
   constexpr double bh{.0029e0};
   constexpr double c0h{.062e0};
@@ -67,9 +67,10 @@ int iers2010::vmf1_ht(double ah, double aw, double dmjd, double dlat, double ht,
     c10h = .001e0;
   }
 
-  double ch{c0h + ((std::cos(doy / 365.25e0 * TWOPI + phh) + 1e0) * c11h / 2e0 +
-                   c10h) *
-                      (1e0 - std::cos(dlat))};
+  const double ch{
+      c0h +
+      ((std::cos(doy / 365.25e0 * TWOPI + phh) + 1e0) * c11h / 2e0 + c10h) *
+          (1e0 - std::cos(dlat))};
 
   double sine{sin(PI / 2e0 - zd)};
   double beta{bh / (sine + ch)};

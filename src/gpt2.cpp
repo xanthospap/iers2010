@@ -77,9 +77,9 @@ template <typename T> inline int sgn(T val) noexcept {
 ///     10.1002/grl.50288.
 ///
 /// TODO Test some extreme cases
-int iers2010::gpt2(double dmjd, double *dlat, double *dlon, double *hell,
-                   int nstat, int it, double *p, double *t, double *dt,
-                   double *e, double *ah, double *aw, double *undu,
+int iers2010::gpt2(double dmjd, const double *dlat, const double *dlon,
+                   const double *hell, int nstat, int it, double *p, double *t,
+                   double *dt, double *e, double *ah, double *aw, double *undu,
                    const char *ifile) {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double TWOPI(D2PI);

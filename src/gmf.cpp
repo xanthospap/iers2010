@@ -215,9 +215,10 @@ int iers2010::gmf(double dmjd, double dlat, double dlon, double dhgt, double zd,
     c11h = .005e0;
     c10h = .001e0;
   }
-  const double ch{c0h + ((std::cos(doy / 365.25e0 * TWOPI + phh) + 1e0) * c11h / 2e0 +
-                   c10h) *
-                      (1e0 - std::cos(dlat))};
+  const double ch{
+      c0h +
+      ((std::cos(doy / 365.25e0 * TWOPI + phh) + 1e0) * c11h / 2e0 + c10h) *
+          (1e0 - std::cos(dlat))};
 
   double ahm{0e0};
   double aha{0e0};

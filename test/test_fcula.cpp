@@ -14,10 +14,9 @@ int main() {
 #ifdef STRICT_TEST
   assert(approxEqual(f, result_ref));
 #else
-  printf("\nargs[%1d] = %12.6e ",1,
-		  std::abs(f - result_ref));
+  printf("\nargs[%1d] = %12.6e ", 1, std::abs(f - result_ref));
   assert(std::abs(f - result_ref) < 1e-11);
 #endif
-  
+
   return 0;
 }

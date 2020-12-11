@@ -15,7 +15,10 @@ testFcula \
 testFculb \
 testFculZdhPa \
 testGmf \
-testVmf1
+testVmf1 \
+testVmf1Ht \
+testGpt2 \
+testGpt
 
 MCXXFLAGS = \
 -std=c++17 \
@@ -97,6 +100,18 @@ testGmf_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime
 testVmf1_SOURCES  = test_vmf1.cpp
 testVmf1_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
 testVmf1_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testVmf1Ht_SOURCES  = test_vmf1ht.cpp
+testVmf1Ht_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testVmf1Ht_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testGpt_SOURCES  = test_gpt.cpp
+testGpt_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testGpt_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testGpt2_SOURCES  = test_gpt2.cpp
+testGpt2_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testGpt2_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 #check_PROGRAMS    = test
 #dist_test_SOURCES = test.cpp
 #EXTRA_DIST        = hardisp_results_onsa \

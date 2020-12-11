@@ -2,8 +2,8 @@
 #include <iostream>
 #include <random>
 
-inline 
-double generate_random_double(double lower_bound, double upper_bound) noexcept {
+inline double generate_random_double(double lower_bound,
+                                     double upper_bound) noexcept {
   std::random_device rd;
   std::mt19937 e2(rd());
   std::uniform_real_distribution<double> unif(lower_bound, upper_bound);

@@ -8,7 +8,7 @@
 #define TEST_STATUS_FAILURE 1
 
 // default location of file: gpt2_5.grd
-const char gpt2grd[] = "/usr/local/share/libiers10/gpt2_5.grd";
+const char gpt2grd[] = "/usr/local/share/iers10/gpt2_5.grd";
 bool file_exists(const char *str) {
   bool status = true;
   std::ifstream fin(str);
