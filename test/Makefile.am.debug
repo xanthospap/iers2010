@@ -20,6 +20,24 @@ check_PROGRAMS = testFundarg \
 	testGpt2 \
 	testGpt
 
+TESTS = testFundarg \
+	testPmsdnut2 \
+	testUtlibr \
+	testFcnnut \
+	testDehanttideinel \
+	testArg2 \
+	testCnmtx \
+	testOrthoeop \
+	testRgZont2 \
+	testFcula \
+	testFculb \
+	testFculZdhPa \
+	testGmf \
+	testVmf1 \
+	testVmf1Ht \
+	testGpt2 \
+	testGpt
+
 MCXXFLAGS = \
 	-std=c++17 \
 	-g \

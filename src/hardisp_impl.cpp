@@ -75,9 +75,9 @@ int iers2010::hisp::read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
 ///          http://maia.usno.navy.mil/conv2010/software.html
 /// @param[in] irnt Number of output samples (of samp seconds)
 /// @param[in] samp Sample time interval in seconds
-/// @param[out] du Array of size irnt; at output holds the values of radial 
+/// @param[out] du Array of size irnt; at output holds the values of radial
 ///                tidal ocean loading displacement
-/// @param[out] dw Array of size irnt; at output holds the values of west   
+/// @param[out] dw Array of size irnt; at output holds the values of west
 ///                tidal ocean loading displacement
 /// @param[out] ds Array of size irnt; at output holds the values of south
 ///                tidal ocean loading displacement
@@ -99,7 +99,7 @@ int iers2010::hisp::read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
 ///       ds : South tidal ocean loading displacement
 ///    -# \c argv and \c argc are read from stdin (like in every 'main'). Date
 ///      provided, must be in UTC scale.
-///    -# irnt and samp define the computation of tidal displacements; actually, 
+///    -# irnt and samp define the computation of tidal displacements; actually,
 ///       we are computing irnt values for every samp seconds begining at the
 ///       epoch provided. E.g. given: datetime_start, irnt=24, samp=3600 means
 ///       that we are computing displacements from datetime_start and for every
@@ -121,7 +121,8 @@ int iers2010::hisp::read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
 /// @cite iers2010
 int iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin],
                                  double tph[3][ntin],
-                                 ngpt::datetime<ngpt::seconds> epoch, double* odu, double* ods, double* odw) {
+                                 ngpt::datetime<ngpt::seconds> epoch,
+                                 double *odu, double *ods, double *odw) {
   constexpr double dr(0.01745329252e0);
   int irli(1);
 
@@ -203,18 +204,9 @@ int iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin],
     recurs(ds, np, hcs, ntout, wf, scr);
     recurs(dw, np, hcw, ntout, wf, scr);
 
-/*
-#ifdef DEBUG
-    if (irnt!=np) std::cerr<<"\n[ERROR] np and irnt do not match! np="<<np<<" irnt="<<irnt; 
-    assert(irnt==np);
-#endif
-*/
-    /*for (int i = 0; i < np; i++)
-      printf("\n%14.6f %14.6f %14.6f", dz[i], ds[i], dw[i]);
-    printf("\n");*/
-    std::memcpy(odu+iteration*nl, dz, sizeof(double) * np);
-    std::memcpy(ods+iteration*nl, ds, sizeof(double) * np);
-    std::memcpy(odw+iteration*nl, dw, sizeof(double) * np);
+    std::memcpy(odu + iteration * nl, dz, sizeof(double) * np);
+    std::memcpy(ods + iteration * nl, ds, sizeof(double) * np);
+    std::memcpy(odw + iteration * nl, dw, sizeof(double) * np);
 
     if (irhi == irnt)
       break;

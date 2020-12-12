@@ -25,11 +25,10 @@ bool is_end_of_header(const char *line) {
   return !std::strncmp(str, "END HEADER", 10);
 }
 
-/// @brief Constructor from filename
+/// @detail Constructor from filename
 /// The function will open the stream and read the file's header. A marker
 /// will be set at end of header (aka __eoheader).
 /// If something fails, the constructor will throw.
-/// @param[in] filename  The filename of the BLQ file
 iers2010::BlqIn::BlqIn(const char *filename)
     : __filename(filename), __istream(filename, std::ios_base::in),
       __eoheader(0) {
@@ -37,14 +36,9 @@ iers2010::BlqIn::BlqIn(const char *filename)
     throw std::runtime_error("[ERROR] BlqIn::BlqIn() failed");
 }
 
-/// Read a BLQ-format file header.
+/// @detail Read a BLQ-format file header.
 /// The function will read the header and set the (member's) __eoheader marker
 /// to the end of header position.
-/// @return An integer; anything other than zero denotes an error:
-///         *  0 : All ok
-///         * 10 : Stream is closed
-///         *  3 : Read MAX_HEADER_LINES before encountering the actual end of
-///         header
 int iers2010::BlqIn::read_header() noexcept {
   char line[MAX_HEADER_CHARS];
 
@@ -77,15 +71,15 @@ int iers2010::BlqIn::read_header() noexcept {
   return 0;
 }
 
-/// @brief Read next station from (an already open) BlqIn stream
+/// @detail Read next station from (an already open) BlqIn stream
 /// Here is an extract of a relevant field:
 /// ----------------------------------------------------------------------------------
-///  47 $$
-///  48   ACOR
-///  49 $$ FES2004_PP ID: 2013-08-22 09:18:52
-///  50 $$ Computed by OLMPP by H G Scherneck, Onsala Space Observatory, 2013
-///  51 $$ ACOR,                      RADI TANG  lon/lat:
-///  351.6011   43.3644   66.957 52   .03571 .01196 .00768 .00308 .00416 .00122
+///  $$
+///    ACOR
+///  $$ FES2004_PP ID: 2013-08-22 09:18:52
+///  $$ Computed by OLMPP by H G Scherneck, Onsala Space Observatory, 2013
+///  $$ ACOR,                      RADI TANG  lon/lat:
+///  51.6011   43.3644   66.957 52   .03571 .01196 .00768 .00308 .00416 .00122
 ///  .00137 .00058 .00052 .00030 .00026 53   .00524 .00170 .00115 .00045 .00050
 ///  .00031 .00017 .00010 .00003 .00002 .00002 54   .00597 .00218 .00117 .00055
 ///  .00044 .00034 .00014 .00012 .00008 .00004 .00003 55    -88.1  -58.9 -107.3
@@ -100,15 +94,7 @@ int iers2010::BlqIn::read_header() noexcept {
 /// - read next lines untill a line is found that does not start with '$'
 /// - remove all leading whitespaces (and if any after the first char) '$' chars
 /// - get the length of the remaining string; if it is 4 then it is interpreted
-/// as a
-///   station name and stored in sta; restore stream position to curpos
-///
-/// @param[out] sta  If found, the name of the next station BLQ record
-/// @return  An integer, denoting the following:
-///          * -1  : EOF encountered before encountering next station
-///          *  0  : all ok; station stored in sta and stream position is set to
-///                  reading record of station sta
-///          *  1  : error
+/// as a station name and stored in sta; restore stream position to curpos
 int iers2010::BlqIn::peak_next_station(std::string &sta) noexcept {
   char line[MAX_HEADER_CHARS];
   const char *str;
@@ -131,14 +117,10 @@ int iers2010::BlqIn::peak_next_station(std::string &sta) noexcept {
   return 1;
 }
 
-/// @brief read and skip next station's record
+/// @detail Read and skip next station's record
 /// The function will try to find the next station, read and skip all subsequent
 /// comment lines (aka starting with '$') and then read and skip the six record
 /// lines.
-/// @return An integer denoting:
-///          * -1  : EOF encountered before reading next station
-///          *  0  : all ok; station records read and skipped
-///          *  1  : error
 int iers2010::BlqIn::skip_next_station() {
   char line[MAX_HEADER_CHARS];
 
@@ -248,13 +230,16 @@ int iers2010::BlqIn::read_next_station(std::string &sta, double tamp[3][11],
   return 0;
 }
 
-/// @brief Get the stream (get) position to end of header (__eoheader)
+/// @detail Set the stream (get) position to end of header (__eoheader)
 void iers2010::BlqIn::goto_eoh() {
   __istream.clear();
   __istream.seekg(__eoheader);
 }
 
-/// @brief Find a station in the BLQ file stream (aka current instance)
+/// @detail Find a station in the BLQ file stream (aka current instance)
+/// Before starting the search, the function will reset the get position to
+/// the marked __eoheader so that it starts the search from the top of the
+/// station records.
 bool iers2010::BlqIn::find_station(const std::string &station) {
   this->goto_eoh();
   std::string cur_sta;

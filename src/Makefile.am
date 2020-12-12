@@ -4,8 +4,6 @@ bin_PROGRAMS = hardisp
 ## Only use the following flags for debuging purposes
 libiers2010_la_CXXFLAGS = \
 -std=c++17 \
--g \
--pg \
 -Wall \
 -Wextra \
 -Werror \
@@ -13,21 +11,19 @@ libiers2010_la_CXXFLAGS = \
 -W \
 -Wshadow \
 -Winline \
--Wdisabled-optimization \
--DDEBUG
+-O2 \
+-march=native
 
 MCXXFLAGS = \
 -std=c++17 \
--g \
--pg \
 -Wall \
 -Wextra \
 -Werror \
 -pedantic \
 -W \
 -Wshadow \
--Wdisabled-optimization \
--DDEBUG
+-O2 \
+-march=native
 
 pkginclude_HEADERS = \
 iers2010.hpp \

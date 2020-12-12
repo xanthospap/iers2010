@@ -29,16 +29,16 @@ for sn in ${SAMPLE_NR[@]} ; do
   for si in ${SAMPLE_NT[@]} ; do
     for sf in ${TEST_BLQ[@]} ; do
       ${C_HARDISP} ${DATE_STR} ${sn} ${si} < ${sf} | sed '/^$/d' > test.c || { echo '${C_HARDISP} ${DATE_STR} ${sn} ${si} failed' ; exit 1; }
-      echo "${C_HARDISP} ${DATE_STR} ${sn} ${si} < ${sf} > test.c"
+      #echo "${C_HARDISP} ${DATE_STR} ${sn} ${si} < ${sf} > test.c"
       ${F_HARDISP} ${DATE_STR} ${sn} ${si} < ${sf} > test.f || { echo '${F_HARDISP} ${DATE_STR} ${sn} ${si} failed' ; exit 1; }
-      echo "${F_HARDISP} ${DATE_STR} ${sn} ${si} < ${sf} > test.f"
-      echo "Max diffs for ${sn} ${si} :"
+      #echo "${F_HARDISP} ${DATE_STR} ${sn} ${si} < ${sf} > test.f"
+      #echo "Max diffs for ${sn} ${si} :"
       paste test.c test.f | awk '{printf "%9.6f %9.6f %9.6f\n", $1-$4, $2-$5, $3-$6}' > paste.out
       awk 'BEGIN{c1=0e0; c2=0e0; c3=0e0} \
       {if (sqrt($1*$1)>c1) {c1=$1} \
         if (sqrt($2*$2)>c2) {c2=$2} \
         if (sqrt($3*$3)>c3) {c3=$3} } \
-        END {print c1, c2, c3}' paste.out
+        END {printf "%10.6f %10.6f %10.6f\n", c1, c2, c3}' paste.out
     done
   done
 done

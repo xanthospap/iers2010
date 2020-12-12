@@ -19,6 +19,8 @@ int main() {
   const double input[][6] = {
       {56141.e0, 48.20e0 * pi / 180.e0, 16.37e0 * pi / 180.e0, 156.e0, 1, 0},
       {56141.e0, 48.20e0 * pi / 180.e0, 16.37e0 * pi / 180.e0, 156.e0, 1, 1}};
+
+  const double alg_accuracy_[] = {1e-2, 1e-2, 1e-2, 1e-2, 1e-7, 1e-7, 1e-2};
   double result[7];
 
   for (int t = 0; t < 2; t++) {
@@ -31,7 +33,7 @@ int main() {
 #else
       printf("\nargs[%1d] = %12.6e %s", i,
              std::abs(result[i] - result_ref[t][i]), units[i]);
-      // assert(std::abs(result[i] - result_ref[t][i]) < 1e-11);
+      assert(std::abs(result[i] - result_ref[t][i]) < alg_accuracy_[i]);
 #endif
     }
   }

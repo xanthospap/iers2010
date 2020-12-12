@@ -2,6 +2,8 @@
 #include "test_help.hpp"
 #include <cassert>
 
+constexpr double _alg_accuracy_ = 1e-19;
+
 int main() {
 
   // testing rg_zont2
@@ -22,7 +24,7 @@ int main() {
 #else
     printf("\nargs[%1d] = %12.6e %s", i, std::abs(result[i] - result_ref[i]),
            units[i]);
-    assert(std::abs(result[i] - result_ref[i]) < 1e-11);
+    assert(std::abs(result[i] - result_ref[i]) < _alg_accuracy_);
 #endif
   }
 

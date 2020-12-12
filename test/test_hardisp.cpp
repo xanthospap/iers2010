@@ -32,9 +32,10 @@ int main(int argc, char *argv[]) {
   // call hardisp
   ngpt::datetime d(ngpt::year(2009), ngpt::month(6), ngpt::day_of_month(25),
                    ngpt::hours(1), ngpt::minutes(10), ngpt::seconds(45));
-  
-  double *displacements = new double[3*24];
-  double *dw = displacements, *du = displacements+24, *ds = displacements+2*24;
+
+  double *displacements = new double[3 * 24];
+  double *dw = displacements, *du = displacements + 24,
+         *ds = displacements + 2 * 24;
   iers2010::hisp::hardisp_impl(24, 3600e0, a1, a2, d, du, ds, dw);
   delete[] displacements;
 

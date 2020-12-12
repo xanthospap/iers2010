@@ -2,6 +2,8 @@
 #include "test_help.hpp"
 #include <cassert>
 
+constexpr double _alg_accuracy_ = 1e-11;
+
 int main() {
 
   // testing fundarg
@@ -19,7 +21,7 @@ int main() {
 #else
     printf("\nargs[%1d] = %12.6e radians", i,
            std::abs(fargs[i] - fargs_ref[i]));
-    assert(std::abs(fargs[i] - fargs_ref[i]) < 1e-11);
+    assert(std::abs(fargs[i] - fargs_ref[i]) < _alg_accuracy_);
 #endif
   }
   return 0;

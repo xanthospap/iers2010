@@ -2,6 +2,8 @@
 #include "test_help.hpp"
 #include <cassert>
 
+constexpr double _alg_accuray_ = 1e-5;
+
 int main() {
 
   // testing fcul_zd_hpa
@@ -21,7 +23,7 @@ int main() {
 #else
     printf("\nargs[%1d] = %12.6e meters", 1,
            std::abs(result[i] - result_ref[i]));
-    // assert(std::abs(result[i] - result_ref[i]) < 1e-11);
+    assert(std::abs(result[i] - result_ref[i]) < _alg_accuray_);
 #endif
   }
   return 0;

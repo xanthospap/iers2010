@@ -6,71 +6,112 @@ C++ library implementing the IERS 2010 standards.
 
 ## Introduction
 This project contains a number of functions implementing models defined in
-IERS Conventions (2010). The functions are available in FORTRAN from the [IERS website](https://iers-conventions.obspm.fr/conventions_material.php). Note that the
-software found at this website is routinely updated.
+IERS Conventions (2010). The functions are available in FORTRAN from the 
+[IERS website](https://iers-conventions.obspm.fr/conventions_material.php). 
+Note that the software found at this website is routinely updated.
 The FORTRAN subroutines are translated to C++ with (as much as
 possible) minor modifications.
-__Note that the Software is now (January 2017) available at the [ftp site](ftp://maia.usno.navy.mil/conventions/2010/2010_update/) in the `software` folder per chapter.__ 
 
 ## Prerequisites
 
-The C++ library [ggdatetime](https://github.com/xanthospap/ggdatetime) is used in the library functions to handle datetime instances when needed. Hence, you should
-have [ggdatetime](https://github.com/xanthospap/ggdatetime) on your system.
+The C++ library [ggdatetime](https://github.com/xanthospap/ggdatetime) 
+is used in the library functions to handle datetime instances when needed. 
+Hence, you should have [ggdatetime](https://github.com/xanthospap/ggdatetime) 
+on your system.
 
-Other than that, you will need a C++ compiler and (at least at this point) the `autoreconf` program which is part of the
-[GNU Autotools](https://en.wikipedia.org/wiki/GNU_Autotools).
+Also *note that the library is still at development phase so users need to 
+configure the project before compiling*. That is, you will need the
+[GNU Autotools](https://en.wikipedia.org/wiki/GNU_Autotools) package to be 
+able to install the software.
 
 ## Compilation / Installation
 
-Source code is ISO C++17. Compilation should be trivial using any gcc version 
-supporting the c++17 standard (option `-std=c++17`).
+### TL;DR
 
-> This software is meant to be implemented on Unix-type OS's. No effort will be
-> undertaken for compatibility with other OS types.
+Clone, prepare build and make!
 
-To compile the library, just follow the basic steps: (*note that the library is still at development phase so users need to configure the project before compiling*)
+```bash
+$> git clone https://github.com/xanthospap/iers2010.git && cd iers2010
+$> ./install_setup.py -c production
+$> autoreconf -if
+$> ./configure
+$> make && sudo make install
+```
 
-**If you do not need the DEBUG version** (which most probably you don't), create the `Makefile.am` templates. This means that you
-should rename [Makefile.am.production](src/Makefile.am.production) and [Makefile.am.production](test/Makefile.am.production) to
-`src/Makefile.am` and `test/Makefile.am` respectively.
+### Choosing C++ Standard
+
+Source code is ISO C++17 but also __compatible with C++14__. 
+Compilation should be trivial using any C++ compiler
+[supporting the c++17](https://en.wikipedia.org/wiki/C%2B%2B17#Compiler_support) 
+or the [c++14](https://en.wikipedia.org/wiki/C%2B%2B14#Compiler_support)
+standard (option `-std=c++17` or -std=c++14` in gcc and clang). By default, the 
+project build files use the C++17 standard; to specify a different one, you can either 
+  * change the standard flag (`-std=c++17`) in every Makefile.am file, in the directories 
+    `src`, `test` and optionally `boost`, or
+  * [set the flag](#install-setup-script) when invoking the `install_setup.py` script (e.g. for C++14,
+    `./install_setup.py -s 14`)
+
+Apart from C++17 and C++14 no other standard has been tested; should you want another, 
+chances are you should probably adapt the source code.
+
+### install setup script
+
+We provide a python script ([install_setup.py](install_setup.py)) to assist the 
+creation/editing of the needed Makefile.am's; this way you most probably do not need to 
+mess up with any Makefiles. The script has a help message (just pass the `-h` option) 
+where you can see all applicable switches. The basic options are:
+  * choose between a __debug__ or a __production__ build,
+  * [choose a C++ standard](#chossing_c++_standard),
+
+For most users, just running `install_setup.py -c production` should do just fine. This will 
+setup a build enviroment using the default options aka the C++17 standard, a production compilation 
+mode and exclude source code depending on boost.
+
+###  Compilation
+
+For the following, `ROOTDIR` will be the root directory of this repository,
+aka the directory under which `/src`, `/test` and `/doc` folders live.
+
+To prepare the required files for compilation (that is the `Makefile.am` in each 
+of the relevant folders) you need to run the script [install_setup.py](install_setup.py). 
+You can use the `-h` switch to see the help message, but in most cases the 
+command `./install_setup.py -c production` will suffice.
+
+If needed (that is you are not running the script from `ROOTDIR`) specify the 
+`ROOTDIR` path via the `-d` switch.
 
 Then run Autotools and compile:
 
-```
+```bash
 autoreconf -if
 ./configure
 make
-make install
+sudo make install
 ```
 
-### Distributed Data Files
+## Distributed Data Files
 
 > The data file `gpt2_5.grd` is only needed for (i.e. is read by) the function `gpt2`
 
 This repository includes also the data file [gpt2_5.grd](data/gpt2_5.grd) in the
 `data` directory. This file is needed for computations when the function [gpt2](#gpt2-cmp) in invoked.
 When installing the libary (aka `make install`) this file will be installed in the 
-default `share` directory of the system, under the folder `iers10`. In most X systems, 
+default `share` directory of the system, under the folder `iers10`. In most *X systems, 
 this means that you'll end up with the file: `/usr/local/share/iers10/gpt2_5.grd`.
 
 If you want to change the data directory path, you will need to alter the respective 
 Makefile template, that is [Makefile.am](data/Makefile.am).
 
-### BLQ format files
+## BLQ format files
 
-The library includes a helper class, i.e. `iers2010::BlqIn` (declared in [blqstrm.hpp](src/blqstrm.hpp)) 
-to assist reading records off from a BLQ file. Obviously, users can make use of this 
-code independent of the (rest of the) library.
+The library includes a helper class, i.e. `iers2010::BlqIn` (declared in 
+[blqstrm.hpp](src/blqstrm.hpp)) to assist reading records off from a BLQ file. 
+Obviously, users can make use of this code independent of the (rest of the) 
+library.
 
 The file [test_blq.cpp](test/test_blq.cpp) includes a test case usage of the 
 source code for reading and manipulating BLQ files; the source code is compiled to 
-the executable `testBlq`. Should you want to play with it, change the first line 
-of code, aka:
-```
-BlqIn blq("/home/xanthos/Software/iers2010/data/NTUA.BLQ");
-```
-to reflect a valid BLQ file (normaly such a file is distributed within the project 
-under the `/data` directory.
+the executable `testBlq`.
 
 ## Status
 
@@ -106,18 +147,54 @@ under the `/data` directory.
 
 ## Test Programs
 
-During the compilation, some programs are compiled to test the implementations of the individual functions in the
-library. These are:
+To compile the test programs, you need to enter the command `make check` (at the 
+`ROOTDIR` folder (after you have run `make`). This will build the programs 
+to test the implementations of the individual functions in the library. 
+They are compiled into executables in the `test` folder:
 
-- [testIers2010](test/test_iers2010.cpp) compiled to `test/testIers2010`
+  * `testFundarg`
+  
+  * `testPmsdnut2`
+  
+  * `testUtlibr`
+  
+  * `testFcnnut`
+  
+  * `testDehanttideinel`
+  
+  * `testArg2`
+  
+  * `testCnmtx`
+  
+  * `testOrthoeop`
+  
+  * `testRgZont2`
+  
+  * `testFcula`
+  
+  * `testFculb`
+  
+  * `testFculZdhPa`
+  
+  * `testGmf`
+  
+  * `testVmf1`
+  
+  * `testVmf1Ht`
+  
+  * `testGpt2`
+  
+  * `testGpt
+
+- ~~[testIers2010](test/test_iers2010.cpp) compiled to `test/testIers2010`
   This program checks the library functions using the test cases provided in the original
   FORTRAN routines. Run and check the results; in some cases, the differences (if 
   present) are expected and reason they appear is documented in the routine-specific
-  blocks below.
+  blocks below.~~
 
-- [testDehantTide](test/test_dehanttide.cpp) compiled to `test/testDehantTide`
+- ~~[testDehantTide](test/test_dehanttide.cpp) compiled to `test/testDehantTide`
   This program checks specifically the library function `dehandtideinel` using the test cases 
-  provided in the original FORTRAN routine.
+  provided in the original FORTRAN routine.~~
 
 - [testHardisp](test/test_hardisp.cpp) compiled to `test/testHardisp`
   This program checks the library hardisp program; to run this, you are going to need

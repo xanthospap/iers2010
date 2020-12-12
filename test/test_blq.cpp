@@ -7,8 +7,13 @@
 
 using iers2010::BlqIn;
 
-int main() {
-  BlqIn blq("/home/xanthos/Software/iers2010/data/NTUA.BLQ");
+int main(int argc, char* argv[]) {
+
+  if (argc!=2) {
+    std::cerr<<"\n[ERROR] Need to provide a valid .BLQ file (argc #"<<argc<<")";
+    return 1;
+  }
+  BlqIn blq(argv[1]);
 
   int status = 0;
   std::string staname;

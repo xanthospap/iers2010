@@ -1,4 +1,8 @@
 #include "iers2010.hpp"
+#include "test_help.hpp"
+#include <cassert>
+
+constexpr double _alg_accuracy_ = 1e-6;
 
 int main() {
 
@@ -18,7 +22,8 @@ int main() {
 #else
   printf("\ndx= %12.6e microarcseconds", std::abs(dx - dx_ref));
   printf("\ndy= %12.6e microarcseconds", std::abs(dy - dy_ref));
-  assert(std::abs(dx - dx_ref) < 1e-6 && std::abs(dy - dy_ref) < 1e-6);
+  assert(std::abs(dx - dx_ref) < _alg_accuracy_ &&
+         std::abs(dy - dy_ref) < _alg_accuracy_);
 #endif
 
   return 0;

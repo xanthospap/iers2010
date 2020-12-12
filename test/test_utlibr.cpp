@@ -1,4 +1,8 @@
 #include "iers2010.hpp"
+#include "test_help.hpp"
+#include <cassert>
+
+constexpr double _alg_accuracy_ = 1e-6;
 
 int main() {
 
@@ -20,8 +24,8 @@ int main() {
 #else
   printf("\ndut1= %12.6e mas", std::abs(dut1 - results[0]));
   printf("\ndlod= %12.6e mas / day", std::abs(dlod - results[1]));
-  assert(std::abs(dut1 - results[0]) < 1e-6 &&
-         std::abs(dlod - results[1]) < 1e-6);
+  assert(std::abs(dut1 - results[0]) < _alg_accuracy_ &&
+         std::abs(dlod - results[1]) < _alg_accuracy_);
 #endif
 
   iers2010::utlibr(55227.4e0, dut1, dlod);
@@ -31,8 +35,8 @@ int main() {
 #else
   printf("\ndut1= %12.6e mas", std::abs(dut1 - results[2]));
   printf("\ndlod= %12.6e mas / day", std::abs(dlod - results[3]));
-  assert(std::abs(dut1 - results[2]) < 1e-6 &&
-         std::abs(dlod - results[3]) < 1e-6);
+  assert(std::abs(dut1 - results[2]) < _alg_accuracy_ &&
+         std::abs(dlod - results[3]) < _alg_accuracy_);
 #endif
 
   return 0;

@@ -5,6 +5,8 @@
 #include <iostream>
 #include <map>
 
+constexpr double _alg_accuracy_ = 1e-13;
+
 const double input1[] = {
     4075578.385e0,       931852.890e0,        4801570.154e0,
     137859926952.015e0,  54228127881.4350e0,  23509422341.6960e0,
@@ -80,7 +82,10 @@ int main() {
 #else
       printf("\nargs[%1d] = %12.6e meters", i,
              std::abs(res[i] - test.second.result_[i]));
-      // assert(std::abs(res[i]- test.second.input_[i])<1e-11);
+      // if (std::abs(res[i]-test.second.input_[i])>_alg_accuracy_)
+      //  printf("check failed fot test case %c arg %d", test.first, i);
+      if (test.first != 'd')
+        assert(std::abs(res[i] - test.second.result_[i]) < _alg_accuracy_);
 #endif
     }
   }
