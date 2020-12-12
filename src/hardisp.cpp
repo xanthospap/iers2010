@@ -9,6 +9,16 @@ using iers2010::hisp::nl;
 using iers2010::hisp::nt;
 using iers2010::hisp::ntin;
 
+/// Argv are:
+///                  -# year (integer) (Note 4)
+///                  -# [month (integer) day_of_month (integer)], or
+///                     day_of_year (integer)
+///                  -# hour (integer)
+///                  -# minute (integer)
+///                  -# second (integer)
+///                  -# Number of output epochs to be written out/computed
+///                     (integer)
+///                  -# Sampling interval (in seconds) (double)
 int main(int argc, char *argv[]) {
   //  Check number of arguments from command line, then read them in
   if (argc < 8 || argc > 9) {
@@ -78,18 +88,14 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  // Compute & report
-  /*
-  std::cout<<"\nDatetime: "<<ngpt::strftime_ymd_hmfs(epoch);
-  std::cout<<"\n"<<irnt<<", "<<samp;
-  for (int i=0; i<3; i++) {
-    std::cout<<"\n";
-    for (int j=0; j<11; j++) std::cout<<" "<<tamp[i][j];
-  }
-  for (int i=0; i<3; i++) {
-    std::cout<<"\n";
-    for (int j=0; j<11; j++) std::cout<<" "<<tph[i][j];
-  }
-  */
-  return iers2010::hisp::hardisp_impl(irnt, samp, tamp, tph, epoch);
+  double *du = new double[irnt];
+  double *dw = new double[irnt];
+  double *ds = new double[irnt];
+  iers2010::hisp::hardisp_impl(irnt, samp, tamp, tph, epoch, du, ds, dw);
+  for (int i = 0; i < irnt; i++)
+    printf("\n%14.6f %14.6f %14.6f", du[i], ds[i], dw[i]);
+  printf("\n");
+  delete[] du;
+  delete[] dw;
+  delete[] ds;
 }

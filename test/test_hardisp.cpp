@@ -32,19 +32,11 @@ int main(int argc, char *argv[]) {
   // call hardisp
   ngpt::datetime d(ngpt::year(2009), ngpt::month(6), ngpt::day_of_month(25),
                    ngpt::hours(1), ngpt::minutes(10), ngpt::seconds(45));
-  /*
-  std::cout<<"\nDatetime: "<<ngpt::strftime_ymd_hmfs(d);
-  std::cout<<"\n24, 3600e0";
-  for (int i=0; i<3; i++) {
-    std::cout<<"\n";
-    for (int j=0; j<11; j++) std::cout<<" "<<a1[i][j];
-  }
-  for (int i=0; i<3; i++) {
-    std::cout<<"\n";
-    for (int j=0; j<11; j++) std::cout<<" "<<a2[i][j];
-  }
-  */
-  iers2010::hisp::hardisp_impl(24, 3600e0, a1, a2, d);
+  
+  double *displacements = new double[3*24];
+  double *dw = displacements, *du = displacements+24, *ds = displacements+2*24;
+  iers2010::hisp::hardisp_impl(24, 3600e0, a1, a2, d, du, ds, dw);
+  delete[] displacements;
 
   printf("\n");
   return 0;

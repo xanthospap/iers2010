@@ -36,7 +36,7 @@ int read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
                       const char *filename = nullptr);
 
 int hardisp_impl(int, double, double tamp[3][ntin], double tph[3][ntin],
-                 ngpt::datetime<ngpt::seconds> epoch);
+                 ngpt::datetime<ngpt::seconds> epoch, double* du, double* ds, double* dw);
 
 } // namespace hisp
 
