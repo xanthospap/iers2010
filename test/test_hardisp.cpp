@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
   // create a BlqIn instance
   BlqIn blq(argv[1]);
 
-  // find and read the station we ant in the BLQ file (note that we change
+  // find and read the station we want in the BLQ file (note that we change
   // phase sign to immidiately use hardisp)
   if (!blq.find_station("ONSA")) {
     std::cerr << "\n[ERROR] Could not find station ONS in the BLQ file";
@@ -33,10 +33,16 @@ int main(int argc, char *argv[]) {
   ngpt::datetime d(ngpt::year(2009), ngpt::month(6), ngpt::day_of_month(25),
                    ngpt::hours(1), ngpt::minutes(10), ngpt::seconds(45));
 
-  double *displacements = new double[3 * 24];
-  double *dw = displacements, *du = displacements + 24,
-         *ds = displacements + 2 * 24;
-  iers2010::hisp::hardisp_impl(24, 3600e0, a1, a2, d, du, ds, dw);
+  // number of samples and sample interval in seconds
+  const int irnt = 24;
+  const double sample_sec = 3600e0;
+  double *displacements = new double[3 * irnt];
+  double *dw = displacements, *du = displacements + irnt,
+         *ds = displacements + 2 * irnt;
+  iers2010::hisp::hardisp_impl(irnt, sample_sec, a1, a2, d, du, ds, dw);
+  for (int i = 0; i < irnt; i++)
+    printf("\n%14.6f %14.6f %14.6f", du[i], ds[i], dw[i]);
+  printf("\n");
   delete[] displacements;
 
   printf("\n");

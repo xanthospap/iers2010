@@ -6,11 +6,16 @@ C++ library implementing the IERS 2010 standards.
 
 ## Introduction
 This project contains a number of functions implementing models defined in
-IERS Conventions (2010). The functions are available in FORTRAN from the 
-[IERS website](https://iers-conventions.obspm.fr/conventions_material.php). 
+[IERS Conventions (2010)](https://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html/) 
+as described in 
+[IERS Technical Note No. 36](https://www.iers.org/SharedDocs/Publikationen/EN/IERS/Publications/tn/TechnNote36/tn36.pdf;jsessionid=716AD09DB6CA42AD5E5F2F7061EDAC0A.live2?__blob=publicationFile&v=1).
+The International Earth Rotation and Reference Systems Service ([IERS](https://www.iers.org/IERS/EN/Home/home_node.html))
+publishes the Conventions along with relevant documents, model implementations and 
+respective test cases; the latter two are available in the FORTRAN programming 
+language from at the [IERS website](https://iers-conventions.obspm.fr/conventions_material.php).
+This repository is an effort to translate the algorithms in the C++ programming language 
+ with (as much as possible) minor modifications.
 Note that the software found at this website is routinely updated.
-The FORTRAN subroutines are translated to C++ with (as much as
-possible) minor modifications.
 
 ## Prerequisites
 
@@ -184,7 +189,12 @@ They are compiled into executables in the `test` folder:
   
   * `testGpt2`
   
-  * `testGpt
+  * `testGpt`
+  
+  * [testHardisp](test/test_hardisp.cpp) compiled to `test/testHardisp`
+  This program checks the library hardisp program; to run this, you are going to need
+  a `BLQ` file with records for the GNSS station 'ONSA' (or you could use the file 
+  [NTUA.BLQ](data/NTUA.BLQ)). For details see [hardisp](#hardisp-cmp).
 
 - ~~[testIers2010](test/test_iers2010.cpp) compiled to `test/testIers2010`
   This program checks the library functions using the test cases provided in the original
@@ -196,13 +206,10 @@ They are compiled into executables in the `test` folder:
   This program checks specifically the library function `dehandtideinel` using the test cases 
   provided in the original FORTRAN routine.~~
 
-- [testHardisp](test/test_hardisp.cpp) compiled to `test/testHardisp`
-  This program checks the library hardisp program; to run this, you are going to need
-  a `BLQ` file with records for the GNSS station 'ONSA' (or you could use the file 
-  [NTUA.BLQ](data/NTUA.BLQ))
-
-
-These programs contain source code to run the test cases provided in the FORTRAN implementation files.
+These programs check the library functions against the test cases provided in 
+the IERS published FORTRAN source code files. **Note that in some rare occasions, the 
+original FORTRAN implementation may fail (to a given accuracy) the actual test case** 
+(see e.g. [fundarg](#fundarg-cmp))
 
 ~~If needed, alternative FORTRAN implementations are provided (in the `fortran_impl` directory) for further testing.
 These can be compiled using the `fortran_impl/Makefile` aka run `make` in the `fortran_impl` folder.
@@ -213,9 +220,6 @@ IERS source code) Alternative FORTRAN implementations are provided for:~~
 
 ~~-PMSDNUT2.F named [PMSDNUT2_D0.F](fortran_impl/PMSDNUT2_D0.F) (see [pmsdnut2](#pmsdnut2-cmp))~~
 ~~-UTLIBR.F named [UTLIBR_D0.F](fortran_impl/UTLIBR_D0.F) (see [utlibr](#utlibr-cmp))~~
-
-See the individual (sub)routine chapters below for the reason these files are provided.
-
 
 ### fundarg <a id="fundarg-cmp"></a>
 
@@ -347,21 +351,41 @@ paste reyk.tmp test/test_reyk_results | awk '{printf "%9.6f %9.6f %9.6f\n", $1-$
 ```
 
 You should see the differences (per line and column) and they should not exceed
-the value 1e-6.
+the value 1e<sup>-6</sup>.
 
 In the official IERS2010 software, HARDISP comes as a standalone routine/program. In
 this implementation, HARDISP comes both as a standalone program as well as a function 
 (see `hisp::hardisp_impl` in file [hardisp_impl.cpp](src/hardisp_impl.cpp)) that can be 
 used by the users in source code.
 
-## How to use the library (TODO)
+A test case for using the implementation is provided in the test source code 
+[test_hardisp.cpp](test/test_hardisp.cpp). When compiling the tests (via `make check`) 
+this source code will be compiled to `test/testHardisp`. Given a BLQ file with a 
+record for station ONSA, you can check the results (which sould exactly agree with 
+the `src/hardisp` executable. A BLQ file with records for ONSA is provided in [NTUA.BLQ](data/NTUA.BLQ).
+Example:
+```
+test/testHardisp data/NTUA.BLQ > onsa.tmp
+paste onsa.tmp test/test_onsa_results | awk '{printf "%9.6f %9.6f %9.6f\n", $1-$4, $2-$5, $3-$6}'
+```
+
+Again, the differences (per line and column) should not exceed 1e<sup>-6</sup>
+
+## How to use the library
 
 ### Namespaces
 
-- namespace `iers2010`
-- namespace `iers2010::dhtide`
-- namespace `iers2010::hisp`
-- namespace `iers2010::oeop`
+- __namespace `iers2010` includes all model implementation functions.__
+
+- namespace `iers2010::dhtide` includes details and functions only relevant to 
+  the `dehanttideinel` funtion. You should probably never have to use this.
+
+- namespace `iers2010::hisp` includes details and functions only relevant to 
+  the `hardisp` funtion. You should probably never have to use this.
+
+- namespace `iers2010::oeop` includes details and functions only relevant to 
+  the `orthoeop` funtion. You should probably never have to use this.
+
 
 ### Linking
 
