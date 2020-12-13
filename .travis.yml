@@ -13,6 +13,7 @@ before_script:
  - make
  - sudo make install
  - sudo ldconfig
+ - cd iers2010
 
 script:
  - pwd
