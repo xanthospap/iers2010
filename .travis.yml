@@ -15,8 +15,8 @@ before_script:
  - sudo ldconfig
 
 script:
- - mv src/Makefile.am.production src/Makefile.am
- - mv test/Makefile.am.production test/Makefile.am
+ - pwd
+ - ./install_setup.py -c production
  - autoreconf -if
  - ./configure
  - make
