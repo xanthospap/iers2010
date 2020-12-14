@@ -18,7 +18,8 @@ testGmf \
 testVmf1 \
 testVmf1Ht \
 testGpt2 \
-testGpt
+testGpt \
+testTdfrph
 
 TESTS = testFundarg \
 testPmsdnut2 \
@@ -36,7 +37,8 @@ testGmf \
 testVmf1 \
 testVmf1Ht \
 testGpt2 \
-testGpt
+testGpt \
+testTdfrph
 
 MCXXFLAGS = \
 -std=c++17 \
@@ -130,6 +132,10 @@ testGpt_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime
 testGpt2_SOURCES  = test_gpt2.cpp
 testGpt2_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
 testGpt2_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testTdfrph_SOURCES  = test_tdfrph.cpp
+testTdfrph_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testTdfrph_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 #check_PROGRAMS    = test
 #dist_test_SOURCES = test.cpp
 #EXTRA_DIST        = hardisp_results_onsa \

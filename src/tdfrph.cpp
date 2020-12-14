@@ -22,7 +22,7 @@
 ///        order) = (1,2), (1,3), or (3,3).
 ///     -# Status:  Class 1 model
 ///
-/// @version 11.09.2013
+/// @version 21.05.2015
 ///
 /// @cite iers2010
 ///
@@ -45,37 +45,34 @@ int iers2010::hisp::tdfrph(const int idood[6],
         iepoch.cast_to<ngpt::milliseconds>();
     // Convert times to Julian days (UT) then to Julian centuries
     // from J2000.0 (TT)
-    int dat = ngpt::dat(epoch.mjd());
-    double dayfr = epoch.sec().fractional_days();
+    const int dat = ngpt::dat(epoch.mjd());
+    const double dayfr = epoch.sec().fractional_days();
     epoch.add_seconds(ngpt::milliseconds(dat * 1e3) +
                       ngpt::milliseconds(32184));
-    double t = (epoch.as_mjd() + ngpt::mjd0_jd - ngpt::j2000_jd) / 36525e0;
-    // printf("\ndat=%5d, dayfr=%15.10f, jd=%20.10f t=%15.10f", dat, dayfr,
-    // epoch.as_mjd() + ngpt::mjd0_jd, t); t = 0.094799449636217e0; dayfr =
-    // 0.049131944444444e0;
+    const double t = (epoch.as_mjd() + ngpt::mjd0_jd - ngpt::j2000_jd) / 36525e0;
 
     // IERS expressions for the Delaunay arguments, in degrees
-    double f1{134.9634025100e0 +
+    const double f1{134.9634025100e0 +
               t * (477198.8675605000e0 +
                    t * (0.0088553333e0 +
                         t * (0.0000143431e0 + t * (-0.0000000680e0))))};
 
-    double f2{357.5291091806e0 +
+    const double f2{357.5291091806e0 +
               t * (35999.0502911389e0 +
                    t * (-0.0001536667e0 +
                         t * (0.0000000378e0 + t * (-0.0000000032e0))))};
 
-    double f3{93.2720906200e0 +
+    const double f3{93.2720906200e0 +
               t * (483202.0174577222e0 +
                    t * (-0.0035420000e0 +
                         t * (-0.0000002881e0 + t * (0.0000000012e0))))};
 
-    double f4{297.8501954694e0 +
+    const double f4{297.8501954694e0 +
               t * (445267.1114469445e0 +
                    t * (-0.0017696111e0 +
                         t * (0.0000018314e0 + t * (-0.0000000088e0))))};
 
-    double f5{125.0445550100e0 +
+    const double f5{125.0445550100e0 +
               t * (-1934.1362619722e0 +
                    t * (0.0020756111e0 +
                         t * (0.0000021394e0 + t * (-0.0000000165e0))))};
@@ -90,11 +87,11 @@ int iers2010::hisp::tdfrph(const int idood[6],
 
     //  Find frequencies of Delauney variables (in cycles/day), and from
     //+ these the same for the Doodson arguments
-    double fd1{0.0362916471e0 + 0.0000000013e0 * t};
-    double fd2{0.0027377786e0};
-    double fd3{0.0367481951e0 - 0.0000000005e0 * t};
-    double fd4{0.0338631920e0 - 0.0000000003e0 * t};
-    double fd5{-0.0001470938e0 + 0.0000000003e0 * t};
+    const double fd1{0.0362916471e0 + 0.0000000013e0 * t};
+    const double fd2{0.0027377786e0};
+    const double fd3{0.0367481951e0 - 0.0000000005e0 * t};
+    const double fd4{0.0338631920e0 - 0.0000000003e0 * t};
+    const double fd5{-0.0001470938e0 + 0.0000000003e0 * t};
     dd[0] = 1e0 - fd4;
     dd[1] = fd3 + fd5;
     dd[2] = dd[1] - fd4;
@@ -111,8 +108,8 @@ int iers2010::hisp::tdfrph(const int idood[6],
   freq = 0e0;
   phase = 0e0;
   for (int i = 0; i < 6; i++) {
-    freq += ((double)idood[i]) * dd[i];
-    phase += ((double)idood[i]) * d[i];
+    freq += static_cast<double>(idood[i]) * dd[i];
+    phase += static_cast<double>(idood[i]) * d[i];
   }
 
   // Adjust phases so that they fall in the positive range 0 to 360

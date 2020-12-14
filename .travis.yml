@@ -13,11 +13,10 @@ before_script:
  - make
  - sudo make install
  - sudo ldconfig
- - cd iers2010
 
 script:
  - pwd
- - ./install_setup.py -c production
+ - python install_setup.py -c production
  - autoreconf -if
  - ./configure
  - make
