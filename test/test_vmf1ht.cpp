@@ -20,7 +20,6 @@ int main() {
 #else
     printf("\nargs[%1d] = %12.6e ", i, std::abs(result[i] - result_ref[i]));
     assert(approxEqual(result[i], result_ref[i]));
-    // assert(std::abs(result[i] - result_ref[i]) < 1e-11);
 #endif
   }
   return 0;

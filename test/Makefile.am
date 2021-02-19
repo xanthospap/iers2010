@@ -2,6 +2,17 @@ noinst_PROGRAMS = testIers2010 \
 testBlqIn \
 testHardisp
 
+MCXXFLAGS = \
+-std=c++17 \
+-Wall \
+-Wextra \
+-Werror \
+-pedantic \
+-W \
+-Wshadow \
+-O2 \
+-march=native
+
 check_PROGRAMS = testFundarg \
 testPmsdnut2 \
 testUtlibr \
@@ -18,8 +29,7 @@ testGmf \
 testVmf1 \
 testVmf1Ht \
 testGpt2 \
-testGpt \
-testTdfrph
+testGpt
 
 TESTS = testFundarg \
 testPmsdnut2 \
@@ -37,25 +47,15 @@ testGmf \
 testVmf1 \
 testVmf1Ht \
 testGpt2 \
-testGpt \
-testTdfrph
-
-MCXXFLAGS = \
--std=c++17 \
--g \
--pg \
--Wall \
--Wextra \
--Werror \
--pedantic \
--W \
--Wshadow \
--Wdisabled-optimization \
--DDEBUG
+testGpt
 
 testIers2010_SOURCES  = test_iers2010.cpp
 testIers2010_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
 testIers2010_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
+
+testDehantTide_SOURCES  = test_dehanttd.cpp
+testDehantTide_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
+testDehantTide_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
 
 testBlqIn_SOURCES  = test_blq.cpp
 testBlqIn_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
@@ -132,29 +132,3 @@ testGpt_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime
 testGpt2_SOURCES  = test_gpt2.cpp
 testGpt2_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
 testGpt2_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
-
-testTdfrph_SOURCES  = test_tdfrph.cpp
-testTdfrph_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src
-testTdfrph_LDADD    = $(top_srcdir)/src/libiers2010.la /usr/local/lib/libggdatetime.a
-#check_PROGRAMS    = test
-#dist_test_SOURCES = test.cpp
-#EXTRA_DIST        = hardisp_results_onsa \
-#					hardisp_results_reyk \
-#					reyk.blq \
-#					onsa.blq
-#test_CXXFLAGS     = -I$(top_srcdir)/src -L$(top_srcdir)/src -std=c++11
-#test_LDADD        = $(top_srcdir)/src/libiers10++.a
-#
-#check_SCRIPTS     = greptest.sh
-#TESTS             = $(check_SCRIPTS)
-#
-#EXTRA_PROGRAMS            = test-hardisp
-#dist_test_hardisp_SOURCES = test-hardisp.cpp
-#test_hardisp_CXXFLAGS     = -I$(top_srcdir)/src -L$(top_srcdir)/src -std=c++11
-#test_hardisp_LDADD        = $(top_srcdir)/src/libiers10++.a
-#
-#greptest.sh:
-#	echo './test | grep "Library Status : OK"' > greptest.sh
-#	chmod +x greptest.sh
-#
-#CLEANFILES        = greptest.sh

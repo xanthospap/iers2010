@@ -12,7 +12,8 @@ as described in
 The International Earth Rotation and Reference Systems Service ([IERS](https://www.iers.org/IERS/EN/Home/home_node.html))
 publishes the Conventions along with relevant documents, model implementations and 
 respective test cases; the latter two are available in the FORTRAN programming 
-language from at the [IERS website](https://iers-conventions.obspm.fr/conventions_material.php).
+language at the [IERS website](https://iers-conventions.obspm.fr/conventions_material.php).
+
 This repository is an effort to translate the algorithms in the C++ programming language 
  with (as much as possible) minor modifications.
 Note that the software found at this website is routinely updated.
@@ -43,7 +44,7 @@ $> ./configure
 $> make && sudo make install
 ```
 
-### Choosing C++ Standard
+### Choosing C++ Standard _(optional read)_
 
 Source code is ISO C++17 but also __compatible with C++14__. 
 Compilation should be trivial using any C++ compiler
@@ -59,7 +60,7 @@ project build files use the C++17 standard; to specify a different one, you can 
 Apart from C++17 and C++14 no other standard has been tested; should you want another, 
 chances are you should probably adapt the source code.
 
-### install setup script
+### install setup script _(optional read)_
 
 We provide a python script ([install_setup.py](install_setup.py)) to assist the 
 creation/editing of the needed Makefile.am's; this way you most probably do not need to 
@@ -105,7 +106,7 @@ default `share` directory of the system, under the folder `iers10`. In most *X s
 this means that you'll end up with the file: `/usr/local/share/iers10/gpt2_5.grd`.
 
 If you want to change the data directory path, you will need to alter the respective 
-Makefile template, that is [Makefile.am](data/Makefile.am).
+Makefile template, that is [data/Makefile.am](data/Makefile.am).
 
 ## BLQ format files
 
@@ -118,7 +119,7 @@ The file [test_blq.cpp](test/test_blq.cpp) includes a test case usage of the
 source code for reading and manipulating BLQ files; the source code is compiled to 
 the executable `testBlq`.
 
-## Status
+## Status of the Library _(or translated routines)_
 
 | Chapter | (Sub)Routine | Translated | Tested | Version  | Comments |
 |:--------|:-------------|:----------:|:------:|:---------|:---------|
@@ -150,9 +151,9 @@ the executable `testBlq`.
 > The discussion below is only a description of the discrepancies between implementations
 > and does **not** depict the actual precission of the models.
 
-## Test Programs
+## Test Programs _(optional read)_
 
-To compile the test programs, you need to enter the command `make check` (at the 
+To compile the test programs, you need to enter the command `make check` at the 
 `ROOTDIR` folder (after you have run `make`). This will build the programs 
 to test the implementations of the individual functions in the library. 
 They are compiled into executables in the `test` folder:
@@ -187,8 +188,8 @@ They are compiled into executables in the `test` folder:
   
   * `testVmf1Ht`
   
-  * `testGpt2` (__you need to have run `make install` first for the data file [gpt2_5.grd](#Distributed-Data-Files)
-    to be in place before running this script, otherwise it will fail__)
+  * `testGpt2` (_you need to have run `make install` first for the data file [gpt2_5.grd](#Distributed-Data-Files)
+    to be in place before running this script, otherwise it will fail_)
 
   * `testGpt`
   
@@ -402,6 +403,11 @@ Again, the differences (per line and column) should not exceed 1e<sup>-6</sup>
 - [x] ~~test compilation against c++17 (gcc)~~
 - [x] ~~the new version of dehanttidenl has a new example test case; use it!~~
 - [ ] the fourth case of dehanttideinel fails with large discrepancies; wtf?
+
+Three test programs fail:
+ - testCnmtx
+ - testOrthoeop
+ - testRgZont2
 
 ## Bugs & Maintanance
 Xanthos, xanthos@mail.ntua.gr
