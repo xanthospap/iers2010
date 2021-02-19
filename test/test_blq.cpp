@@ -7,10 +7,11 @@
 
 using iers2010::BlqIn;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 
-  if (argc!=2) {
-    std::cerr<<"\n[ERROR] Need to provide a valid .BLQ file (argc #"<<argc<<")";
+  if (argc != 2) {
+    std::cerr << "\n[ERROR] Need to provide a valid .BLQ file (argc #" << argc
+              << ")";
     return 1;
   }
   BlqIn blq(argv[1]);
