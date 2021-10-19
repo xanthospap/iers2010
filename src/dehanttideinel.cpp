@@ -70,7 +70,7 @@
 ///
 int iers2010::dehanttideinel(const double *xsta, const double *xsun,
                              const double *xmon,
-                             ngpt::datetime<ngpt::seconds> iepoch,
+                             dso::datetime<dso::seconds> iepoch,
                              double *dxtide) {
   using iers2010::dhtide::sprod;
 
@@ -152,13 +152,13 @@ int iers2010::dehanttideinel(const double *xsta, const double *xsun,
   // corrections for the diurnal band:
   // first, we need to know the date converted in julian centuries
   // UTC to TT time
-  ngpt::datetime<ngpt::milliseconds> epoch =
-      iepoch.cast_to<ngpt::milliseconds>();
+  dso::datetime<dso::milliseconds> epoch =
+      iepoch.cast_to<dso::milliseconds>();
   double fhr = epoch.sec().to_fractional_seconds();
   fhr /= 3600e0;
-  int dat = ngpt::dat(epoch.mjd());
-  epoch.add_seconds(ngpt::milliseconds(dat * 1e3) + ngpt::milliseconds(32184));
-  double t = (epoch.as_mjd() + ngpt::mjd0_jd - ngpt::j2000_jd) / 36525e0;
+  int dat = dso::dat(epoch.mjd());
+  epoch.add_seconds(dso::milliseconds(dat * 1e3) + dso::milliseconds(32184));
+  double t = (epoch.as_mjd() + dso::mjd0_jd - dso::j2000_jd) / 36525e0;
 
   //  second, we can call the subroutine step2diu, for the diurnal band
   //+ corrections, (in-phase and out-of-phase frequency dependence):

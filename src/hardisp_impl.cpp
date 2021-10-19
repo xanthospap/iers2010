@@ -121,7 +121,7 @@ int iers2010::hisp::read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
 /// @cite iers2010
 int iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin],
                                  double tph[3][ntin],
-                                 ngpt::datetime<ngpt::seconds> epoch,
+                                 dso::datetime<dso::seconds> epoch,
                                  double *odu, double *ods, double *odw) {
   constexpr double dr(0.01745329252e0);
   int irli(1);

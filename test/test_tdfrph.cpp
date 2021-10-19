@@ -14,13 +14,13 @@ int main() {
   std::cout << "----------------------------------------\n";
 
   auto t1 =
-      ngpt::datetime<ngpt::seconds>{ngpt::year(2009), ngpt::day_of_year(176)};
+      dso::datetime<dso::seconds>{dso::year(2009), dso::day_of_year(176)};
 
-  auto t2 = ngpt::datetime<ngpt::seconds>{
-      ngpt::year(2009), ngpt::day_of_year(176), ngpt::hours(12),
-      ngpt::minutes(1), ngpt::seconds(45)};
+  auto t2 = dso::datetime<dso::seconds>{
+      dso::year(2009), dso::day_of_year(176), dso::hours(12),
+      dso::minutes(1), dso::seconds(45)};
 
-  const ngpt::datetime<ngpt::seconds> epochs[] = {t1, t2};
+  const dso::datetime<dso::seconds> epochs[] = {t1, t2};
   const int idood[2][6] = {{2, 0, 0, 0, 0, 0}, {2, 0, 0, 0, 0, 0}};
   const double result_ref[2][2] = {{1.93227361605688e0, 303.343338720297e0},
                                    {1.93227361605689e0, 291.997959322689e0}};

@@ -31,9 +31,9 @@
 /// returns a delta != 0. The FORTRAN routine however gives delta=0.
 /// WTF ??
 int iers2010::hisp::tdfrph(const int idood[6],
-                           ngpt::datetime<ngpt::seconds> iepoch, double &freq,
+                           dso::datetime<dso::seconds> iepoch, double &freq,
                            double &phase) {
-  static ngpt::datetime<ngpt::seconds> last_epoch;
+  static dso::datetime<dso::seconds> last_epoch;
   static double d[6];
   static double dd[6];
 
@@ -41,16 +41,16 @@ int iers2010::hisp::tdfrph(const int idood[6],
   //  for each of the Doodson arguments
   if (iepoch != last_epoch) {
 
-    ngpt::datetime<ngpt::milliseconds> epoch =
-        iepoch.cast_to<ngpt::milliseconds>();
+    dso::datetime<dso::milliseconds> epoch =
+        iepoch.cast_to<dso::milliseconds>();
     // Convert times to Julian days (UT) then to Julian centuries
     // from J2000.0 (TT)
-    const int dat = ngpt::dat(epoch.mjd());
+    const int dat = dso::dat(epoch.mjd());
     const double dayfr = epoch.sec().fractional_days();
-    epoch.add_seconds(ngpt::milliseconds(dat * 1e3) +
-                      ngpt::milliseconds(32184));
+    epoch.add_seconds(dso::milliseconds(dat * 1e3) +
+                      dso::milliseconds(32184));
     const double t =
-        (epoch.as_mjd() + ngpt::mjd0_jd - ngpt::j2000_jd) / 36525e0;
+        (epoch.as_mjd() + dso::mjd0_jd - dso::j2000_jd) / 36525e0;
 
     // IERS expressions for the Delaunay arguments, in degrees
     const double f1{134.9634025100e0 +

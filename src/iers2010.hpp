@@ -25,7 +25,7 @@ int arg2(int, double, double *) noexcept;
 /// Compute tidal corrections of station displacements caused by lunar and
 /// solar gravitational attraction.
 int dehanttideinel(const double *, const double *, const double *,
-                   ngpt::datetime<ngpt::seconds>, double *);
+                   dso::datetime<dso::seconds>, double *);
 
 /// Compute the diurnal and semi-diurnal variations in Earth Orientation
 /// Parameters from ocean tides.

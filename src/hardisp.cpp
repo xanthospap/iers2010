@@ -65,17 +65,17 @@ int main(int argc, char *argv[]) {
   }
 
   /// Construct the date
-  ngpt::hours _h(it[3]);
-  ngpt::minutes _m(it[4]);
-  ngpt::seconds _s(it[5]);
-  ngpt::datetime<ngpt::seconds> epoch;
+  dso::hours _h(it[3]);
+  dso::minutes _m(it[4]);
+  dso::seconds _s(it[5]);
+  dso::datetime<dso::seconds> epoch;
   if (argc == 8) {
-    epoch = ngpt::datetime<ngpt::seconds>{ngpt::year(it[0]),
-                                          ngpt::day_of_year(it[1]), _h, _m, _s};
+    epoch = dso::datetime<dso::seconds>{dso::year(it[0]),
+                                          dso::day_of_year(it[1]), _h, _m, _s};
   } else {
-    epoch = ngpt::datetime<ngpt::seconds>{ngpt::year(it[0]),
-                                          ngpt::month(it[1]),
-                                          ngpt::day_of_month(it[2]),
+    epoch = dso::datetime<dso::seconds>{dso::year(it[0]),
+                                          dso::month(it[1]),
+                                          dso::day_of_month(it[2]),
                                           _h,
                                           _m,
                                           _s};

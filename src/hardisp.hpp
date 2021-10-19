@@ -27,16 +27,16 @@ int shells(double *, int *, int) noexcept;
 
 int spline(int, const double *, const double *, double *, double *);
 
-int tdfrph(const int *, ngpt::datetime<ngpt::seconds>, double &, double &);
+int tdfrph(const int *, dso::datetime<dso::seconds>, double &, double &);
 
-int admint(const double *, const double *, ngpt::datetime<ngpt::seconds>,
+int admint(const double *, const double *, dso::datetime<dso::seconds>,
            double *, double *, double *, int, int &);
 
 int read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
                       const char *filename = nullptr);
 
 int hardisp_impl(int, double, double tamp[3][ntin], double tph[3][ntin],
-                 ngpt::datetime<ngpt::seconds> epoch, double *du, double *ds,
+                 dso::datetime<dso::seconds> epoch, double *du, double *ds,
                  double *dw);
 
 } // namespace hisp

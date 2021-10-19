@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
   }
 
   // call hardisp
-  ngpt::datetime d(ngpt::year(2009), ngpt::month(6), ngpt::day_of_month(25),
-                   ngpt::hours(1), ngpt::minutes(10), ngpt::seconds(45));
+  dso::datetime d(dso::year(2009), dso::month(6), dso::day_of_month(25),
+                   dso::hours(1), dso::minutes(10), dso::seconds(45));
 
   // number of samples and sample interval in seconds
   const int irnt = 24;

@@ -36,7 +36,7 @@
 /// @cite iers2010
 ///
 int iers2010::hisp::admint(const double *ampin, const double *phin,
-                           ngpt::datetime<ngpt::seconds> epoch, double *amp,
+                           dso::datetime<dso::seconds> epoch, double *amp,
                            double *f, double *p, int nin, int &nout) {
   // The parameters below set the number of harmonics used in the prediction
   // (nt; This must also be set in the main program) and the number of
