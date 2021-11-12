@@ -33,7 +33,8 @@ pkginclude_HEADERS = \
 	iers2010.hpp \
 	hardisp.hpp \
 	dehanttideinel.hpp \
-	blqstrm.hpp
+	blqstrm.hpp \
+	gpt3.hpp
 
 dist_libiers2010_la_SOURCES = \
 	fundarg.cpp \
@@ -65,8 +66,12 @@ dist_libiers2010_la_SOURCES = \
 	gpt2.cpp \
 	hardisp_impl.cpp \
 	dehanttideinel.cpp \
-	blqstrm.cpp
+	blqstrm.cpp \
+	gpt3_5_fast_readgrid.cpp \
+	gpt3_5_fast.cpp
+
+AM_LDFLAGS =-lggeodesy -lggdatetime
 
 hardisp_SOURCES  = hardisp.cpp
 hardisp_CXXFLAGS = $(MCXXFLAGS) -I$(top_srcdir)/src 
-hardisp_LDADD    = libiers2010.la /usr/local/lib/libggdatetime.a
+hardisp_LDADD    = libiers2010.la $(AM_LDFLAGS)
