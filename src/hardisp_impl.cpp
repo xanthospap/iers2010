@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <cstring>
 
 using iers2010::hisp::nl;
 using iers2010::hisp::nt;

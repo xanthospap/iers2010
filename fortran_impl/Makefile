@@ -54,7 +54,8 @@ all: test_iers \
 	testVmf1 \
 	testVmf1Ht \
 	testGpt \
-	testGpt2
+	testGpt2 \
+	validateFcnnut
 
 test_iers: MAIN.F $(IERS_OBS)
 	$(FC) -o $@ MAIN.F $(IERS_OBS)
@@ -72,6 +73,8 @@ testUtlibr_d0: test_utlibr.f $(IERS_OBS_D0)
 	$(FC) -o $@ test_utlibr.f $(IERS_OBS_D0)
 testFcnnut: test_fcnnut.f $(IERS_OBS)
 	$(FC) -o $@ test_fcnnut.f $(IERS_OBS)
+validateFcnnut: validate_fcnnut.f $(IERS_OBS)
+	$(FC) -o $@ validate_fcnnut.f $(IERS_OBS)
 testArg2: test_arg2.f $(IERS_OBS)
 	$(FC) -o $@ test_arg2.f $(IERS_OBS)
 testCnmtx: test_cnmtx.f $(IERS_OBS)

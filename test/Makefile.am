@@ -10,8 +10,7 @@ MCXXFLAGS = \
 -pedantic \
 -W \
 -Wshadow \
--O2 \
--march=native
+-O2
 
 check_PROGRAMS = testFundarg \
 testPmsdnut2 \
