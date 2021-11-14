@@ -22,22 +22,6 @@ struct gpt3_5_grid {
   double Ge_h_grid[GPT3_5_GRID_LINES][5];
   double Gn_w_grid[GPT3_5_GRID_LINES][5];
   double Ge_w_grid[GPT3_5_GRID_LINES][5];
-
-  void ugrid_slice(const int *indexes, double *values) noexcept {
-    values[0] = u_grid[indexes[0]];
-    values[1] = u_grid[indexes[1]];
-    values[2] = u_grid[indexes[2]];
-    values[3] = u_grid[indexes[3]];
-    return;
-  }
-  void hsgrid_slice(const int *indexes, double *values) noexcept {
-    values[0] = Hs_grid[indexes[0]];
-    values[1] = Hs_grid[indexes[1]];
-    values[2] = Hs_grid[indexes[2]];
-    values[3] = Hs_grid[indexes[3]];
-    return;
-  }
-
 }; // gpt3_5_grid
 
 int parse_gpt3_5_grid(const char *gridfn, gpt3_5_grid *grid) noexcept;
