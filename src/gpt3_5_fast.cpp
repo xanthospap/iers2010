@@ -1,7 +1,7 @@
-#include <cmath>
-#include "gpt3.hpp"
 #include "ggdatetime/dtcalendar.hpp"
 #include "ggeodesy/units.hpp"
+#include "gpt3.hpp"
+#include <cmath>
 #ifdef USE_EXTERNAL_CONSTS
 #include "gencon.hpp"
 #endif
@@ -18,7 +18,7 @@ int dso::gpt3_5_fast(const dso::datetime<dso::nanoseconds> &t,
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double pi(DPI);
 #else
-  constexpr double pi(3.1415926535897932384626433e0);
+  constexpr double pi(M_PI);
 #endif
 
   // determine the GPT3 coefficients
@@ -69,8 +69,8 @@ int dso::gpt3_5_fast(const dso::datetime<dso::nanoseconds> &t,
     int ilon = std::floor((plon + 5) / 5);
 
     // normalized (to one) differences, can be positive or negative
-    int diffpod = (ppod - (ipod * 5 - 2.5)) / 5;
-    int difflon = (plon - (ilon * 5 - 2.5)) / 5;
+    double diffpod = (ppod - (ipod * 5e0 - 2.5e0)) / 5e0;
+    double difflon = (plon - (ilon * 5e0 - 2.5e0)) / 5e0;
     if (ipod == 37)
       ipod = 36;
     if (ilon == 73)
@@ -102,7 +102,7 @@ int dso::gpt3_5_fast(const dso::datetime<dso::nanoseconds> &t,
       double T0 = g.T_grid[ix][0] + g.T_grid[ix][1] * cosfy +
                   g.T_grid[ix][2] * sinfy + g.T_grid[ix][3] * coshy +
                   g.T_grid[ix][4] * sinhy;
-      double p0 = g.p_grid[ix][0] + g.p_grid[ix][2] * cosfy +
+      double p0 = g.p_grid[ix][0] + g.p_grid[ix][1] * cosfy +
                   g.p_grid[ix][2] * sinfy + g.p_grid[ix][3] * coshy +
                   g.p_grid[ix][4] * sinhy;
 
@@ -116,14 +116,14 @@ int dso::gpt3_5_fast(const dso::datetime<dso::nanoseconds> &t,
                     g.dT_grid[ix][2] * sinfy + g.dT_grid[ix][3] * coshy +
                     g.dT_grid[ix][4] * sinhy;
 
-      // temperature lapse rate in degrees / km
-      g3out[k].dT = g3out[k].dT * 1000e0;
-
       // station height - grid height
       double redh = hgt - g.Hs_grid[ix];
 
       // temperature at station height in Celsius
       g3out[k].T = T0 + g3out[k].dT * redh - 273.15e0;
+
+      // temperature lapse rate in degrees / km
+      g3out[k].dT *= 1e3;
 
       // virtual temperature in Kelvin
       double Tv = T0 * (1e0 + 0.6077e0 * Q);
@@ -194,8 +194,14 @@ int dso::gpt3_5_fast(const dso::datetime<dso::nanoseconds> &t,
 
       // transforming ellipsoidal height to orthometric height :
       // Hortho = -N + Hell
-      double undul[4], hgt[4];
-      g.ugrid_slice(indx, undul);
+      double undul[4] =
+          {
+              g.u_grid[indx[0]],
+              g.u_grid[indx[1]],
+              g.u_grid[indx[2]],
+              g.u_grid[indx[3]],
+          },
+             hgt[4];
       for (int i = 0; i < 4; i++) {
         hgt[i] = hell[k] - undul[i];
       }
@@ -221,12 +227,12 @@ int dso::gpt3_5_fast(const dso::datetime<dso::nanoseconds> &t,
       }
 
       // reduction = stationheight - gridheight
-      // double Hs1 = Hs_grid[indx];
-      // double redh = hgt - Hs1;
-      double Hs1[4], redh[4];
-      g.hsgrid_slice(indx, Hs1);
-      for (int i = 0; i < 4; i++)
+      double Hs1[4] = {g.Hs_grid[indx[0]], g.Hs_grid[indx[1]],
+                       g.Hs_grid[indx[2]], g.Hs_grid[indx[3]]},
+             redh[4];
+      for (int i = 0; i < 4; i++) {
         redh[i] = hgt[i] - Hs1[i];
+      }
 
       // lapse rate of the temperature in degree / m
       double dTl[4];
@@ -314,13 +320,14 @@ int dso::gpt3_5_fast(const dso::datetime<dso::nanoseconds> &t,
             e0[i] *
             std::pow(
                 100.e0 * pl[i] / p0[i],
-                lal[i] + 1e0); // on the station height - (14)Askne and Nordius, 1987
+                lal[i] +
+                    1e0); // on the station height - (14)Askne and Nordius, 1987
       }
 
-      int dnpod1 = std::abs(diffpod); // distance nearer point
-      int dnpod2 = 1 - dnpod1;        // distance to distant point
-      int dnlon1 = std::abs(difflon);
-      int dnlon2 = 1 - dnlon1;
+      double dnpod1 = std::abs(diffpod); // distance nearer podouble
+      double dnpod2 = 1e0 - dnpod1;      // distance to distant podouble
+      double dnlon1 = std::abs(difflon);
+      double dnlon2 = 1e0 - dnlon1;
 
       // pressure
       double R1 = dnpod2 * pl[0] + dnpod1 * pl[1];
@@ -334,7 +341,7 @@ int dso::gpt3_5_fast(const dso::datetime<dso::nanoseconds> &t,
 
       // temperature in degree per km
       R1 = dnpod2 * dTl[0] + dnpod1 * dTl[1];
-      R2 = dnpod2 * dTl[3] + dnpod1 * dTl[3];
+      R2 = dnpod2 * dTl[2] + dnpod1 * dTl[3];
       g3out[k].dT = (dnlon2 * R1 + dnlon1 * R2) * 1000e0;
 
       // water vapor pressure in hPa
@@ -363,16 +370,16 @@ int dso::gpt3_5_fast(const dso::datetime<dso::nanoseconds> &t,
       // gradients
       R1 = dnpod2 * Gn_hl[0] + dnpod1 * Gn_hl[1];
       R2 = dnpod2 * Gn_hl[2] + dnpod1 * Gn_hl[3];
-      g3out[k].Gn_h = (dnlon2 * R1 + dnlon1 * R2);
+      g3out[k].Gn_h = dnlon2 * R1 + dnlon1 * R2;
       R1 = dnpod2 * Ge_hl[0] + dnpod1 * Ge_hl[1];
       R2 = dnpod2 * Ge_hl[2] + dnpod1 * Ge_hl[3];
-      g3out[k].Ge_h = (dnlon2 * R1 + dnlon1 * R2);
+      g3out[k].Ge_h = dnlon2 * R1 + dnlon1 * R2;
       R1 = dnpod2 * Gn_wl[0] + dnpod1 * Gn_wl[1];
       R2 = dnpod2 * Gn_wl[2] + dnpod1 * Gn_wl[3];
-      g3out[k].Gn_w = (dnlon2 * R1 + dnlon1 * R2);
+      g3out[k].Gn_w = dnlon2 * R1 + dnlon1 * R2;
       R1 = dnpod2 * Ge_wl[0] + dnpod1 * Ge_wl[1];
       R2 = dnpod2 * Ge_wl[2] + dnpod1 * Ge_wl[3];
-      g3out[k].Ge_w = (dnlon2 * R1 + dnlon1 * R2);
+      g3out[k].Ge_w = dnlon2 * R1 + dnlon1 * R2;
 
       // mean temperature of the water vapor Tm
       R1 = dnpod2 * Tml[0] + dnpod1 * Tml[1];

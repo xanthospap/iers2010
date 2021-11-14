@@ -5,7 +5,7 @@
 
 namespace dso {
 namespace gpt3 {
-constexpr int GPT3_5_GRID_LINES = 2592;
+constexpr int GPT3_5_GRID_LINES = 2593; // including header line
 
 struct gpt3_5_grid {
   double p_grid[GPT3_5_GRID_LINES][5];

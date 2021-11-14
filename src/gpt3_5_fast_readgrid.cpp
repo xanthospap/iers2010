@@ -45,10 +45,9 @@ int dso::gpt3::parse_gpt3_5_grid(const char *gridfn, dso::gpt3::gpt3_5_grid *gri
 
     // read every data row ...
     double dm1, dm2;
-    int idm1;
   int row = 0;
   while (!grd.eof()) {
-    grd >> dm1 >> dm2 >> idm1 >> grid->p_grid[row][0] >> grid->p_grid[row][1] >> grid->p_grid[row][2] >>
+    grd >> dm1 >> dm2 >> grid->p_grid[row][0] >> grid->p_grid[row][1] >> grid->p_grid[row][2] >>
         grid->p_grid[row][3] >> grid->p_grid[row][4] >> grid->T_grid[row][0] >>
         grid->T_grid[row][1] >> grid->T_grid[row][2] >> grid->T_grid[row][3] >>
         grid->T_grid[row][4] >> grid->Q_grid[row][0] >> grid->Q_grid[row][1] >>
@@ -88,10 +87,10 @@ int dso::gpt3::parse_gpt3_5_grid(const char *gridfn, dso::gpt3::gpt3_5_grid *gri
   for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->dT_grid[i][j] /= 1e3;
   for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->ah_grid[i][j] /= 1e3;
   for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->aw_grid[i][j] /= 1e3;
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Gn_h_grid[i][j] /= 1e3;
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Ge_h_grid[i][j] /= 1e3;
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Gn_w_grid[i][j] /= 1e3;
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Ge_w_grid[i][j] /= 1e3;
+  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Gn_h_grid[i][j] /= 1e5;
+  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Ge_h_grid[i][j] /= 1e5;
+  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Gn_w_grid[i][j] /= 1e5;
+  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Ge_w_grid[i][j] /= 1e5;
 
   return 0;
 }

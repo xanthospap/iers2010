@@ -373,6 +373,45 @@ paste onsa.tmp test/test_onsa_results | awk '{printf "%9.6f %9.6f %9.6f\n", $1-$
 
 Again, the differences (per line and column) should not exceed 1e<sup>-6</sup>
 
+
+## gpt3
+
+GPT3 is a new/refined empirical set of trpospheric mapping functions, described at 
+Landskron & Böhm (2018) VMF3/GPT3: refined discrete and empirical troposphere mapping functions. DOI:10.1007/s00190-017-1066-2.
+It is not included in the IERS2010 standards but we include a C++ version of the 
+core algorithm here, adopted from [gpt3_5_fast.m](https://vmf.geo.tuwien.ac.at/codes/gpt3_5_fast.m). 
+This function is not wrapped in the iers2010 namespace, but in a namespace called 
+`dso`.
+
+GPT3 needs a grid file to work, which can be downloaded from TU Wienn, at
+https://vmf.geo.tuwien.ac.at/codes/
+
+## Checking gpt3 implementation
+```
+## run the program to randomly check cpp-based results
+test/testGpt3 > cpp.test
+## mv the results to the alternatives folder
+mv cpp.test alternatives/gpt3/
+## the cpp program will also write an octave script to check the same points
+## using the mtlab/octave implementation
+mv test_gpt3.m alternatives/gpt3/
+## got the alternatives/gpt3/ folder; in there the two octave scripts
+## gpt3_5_fast_readGrid.m and
+## gpt3_5_fast.m
+## should be available. We will also need the gpt3 5x5 grid file
+## Now run the octave script
+octave
+[...]
+% load the grid file
+grid=gpt3_5_fast_readGrid();
+% run the scipt to compute results, output at file octave_gpt3_results.txt
+test_gpt3
+% all done
+quit
+## Now use the python script provided to test results
+./compare_gpt3_results.py cpp.test octave_gpt3_results.txt
+```
+
 ## How to use the library
 
 ### Namespaces
