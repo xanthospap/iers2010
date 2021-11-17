@@ -388,17 +388,23 @@ https://vmf.geo.tuwien.ac.at/codes/
 
 ## Checking gpt3 implementation
 ```
-## run the program to randomly check cpp-based results
+## run the program to randomly check cpp-based results. Store results of gpt3
+## to cpp.test; note that the program will also check the vmf3 and vmf3vec
+## functions. For the latter, a file with results will be created, named
+## vmf3_res.cpp
 test/testGpt3 > cpp.test
 ## mv the results to the alternatives folder
 mv cpp.test alternatives/gpt3/
+mv vmf3_res.cpp alternatives/gpt3/
 ## the cpp program will also write an octave script to check the same points
 ## using the mtlab/octave implementation
 mv test_gpt3.m alternatives/gpt3/
 ## got the alternatives/gpt3/ folder; in there the two octave scripts
 ## gpt3_5_fast_readGrid.m and
 ## gpt3_5_fast.m
-## should be available. We will also need the gpt3 5x5 grid file
+## should be available. We will also need the gpt3 5x5 grid file. To check
+## the vmf3 implementation, a matlabl script named vmf3.m should also be
+## available
 ## Now run the octave script
 octave
 [...]
@@ -410,6 +416,7 @@ test_gpt3
 quit
 ## Now use the python script provided to test results
 ./compare_gpt3_results.py cpp.test octave_gpt3_results.txt
+./compare_vmf3_results.py vmf3_res.cpp octave_vmf3_results.txt
 ```
 
 ## How to use the library

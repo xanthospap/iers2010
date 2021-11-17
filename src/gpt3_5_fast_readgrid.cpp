@@ -1,7 +1,7 @@
 #include <fstream>
 #include <cstdio>
 #include <cstring>
-#include "gpt3.hpp"
+#include "tropo.hpp"
 
 int dso::gpt3::parse_gpt3_5_grid(const char *gridfn, dso::gpt3::gpt3_5_grid *grid) noexcept {
   std::ifstream grd(gridfn);

@@ -34,7 +34,7 @@ pkginclude_HEADERS = \
 	hardisp.hpp \
 	dehanttideinel.hpp \
 	blqstrm.hpp \
-	gpt3.hpp
+	tropo.hpp
 
 dist_libiers2010_la_SOURCES = \
 	fundarg.cpp \
@@ -68,7 +68,11 @@ dist_libiers2010_la_SOURCES = \
 	dehanttideinel.cpp \
 	blqstrm.cpp \
 	gpt3_5_fast_readgrid.cpp \
-	gpt3_5_fast.cpp
+	gpt3_5_fast.cpp \
+	asknewet.cpp \
+	vmf3.cpp \
+	vmf3vec.cpp \
+	saasthy.cpp
 
 AM_LDFLAGS =-lggeodesy -lggdatetime
 
