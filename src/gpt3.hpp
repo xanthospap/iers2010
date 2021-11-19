@@ -46,6 +46,9 @@ struct gpt3_result {
 
 int gpt3_5_fast(const dso::datetime<dso::nanoseconds> &t, const double *lat,
                 const double *lon, const double *hell, int num_stations, int it,
+                const gpt3::gpt3_5_grid *grid5x5, gpt3_result *g3out) noexcept;
+int gpt3_5_fast(const dso::datetime<dso::nanoseconds> &t, const double *lat,
+                const double *lon, const double *hell, int num_stations, int it,
                 const char *grid_file, gpt3_result *g3out) noexcept;
 
 } // namespace dso
