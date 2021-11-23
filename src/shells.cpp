@@ -1,6 +1,7 @@
 #include "hardisp.hpp"
 #include "iers2010.hpp"
 #include <algorithm>
+#include <vector>
 
 /// @details This function sorts an array x, of length n, sorting upward,
 ///          and returns an array k which may be used to key another array
