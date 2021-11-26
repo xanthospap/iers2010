@@ -115,7 +115,7 @@ constexpr int NS2 = (int)(sizeof s2 / sizeof(TERM));
 constexpr int NS3 = (int)(sizeof s3 / sizeof(TERM));
 constexpr int NS4 = (int)(sizeof s4 / sizeof(TERM));
 
-double iers2010::iau::s06(double date1, double date2, double x,
+double iers2010::sofa::s06(double date1, double date2, double x,
                           double y) noexcept {
 
   // Polynomial coefficients
@@ -125,7 +125,7 @@ double iers2010::iau::s06(double date1, double date2, double x,
 
   // Time since J2000.0, in Julian centuries
   // Interval between fundamental epoch J2000.0 and current date (JC).
-  double t = ((date1 - DJ00) + date2) / DJC;
+  double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
 
   // Fundamental Arguments (from IERS Conventions 2003)
   double fa[8] = {
@@ -194,8 +194,8 @@ double iers2010::iau::s06(double date1, double date2, double x,
     w4 += s4[i].s * std::sin(a) + s4[i].c * std::cos(a);
   }
 
-  double s = (w0 + (w1 + (w2 + (w3 + (w4 + w5 * t) * t) * t) * t) * t) * DAS2R -
-             x * y / 2.0;
+  double s = (w0 + (w1 + (w2 + (w3 + (w4 + w5 * t) * t) * t) * t) * t) * iers2010::DAS2R -
+             x * y / 2e0;
 
   // Finished.
   return s;

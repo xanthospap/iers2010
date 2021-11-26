@@ -2461,11 +2461,11 @@
    constexpr int jasc[] = {0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0};
    constexpr int japt[] = {0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4};
 
-   void iers2010::iau::xy06(double date1, double date2, double &x,
+   void iers2010::sofa::xy06(double date1, double date2, double &x,
                             double &y) noexcept {
 
      // Interval between fundamental date J2000.0 and given date (JC).
-     double t = ((date1 - DJ00) + date2) / DJC;
+     double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
 
      // Powers of T.
      double pt[MAXPT + 1];
@@ -2587,8 +2587,8 @@
 
      // Results:  CIP unit vector components
      // ------------------------------------
-     x = DAS2R * (xypr[0] + (xyls[0] + xypl[0]) / 1e6);
-     y = DAS2R * (xypr[1] + (xyls[1] + xypl[1]) / 1e6);
+     x = iers2010::DAS2R * (xypr[0] + (xyls[0] + xypl[0]) / 1e6);
+     y = iers2010::DAS2R * (xypr[1] + (xyls[1] + xypl[1]) / 1e6);
 
      // Finished.
      return;
