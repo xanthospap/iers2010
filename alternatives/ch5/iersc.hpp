@@ -6,7 +6,13 @@ namespace ier2010 {
 constexpr double TURNAS  =1296000e0;
 
 /// @brief Arcseconds to radians
-constexpr DAS2R = 4.848136811095359935899141e-6;
+constexpr double DAS2R = 4.848136811095359935899141e-6;
+
+/// @brief Reference epoch (J2000.0), Julian Date
+constexpr double DJ00 = 2451545e0;
+
+/// @brief Days per Julian century
+constexpr double DJC = 36525e0;
 }// iers2010
 
 #endif
