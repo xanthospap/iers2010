@@ -156,3 +156,15 @@ void iers2010::RotationMatrix3::transpose_inplace() noexcept {
   data[2][0] = c20;
   data[2][1] = c21;
 }
+
+iers2010::RotationMatrix3 iers2010::RotationMatrix3::transpose() noexcept {
+  const double c10 = data[0][1];
+  const double c20 = data[0][2];
+  const double c01 = data[1][0];
+  const double c21 = data[1][2];
+  const double c02 = data[2][0];
+  const double c12 = data[2][1];
+
+  return iers2010::RotationMatrix3{
+      {{data[0][0], c01, c02}, {c10, data[1][1], c12}, {c20, c21, data[2][2]}}};
+}

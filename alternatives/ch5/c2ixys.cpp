@@ -2,8 +2,7 @@
 #include "iersc.hpp"
 #include <cmath>
 
-void iers2010::sofa::c2ixys(double x, double y, double s,
-                           iers2010::RotationMatrix3 &r3mat) noexcept {
+iers2010::RotationMatrix3 iers2010::sofa::c2ixys(double x, double y, double s) noexcept {
 
   // Obtain the spherical angles E and d
   const double r2 = x * x + y * y;
@@ -11,15 +10,15 @@ void iers2010::sofa::c2ixys(double x, double y, double s,
   const double d = std::atan(std::sqrt(r2 / (1e0 - r2)));
 
   // initialize rotation matrix to identity
-  r3mat.set_identity();
+  iers2010::RotationMatrix3 rc2i;
 
   // R3 (−E) x R2 (−d) x R3 (E) x R3 (s),
   // X = sin d cos E,
   // Y = sin d sin E,
   // Z = cos d,
-  r3mat.rotz(e);
-  r3mat.roty(d);
-  r3mat.rotz(-(e + s));
+  rc2i.rotz(e);
+  rc2i.roty(d);
+  rc2i.rotz(-(e + s));
 
-  return;
+  return rc2i;
 }

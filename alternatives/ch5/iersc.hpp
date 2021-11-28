@@ -15,16 +15,25 @@ constexpr double TURNAS  =1296000e0;
 /// @brief Arcseconds to radians
 constexpr double DAS2R = 4.848136811095359935899141e-6;
 
+// Milliarcseconds to radians
+constexpr double DMAS2R = DAS2R / 1e3;
+
 /// @brief Reference epoch (J2000.0), Julian Date
 constexpr double DJ00 = 2451545e0;
 
 /// @brief Days per Julian century
 constexpr double DJC = 36525e0;
 
+// Julian Date of Modified Julian Date zero
+constexpr double DJM0 = 2400000.5e0;
+
+// Reference epoch (J2000.0), Modified Julian Date
+constexpr double DJM00 = 51544.5e0;
+
 /// @brief Normalize angle into the range 0 <= a < 2pi.
 /// @param[in] angle Angle in radians
 /// @return Angle in radians in range [0,2pi)
-double nang_02pi(double angle) noexcept {
+inline double nang_02pi(double angle) noexcept {
     double w = std::fmod(angle, iers2010::D2PI);
     if (w<0e0) w += iers2010::D2PI;
     return w;
