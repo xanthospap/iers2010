@@ -430,27 +430,6 @@ void pr00(double date1, double date2, double &dpsipr, double &depspr) noexcept;
 /// @return the TIO locator s' in radians
 double sp00(double date1, double date2) noexcept;
 
-/// @brief equation of the equinoxes
-/// The equation of the equinoxes, compatible with IAU 2000 resolutions,
-/// given the nutation in longitude and the mean obliquity.
-/// @param[in] date1  TT as a 2-part Julian Date. The TT date date1+date2 is
-///            a Julian Date, apportioned in any convenient way between the
-///            two arguments. The J2000 method is best matched to the way
-///            the argument is handled internally and will deliver the
-///            optimum resolution.
-/// @param[in] date2  TT as a 2-part Julian Date (see above)
-/// @param[in] epsa mean obliquity. The obliquity, in radians, is mean of date.
-/// @param[in] dpsi nutation in longitude; The result, which is in radians,
-///            operates in the following sense:
-///            Greenwich apparent ST = GMST + equation of the equinoxes
-/// @return equation of the equinoxes; The result is compatible with the IAU
-/// 2000 resolutions.
-inline double ee00(double date1, double date2, double epsa,
-                   double dpsi) noexcept {
-  // Equation of the equinoxes.
-  return dpsi * std::cos(epsa) + eect00(date1, date2);
-}
-
 /// @brief Earth rotation angle (IAU 2000 model).
 /// @param[in] dj1 (dj2) UT1 as a 2-part Julian Date. The UT1 date dj1+dj2 is a
 ///            Julian Date, apportioned in any convenient way between the
@@ -495,6 +474,28 @@ double era00(double dj1, double dj2) noexcept;
 ///     compatible with IAU 2000 resolutions (Capitaine et al., 2002, and
 ///     IERS Conventions 2003).
 double eect00(double date1, double date2) noexcept;
+
+/// @brief equation of the equinoxes
+/// The equation of the equinoxes, compatible with IAU 2000 resolutions,
+/// given the nutation in longitude and the mean obliquity.
+/// @param[in] date1  TT as a 2-part Julian Date. The TT date date1+date2 is
+///            a Julian Date, apportioned in any convenient way between the
+///            two arguments. The J2000 method is best matched to the way
+///            the argument is handled internally and will deliver the
+///            optimum resolution.
+/// @param[in] date2  TT as a 2-part Julian Date (see above)
+/// @param[in] epsa mean obliquity. The obliquity, in radians, is mean of date.
+/// @param[in] dpsi nutation in longitude; The result, which is in radians,
+///            operates in the following sense:
+///            Greenwich apparent ST = GMST + equation of the equinoxes
+/// @return equation of the equinoxes; The result is compatible with the IAU
+/// 2000 resolutions.
+inline double ee00(double date1, double date2, double epsa,
+                   double dpsi) noexcept {
+  // Equation of the equinoxes.
+  return dpsi * std::cos(epsa) + eect00(date1, date2);
+}
+
 
 /// @brief Compute the GCRS-to-CIRS matrix
 /// Form the celestial to intermediate-frame-of-date matrix given the CIP X,Y
@@ -1036,10 +1037,11 @@ void pn00(double date1, double date2, double dpsi, double deps, double &epsa,
 ///             nutation in that order. The X,Y,Z coordinates of the IAU 2000A
 ///             Celestial Intermediate Pole are elements(3, 1 - 3) of the 
 ///             GCRS - to - true matrix, i.e.rbpn[2][0 - 2].
-inline void pn00a(double date1, double date2, double dpsi, double deps, double &epsa,
-           iers2010::RotationMatrix3 &rb, iers2010::RotationMatrix3 &rp,
-           iers2010::RotationMatrix3 &rbp, iers2010::RotationMatrix3 &rn,
-           iers2010::RotationMatrix3 &rbpn) noexcept {
+inline void pn00a(double date1, double date2, double dpsi, double deps,
+                  double &epsa, iers2010::RotationMatrix3 &rb,
+                  iers2010::RotationMatrix3 &rp, iers2010::RotationMatrix3 &rbp,
+                  iers2010::RotationMatrix3 &rn,
+                  iers2010::RotationMatrix3 &rbpn) noexcept {
   // Nutation.
   nut00a(date1, date2, dpsi, deps);
 
