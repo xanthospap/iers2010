@@ -14,7 +14,12 @@ std::mt19937
 std::uniform_int_distribution<int> uni(0e3, 3e6); // guaranteed unbiased
 std::uniform_real_distribution<double> runi(0e3, M_PI/2e0); // guaranteed unbiased
 
-int main() {
+int main(int argc, char *argv[]) {
+  if (argc!=2) {
+    fprintf(stderr, "ERROR! Usage: %s [GPT3-5x5 GRID FILE]\n", argv[0]);
+    return 1;
+  }
+
   long num_sta = 0;
   double lat0 = -90e0;
   double lat1 = 90e0;
@@ -52,10 +57,9 @@ int main() {
       dso::nanoseconds{(6 * 60 * 60L + 123456L) *
                        dso::nanoseconds::sec_factor<long>()}};
 
-  const char *grid =
-      //      "/home/xanthos/Software/iers2010/test/gpt3/gpt3_5.grd";
-      "/home/xanthos/Builds/iers2010/test/gpt3_5.grd";
-  int error = gpt3_5_fast(t, latv, lonv, hell, num_sta, 1, grid, res);
+  int grid_step = 0;
+  const char *grid = argv[1];
+  int error = dso::gpt3_fast(t, latv, lonv, hell, num_sta, 1, grid, res, grid_step);
 
   if (error)
     return error;
@@ -136,5 +140,6 @@ int main() {
       fprintf(fp, "fclose(fid)\n");
       fclose(fp);
 
+      printf("Note that the input grid file has a step of %d degrees\n", grid_step);
       return error;
 }

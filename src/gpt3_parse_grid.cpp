@@ -3,11 +3,19 @@
 #include <cstring>
 #include "tropo.hpp"
 
-int dso::gpt3::parse_gpt3_5_grid(const char *gridfn, dso::gpt3::gpt3_5_grid *grid) noexcept {
+int dso::gpt3::parse_gpt3_grid(const char *gridfn, dso::gpt3::gpt3_grid *grid) noexcept {
+  unsigned num_rows = grid->size;
+  if (num_rows != 2593-1 && num_rows != 64801-1) {
+    fprintf(stderr,
+            "[ERROR] Failed parsing gpt3 grid file! Ubiguous row count %u (traceback: %s)\n",
+            num_rows, __func__);
+    return 15;
+  }
+
   std::ifstream grd(gridfn);
   if (!grd) {
     fprintf(stderr,
-            "[ERROR] Failed to open gpt3_5 grid file %s (traceback: %s)\n",
+            "[ERROR] Failed to open gpt3 grid file %s (traceback: %s)\n",
             gridfn, __func__);
     return 1;
   }
@@ -17,7 +25,7 @@ int dso::gpt3::parse_gpt3_5_grid(const char *gridfn, dso::gpt3::gpt3_5_grid *gri
   grd.getline(header, 512);
   if (!grd.good()) {
     fprintf(stderr,
-            "[ERROR] Failed extracting first/header line from gpt3_5 grid file "
+            "[ERROR] Failed extracting first/header line from gpt3 grid file "
             "%s (traceback: %s)\n",
             gridfn, __func__);
     return 2;
@@ -37,7 +45,7 @@ int dso::gpt3::parse_gpt3_5_grid(const char *gridfn, dso::gpt3::gpt3_5_grid *gri
     // validate header
   if (std::strncmp(chdr, header, chdr_len)) {
     fprintf(stderr,
-            "[ERROR] Failed to valildate header for gpt3_5 grid file %s "
+            "[ERROR] Failed to valildate header for gpt3 grid file %s "
             "(traceback: %s)\n",
             gridfn, __func__);
     return 3;
@@ -47,6 +55,13 @@ int dso::gpt3::parse_gpt3_5_grid(const char *gridfn, dso::gpt3::gpt3_5_grid *gri
     double dm1, dm2;
   int row = 0;
   while (!grd.eof()) {
+    if (row > (int)num_rows) {
+    fprintf(
+        stderr,
+        "[ERROR] More than expected lines found for gpt3 grid file %s (traceback: %s)\n",
+        gridfn, __func__);
+        return 11;
+    }
     grd >> dm1 >> dm2 >> grid->p_grid[row][0] >> grid->p_grid[row][1] >> grid->p_grid[row][2] >>
         grid->p_grid[row][3] >> grid->p_grid[row][4] >> grid->T_grid[row][0] >>
         grid->T_grid[row][1] >> grid->T_grid[row][2] >> grid->T_grid[row][3] >>
@@ -74,23 +89,23 @@ int dso::gpt3::parse_gpt3_5_grid(const char *gridfn, dso::gpt3::gpt3_5_grid *gri
     ++row;
   }
 
-  if (row != GPT3_5_GRID_LINES) {
+  if (row != (int)num_rows+1) {
     fprintf(
         stderr,
-        "[ERROR] Parsed %d/%d lines from gpt3_5 grid file %s (traceback: %s)\n",
-        row, GPT3_5_GRID_LINES, gridfn, __func__);
+        "[ERROR] Parsed %d/%d lines from gpt3 grid file %s (traceback: %s)\n",
+        row, num_rows, gridfn, __func__);
     return 10;
   }
 
   // handle units ...
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Q_grid[i][j] /= 1e3;
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->dT_grid[i][j] /= 1e3;
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->ah_grid[i][j] /= 1e3;
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->aw_grid[i][j] /= 1e3;
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Gn_h_grid[i][j] /= 1e5;
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Ge_h_grid[i][j] /= 1e5;
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Gn_w_grid[i][j] /= 1e5;
-  for (int i=0; i<GPT3_5_GRID_LINES; i++) for (int j=0; j<5; j++) grid->Ge_w_grid[i][j] /= 1e5;
+  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->Q_grid[i][j] /= 1e3;
+  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->dT_grid[i][j] /= 1e3;
+  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->ah_grid[i][j] /= 1e3;
+  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->aw_grid[i][j] /= 1e3;
+  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->Gn_h_grid[i][j] /= 1e5;
+  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->Ge_h_grid[i][j] /= 1e5;
+  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->Gn_w_grid[i][j] /= 1e5;
+  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->Ge_w_grid[i][j] /= 1e5;
 
   return 0;
 }
