@@ -1,5 +1,5 @@
-#include <cmath>
 #include "tropo.hpp"
+#include <cmath>
 #ifdef DEBUG
 #include <cassert>
 #endif
@@ -1425,7 +1425,8 @@ const double bnm_cw[91][5] = {
      4.10287131339291e-17, -6.72171711728514e-17}};
 
 int dso::vmf3(double ah, double aw, dso::datetime<dso::nanoseconds> &t,
-              double lat, double lon, double zd, double &mfh, double &mfw) noexcept {
+              double lat, double lon, double zd, double &mfh,
+              double &mfw) noexcept {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double pi(DPI);
 #else
@@ -1446,7 +1447,7 @@ int dso::vmf3(double ah, double aw, dso::datetime<dso::nanoseconds> &t,
 
   // degree and order
   constexpr int nmax = 12;
-  constexpr int size = nmax+2;
+  constexpr int size = nmax + 2;
 
   // unit vector
   const double x = std::sin(polDist) * std::cos(lon);
@@ -1465,23 +1466,23 @@ int dso::vmf3(double ah, double aw, dso::datetime<dso::nanoseconds> &t,
     V[n + 1][1] = ((2 * n - 1) * z * V[n][1] - (n - 1) * V[n - 1][1]) / n;
     W[n + 1][1] = 0e0;
 #ifdef DEBUG
-        assert(n+1<size);
-        #endif
+    assert(n + 1 < size);
+#endif
   }
 
   for (int m = 1; m <= nmax; m++) {
-  int n;
+    int n;
     V[m + 1][m + 1] = (2 * m - 1) * (x * V[m][m] - y * W[m][m]);
     W[m + 1][m + 1] = (2 * m - 1) * (x * W[m][m] + y * V[m][m]);
-    #ifdef DEBUG
-    assert(m+1<size);
-    #endif
+#ifdef DEBUG
+    assert(m + 1 < size);
+#endif
     if (m < nmax) {
       V[m + 2][m + 1] = (2 * m + 1) * z * V[m + 1][m + 1];
       W[m + 2][m + 1] = (2 * m + 1) * z * W[m + 1][m + 1];
-      #ifdef DEBUG
-      assert(m+2<size);
-      #endif
+#ifdef DEBUG
+      assert(m + 2 < size);
+#endif
     }
     for (n = m + 2; n <= nmax; n++) {
       V[n + 1][m + 1] =
@@ -1490,9 +1491,9 @@ int dso::vmf3(double ah, double aw, dso::datetime<dso::nanoseconds> &t,
       W[n + 1][m + 1] =
           ((2 * n - 1) * z * W[n][m + 1] - (n + m - 1) * W[n - 1][m + 1]) /
           (n - m);
-      #ifdef DEBUG
-      assert((n+1<size) && (m+1<size));
-      #endif
+#ifdef DEBUG
+      assert((n + 1 < size) && (m + 1 < size));
+#endif
     }
   }
 

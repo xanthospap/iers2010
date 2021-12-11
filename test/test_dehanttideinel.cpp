@@ -13,8 +13,7 @@ const double input1[] = {
     -179996231.920342e0, -312468450.131567e0, -169288918.592160e0};
 
 const dso::datetime<dso::seconds> d1(dso::year(2009), dso::month(4),
-                                       dso::day_of_month(13),
-                                       dso::seconds(0));
+                                     dso::day_of_month(13), dso::seconds(0));
 
 const double result1[] = {0.7700420357108125891e-01, 0.6304056321824967613e-01,
                           0.5516568152597246810e-01};
@@ -25,8 +24,7 @@ const double input2[] = {
     300396716.912e0,     243238281.451e0,    120548075.939e0};
 
 const dso::datetime<dso::seconds> d2(dso::year(2012), dso::month(7),
-                                       dso::day_of_month(13),
-                                       dso::seconds(0));
+                                     dso::day_of_month(13), dso::seconds(0));
 
 const double result2[] = {-0.2036831479592075833e-01, 0.5658254776225972449e-01,
                           -0.7597679676871742227e-01};
@@ -37,8 +35,7 @@ const double input3[] = {
     369817604.4348e0,    1897917.5258e0,      120804980.8284e0};
 
 const dso::datetime<dso::seconds> d3(dso::year(2015), dso::month(7),
-                                       dso::day_of_month(15),
-                                       dso::seconds(0));
+                                     dso::day_of_month(15), dso::seconds(0));
 
 const double result3[] = {0.00509570869172363845e0, 0.0828663025983528700e0,
                           -0.0636634925404189617e0};
@@ -49,8 +46,7 @@ const double input4[] = {1112152.8166e0,        3985496.1783e0,
                          2871428.1904491195e0,  79015680.553570181e0};
 
 const dso::datetime<dso::seconds> d4(dso::year(2017), dso::month(1),
-                                       dso::day_of_month(15),
-                                       dso::seconds(0));
+                                     dso::day_of_month(15), dso::seconds(0));
 
 const double result4[] = {0.0050957086917236384e0, 0.082866302598352870e0,
                           -0.063663492540418962e0};

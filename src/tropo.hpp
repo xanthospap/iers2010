@@ -14,51 +14,51 @@ int vmf3(double ah, double aw, dso::datetime<dso::nanoseconds> &t, double lat,
 namespace gpt3 {
 
 enum class Gpt3Grid : char { grid1x1, grid5x5 };
-template <Gpt3Grid G> struct gpt3_grid_attributes {
-};
+template <Gpt3Grid G> struct gpt3_grid_attributes {};
 
 template <> struct gpt3_grid_attributes<Gpt3Grid::grid1x1> {
   template <typename T> static constexpr T grid_tick() { return T(1e0); }
-  static constexpr unsigned num_lines = 64801-1;
+  static constexpr unsigned num_lines = 64801 - 1;
 };
 template <> struct gpt3_grid_attributes<Gpt3Grid::grid5x5> {
   template <typename T> static constexpr T grid_tick() { return T(5e0); }
-  static constexpr unsigned num_lines = 2593-1;
+  static constexpr unsigned num_lines = 2593 - 1;
 };
-
 
 struct gpt3_grid {
 
-  gpt3_grid(int rows=0) {
-    if (rows) allocate(rows);
+  gpt3_grid(int rows = 0) {
+    if (rows)
+      allocate(rows);
   };
   ~gpt3_grid() noexcept {
-    if (size) dealloc();
+    if (size)
+      dealloc();
   }
-  gpt3_grid(const gpt3_grid&) noexcept = delete;
-  gpt3_grid(gpt3_grid&&) noexcept = delete;
-  gpt3_grid& operator=(const gpt3_grid&) noexcept = delete;
-  gpt3_grid& operator=(gpt3_grid&&) noexcept = delete;
+  gpt3_grid(const gpt3_grid &) noexcept = delete;
+  gpt3_grid(gpt3_grid &&) noexcept = delete;
+  gpt3_grid &operator=(const gpt3_grid &) noexcept = delete;
+  gpt3_grid &operator=(gpt3_grid &&) noexcept = delete;
 
   void allocate(unsigned num_rows);
 
   void dealloc() noexcept;
 
   unsigned size = 0;
-  double **p_grid=nullptr;
-  double **T_grid=nullptr;
-  double **Q_grid=nullptr;
-  double **dT_grid=nullptr;
-  double *u_grid=nullptr;
-  double *Hs_grid=nullptr;
-  double **ah_grid=nullptr;
-  double **aw_grid=nullptr;
-  double **la_grid=nullptr;
-  double **Tm_grid=nullptr;
-  double **Gn_h_grid=nullptr;
-  double **Ge_h_grid=nullptr;
-  double **Gn_w_grid=nullptr;
-  double **Ge_w_grid=nullptr;
+  double **p_grid = nullptr;
+  double **T_grid = nullptr;
+  double **Q_grid = nullptr;
+  double **dT_grid = nullptr;
+  double *u_grid = nullptr;
+  double *Hs_grid = nullptr;
+  double **ah_grid = nullptr;
+  double **aw_grid = nullptr;
+  double **la_grid = nullptr;
+  double **Tm_grid = nullptr;
+  double **Gn_h_grid = nullptr;
+  double **Ge_h_grid = nullptr;
+  double **Gn_w_grid = nullptr;
+  double **Ge_w_grid = nullptr;
 };
 
 int parse_gpt3_grid(const char *gridfn, gpt3_grid *grid) noexcept;
@@ -86,11 +86,12 @@ struct vmf3_hw {
 }; // vmf3_result
 
 int gpt3_fast(const dso::datetime<dso::nanoseconds> &t, const double *lat,
-                const double *lon, const double *hell, int num_stations, int it,
-                const gpt3::gpt3_grid *grid5x5, gpt3_result *g3out) noexcept;
+              const double *lon, const double *hell, int num_stations, int it,
+              const gpt3::gpt3_grid *grid5x5, gpt3_result *g3out) noexcept;
 int gpt3_fast(const dso::datetime<dso::nanoseconds> &t, const double *lat,
-                const double *lon, const double *hell, int num_stations, int it,
-                const char *grid_file, gpt3_result *g3out, int &grid_step) noexcept;
+              const double *lon, const double *hell, int num_stations, int it,
+              const char *grid_file, gpt3_result *g3out,
+              int &grid_step) noexcept;
 int vmf3(const dso::gpt3_result *gptres, dso::datetime<dso::nanoseconds> &t,
          const double *vlat, const double *vlon, const double *vzd,
          dso::vmf3_hw *vmfres, int num_sta) noexcept;

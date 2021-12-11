@@ -1,13 +1,15 @@
-#include <fstream>
+#include "tropo.hpp"
 #include <cstdio>
 #include <cstring>
-#include "tropo.hpp"
+#include <fstream>
 
-int dso::gpt3::parse_gpt3_grid(const char *gridfn, dso::gpt3::gpt3_grid *grid) noexcept {
+int dso::gpt3::parse_gpt3_grid(const char *gridfn,
+                               dso::gpt3::gpt3_grid *grid) noexcept {
   unsigned num_rows = grid->size;
-  if (num_rows != 2593-1 && num_rows != 64801-1) {
+  if (num_rows != 2593 - 1 && num_rows != 64801 - 1) {
     fprintf(stderr,
-            "[ERROR] Failed parsing gpt3 grid file! Ubiguous row count %u (traceback: %s)\n",
+            "[ERROR] Failed parsing gpt3 grid file! Ubiguous row count %u "
+            "(traceback: %s)\n",
             num_rows, __func__);
     return 15;
   }
@@ -42,7 +44,7 @@ int dso::gpt3::parse_gpt3_grid(const char *gridfn, dso::gpt3::gpt3_grid *grid) n
       "A2     B2";
   int chdr_len = std::strlen(chdr);
 
-    // validate header
+  // validate header
   if (std::strncmp(chdr, header, chdr_len)) {
     fprintf(stderr,
             "[ERROR] Failed to valildate header for gpt3 grid file %s "
@@ -51,31 +53,35 @@ int dso::gpt3::parse_gpt3_grid(const char *gridfn, dso::gpt3::gpt3_grid *grid) n
     return 3;
   }
 
-    // read every data row ...
-    double dm1, dm2;
+  // read every data row ...
+  double dm1, dm2;
   int row = 0;
   while (!grd.eof()) {
     if (row > (int)num_rows) {
-    fprintf(
-        stderr,
-        "[ERROR] More than expected lines found for gpt3 grid file %s (traceback: %s)\n",
-        gridfn, __func__);
-        return 11;
+      fprintf(stderr,
+              "[ERROR] More than expected lines found for gpt3 grid file %s "
+              "(traceback: %s)\n",
+              gridfn, __func__);
+      return 11;
     }
-    grd >> dm1 >> dm2 >> grid->p_grid[row][0] >> grid->p_grid[row][1] >> grid->p_grid[row][2] >>
-        grid->p_grid[row][3] >> grid->p_grid[row][4] >> grid->T_grid[row][0] >>
-        grid->T_grid[row][1] >> grid->T_grid[row][2] >> grid->T_grid[row][3] >>
-        grid->T_grid[row][4] >> grid->Q_grid[row][0] >> grid->Q_grid[row][1] >>
-        grid->Q_grid[row][2] >> grid->Q_grid[row][3] >> grid->Q_grid[row][4] >>
-        grid->dT_grid[row][0] >> grid->dT_grid[row][1] >> grid->dT_grid[row][2] >>
+    grd >> dm1 >> dm2 >> grid->p_grid[row][0] >> grid->p_grid[row][1] >>
+        grid->p_grid[row][2] >> grid->p_grid[row][3] >> grid->p_grid[row][4] >>
+        grid->T_grid[row][0] >> grid->T_grid[row][1] >> grid->T_grid[row][2] >>
+        grid->T_grid[row][3] >> grid->T_grid[row][4] >> grid->Q_grid[row][0] >>
+        grid->Q_grid[row][1] >> grid->Q_grid[row][2] >> grid->Q_grid[row][3] >>
+        grid->Q_grid[row][4] >> grid->dT_grid[row][0] >>
+        grid->dT_grid[row][1] >> grid->dT_grid[row][2] >>
         grid->dT_grid[row][3] >> grid->dT_grid[row][4] >> grid->u_grid[row] >>
         grid->Hs_grid[row] >> grid->ah_grid[row][0] >> grid->ah_grid[row][1] >>
-        grid->ah_grid[row][2] >> grid->ah_grid[row][3] >> grid->ah_grid[row][4] >>
-        grid->aw_grid[row][0] >> grid->aw_grid[row][1] >> grid->aw_grid[row][2] >>
-        grid->aw_grid[row][3] >> grid->aw_grid[row][4] >> grid->la_grid[row][0] >>
-        grid->la_grid[row][1] >> grid->la_grid[row][2] >> grid->la_grid[row][3] >>
-        grid->la_grid[row][4] >> grid->Tm_grid[row][0] >> grid->Tm_grid[row][1] >>
-        grid->Tm_grid[row][2] >> grid->Tm_grid[row][3] >> grid->Tm_grid[row][4] >>
+        grid->ah_grid[row][2] >> grid->ah_grid[row][3] >>
+        grid->ah_grid[row][4] >> grid->aw_grid[row][0] >>
+        grid->aw_grid[row][1] >> grid->aw_grid[row][2] >>
+        grid->aw_grid[row][3] >> grid->aw_grid[row][4] >>
+        grid->la_grid[row][0] >> grid->la_grid[row][1] >>
+        grid->la_grid[row][2] >> grid->la_grid[row][3] >>
+        grid->la_grid[row][4] >> grid->Tm_grid[row][0] >>
+        grid->Tm_grid[row][1] >> grid->Tm_grid[row][2] >>
+        grid->Tm_grid[row][3] >> grid->Tm_grid[row][4] >>
         grid->Gn_h_grid[row][0] >> grid->Gn_h_grid[row][1] >>
         grid->Gn_h_grid[row][2] >> grid->Gn_h_grid[row][3] >>
         grid->Gn_h_grid[row][4] >> grid->Ge_h_grid[row][0] >>
@@ -89,7 +95,7 @@ int dso::gpt3::parse_gpt3_grid(const char *gridfn, dso::gpt3::gpt3_grid *grid) n
     ++row;
   }
 
-  if (row != (int)num_rows+1) {
+  if (row != (int)num_rows + 1) {
     fprintf(
         stderr,
         "[ERROR] Parsed %d/%d lines from gpt3 grid file %s (traceback: %s)\n",
@@ -98,14 +104,30 @@ int dso::gpt3::parse_gpt3_grid(const char *gridfn, dso::gpt3::gpt3_grid *grid) n
   }
 
   // handle units ...
-  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->Q_grid[i][j] /= 1e3;
-  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->dT_grid[i][j] /= 1e3;
-  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->ah_grid[i][j] /= 1e3;
-  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->aw_grid[i][j] /= 1e3;
-  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->Gn_h_grid[i][j] /= 1e5;
-  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->Ge_h_grid[i][j] /= 1e5;
-  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->Gn_w_grid[i][j] /= 1e5;
-  for (unsigned i=0; i<num_rows; i++) for (int j=0; j<5; j++) grid->Ge_w_grid[i][j] /= 1e5;
+  for (unsigned i = 0; i < num_rows; i++)
+    for (int j = 0; j < 5; j++)
+      grid->Q_grid[i][j] /= 1e3;
+  for (unsigned i = 0; i < num_rows; i++)
+    for (int j = 0; j < 5; j++)
+      grid->dT_grid[i][j] /= 1e3;
+  for (unsigned i = 0; i < num_rows; i++)
+    for (int j = 0; j < 5; j++)
+      grid->ah_grid[i][j] /= 1e3;
+  for (unsigned i = 0; i < num_rows; i++)
+    for (int j = 0; j < 5; j++)
+      grid->aw_grid[i][j] /= 1e3;
+  for (unsigned i = 0; i < num_rows; i++)
+    for (int j = 0; j < 5; j++)
+      grid->Gn_h_grid[i][j] /= 1e5;
+  for (unsigned i = 0; i < num_rows; i++)
+    for (int j = 0; j < 5; j++)
+      grid->Ge_h_grid[i][j] /= 1e5;
+  for (unsigned i = 0; i < num_rows; i++)
+    for (int j = 0; j < 5; j++)
+      grid->Gn_w_grid[i][j] /= 1e5;
+  for (unsigned i = 0; i < num_rows; i++)
+    for (int j = 0; j < 5; j++)
+      grid->Ge_w_grid[i][j] /= 1e5;
 
   return 0;
 }

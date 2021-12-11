@@ -71,14 +71,14 @@ int main(int argc, char *argv[]) {
   dso::datetime<dso::seconds> epoch;
   if (argc == 8) {
     epoch = dso::datetime<dso::seconds>{dso::year(it[0]),
-                                          dso::day_of_year(it[1]), _h, _m, _s};
+                                        dso::day_of_year(it[1]), _h, _m, _s};
   } else {
     epoch = dso::datetime<dso::seconds>{dso::year(it[0]),
-                                          dso::month(it[1]),
-                                          dso::day_of_month(it[2]),
-                                          _h,
-                                          _m,
-                                          _s};
+                                        dso::month(it[1]),
+                                        dso::day_of_month(it[2]),
+                                        _h,
+                                        _m,
+                                        _s};
   }
 
   /// Read in ocean loading coefficients from stdin

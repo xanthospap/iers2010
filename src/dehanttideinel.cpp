@@ -152,8 +152,7 @@ int iers2010::dehanttideinel(const double *xsta, const double *xsun,
   // corrections for the diurnal band:
   // first, we need to know the date converted in julian centuries
   // UTC to TT time
-  dso::datetime<dso::milliseconds> epoch =
-      iepoch.cast_to<dso::milliseconds>();
+  dso::datetime<dso::milliseconds> epoch = iepoch.cast_to<dso::milliseconds>();
   double fhr = epoch.sec().to_fractional_seconds();
   fhr /= 3600e0;
   int dat = dso::dat(epoch.mjd());

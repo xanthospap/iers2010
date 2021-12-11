@@ -47,10 +47,8 @@ int iers2010::hisp::tdfrph(const int idood[6],
     // from J2000.0 (TT)
     const int dat = dso::dat(epoch.mjd());
     const double dayfr = epoch.sec().fractional_days();
-    epoch.add_seconds(dso::milliseconds(dat * 1e3) +
-                      dso::milliseconds(32184));
-    const double t =
-        (epoch.as_mjd() + dso::mjd0_jd - dso::j2000_jd) / 36525e0;
+    epoch.add_seconds(dso::milliseconds(dat * 1e3) + dso::milliseconds(32184));
+    const double t = (epoch.as_mjd() + dso::mjd0_jd - dso::j2000_jd) / 36525e0;
 
     // IERS expressions for the Delaunay arguments, in degrees
     const double f1{134.9634025100e0 +

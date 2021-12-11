@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 
   // call hardisp
   dso::datetime d(dso::year(2009), dso::month(6), dso::day_of_month(25),
-                   dso::hours(1), dso::minutes(10), dso::seconds(45));
+                  dso::hours(1), dso::minutes(10), dso::seconds(45));
 
   // number of samples and sample interval in seconds
   const int irnt = 24;

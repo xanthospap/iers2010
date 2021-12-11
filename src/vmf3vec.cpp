@@ -1,5 +1,5 @@
-#include <cmath>
 #include "tropo.hpp"
+#include <cmath>
 #ifdef DEBUG
 #include <cassert>
 #endif

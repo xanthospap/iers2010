@@ -12,7 +12,6 @@
 
 using dso::gpt3::gpt3_grid_attributes;
 using dso::gpt3::Gpt3Grid;
-using dso::gpt3::Gpt3Grid;
 
 template <typename T> int sgn(T val) { return (T(0) < val) - (val < T(0)); }
 
@@ -20,69 +19,71 @@ unsigned file_row_count(const char *fn) noexcept {
   std::ifstream grd(fn);
   if (!grd) {
     fprintf(stderr,
-            "[ERROR] Failed to open gpt3 grid file %s (traceback: %s)\n",
-            fn, __func__);
+            "[ERROR] Failed to open gpt3 grid file %s (traceback: %s)\n", fn,
+            __func__);
     return 0;
   }
 
   char header[512];
   unsigned row_count = 0;
-  while (grd.getline(header, 512)) ++row_count;
+  while (grd.getline(header, 512))
+    ++row_count;
   grd.close();
 
   return row_count; // including header!
 }
 
-/// at input, grid_step must be either 0 (if we do not know which grid we are 
+/// at input, grid_step must be either 0 (if we do not know which grid we are
 /// using), or 1 or 5 depending on the gris step of the grid_file. At output,
 // it will hold the grid step size used (aka the one parsed from grid_file)
-int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t,
-                     const double *lat, const double *lon, const double *hell,
-                     int num_stations, int it, const char *grid_file,
-                     dso::gpt3_result *g3out, int &grid_step) noexcept {
-  if (grid_step && (grid_step!=1 && grid_step!=5)) {
+int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t, const double *lat,
+                   const double *lon, const double *hell, int num_stations,
+                   int it, const char *grid_file, dso::gpt3_result *g3out,
+                   int &grid_step) noexcept {
+  if (grid_step && (grid_step != 1 && grid_step != 5)) {
     fprintf(stderr,
             "[ERROR] Invalid gpt3_5 grid file step size! (traceback: %s)\n",
             __func__);
     return 15;
   }
 
-  // if we do not know the step size, we need to read through the file to count 
+  // if we do not know the step size, we need to read through the file to count
   // number of lines
   unsigned num_rows = 0;
   if (!grid_step) {
     num_rows = file_row_count(grid_file) - 1;
-  } else if (grid_step==1) {
+  } else if (grid_step == 1) {
     num_rows = gpt3_grid_attributes<Gpt3Grid::grid1x1>::num_lines;
   } else {
     num_rows = gpt3_grid_attributes<Gpt3Grid::grid5x5>::num_lines;
   }
-  if (num_rows != 2593-1 && num_rows != 64801-1) {
+  if (num_rows != 2593 - 1 && num_rows != 64801 - 1) {
     fprintf(stderr,
-            "[ERROR] Failed parsing gpt3 grid file! Ubiguous file count %u (traceback: %s)\n",
+            "[ERROR] Failed parsing gpt3 grid file! Ubiguous file count %u "
+            "(traceback: %s)\n",
             num_rows, __func__);
     return 15;
   }
 
   gpt3::gpt3_grid grd(num_rows);
-  
+
   if (gpt3::parse_gpt3_grid(grid_file, &grd)) {
-    fprintf(stderr,
-            "[ERROR] Failed parsing gpt3 grid file! (traceback: %s)\n",
+    fprintf(stderr, "[ERROR] Failed parsing gpt3 grid file! (traceback: %s)\n",
             __func__);
     return 15;
   }
 
   // set the grid step size
-  grid_step = (num_rows==gpt3_grid_attributes<Gpt3Grid::grid1x1>::num_lines)?1:5;
+  grid_step =
+      (num_rows == gpt3_grid_attributes<Gpt3Grid::grid1x1>::num_lines) ? 1 : 5;
 
   return gpt3_fast(t, lat, lon, hell, num_stations, it, &grd, g3out);
 }
 
-int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t,
-                     const double *lat, const double *lon, const double *hell,
-                     int num_stations, int it, const gpt3::gpt3_grid* gridNxN,
-                     dso::gpt3_result *g3out) noexcept {
+int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t, const double *lat,
+                   const double *lon, const double *hell, int num_stations,
+                   int it, const gpt3::gpt3_grid *gridNxN,
+                   dso::gpt3_result *g3out) noexcept {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double pi(DPI);
 #else
@@ -98,10 +99,10 @@ int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t,
     half_grid_tick =
         gpt3_grid_attributes<Gpt3Grid::grid1x1>::template grid_tick<double>() /
         2e0;
-    //igrid_tick =
-    //    gpt3_grid_attributes<Gpt3Grid::grid1x1>::template grid_tick<int>();
-    ipod_max = 36;
-    ilon_max = 72;
+    // igrid_tick =
+    //     gpt3_grid_attributes<Gpt3Grid::grid1x1>::template grid_tick<int>();
+    ipod_max = 180;
+    ilon_max = 360;
   } else if (gridNxN->size ==
              gpt3_grid_attributes<Gpt3Grid::grid5x5>::num_lines) {
     grid_tick =
@@ -109,10 +110,10 @@ int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t,
     half_grid_tick =
         gpt3_grid_attributes<Gpt3Grid::grid5x5>::template grid_tick<double>() /
         2e0;
-    //igrid_tick =
-    //    gpt3_grid_attributes<Gpt3Grid::grid5x5>::template grid_tick<int>();
-    ipod_max = 180;
-    ilon_max = 360;
+    // igrid_tick =
+    //     gpt3_grid_attributes<Gpt3Grid::grid5x5>::template grid_tick<int>();
+    ipod_max = 36;
+    ilon_max = 72;
   } else {
     fprintf(stderr,
             "[ERROR] gpt3 grid file seems to have invalid number of rows! "
@@ -183,6 +184,12 @@ int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t,
 
       int ix = indx[0];
 #ifdef DEBUG
+      if (ix < 0 || ix >= (int)gridNxN->size) {
+        fprintf(stderr,
+                ">> error! Index=%d and size is %u; ipod=%d, ilon=%d, "
+                "plon=%.5f, ppod=%.5f\n",
+                ix, gridNxN->size, ipod, ilon, plon, ppod);
+      }
       assert(ix >= 0 && ix < (int)gridNxN->size);
 #endif
 
@@ -192,20 +199,24 @@ int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t,
 
       // pressure, temperature at the height of the grid
       double T0 = gridNxN->T_grid[ix][0] + gridNxN->T_grid[ix][1] * cosfy +
-                  gridNxN->T_grid[ix][2] * sinfy + gridNxN->T_grid[ix][3] * coshy +
+                  gridNxN->T_grid[ix][2] * sinfy +
+                  gridNxN->T_grid[ix][3] * coshy +
                   gridNxN->T_grid[ix][4] * sinhy;
       double p0 = gridNxN->p_grid[ix][0] + gridNxN->p_grid[ix][1] * cosfy +
-                  gridNxN->p_grid[ix][2] * sinfy + gridNxN->p_grid[ix][3] * coshy +
+                  gridNxN->p_grid[ix][2] * sinfy +
+                  gridNxN->p_grid[ix][3] * coshy +
                   gridNxN->p_grid[ix][4] * sinhy;
 
       // specific humidity
       double Q = gridNxN->Q_grid[ix][0] + gridNxN->Q_grid[ix][1] * cosfy +
-                 gridNxN->Q_grid[ix][2] * sinfy + gridNxN->Q_grid[ix][3] * coshy +
+                 gridNxN->Q_grid[ix][2] * sinfy +
+                 gridNxN->Q_grid[ix][3] * coshy +
                  gridNxN->Q_grid[ix][4] * sinhy;
 
       // lapse rate of the temperature
       g3out[k].dT = gridNxN->dT_grid[ix][0] + gridNxN->dT_grid[ix][1] * cosfy +
-                    gridNxN->dT_grid[ix][2] * sinfy + gridNxN->dT_grid[ix][3] * coshy +
+                    gridNxN->dT_grid[ix][2] * sinfy +
+                    gridNxN->dT_grid[ix][3] * coshy +
                     gridNxN->dT_grid[ix][4] * sinhy;
 
       // station height - grid height
@@ -227,35 +238,43 @@ int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t,
 
       // hydrostatic and wet coefficients ah and aw
       g3out[k].ah = gridNxN->ah_grid[ix][0] + gridNxN->ah_grid[ix][1] * cosfy +
-                    gridNxN->ah_grid[ix][2] * sinfy + gridNxN->ah_grid[ix][3] * coshy +
+                    gridNxN->ah_grid[ix][2] * sinfy +
+                    gridNxN->ah_grid[ix][3] * coshy +
                     gridNxN->ah_grid[ix][4] * sinhy;
       g3out[k].aw = gridNxN->aw_grid[ix][0] + gridNxN->aw_grid[ix][1] * cosfy +
-                    gridNxN->aw_grid[ix][2] * sinfy + gridNxN->aw_grid[ix][3] * coshy +
+                    gridNxN->aw_grid[ix][2] * sinfy +
+                    gridNxN->aw_grid[ix][3] * coshy +
                     gridNxN->aw_grid[ix][4] * sinhy;
 
       // water vapour decrease factor la
       g3out[k].la = gridNxN->la_grid[ix][0] + gridNxN->la_grid[ix][1] * cosfy +
-                    gridNxN->la_grid[ix][2] * sinfy + gridNxN->la_grid[ix][3] * coshy +
+                    gridNxN->la_grid[ix][2] * sinfy +
+                    gridNxN->la_grid[ix][3] * coshy +
                     gridNxN->la_grid[ix][4] * sinhy;
 
       // mean temperature Tm
       g3out[k].Tm = gridNxN->Tm_grid[ix][0] + gridNxN->Tm_grid[ix][1] * cosfy +
-                    gridNxN->Tm_grid[ix][2] * sinfy + gridNxN->Tm_grid[ix][3] * coshy +
+                    gridNxN->Tm_grid[ix][2] * sinfy +
+                    gridNxN->Tm_grid[ix][3] * coshy +
                     gridNxN->Tm_grid[ix][4] * sinhy;
 
       // north and east gradients (total, hydrostatic and wet)
-      g3out[k].Gn_h = gridNxN->Gn_h_grid[ix][0] + gridNxN->Gn_h_grid[ix][1] * cosfy +
-                      gridNxN->Gn_h_grid[ix][2] * sinfy + gridNxN->Gn_h_grid[ix][3] * coshy +
-                      gridNxN->Gn_h_grid[ix][4] * sinhy;
-      g3out[k].Ge_h = gridNxN->Ge_h_grid[ix][0] + gridNxN->Ge_h_grid[ix][1] * cosfy +
-                      gridNxN->Ge_h_grid[ix][2] * sinfy + gridNxN->Ge_h_grid[ix][3] * coshy +
-                      gridNxN->Ge_h_grid[ix][4] * sinhy;
-      g3out[k].Gn_w = gridNxN->Gn_w_grid[ix][0] + gridNxN->Gn_w_grid[ix][1] * cosfy +
-                      gridNxN->Gn_w_grid[ix][2] * sinfy + gridNxN->Gn_w_grid[ix][3] * coshy +
-                      gridNxN->Gn_w_grid[ix][4] * sinhy;
-      g3out[k].Ge_w = gridNxN->Ge_w_grid[ix][0] + gridNxN->Ge_w_grid[ix][1] * cosfy +
-                      gridNxN->Ge_w_grid[ix][2] * sinfy + gridNxN->Ge_w_grid[ix][3] * coshy +
-                      gridNxN->Ge_w_grid[ix][4] * sinhy;
+      g3out[k].Gn_h =
+          gridNxN->Gn_h_grid[ix][0] + gridNxN->Gn_h_grid[ix][1] * cosfy +
+          gridNxN->Gn_h_grid[ix][2] * sinfy +
+          gridNxN->Gn_h_grid[ix][3] * coshy + gridNxN->Gn_h_grid[ix][4] * sinhy;
+      g3out[k].Ge_h =
+          gridNxN->Ge_h_grid[ix][0] + gridNxN->Ge_h_grid[ix][1] * cosfy +
+          gridNxN->Ge_h_grid[ix][2] * sinfy +
+          gridNxN->Ge_h_grid[ix][3] * coshy + gridNxN->Ge_h_grid[ix][4] * sinhy;
+      g3out[k].Gn_w =
+          gridNxN->Gn_w_grid[ix][0] + gridNxN->Gn_w_grid[ix][1] * cosfy +
+          gridNxN->Gn_w_grid[ix][2] * sinfy +
+          gridNxN->Gn_w_grid[ix][3] * coshy + gridNxN->Gn_w_grid[ix][4] * sinhy;
+      g3out[k].Ge_w =
+          gridNxN->Ge_w_grid[ix][0] + gridNxN->Ge_w_grid[ix][1] * cosfy +
+          gridNxN->Ge_w_grid[ix][2] * sinfy +
+          gridNxN->Ge_w_grid[ix][3] * coshy + gridNxN->Ge_w_grid[ix][4] * sinhy;
 
       // water vapor pressure in hPa
       double e0 = Q * p0 / (0.622e0 + 0.378e0 * Q) / 100e0; // on the grid
@@ -301,20 +320,26 @@ int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t,
       // pressure, temperature at the height of the grid
       double T0[4], p0[4];
       for (int i = 0; i < 4; i++) {
-        T0[i] = gridNxN->T_grid[indx[i]][0] + gridNxN->T_grid[indx[i]][1] * cosfy +
-                gridNxN->T_grid[indx[i]][2] * sinfy + gridNxN->T_grid[indx[i]][3] * coshy +
+        T0[i] = gridNxN->T_grid[indx[i]][0] +
+                gridNxN->T_grid[indx[i]][1] * cosfy +
+                gridNxN->T_grid[indx[i]][2] * sinfy +
+                gridNxN->T_grid[indx[i]][3] * coshy +
                 gridNxN->T_grid[indx[i]][4] * sinhy;
       }
       for (int i = 0; i < 4; i++) {
-        p0[i] = gridNxN->p_grid[indx[i]][0] + gridNxN->p_grid[indx[i]][1] * cosfy +
-                gridNxN->p_grid[indx[i]][2] * sinfy + gridNxN->p_grid[indx[i]][3] * coshy +
+        p0[i] = gridNxN->p_grid[indx[i]][0] +
+                gridNxN->p_grid[indx[i]][1] * cosfy +
+                gridNxN->p_grid[indx[i]][2] * sinfy +
+                gridNxN->p_grid[indx[i]][3] * coshy +
                 gridNxN->p_grid[indx[i]][4] * sinhy;
       }
       // humidity
       double Ql[4];
       for (int i = 0; i < 4; i++) {
-        Ql[i] = gridNxN->Q_grid[indx[i]][0] + gridNxN->Q_grid[indx[i]][1] * cosfy +
-                gridNxN->Q_grid[indx[i]][2] * sinfy + gridNxN->Q_grid[indx[i]][3] * coshy +
+        Ql[i] = gridNxN->Q_grid[indx[i]][0] +
+                gridNxN->Q_grid[indx[i]][1] * cosfy +
+                gridNxN->Q_grid[indx[i]][2] * sinfy +
+                gridNxN->Q_grid[indx[i]][3] * coshy +
                 gridNxN->Q_grid[indx[i]][4] * sinhy;
       }
 
@@ -329,8 +354,10 @@ int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t,
       // lapse rate of the temperature in degree / m
       double dTl[4];
       for (int i = 0; i < 4; i++) {
-        dTl[i] = gridNxN->dT_grid[indx[i]][0] + gridNxN->dT_grid[indx[i]][1] * cosfy +
-                 gridNxN->dT_grid[indx[i]][2] * sinfy + gridNxN->dT_grid[indx[i]][3] * coshy +
+        dTl[i] = gridNxN->dT_grid[indx[i]][0] +
+                 gridNxN->dT_grid[indx[i]][1] * cosfy +
+                 gridNxN->dT_grid[indx[i]][2] * sinfy +
+                 gridNxN->dT_grid[indx[i]][3] * coshy +
                  gridNxN->dT_grid[indx[i]][4] * sinhy;
       }
 
@@ -356,48 +383,60 @@ int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t,
       // hydrostatic and wet coefficients ah and aw
       double ahl[4], awl[4];
       for (int i = 0; i < 4; i++) {
-        ahl[i] = gridNxN->ah_grid[indx[i]][0] + gridNxN->ah_grid[indx[i]][1] * cosfy +
-                 gridNxN->ah_grid[indx[i]][2] * sinfy + gridNxN->ah_grid[indx[i]][3] * coshy +
+        ahl[i] = gridNxN->ah_grid[indx[i]][0] +
+                 gridNxN->ah_grid[indx[i]][1] * cosfy +
+                 gridNxN->ah_grid[indx[i]][2] * sinfy +
+                 gridNxN->ah_grid[indx[i]][3] * coshy +
                  gridNxN->ah_grid[indx[i]][4] * sinhy;
       }
       for (int i = 0; i < 4; i++) {
-        awl[i] = gridNxN->aw_grid[indx[i]][0] + gridNxN->aw_grid[indx[i]][1] * cosfy +
-                 gridNxN->aw_grid[indx[i]][2] * sinfy + gridNxN->aw_grid[indx[i]][3] * coshy +
+        awl[i] = gridNxN->aw_grid[indx[i]][0] +
+                 gridNxN->aw_grid[indx[i]][1] * cosfy +
+                 gridNxN->aw_grid[indx[i]][2] * sinfy +
+                 gridNxN->aw_grid[indx[i]][3] * coshy +
                  gridNxN->aw_grid[indx[i]][4] * sinhy;
       }
 
       // water vapour decrease factor la
       double lal[4];
       for (int i = 0; i < 4; i++) {
-        lal[i] = gridNxN->la_grid[indx[i]][0] + gridNxN->la_grid[indx[i]][1] * cosfy +
-                 gridNxN->la_grid[indx[i]][2] * sinfy + gridNxN->la_grid[indx[i]][3] * coshy +
+        lal[i] = gridNxN->la_grid[indx[i]][0] +
+                 gridNxN->la_grid[indx[i]][1] * cosfy +
+                 gridNxN->la_grid[indx[i]][2] * sinfy +
+                 gridNxN->la_grid[indx[i]][3] * coshy +
                  gridNxN->la_grid[indx[i]][4] * sinhy;
       }
 
       // mean temperature of the water vapor Tm
       double Tml[4];
       for (int i = 0; i < 4; i++) {
-        Tml[i] = gridNxN->Tm_grid[indx[i]][0] + gridNxN->Tm_grid[indx[i]][1] * cosfy +
-                 gridNxN->Tm_grid[indx[i]][2] * sinfy + gridNxN->Tm_grid[indx[i]][3] * coshy +
+        Tml[i] = gridNxN->Tm_grid[indx[i]][0] +
+                 gridNxN->Tm_grid[indx[i]][1] * cosfy +
+                 gridNxN->Tm_grid[indx[i]][2] * sinfy +
+                 gridNxN->Tm_grid[indx[i]][3] * coshy +
                  gridNxN->Tm_grid[indx[i]][4] * sinhy;
       }
 
       // north and east gradients(total, hydrostatic and wet)
       double Gn_hl[4], Ge_hl[4], Gn_wl[4], Ge_wl[4];
       for (int i = 0; i < 4; i++) {
-        Gn_hl[i] = gridNxN->Gn_h_grid[indx[i]][0] + gridNxN->Gn_h_grid[indx[i]][1] * cosfy +
+        Gn_hl[i] = gridNxN->Gn_h_grid[indx[i]][0] +
+                   gridNxN->Gn_h_grid[indx[i]][1] * cosfy +
                    gridNxN->Gn_h_grid[indx[i]][2] * sinfy +
                    gridNxN->Gn_h_grid[indx[i]][3] * coshy +
                    gridNxN->Gn_h_grid[indx[i]][4] * sinhy;
-        Ge_hl[i] = gridNxN->Ge_h_grid[indx[i]][0] + gridNxN->Ge_h_grid[indx[i]][1] * cosfy +
+        Ge_hl[i] = gridNxN->Ge_h_grid[indx[i]][0] +
+                   gridNxN->Ge_h_grid[indx[i]][1] * cosfy +
                    gridNxN->Ge_h_grid[indx[i]][2] * sinfy +
                    gridNxN->Ge_h_grid[indx[i]][3] * coshy +
                    gridNxN->Ge_h_grid[indx[i]][4] * sinhy;
-        Gn_wl[i] = gridNxN->Gn_w_grid[indx[i]][0] + gridNxN->Gn_w_grid[indx[i]][1] * cosfy +
+        Gn_wl[i] = gridNxN->Gn_w_grid[indx[i]][0] +
+                   gridNxN->Gn_w_grid[indx[i]][1] * cosfy +
                    gridNxN->Gn_w_grid[indx[i]][2] * sinfy +
                    gridNxN->Gn_w_grid[indx[i]][3] * coshy +
                    gridNxN->Gn_w_grid[indx[i]][4] * sinhy;
-        Ge_wl[i] = gridNxN->Ge_w_grid[indx[i]][0] + gridNxN->Ge_w_grid[indx[i]][1] * cosfy +
+        Ge_wl[i] = gridNxN->Ge_w_grid[indx[i]][0] +
+                   gridNxN->Ge_w_grid[indx[i]][1] * cosfy +
                    gridNxN->Ge_w_grid[indx[i]][2] * sinfy +
                    gridNxN->Ge_w_grid[indx[i]][3] * coshy +
                    gridNxN->Ge_w_grid[indx[i]][4] * sinhy;

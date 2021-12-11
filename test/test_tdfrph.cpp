@@ -13,12 +13,11 @@ int main() {
   std::cout << "> tdfrph\n";
   std::cout << "----------------------------------------\n";
 
-  auto t1 =
-      dso::datetime<dso::seconds>{dso::year(2009), dso::day_of_year(176)};
+  auto t1 = dso::datetime<dso::seconds>{dso::year(2009), dso::day_of_year(176)};
 
-  auto t2 = dso::datetime<dso::seconds>{
-      dso::year(2009), dso::day_of_year(176), dso::hours(12),
-      dso::minutes(1), dso::seconds(45)};
+  auto t2 = dso::datetime<dso::seconds>{dso::year(2009), dso::day_of_year(176),
+                                        dso::hours(12), dso::minutes(1),
+                                        dso::seconds(45)};
 
   const dso::datetime<dso::seconds> epochs[] = {t1, t2};
   const int idood[2][6] = {{2, 0, 0, 0, 0, 0}, {2, 0, 0, 0, 0, 0}};
