@@ -2,7 +2,6 @@
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
 
 constexpr int MAX_HEADER_CHARS = 256;
 constexpr int MAX_HEADER_LINES = 500;
@@ -13,7 +12,7 @@ constexpr int MAX_HEADER_LINES = 500;
 /// 2. Include the string 'END HEADER', procedded only by a number of whitespace
 ///    or '$' characters
 /// The function will return true only if the above conditions hold
-bool is_end_of_header(const char *line) {
+bool is_end_of_header(const char *line) noexcept {
   int lensize = std::strlen(line);
   if (lensize < 12)
     return false; // aka '$$END HEADER' = 12 chars
@@ -44,7 +43,9 @@ int iers2010::BlqIn::read_header() noexcept {
 
   // The stream should be open by now!
   if (!(__istream.is_open())) {
-    std::cerr << "\n[ERROR] BlqIn::read_header(): Stream is closed!";
+    fprintf(stderr,
+            "[ERROR] Stream is closed; cannot read header (traceback: %s)\n",
+            __func__);
     return 10;
   }
 
@@ -61,8 +62,9 @@ int iers2010::BlqIn::read_header() noexcept {
   }
 
   if (dummy_it >= MAX_HEADER_LINES) {
-    std::cerr
-        << "\n[ERROR] BlqIn:read_header() -> Could not find 'END HEADER'.";
+    fprintf(stderr,
+            "[ERROR] Failed to find \'END OF HEADER\' field (traceback: %s)\n",
+            __func__);
     return 3;
   }
 
@@ -147,7 +149,9 @@ int iers2010::BlqIn::skip_next_station() {
   // read values (exactly 6 rows)
   for (int i = 0; i < 6; i++) {
     if (!__istream.getline(line, MAX_HEADER_CHARS)) {
-      std::cerr << "\n[ERROR] Expected data line, found: \"" << line << "\"";
+      fprintf(stderr,
+              "[ERROR] Expected data line, found: \"%s\" (traceback: %s)\n",
+              line, __func__);
       break;
     }
   }
@@ -159,8 +163,8 @@ int iers2010::BlqIn::skip_next_station() {
   return 0;
 }
 
-/// @warning       Note that the function will change sign for phase, to be
-///                negative for lags
+/// @warning Note that the function will change sign for phase, to be
+///          negative for lags
 int iers2010::BlqIn::read_next_station(std::string &sta, double tamp[3][11],
                                        double tph[3][11],
                                        bool change_phase_sign) {
@@ -204,8 +208,10 @@ int iers2010::BlqIn::read_next_station(std::string &sta, double tamp[3][11],
     for (int j = 0; j < 11; j++) {
       dbl = std::strtod(p, &end);
       if (errno == ERANGE || p == end) {
-        std::cerr << "\n[ERROR] Failed to resolve blq values for station: "
-                  << sta << " at line and column: " << i + 1 << "/" << j + 1;
+        fprintf(stderr,
+                "[ERROR] Failed to resolve blq values for station: %s at line "
+                "and column %d/%d (traceback: %s)\n",
+                sta.c_str(), i + 1, j + 1, __func__);
         errno = 0;
         return 1;
       }
@@ -213,7 +219,9 @@ int iers2010::BlqIn::read_next_station(std::string &sta, double tamp[3][11],
       p = end;
     }
     if (!__istream.getline(line, MAX_HEADER_CHARS)) {
-      std::cerr << "\n[ERROR] Expected data line, found: \"" << line << "\"";
+      fprintf(stderr,
+              "[ERROR] Expected data line, found: \"%s\" (traceback: %s)\n",
+              line, __func__);
       break;
     }
   }

@@ -1429,7 +1429,7 @@ int dso::vmf3(const dso::gpt3_result *gptres,
               const double *vlon, const double *vzd, dso::vmf3_hw *vmfres,
               int num_sta) noexcept {
 #ifdef USE_EXTERNAL_CONSTS
-  constexpr double pi(DPI);
+  constexpr double pi(iers2010::DPI);
 #else
   constexpr double pi(M_PI);
 #endif

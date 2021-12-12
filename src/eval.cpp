@@ -1,7 +1,9 @@
 #include "hardisp.hpp"
 #include "iers2010.hpp"
 #include <algorithm>
+#ifdef DEBUG
 #include <cassert>
+#endif
 
 /// @details This function performs cubic spline interpolation of a given
 ///          function sampled at unequally spaced intervals. The function spline
@@ -46,15 +48,15 @@ double iers2010::hisp::eval(double y, int nn, const double *x, const double *u,
 
   //  Evaluate and then interpolate.
   //+ Note that this can fail if dk is ~0
-  double dy{x[k2] - y};
-  double dy1{y - x[k1]};
-  double dk{x[k2] - x[k1]};
-  double deli{1e0 / (6e0 * dk)};
-  double ff1{s[k1] * dy * dy * dy};
-  double ff2{s[k2] * dy1 * dy1 * dy1};
-  double f1{(ff1 + ff2) * deli};
-  double f2{dy1 * ((u[k2] / dk) - (s[k2] * dk) / 6e0)};
-  double f3{dy * ((u[k1] / dk) - (s[k1] * dk) / 6e0)};
+  const double dy{x[k2] - y};
+  const double dy1{y - x[k1]};
+  const double dk{x[k2] - x[k1]};
+  const double deli{1e0 / (6e0 * dk)};
+  const double ff1{s[k1] * dy * dy * dy};
+  const double ff2{s[k2] * dy1 * dy1 * dy1};
+  const double f1{(ff1 + ff2) * deli};
+  const double f2{dy1 * ((u[k2] / dk) - (s[k2] * dk) / 6e0)};
+  const double f3{dy * ((u[k1] / dk) - (s[k1] * dk) / 6e0)};
 
   return f1 + f2 + f3;
 }

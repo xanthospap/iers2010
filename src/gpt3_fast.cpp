@@ -4,7 +4,7 @@
 #include <cmath>
 #include <fstream>
 #ifdef USE_EXTERNAL_CONSTS
-#include "gencon.hpp"
+#include "iersc.hpp"
 #endif
 #ifdef DEBUG
 #include <cassert>
@@ -15,6 +15,10 @@ using dso::gpt3::Gpt3Grid;
 
 template <typename T> int sgn(T val) { return (T(0) < val) - (val < T(0)); }
 
+/// @brief Count rows of file fn
+/// @param[in] fn The filename to read rows from
+/// @return Number of rows in file fn
+/// @warning Expects that each row in fn has mx character length of 512 chars
 unsigned file_row_count(const char *fn) noexcept {
   std::ifstream grd(fn);
   if (!grd) {
@@ -35,7 +39,7 @@ unsigned file_row_count(const char *fn) noexcept {
 
 /// at input, grid_step must be either 0 (if we do not know which grid we are
 /// using), or 1 or 5 depending on the gris step of the grid_file. At output,
-// it will hold the grid step size used (aka the one parsed from grid_file)
+/// it will hold the grid step size used (aka the one parsed from grid_file)
 int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t, const double *lat,
                    const double *lon, const double *hell, int num_stations,
                    int it, const char *grid_file, dso::gpt3_result *g3out,
@@ -85,22 +89,20 @@ int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t, const double *lat,
                    int it, const gpt3::gpt3_grid *gridNxN,
                    dso::gpt3_result *g3out) noexcept {
 #ifdef USE_EXTERNAL_CONSTS
-  constexpr double pi(DPI);
+  constexpr double pi(iers2010::DPI);
 #else
   constexpr double pi(M_PI);
 #endif
 
   // grid info
   double grid_tick, half_grid_tick;
-  int /*igrid_tick,*/ ilon_max, ipod_max;
+  int ilon_max, ipod_max;
   if (gridNxN->size == gpt3_grid_attributes<Gpt3Grid::grid1x1>::num_lines) {
     grid_tick =
         gpt3_grid_attributes<Gpt3Grid::grid1x1>::template grid_tick<double>();
     half_grid_tick =
         gpt3_grid_attributes<Gpt3Grid::grid1x1>::template grid_tick<double>() /
         2e0;
-    // igrid_tick =
-    //     gpt3_grid_attributes<Gpt3Grid::grid1x1>::template grid_tick<int>();
     ipod_max = 180;
     ilon_max = 360;
   } else if (gridNxN->size ==
@@ -110,8 +112,6 @@ int dso::gpt3_fast(const dso::datetime<dso::nanoseconds> &t, const double *lat,
     half_grid_tick =
         gpt3_grid_attributes<Gpt3Grid::grid5x5>::template grid_tick<double>() /
         2e0;
-    // igrid_tick =
-    //     gpt3_grid_attributes<Gpt3Grid::grid5x5>::template grid_tick<int>();
     ipod_max = 36;
     ilon_max = 72;
   } else {

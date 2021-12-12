@@ -29,8 +29,7 @@ public:
   /// @return  An integer, denoting the following:
   ///          * -1  : EOF encountered before encountering next station
   ///          *  0  : all ok; station stored in sta and stream position is set
-  ///          to
-  ///                  reading record of station sta
+  ///                  to reading record of station sta
   ///          *  1  : error
   int peak_next_station(std::string &sta) noexcept;
 

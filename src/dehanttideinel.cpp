@@ -36,8 +36,7 @@
 ///     minutes/60.0
 ///        + sec/3600.0.
 ///     -# The displacement vector is in the geocentric ITRF.  All components
-///     are
-///        expressed in meters.
+///        are expressed in meters.
 ///     -# Parameters jc1 and jc2 constitute the date as Julian Centuries in TT
 ///        time scale. The actual date is given by the addition jc1+jc2.
 ///        Either jc1 or jc2 can be set to zero.
@@ -67,7 +66,6 @@
 ///     Ries, J. C., Eanes, R. J., Shum, C. K. and Watkins, M. M., 1992,
 ///     ''Progress in the Determination of the Gravitational Coefficient
 ///     of the Earth," Geophys. Res. Lett., 19(6), pp. 529-531
-///
 int iers2010::dehanttideinel(const double *xsta, const double *xsun,
                              const double *xmon,
                              dso::datetime<dso::seconds> iepoch,

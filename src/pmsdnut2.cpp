@@ -63,10 +63,10 @@ int iers2010::pmsdnut2(double rmjd, double &dx, double &dy) noexcept {
 
   // Set constants
 #ifdef USE_EXTERNAL_CONSTS
-  constexpr double RMJD0(DJM00); // Modified Julian date of J2000
-  constexpr double PI(DPI);
-  constexpr double TWOPI(D2PI);
-  constexpr double RAD2SEC(DRAD2SEC); // Radians to seconds
+  constexpr double RMJD0(iers2010::DJM00); // Modified Julian date of J2000
+  constexpr double PI(iers2010::DPI);
+  constexpr double TWOPI(iers2010::D2PI);
+  constexpr double RAD2SEC(iers2010::DRAD2SEC); // Radians to seconds
 #else
   // Modified Julian date of J2000
   constexpr double RMJD0(51544.5e0);
@@ -114,7 +114,7 @@ int iers2010::pmsdnut2(double rmjd, double &dx, double &dy) noexcept {
 
   //  Rate of secular polar motion, in microarcseconds per year
   //+ Source: IERS Conventions (2010), Table 5.1a
-  constexpr double xrate(-3.8e0), yrate(-4.3e0);
+  constexpr double xrate = -3.8e0, yrate = -4.3e0;
 
   //  Compute the periodical part of the model
   //+ Coordinates of the pole are set to zero first
@@ -125,21 +125,21 @@ int iers2010::pmsdnut2(double rmjd, double &dx, double &dy) noexcept {
   //+ at t = rmjd
 
   // Convert the input epoch to Julian centuries of TDB since J2000
-  const double t((rmjd - RMJD0) / 36525e0);
+  const double t = (rmjd - RMJD0) / 36525e0;
 
   // Compute GMST + pi
-  const double gmst(
+  const double gmst =
       std::fmod(67310.54841e0 + t * ((8640184.812866e0 + 3155760000e0) +
                                      t * (0.093104e0 + t * (-0.0000062e0))),
-                86400e0));
+                86400e0);
 
   // Fundamental arguments
-  double fargs[6]; /* fundamental arguments: GMST+pi, l, lp, f, d, om */
+  double fargs[6]; // fundamental arguments: GMST+pi, l, lp, f, d, om
   iers2010::fundarg(t, fargs + 1);
   fargs[0] = gmst / RAD2SEC + PI;
   fargs[0] = std::fmod(fargs[0], TWOPI);
 
-  const int jstart((iband == 1) ? 15 : 0);
+  const int jstart = (iband == 1) ? 15 : 0;
 
   double angle, sina, cosa;
   for (int j = jstart; j < M; j++) {

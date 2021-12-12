@@ -1,6 +1,6 @@
 #include "iers2010.hpp"
 #ifdef USE_EXTERNAL_CONSTS
-#include "gencon.hpp"
+#include "iersc.hpp"
 #endif
 
 /// @details This subroutine computes the lunisolar fundamental arguments.
@@ -44,6 +44,11 @@ int iers2010::fundarg(double t, double *fargs) noexcept {
   constexpr double DAS2R(4.848136811095359935899141e-6);
   // Arcseconds in a full circle
   constexpr double TURNAS(1296000e0);
+#else
+  // Arcseconds to radians
+  constexpr double DAS2R(iers2010::DAS2R);
+  // Arcseconds in a full circle
+  constexpr double TURNAS(iers2010::TURNAS);
 #endif
 
   //  Compute the fundamental argument L.

@@ -3,7 +3,7 @@
 #include <cassert>
 #include <cmath>
 #ifdef USE_EXTERNAL_CONSTS
-#include "gencon.hpp"
+#include "iersc.hpp"
 #endif
 
 // Block data of amplitudes for X (microas)
@@ -85,17 +85,17 @@ constexpr int N = table.size();
 int iers2010::fcnnut(double mjd, double &x, double &y, double &dx, double &dy) {
 
 #ifdef USE_EXTERNAL_CONSTS
-  constexpr double PI(DPI);
+  constexpr double PI(iers2010::DPI);
 #else
   constexpr double PI(3.14159265358979323846e0);
 #endif
 
   // Mean prediction error in microarcseconds per day
-  constexpr double mpe(0.1325e0);
+  constexpr double mpe = 0.1325e0;
   // FCN parameters period in days
-  constexpr double per(-430.21e0);
+  constexpr double per = -430.21e0;
   // Phase in radians
-  const double phi((2e0 * PI / per) * (mjd - 51544.5e0));
+  const double phi = (2e0 * PI / per) * (mjd - 51544.5e0);
 
   // Prediction of the amplitude at the input date
   double axc(0e0), axs(0e0), ayc(0e0), ays(0e0);
@@ -117,12 +117,12 @@ int iers2010::fcnnut(double mjd, double &x, double &y, double &dx, double &dy) {
     ays = table[N - 1].ys();
   } else {
     --it;
-    double t = mjd - it->date;
-    double dt = (it + 1)->date - it->date;
-    double daxc = (it + 1)->xc() - it->xc();
-    double daxs = (it + 1)->xs() - it->xs();
-    double dayc = (it + 1)->yc() - it->yc();
-    double days = (it + 1)->ys() - it->ys();
+    const double t = mjd - it->date;
+    const double dt = (it + 1)->date - it->date;
+    const double daxc = (it + 1)->xc() - it->xc();
+    const double daxs = (it + 1)->xs() - it->xs();
+    const double dayc = (it + 1)->yc() - it->yc();
+    const double days = (it + 1)->ys() - it->ys();
     axc = it->xc() + (daxc / dt) * t;
     axs = it->xs() + (daxs / dt) * t;
     ayc = it->yc() + (dayc / dt) * t;
@@ -131,7 +131,7 @@ int iers2010::fcnnut(double mjd, double &x, double &y, double &dx, double &dy) {
   }
 
   // Computation of X and Y
-  double cosphi(cos(phi)), sinphi(sin(phi));
+  double cosphi = std::cos(phi), sinphi = std::sin(phi);
   x = axc * cosphi - axs * sinphi; /// microas
   y = ayc * cosphi - ays * sinphi; /// microas
 
@@ -149,12 +149,12 @@ int iers2010::fcnnut(double mjd, double &x, double &y, double &dx, double &dy) {
     ays = it->sy() + mpe * (mjd - it->date);
   } else {
     --it;
-    double t = mjd - it->date;
-    double dt = (it + 1)->date - it->date;
-    double daxc = (it + 1)->sx() - it->sx();
-    double daxs = (it + 1)->sx() - it->sx();
-    double dayc = (it + 1)->sy() - it->sy();
-    double days = (it + 1)->sy() - it->sy();
+    const double t = mjd - it->date;
+    const double dt = (it + 1)->date - it->date;
+    const double daxc = (it + 1)->sx() - it->sx();
+    const double daxs = (it + 1)->sx() - it->sx();
+    const double dayc = (it + 1)->sy() - it->sy();
+    const double days = (it + 1)->sy() - it->sy();
     axc = std::abs(it->sx() + (daxc / dt) * t);
     axs = std::abs(it->sx() + (daxs / dt) * t);
     ayc = std::abs(it->sy() + (dayc / dt) * t);

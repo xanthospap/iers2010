@@ -51,30 +51,30 @@ int iers2010::hisp::tdfrph(const int idood[6],
     const double t = (epoch.as_mjd() + dso::mjd0_jd - dso::j2000_jd) / 36525e0;
 
     // IERS expressions for the Delaunay arguments, in degrees
-    const double f1{134.9634025100e0 +
-                    t * (477198.8675605000e0 +
-                         t * (0.0088553333e0 +
-                              t * (0.0000143431e0 + t * (-0.0000000680e0))))};
+    const double f1 = 134.9634025100e0 +
+                      t * (477198.8675605000e0 +
+                           t * (0.0088553333e0 +
+                                t * (0.0000143431e0 + t * (-0.0000000680e0))));
 
-    const double f2{357.5291091806e0 +
-                    t * (35999.0502911389e0 +
-                         t * (-0.0001536667e0 +
-                              t * (0.0000000378e0 + t * (-0.0000000032e0))))};
+    const double f2 = 357.5291091806e0 +
+                      t * (35999.0502911389e0 +
+                           t * (-0.0001536667e0 +
+                                t * (0.0000000378e0 + t * (-0.0000000032e0))));
 
-    const double f3{93.2720906200e0 +
-                    t * (483202.0174577222e0 +
-                         t * (-0.0035420000e0 +
-                              t * (-0.0000002881e0 + t * (0.0000000012e0))))};
+    const double f3 = 93.2720906200e0 +
+                      t * (483202.0174577222e0 +
+                           t * (-0.0035420000e0 +
+                                t * (-0.0000002881e0 + t * (0.0000000012e0))));
 
-    const double f4{297.8501954694e0 +
-                    t * (445267.1114469445e0 +
-                         t * (-0.0017696111e0 +
-                              t * (0.0000018314e0 + t * (-0.0000000088e0))))};
+    const double f4 = 297.8501954694e0 +
+                      t * (445267.1114469445e0 +
+                           t * (-0.0017696111e0 +
+                                t * (0.0000018314e0 + t * (-0.0000000088e0))));
 
-    const double f5{125.0445550100e0 +
-                    t * (-1934.1362619722e0 +
-                         t * (0.0020756111e0 +
-                              t * (0.0000021394e0 + t * (-0.0000000165e0))))};
+    const double f5 = 125.0445550100e0 +
+                      t * (-1934.1362619722e0 +
+                           t * (0.0020756111e0 +
+                                t * (0.0000021394e0 + t * (-0.0000000165e0))));
 
     // Convert to Doodson (Darwin) variables
     d[0] = 360e0 * dayfr - f4;
@@ -86,11 +86,11 @@ int iers2010::hisp::tdfrph(const int idood[6],
 
     //  Find frequencies of Delauney variables (in cycles/day), and from
     //+ these the same for the Doodson arguments
-    const double fd1{0.0362916471e0 + 0.0000000013e0 * t};
-    const double fd2{0.0027377786e0};
-    const double fd3{0.0367481951e0 - 0.0000000005e0 * t};
-    const double fd4{0.0338631920e0 - 0.0000000003e0 * t};
-    const double fd5{-0.0001470938e0 + 0.0000000003e0 * t};
+    const double fd1 = 0.0362916471e0 + 0.0000000013e0 * t;
+    const double fd2 = 0.0027377786e0;
+    const double fd3 = 0.0367481951e0 - 0.0000000005e0 * t;
+    const double fd4 = 0.0338631920e0 - 0.0000000003e0 * t;
+    const double fd5 = -0.0001470938e0 + 0.0000000003e0 * t;
     dd[0] = 1e0 - fd4;
     dd[1] = fd3 + fd5;
     dd[2] = dd[1] - fd4;

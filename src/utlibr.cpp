@@ -1,6 +1,6 @@
 #include "iers2010.hpp"
 #ifdef USE_EXTERNAL_CONSTS
-#include "gencon.hpp"
+#include "iersc.hpp"
 #endif
 
 /// @details This function evaluates the model of subdiurnal libration
@@ -58,11 +58,11 @@ int iers2010::utlibr(double rmjd, double &dut1, double &dlod) noexcept {
   // Set constants
 #ifdef USE_EXTERNAL_CONSTS
   // Modified Julian date of J2000
-  constexpr double RMJD0(DJM00);
-  constexpr double PI(DPI);
-  constexpr double TWOPI(D2PI);
+  constexpr double RMJD0(iers2010::DJM00);
+  constexpr double PI(iers2010::DPI);
+  constexpr double TWOPI(iers2010::D2PI);
   // Radians to seconds
-  constexpr double RAD2SEC(DRAD2SEC);
+  constexpr double RAD2SEC(iers2010::DRAD2SEC);
 #else
   // Modified Julian date of J2000
   constexpr double RMJD0(51544.5e0);
@@ -100,13 +100,13 @@ int iers2010::utlibr(double rmjd, double &dut1, double &dlod) noexcept {
   //+ arg(1:6) = [ GMST+pi, el, elp, f, d, om ] at t = rmjd
 
   // Convert the input epoch to Julian centuries of TDB since J2000
-  const double t((rmjd - RMJD0) / 36525e0);
+  const double t = (rmjd - RMJD0) / 36525e0;
 
   // Compute GMST + pi
-  const double gmst(
+  const double gmst =
       std::fmod(67310.54841e0 + t * ((8640184.812866e0 + 3155760000e0) +
                                      t * (0.093104e0 + t * (-0.0000062e0))),
-                86400e0));
+                86400e0);
 
   // Fundamental arguments
   double fargs[6];

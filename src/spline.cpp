@@ -31,7 +31,7 @@ inline double q(double u1, double x1, double u2, double x2) noexcept {
 /// @version 26.08.2009
 int iers2010::hisp::spline(int nn, const double *x, const double *u, double *s,
                            double *a) {
-  const int n(std::abs(nn));
+  const int n = std::abs(nn);
 
   if (n <= 3) {
     // series too short for cubic spline - use straight lines.

@@ -2,7 +2,7 @@
 #include "iers2010.hpp"
 #include <cstring>
 #include <fstream>
-#include <iostream>
+//#include <iostream>
 #include <stdexcept>
 
 using iers2010::hisp::nl;
@@ -34,7 +34,8 @@ int iers2010::hisp::read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
     ifn.open(filename);
     in = &ifn;
     if (!ifn.is_open()) {
-      std::cerr << "\n[ERROR] Failed to open file \"" << filename << "\"";
+      fprintf(stderr, "[ERROR] Failed to open file \"%s\" (traceback: %s)\n",
+              filename, __func__);
       return 1;
     }
   }
@@ -61,7 +62,7 @@ int iers2010::hisp::read_hardisp_args(double tamp[3][ntin], double tph[3][ntin],
     --sta2read;
   }
 
-  return !in->good();
+  return !(in->good());
 }
 
 /// @details This program reads in a file of station displacements in the BLQ
@@ -124,11 +125,11 @@ int iers2010::hisp::hardisp_impl(int irnt, double samp, double tamp[3][ntin],
                                  double tph[3][ntin],
                                  dso::datetime<dso::seconds> epoch, double *odu,
                                  double *ods, double *odw) {
-  constexpr double dr(0.01745329252e0);
-  int irli(1);
+  constexpr double dr = 0.01745329252e0;
+  int irli = 1;
 
 #ifdef USE_EXTERNAL_CONSTS
-  constexpr double PI(DPI);
+  constexpr double PI(iers2010::DPI);
 #else
   constexpr double PI(3.1415926535897932384626433e0);
 #endif

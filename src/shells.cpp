@@ -23,7 +23,6 @@
 ///     -# Status: Canonical model
 ///
 /// @version 2009 August 19
-///
 int iers2010::hisp::shells(double *x, int *k, int n) noexcept {
   std::vector<std::pair<double, int>> vec;
   vec.reserve(n);

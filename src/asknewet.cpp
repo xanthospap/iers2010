@@ -1,30 +1,5 @@
-// https://vmf.geo.tuwien.ac.at/codes/asknewet.m
 #include "tropo.hpp"
-//
-//  This subroutine determines the zenith wet delay based on the
-//  equation 22 by Aske and Nordius (1987)
-//
-//  c Reference:
-//  Askne and Nordius, Estimation of tropospheric delay for microwaves from
-//  surface weather data, Radio Science, Vol 22(3): 379-386, 1987.
-//
-//  input parameters:
-//  e:      water vapor pressure in hPa
-//  Tm:     mean temperature in Kelvin
-//  lambda: water vapor lapse rate (see definition in Askne and Nordius 1987)
-//
-//  output parameters:
-//  zwd:  zenith wet delay in meter
-//
-//  Example 1 :
-//  e =  10.9621 hPa
-//  Tm = 273.8720
-//  lambda = 2.8071
-//
-//  output:
-//  zwd = 0.1176 m
-//
-//  ---
+
 double dso::asknewet(double e, double Tm, double lambda) noexcept {
   // coefficients
   constexpr double k1 = 77.604e0;                         // K / hPa

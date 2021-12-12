@@ -2,7 +2,6 @@
 #include "ggdatetime/datetime_write.hpp"
 #include "iers2010.hpp"
 #include <fstream>
-#include <iostream>
 #include <stdexcept>
 
 using iers2010::hisp::nl;
@@ -20,6 +19,7 @@ using iers2010::hisp::ntin;
 ///                     (integer)
 ///                  -# Sampling interval (in seconds) (double)
 int main(int argc, char *argv[]) {
+
   //  Check number of arguments from command line, then read them in
   if (argc < 8 || argc > 9) {
     printf(" Usage:\n");
@@ -55,12 +55,16 @@ int main(int argc, char *argv[]) {
     irnt = std::stoi(argv[next++]);
     samp = std::stod(argv[next++]);
   } catch (std::invalid_argument &) {
-    std::cerr
-        << "[ERROR] Invalid argument while reading input arguments. Fatal.\n";
+    fprintf(stderr,
+            "[ERROR] Invalid argument while reading input arguments. Fatal "
+            "(traceback: %s)\n",
+            __func__);
     return 1;
   } catch (std::out_of_range &) {
-    std::cerr
-        << "[ERROR] Invalid argument while reading input arguments. Fatal.\n";
+    fprintf(stderr,
+            "[ERROR] Invalid argument while reading input arguments. Fatal "
+            "(traceback: %s)\n",
+            __func__);
     return 1;
   }
 
@@ -84,7 +88,8 @@ int main(int argc, char *argv[]) {
   /// Read in ocean loading coefficients from stdin
   double tamp[3][ntin], tph[3][ntin];
   if (iers2010::hisp::read_hardisp_args(tamp, tph)) {
-    std::cerr << "[ERROR] Failed to read harmonics. Fatal.\n";
+    fprintf(stderr, "[ERROR] Failed to read harmonics. Fatal (traceback: %s)\n",
+            __func__);
     return 1;
   }
 
@@ -98,4 +103,6 @@ int main(int argc, char *argv[]) {
   delete[] du;
   delete[] dw;
   delete[] ds;
+
+  return 0;
 }

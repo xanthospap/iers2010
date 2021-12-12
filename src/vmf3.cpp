@@ -1428,7 +1428,7 @@ int dso::vmf3(double ah, double aw, dso::datetime<dso::nanoseconds> &t,
               double lat, double lon, double zd, double &mfh,
               double &mfw) noexcept {
 #ifdef USE_EXTERNAL_CONSTS
-  constexpr double pi(DPI);
+  constexpr double pi(iers2010::DPI);
 #else
   constexpr double pi(M_PI);
 #endif

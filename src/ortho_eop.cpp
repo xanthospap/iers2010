@@ -1,7 +1,4 @@
 #include "iers2010.hpp"
-#ifdef USE_EXTERNAL_CONSTS
-#include "gencon.hpp"
-#endif
 
 /// @details  The purpose of the function is to compute the diurnal and semi-
 ///           diurnal variations in Earth Orientation Parameters (x,y, UT1) from
@@ -29,6 +26,7 @@
 ///       "Diurnal and Semidiurnal Variations in the Earth's Rotation
 ///        Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
 int iers2010::ortho_eop(double time, double &dx, double &dy, double &dut1) {
+
   constexpr double orthow[3][12] = {
       {-6.77832e0, -14.86323e0, 0.47884e0, -1.45303e0, 0.16406e0, 0.42030e0,
        0.09398e0, 25.73054e0, -4.77974e0, 0.28080e0, 1.94539e0, -0.73089e0},

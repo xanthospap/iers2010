@@ -1,5 +1,8 @@
 #include "dehanttideinel.hpp"
 #include <numeric>
+#ifdef USE_EXTERNAL_CONSTS
+#include "iersc.hpp"
+#endif
 
 /// @details This function gives the in-phase and out-of-phase corrections
 ///          induced by mantle anelasticity in the diurnal band.
@@ -34,6 +37,8 @@ void iers2010::dhtide::step2diu(const double *xsta, double fhr, double t,
 
   // Set constants
 #ifdef USE_EXTERNAL_CONSTS
+  constexpr double D2PI(iers2010::D2PI);
+  constexpr double DEG2RAD(iers2010::D2PI / 360e0);
 #else
   constexpr double D2PI(6.283185307179586476925287e0); // 2*pi
   constexpr double DEG2RAD(D2PI / 360e0);              // degrees to radians
@@ -73,46 +78,46 @@ void iers2010::dhtide::step2diu(const double *xsta, double fhr, double t,
       {3e0, 0e0, 0e0, 1e0, 0e0, 0e0, 0e0, 0e0, 0e0}};
 
   // Compute the phase angles in degrees.
-  double s{218.31664563e0 +
-           (481267.88194e0 + (-0.0014663889e0 + (0.00000185139e0) * t) * t) *
-               t};
+  double s =
+      218.31664563e0 +
+      (481267.88194e0 + (-0.0014663889e0 + (0.00000185139e0) * t) * t) * t;
 
-  double tau{fhr * 15e0 + 280.4606184e0 +
-             (36000.7700536e0 + (0.00038793e0 + (-0.0000000258e0) * t) * t) *
-                 t +
-             (-s)};
+  double tau =
+      fhr * 15e0 + 280.4606184e0 +
+      (36000.7700536e0 + (0.00038793e0 + (-0.0000000258e0) * t) * t) * t + (-s);
 
-  double pr{(1.396971278e0 +
-             (0.000308889e0 + (0.000000021e0 + (0.000000007e0) * t) * t) * t) *
-            t};
+  double pr =
+      (1.396971278e0 +
+       (0.000308889e0 + (0.000000021e0 + (0.000000007e0) * t) * t) * t) *
+      t;
 
   s += pr;
 
-  double h{
+  double h =
       280.46645e0 +
       (36000.7697489e0 +
        (0.00030322222e0 + (0.000000020e0 + (-0.00000000654e0) * t) * t) * t) *
-          t};
+          t;
 
-  double p{
+  double p =
       83.35324312e0 +
       (4069.01363525e0 +
        (-0.01032172222e0 + (-0.0000124991e0 + (0.00000005263e0) * t) * t) * t) *
-          t};
+          t;
 
-  double zns{
+  double zns =
       234.95544499e0 +
       (1934.13626197e0 +
        (-0.00207561111e0 + (-0.00000213944e0 + (0.00000001650e0) * t) * t) *
            t) *
-          t};
+          t;
 
-  double ps{
+  double ps =
       282.93734098e0 +
       (1.71945766667e0 +
        (0.00045688889e0 + (-0.00000001778e0 + (-0.00000000334e0) * t) * t) *
            t) *
-          t};
+          t;
 
   // Reduce angles to between the range 0 and 360.
   s = std::fmod(s, 360e0);
@@ -122,12 +127,12 @@ void iers2010::dhtide::step2diu(const double *xsta, double fhr, double t,
   zns = std::fmod(zns, 360e0);
   ps = std::fmod(ps, 360e0);
 
-  const double rsta{std::sqrt(std::inner_product(xsta, xsta + 3, xsta, 0e0))};
-  const double sinphi{xsta[2] / rsta};
-  const double cosphi{std::sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta};
-  const double cosla{xsta[0] / cosphi / rsta};
-  const double sinla{xsta[1] / cosphi / rsta};
-  const double zla{std::atan2(xsta[1], xsta[0])};
+  const double rsta = std::sqrt(std::inner_product(xsta, xsta + 3, xsta, 0e0));
+  const double sinphi = xsta[2] / rsta;
+  const double cosphi = std::sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
+  const double cosla = xsta[0] / cosphi / rsta;
+  const double sinla = xsta[1] / cosphi / rsta;
+  const double zla = std::atan2(xsta[1], xsta[0]);
 
   xcorsta[0] = xcorsta[1] = xcorsta[2] = 0e0;
 
@@ -146,8 +151,8 @@ void iers2010::dhtide::step2diu(const double *xsta, double fhr, double t,
 
     // DE=DATDI(8,J)*SINPHI*COS(THETAF+ZLA)+
     // Modified 20 June 2007
-    de = datdi[j][7] * sinphi * cos(thetaf + zla) -
-         datdi[j][8] * sinphi * sin(thetaf + zla);
+    de = datdi[j][7] * sinphi * std::cos(thetaf + zla) -
+         datdi[j][8] * sinphi * std::sin(thetaf + zla);
 
     xcorsta[0] += dr * cosla * cosphi - de * sinla - dn * sinphi * cosla;
     xcorsta[1] += dr * sinla * cosphi + de * cosla - dn * sinphi * sinla;

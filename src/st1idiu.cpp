@@ -33,43 +33,43 @@
 void iers2010::dhtide::st1idiu(const double *xsta, const double *xsun,
                                const double *xmon, double fac2sun,
                                double fac2mon, double *xcorsta) noexcept {
-  constexpr double dhi{-0.0025e0}, dli{-0.0007e0};
+  constexpr double dhi = -0.0025e0, dli = -0.0007e0;
 
   // Compute the normalized position vector of the IGS station.
-  const double rsta{std::sqrt(std::inner_product(xsta, xsta + 3, xsta, .0e0))};
-  const double sinphi{xsta[2] / rsta};
-  const double cosphi{std::sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta};
-  const double cos2phi{cosphi * cosphi - sinphi * sinphi};
-  const double sinla{xsta[1] / cosphi / rsta};
-  const double cosla{xsta[0] / cosphi / rsta};
+  const double rsta = std::sqrt(std::inner_product(xsta, xsta + 3, xsta, .0e0));
+  const double sinphi = xsta[2] / rsta;
+  const double cosphi = std::sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
+  const double cos2phi = cosphi * cosphi - sinphi * sinphi;
+  const double sinla = xsta[1] / cosphi / rsta;
+  const double cosla = xsta[0] / cosphi / rsta;
 
   // Compute the normalized position vector of the Moon.
-  const double rmon2{std::inner_product(xmon, xmon + 3, xmon, .0e0)};
+  const double rmon2 = std::inner_product(xmon, xmon + 3, xmon, .0e0);
 
   // Compute the normalized position vector of the Sun.
-  const double rsun2{std::inner_product(xsun, xsun + 3, xsun, .0e0)};
+  const double rsun2 = std::inner_product(xsun, xsun + 3, xsun, .0e0);
 
-  const double drsun{-3e0 * dhi * sinphi * cosphi * fac2sun * xsun[2] *
-                     (xsun[0] * sinla - xsun[1] * cosla) / rsun2};
+  const double drsun = -3e0 * dhi * sinphi * cosphi * fac2sun * xsun[2] *
+                       (xsun[0] * sinla - xsun[1] * cosla) / rsun2;
 
-  const double drmon{-3e0 * dhi * sinphi * cosphi * fac2mon * xmon[2] *
-                     (xmon[0] * sinla - xmon[1] * cosla) / rmon2};
+  const double drmon = -3e0 * dhi * sinphi * cosphi * fac2mon * xmon[2] *
+                       (xmon[0] * sinla - xmon[1] * cosla) / rmon2;
 
-  const double dnsun{-3e0 * dli * cos2phi * fac2sun * xsun[2] *
-                     (xsun[0] * sinla - xsun[1] * cosla) / rsun2};
+  const double dnsun = -3e0 * dli * cos2phi * fac2sun * xsun[2] *
+                       (xsun[0] * sinla - xsun[1] * cosla) / rsun2;
 
-  const double dnmon{-3e0 * dli * cos2phi * fac2mon * xmon[2] *
-                     (xmon[0] * sinla - xmon[1] * cosla) / rmon2};
+  const double dnmon = -3e0 * dli * cos2phi * fac2mon * xmon[2] *
+                       (xmon[0] * sinla - xmon[1] * cosla) / rmon2;
 
-  const double desun{-3e0 * dli * sinphi * fac2sun * xsun[2] *
-                     (xsun[0] * cosla + xsun[1] * sinla) / rsun2};
+  const double desun = -3e0 * dli * sinphi * fac2sun * xsun[2] *
+                       (xsun[0] * cosla + xsun[1] * sinla) / rsun2;
 
-  const double demon{-3e0 * dli * sinphi * fac2mon * xmon[2] *
-                     (xmon[0] * cosla + xmon[1] * sinla) / rmon2};
+  const double demon = -3e0 * dli * sinphi * fac2mon * xmon[2] *
+                       (xmon[0] * cosla + xmon[1] * sinla) / rmon2;
 
-  const double dr{drsun + drmon};
-  const double dn{dnsun + dnmon};
-  const double de{desun + demon};
+  const double dr = drsun + drmon;
+  const double dn = dnsun + dnmon;
+  const double de = desun + demon;
 
   // Compute the corrections for the station.
   xcorsta[0] = dr * cosla * cosphi - de * sinla - dn * sinphi * cosla;
