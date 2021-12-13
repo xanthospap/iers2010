@@ -14,9 +14,9 @@ publishes the Conventions along with relevant documents, model implementations a
 respective test cases; the latter two are available in the FORTRAN programming 
 language at the [IERS website](https://iers-conventions.obspm.fr/conventions_material.php).
 
-This repository is an effort to translate the algorithms in the C++ programming language 
- with (as much as possible) minor modifications.
-Note that the software found at this website is routinely updated.
+This repository is an effort to translate the algorithms in the C++ programming 
+language with (as much as possible) minor modifications. Note that the software 
+found at this website is routinely updated.
 
 ## Prerequisites
 
@@ -225,20 +225,38 @@ IERS source code) Alternative FORTRAN implementations are provided for:~~
 
 ### fundarg <a id="fundarg-cmp"></a>
 
-The test provided for FUNDARG (in `FUNDARG.F`) fails with maximum descripancies in the order of 
-1e<sup>-11</sup> radians or less. The same thing happens when i compile and run the FORTRAN implementation
-(see `fortran_impl`) exactly as provided by the IERS website. The tests for this program are coded in 
-[test_fundarg.cpp](src/test_fundarg.cpp) and [test_fundarg.f](fortran_impl/test_fundarg.f).
+Test case provided in the `FUNDARG.F` source file; the C++ implementation 
+([test_fundarg.cpp](src/test_fundarg.cpp)) and the FORTRAN implementation 
+([test_fundarg.f](fortran_impl/test_fundarg.f)) produce the same descripancies 
+when compared to the test case given; these are:
+```
+----------------------------------------
+> fundarg
+----------------------------------------
 
+args[0] = 7.638334e-14 radians
+args[1] = 9.699797e-12 radians
+args[2] = 7.771561e-14 radians
+args[3] = 9.591439e-12 radians
+args[4] = 2.220446e-16 radians
+```
 
 ### pmsdnut2 <a id="pmsdnut2-cmp"></a>
 
-The test case provided (in `PMSDNUT2.F`) shows discrepancies (against the C++ implementation) in the order
-of 1e<sup>-6</sup> microarcseconds or less. This is because the `DOUBLE PRECISION` float arrays `PER, XS, XC, YS and YC`
-are not explicitely marked with `D0` (in `PMSDNUT2.F`). If i use the implementation 
-[PMSDNUT2_D0.F](fortran_impl/PMSDNUT2_D0.F) (where
-the only change from `PMSDNUT2.F` is the declerations of the arrays), then the FORTRAN and C++ 
-results are identical.
+Test case provided in the `PMSDNUT2.F` source file; the C++ implementation shows 
+discrepancies of
+```
+----------------------------------------
+> pmsdnut2
+----------------------------------------
+
+dx= 1.328753e-07 microarcseconds
+dy= 4.441797e-07 microarcseconds
+```
+These discrepancies are due to the initialization of double precision values in 
+the PMSDNUT2.F subroutine; if we initialize these values using the notation:
+`123.D0` instead of `123.0`, results are identical for the FORTRAN and C++ 
+implementations.
 
 *Note that the Same thing happens with [utlibr](#utlibr-cmp).*
 

@@ -5,13 +5,19 @@
 #include <cmath>
 
 namespace iers2010 {
-/// Compute the lunisolar fundamental arguments.
+/// @brief Compute the lunisolar fundamental arguments.
 int fundarg(double, double *) noexcept;
 
-/// Compute the diurnal lunisolar effect on polar motion.
+/// @brief Compute the diurnal lunisolar effect on polar motion.
+int pmsdnut2(const dso::datetime<dso::seconds> &t, double &, double &) noexcept;
+
+/// @brief Compute the diurnal lunisolar effect on polar motion.
 int pmsdnut2(double, double &, double &) noexcept;
 
-/// Compute the subdiurnal librations in UT1.
+/// @brief Compute the subdiurnal librations in UT1.
+int utlibr(const dso::datetime<dso::seconds> &t, double &, double &) noexcept;
+
+/// @brief Compute the subdiurnal librations in UT1.
 int utlibr(double, double &, double &) noexcept;
 
 /// Compute corrections to the coordinates of the CIP to account for

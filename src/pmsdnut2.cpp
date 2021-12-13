@@ -3,6 +3,11 @@
 #include "gencon.hpp"
 #endif
 
+int iers2010::pmsdnut2(const dso::datetime<dso::seconds> &t, double &dx,
+                       double &dy) noexcept {
+  return iers2010::pmsdnut2(t.as_mjd(), dx, dy);
+}
+
 /// @details This function evaluates the model of polar motion for
 ///          a nonrigid Earth due to tidal gravitation. This polar motion
 ///          is equivalent to the so-called "subdiurnal nutation." The model
@@ -166,3 +171,4 @@ int iers2010::pmsdnut2(double rmjd, double &dx, double &dy) noexcept {
   //  Finished
   return 0;
 }
+

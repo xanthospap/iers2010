@@ -26,5 +26,17 @@ int main() {
          std::abs(dy - dy_ref) < _alg_accuracy_);
 #endif
 
+  // check also the implementation using a datetime instance
+  double dx2, dy2;
+  dso::datetime<dso::seconds> t{dso::year(2007), dso::month(8),
+                                dso::day_of_month(23), dso::seconds(0)};
+  iers2010::pmsdnut2(t, dx2, dy2);
+  assert(dx == dx2 && dy == dy2);
+
+  dso::datetime<dso::seconds> t2(dso::modified_julian_day(54335e0),
+                                 dso::seconds(0));
+  iers2010::pmsdnut2(t2, dx2, dy2);
+  assert(dx == dx2 && dy == dy2);
+
   return 0;
 }

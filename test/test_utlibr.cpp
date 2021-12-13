@@ -28,6 +28,13 @@ int main() {
          std::abs(dlod - results[1]) < _alg_accuracy_);
 #endif
 
+  dso::datetime<dso::seconds> t(dso::year(1980), dso::month(1),
+                                dso::day_of_month(1), dso::hours(2),
+                                dso::minutes(24), dso::seconds(0));
+  double dut1_, dlod_;
+  iers2010::utlibr(t, dut1_, dlod_);
+  assert(dut1 == dut1_ && dlod == dlod_);
+
   iers2010::utlibr(55227.4e0, dut1, dlod);
 #ifdef STRICT_TEST
   assert(approxEqual(dut1, results[2]));
@@ -38,6 +45,12 @@ int main() {
   assert(std::abs(dut1 - results[2]) < _alg_accuracy_ &&
          std::abs(dlod - results[3]) < _alg_accuracy_);
 #endif
+  
+  dso::datetime<dso::seconds> t1(dso::year(2010), dso::month(1),
+                                dso::day_of_month(31), dso::hours(9),
+                                dso::minutes(35), dso::seconds(59));
+  iers2010::utlibr(t1, dut1_, dlod_);
+  assert(dut1 == dut1_ && dlod == dlod_);
 
   return 0;
 }
