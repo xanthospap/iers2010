@@ -1,17 +1,19 @@
 import os, sys, glob
 
 ## Prefic for install(ed) files
-PREFIX="/usr/local"
-if not os.path.isdir(PREFIX):
-    print('[ERROR] Cannot find \'prefix\' directory, aka {:}; aborting'.format(PREFIX), file=sys.stderr)
+prefix="/usr/local"
+if not os.path.isdir(prefix):
+    print('[ERROR] Cannot find \'prefix\' directory, aka {:}; aborting'.format(prefix), file=sys.stderr)
     sys.exit(1)
 
 ## Library version
-LIBV="0.1.0"
+lib_version="0.1.0"
 ## Library name
-LIBNAME="iers2010"
+lib_name="iers2010"
 ## Include dir (following prefix) if any
-INCDIR="iers2010"
+inc_dir="iers2010"
+## the rootdir of the project
+root_dir=os.path.abspath(os.getcwd())
 
 ## get number of CPUs and use for parallel builds
 num_cpu = int(os.environ.get('NUM_CPU', 2))
@@ -35,17 +37,18 @@ debug = ARGUMENTS.get('debug', 0)
 env = denv.Clone() if int(debug) else penv.Clone()
 
 ## (shared) library ...
-vlib = env.SharedLibrary(source=lib_src_files, target=LIBNAME, CPPPATH=['.'], SHLIBVERSION=LIBV)
+vlib = env.SharedLibrary(source=lib_src_files, target=lib_name, CPPPATH=['.'], SHLIBVERSION=lib_version)
 
 ## Build ....
 env.Program(source='src/hardisp.cpp', target='bin/hardisp',
             LIBS=vlib+['ggeodesy', 'ggdatetime'], LIBPATH='.', CPPPATH=['src/'])
-env.Alias(target='install', source=env.Install(dir=os.path.join(PREFIX, 'lib'), source=vlib))
-env.Alias(target='install', source=env.Install(dir=os.path.join(PREFIX, 'include', INCDIR), source=hdr_src_files))
+env.Alias(target='install', source=env.Install(dir=os.path.join(prefix, 'lib'), source=vlib))
+env.Alias(target='install', source=env.Install(dir=os.path.join(prefix, 'include', inc_dir), source=hdr_src_files))
 
 ## Tests ...
 tests_sources = glob.glob(r"test/*.cpp")
-env.Append(CXXFLAGS='-Wl,-rpath,\'\'')
+#env.Append(CXXFLAGS='-Wl,-rpath,\'\'')
+env.Append(RPATH=root_dir)
 for tsource in tests_sources:
   ttarget = tsource.replace('_', '-').replace('.cpp', '.out')
   env.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['ggeodesy', 'ggdatetime'], LIBPATH='.')
