@@ -46,11 +46,5 @@ int main() {
          std::abs(dlod - results[3]) < _alg_accuracy_);
 #endif
   
-  dso::datetime<dso::seconds> t1(dso::year(2010), dso::month(1),
-                                dso::day_of_month(31), dso::hours(9),
-                                dso::minutes(35), dso::seconds(59));
-  iers2010::utlibr(t1, dut1_, dlod_);
-  assert(dut1 == dut1_ && dlod == dlod_);
-
   return 0;
 }

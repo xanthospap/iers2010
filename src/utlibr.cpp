@@ -3,11 +3,6 @@
 #include "iersc.hpp"
 #endif
 
-int iers2010::utlibr(const dso::datetime<dso::seconds> &t, double &dut1,
-                     double &dlod) noexcept {
-  return iers2010::utlibr(t.as_mjd(), dut1, dlod);
-}
-
 /// @details This function evaluates the model of subdiurnal libration
 ///          in the axial component of rotation, expressed by UT1 and LOD.
 ///          This effect is due to the influence of tidal gravitation on

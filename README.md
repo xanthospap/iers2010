@@ -262,24 +262,60 @@ implementations.
 
 ### utlibr <a id="utlibr-cmp"></a>
 
-The test cases provided (in `UTLIBR.F`) shows discrepancies (against the C++ implementation) in the order
-of 1e<sup>-6</sup> mas and mas/day or less. This is because the `DOUBLE PRECISION` float arrays `PER, DUT1S, DUT1C, DLODS and DLODC`
-are not explicitely marked with `D0` (in `UTLIBR.F`). If i use the implementation 
-[UTLIBR_D0.F](fortran_impl/UTLIBR_D0.F) (where
-the only change from `UTLIBR.F` is the declerations of the arrays), then the FORTRAN and C++
-results are identical.
+The source file UTLIBR.F includes two individual test cases; the C++ 
+implementation shows discrepancies of
+```
+----------------------------------------
+> utlibr
+----------------------------------------
 
-Same thing happens with [pmsdnut2](#pmsdnut2-cmp).
+dut1= 1.373660e-08 mas
+dlod= 2.357558e-07 mas / day
+dut1= 1.522151e-08 mas
+dlod= 4.876766e-07 mas / day
+```
+
+This is because of the initialization of the DOUBLE PRECISION float arrays 
+`PER, DUT1S, DUT1C, DLODS and DLODC` which not explicitely marked with `D0` 
+(in `UTLIBR.F`). If we change the initialization, the C++ and FORTRAN versions 
+produce identical results.
+
+*Same thing happens with [pmsdnut2](#pmsdnut2-cmp).*
 
 ### fcnnut <a id="fcnnut-cmp"></a>
 
-FORTRAN (i.e. `FCNNUT.F`) and C++ implementations produce identical results; no discrepancies found
-in running the test case.
+FORTRAN (i.e. `FCNNUT.F`) and C++ implementations produce identical results:
+```
+----------------------------------------
+> fcnnut
+----------------------------------------
+
+args[0] = 0.000000e+00 microarcseconds
+args[1] = 1.421085e-14 microarcseconds
+args[2] = 0.000000e+00 microarcseconds
+args[3] = 0.000000e+00 microarcseconds
+```
 
 ### arg2 <a id="arg2-cmp"></a>
 
-FORTRAN (i.e. `ARG2.F`) and C++ implementations produce identical results; no discrepancies found
-in running the test case.
+FORTRAN (i.e. `ARG2.F`) and C++ implementations produce identical results:
+```
+----------------------------------------
+> arg2
+----------------------------------------
+
+args[0] = 0.000000e+00 radians
+args[1] = 0.000000e+00 radians
+args[2] = 0.000000e+00 radians
+args[3] = 0.000000e+00 radians
+args[4] = 0.000000e+00 radians
+args[5] = 0.000000e+00 radians
+args[6] = 0.000000e+00 radians
+args[7] = 0.000000e+00 radians
+args[8] = 0.000000e+00 radians
+args[9] = 0.000000e+00 radians
+args[10] = 0.000000e+00 radians
+```
 
 ### dehanttideinel <a id="dehanttideinel-cmp"></a>
 

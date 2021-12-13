@@ -6,19 +6,33 @@
 
 namespace iers2010 {
 /// @brief Compute the lunisolar fundamental arguments.
-int fundarg(double, double *) noexcept;
+int fundarg(double tjc, double *fargs) noexcept;
 
 /// @brief Compute the diurnal lunisolar effect on polar motion.
-int pmsdnut2(const dso::datetime<dso::seconds> &t, double &, double &) noexcept;
+int pmsdnut2(double mjd, double &dx, double &dy) noexcept;
 
 /// @brief Compute the diurnal lunisolar effect on polar motion.
-int pmsdnut2(double, double &, double &) noexcept;
+#if __cplusplus >= 202002L
+template <gconcepts::is_sec_dt S>
+#else
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+#endif
+int pmsdnut2(const dso::datetime<S> &t, double &dx, double &dy) noexcept {
+    return pmsdnut2(t.as_mjd(), dx, dy);
+}
 
 /// @brief Compute the subdiurnal librations in UT1.
-int utlibr(const dso::datetime<dso::seconds> &t, double &, double &) noexcept;
+int utlibr(double mjd, double &dut1, double &dlod) noexcept;
 
 /// @brief Compute the subdiurnal librations in UT1.
-int utlibr(double, double &, double &) noexcept;
+#if __cplusplus >= 202002L
+template <gconcepts::is_sec_dt S>
+#else
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+#endif
+int utlibr(const dso::datetime<S> &t, double &dut1, double &dlod) noexcept {
+    return utlibr(t.as_mjd(), dut1, dlod);
+}
 
 /// Compute corrections to the coordinates of the CIP to account for
 /// Free Core Nutation.
