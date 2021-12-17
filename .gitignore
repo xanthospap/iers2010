@@ -1,8 +1,11 @@
+*.bak
+
 # Compiled Object files
 *.slo
 *.lo
 *.o
 *.obj
+*.os
 
 # Precompiled Headers
 *.gch

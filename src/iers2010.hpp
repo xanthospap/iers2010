@@ -3,6 +3,9 @@
 
 #include "ggdatetime/dtcalendar.hpp"
 #include <cmath>
+#ifdef DEBUG
+#include <cstdio>
+#endif
 
 namespace iers2010 {
 /// @brief Compute the lunisolar fundamental arguments.
@@ -34,13 +37,40 @@ int utlibr(const dso::datetime<S> &t, double &dut1, double &dlod) noexcept {
     return utlibr(t.as_mjd(), dut1, dlod);
 }
 
-/// Compute corrections to the coordinates of the CIP to account for
+/// @brief Compute corrections to the coordinates of the CIP to account for
 /// Free Core Nutation.
-int fcnnut(double, double &, double &, double &, double &);
+int fcnnut(double mjd, double &x, double &y, double &dx, double &dy) noexcept;
 
-/// Compute the angular argument which depends on time for 11 tidal
+/// @brief Compute corrections to the coordinates of the CIP to account for
+/// Free Core Nutation.
+#if __cplusplus >= 202002L
+template <gconcepts::is_sec_dt S>
+#else
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+#endif
+int fcnnut(const dso::datetime<S> &t, double &x, double &y, double &dx, double &dy) noexcept {
+    return fcnnut(t.as_mjd(), x, y, dx, dy);
+}
+
+/// @brief Compute the angular argument which depends on time for 11 tidal
 /// argument calculations.
-int arg2(int, double, double *) noexcept;
+int arg2(int iyear, double fdoy, double *angles) noexcept;
+
+/// @brief Compute the angular argument which depends on time for 11 tidal
+/// argument calculations.
+#if __cplusplus >= 202002L
+template <gconcepts::is_sec_dt S>
+#else
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+#endif
+int arg2(const dso::datetime<S> &t, double *angles) noexcept {
+  const dso::ydoy_date ydoy = t.as_ydoy();
+  const double day_fraction = t.sec().fractional_days();
+  return arg2(ydoy.__year.as_underlying_type(),
+              day_fraction +
+                  static_cast<double>(ydoy.__doy.as_underlying_type()),
+              angles);
+}
 
 /// Compute tidal corrections of station displacements caused by lunar and
 /// solar gravitational attraction.
@@ -94,9 +124,20 @@ int gpt2(double dmjd, double dlat, double dlon, double hell, int it, double &p,
          const char *ifile = nullptr);
 
 namespace oeop {
-/// Compute the time dependent part of second degree diurnal and
+/// @brief Compute the time dependent part of second degree diurnal and
 /// semidiurnal tidal potential.
-int cnmtx(double dmjd, double *h);
+int cnmtx(double dmjd, double *h) noexcept;
+
+/// @brief Compute the time dependent part of second degree diurnal and
+/// semidiurnal tidal potential.
+#if __cplusplus >= 202002L
+template <gconcepts::is_sec_dt S>
+#else
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+#endif
+int cnmtx(const dso::datetime<S> &t, double *h) noexcept {
+    return cnmtx(t.as_mjd(), h);
+}
 
 } // namespace oeop
 

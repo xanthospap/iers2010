@@ -114,7 +114,7 @@ int nlines = sizeof(x) / sizeof(x[0]);
 /// Ray,R. D., Steinberg, D. J., Chao, B. F., and Cartwright, D. E.,
 ///      "Diurnal and Semidiurnal Variations in the Earth's Rotation
 ///      Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
-int iers2010::oeop::cnmtx(double dmjd, double *h) {
+int iers2010::oeop::cnmtx(double dmjd, double *h) noexcept {
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double TWOPI(iers2010::D2PI);
 #else

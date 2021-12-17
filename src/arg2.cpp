@@ -14,7 +14,7 @@
 /// @param[in]  iyear Four digit year (Note 1)
 /// @param[in]  day   Day of Year Greenwich Time (Note 2)
 /// @param[out] angle Angular argument for Schwiderski computation, in radians
-///                   (Notes 3, 4 and 5)
+///                   (Notes 3, 4 and 5). Array of size > 11.
 /// @return           An integer value which can be:
 ///                   Returned Value | Status
 ///                   ---------------|-------------------------------------------

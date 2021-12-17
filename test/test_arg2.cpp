@@ -15,10 +15,16 @@ int main() {
       3.908159227647345801e0, 2.551018561669245344e0, 5.041990012540757959e0,
       4.206816878908014701e0, 1.608463638294885811e0,
   };
-  double result[11];
+  double result[11], result2[11];
 
   iers2010::arg2(2008, 311.5e0, result);
+
+  dso::datetime<dso::seconds> t{dso::year(2008), dso::day_of_year(311), dso::seconds(86400L / 2)};
+  iers2010::arg2(t, result2);
+
   for (int i = 0; i < 11; ++i) {
+    // printf("\targ2[%02d] diff=%.12f\n", i, std::abs(result[i]-result2[i]));
+    assert(result[i]==result2[i]);
 #ifdef STRICT_TEST
     assert(approxEqual(result[i], result_ref[i]));
 #else

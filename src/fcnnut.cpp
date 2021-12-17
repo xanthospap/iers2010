@@ -82,7 +82,7 @@ constexpr int N = table.size();
 ///
 /// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
 ///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
-int iers2010::fcnnut(double mjd, double &x, double &y, double &dx, double &dy) {
+int iers2010::fcnnut(double mjd, double &x, double &y, double &dx, double &dy) noexcept {
 
 #ifdef USE_EXTERNAL_CONSTS
   constexpr double PI(iers2010::DPI);
