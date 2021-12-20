@@ -1,5 +1,5 @@
 #include "hardisp.hpp"
-#include "ggdatetime/datetime_write.hpp"
+#include "datetime/datetime_write.hpp"
 #include "iers2010.hpp"
 #include <fstream>
 #include <stdexcept>

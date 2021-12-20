@@ -1,7 +1,7 @@
 #ifndef __IERS_1010_HARDISP__
 #define __IERS_1010_HARDISP__
 
-#include "ggdatetime/dtcalendar.hpp"
+#include "datetime/dtcalendar.hpp"
 #include <cmath>
 
 namespace iers2010 {

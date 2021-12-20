@@ -1,6 +1,6 @@
 #include "blqstrm.hpp"
-#include "ggdatetime/datetime_write.hpp"
-#include "ggdatetime/dtcalendar.hpp"
+#include "datetime/datetime_write.hpp"
+#include "datetime/dtcalendar.hpp"
 #include "hardisp.hpp"
 #include "iers2010.hpp"
 #include <stdio.h>

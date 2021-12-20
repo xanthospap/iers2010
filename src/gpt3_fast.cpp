@@ -1,5 +1,5 @@
-#include "ggdatetime/dtcalendar.hpp"
-#include "ggeodesy/units.hpp"
+#include "datetime/dtcalendar.hpp"
+#include "geodesy/units.hpp"
 #include "tropo.hpp"
 #include <cmath>
 #include <fstream>
