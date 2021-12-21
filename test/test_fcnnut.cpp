@@ -15,13 +15,9 @@ int main() {
 
   iers2010::fcnnut(54790e0, result[0], result[1], result[2], result[3]);
   for (int i = 0; i < 4; ++i) {
-#ifdef STRICT_TEST
-    assert(approxEqual(result[i], result_ref[i]));
-#else
     printf("\nargs[%1d] = %12.6e microarcseconds", i,
            std::abs(result[i] - result_ref[i]));
     assert(approxEqual(result[i], result_ref[i]));
-#endif
   }
   return 0;
 }

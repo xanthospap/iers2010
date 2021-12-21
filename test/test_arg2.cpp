@@ -19,19 +19,16 @@ int main() {
 
   iers2010::arg2(2008, 311.5e0, result);
 
-  dso::datetime<dso::seconds> t{dso::year(2008), dso::day_of_year(311), dso::seconds(86400L / 2)};
+  dso::datetime<dso::seconds> t{dso::year(2008), dso::day_of_year(311),
+                                dso::seconds(86400L / 2)};
   iers2010::arg2(t, result2);
 
   for (int i = 0; i < 11; ++i) {
     // printf("\targ2[%02d] diff=%.12f\n", i, std::abs(result[i]-result2[i]));
     assert(result[i]==result2[i]);
-#ifdef STRICT_TEST
-    assert(approxEqual(result[i], result_ref[i]));
-#else
     printf("\nargs[%1d] = %12.6e radians", i,
            std::abs(result[i] - result_ref[i]));
     assert(approxEqual(result[i], result_ref[i]));
-#endif
   }
   return 0;
 }

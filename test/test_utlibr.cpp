@@ -15,18 +15,17 @@ int main() {
                             -14.78971247349449492e0,
                             -2.655705844335680244e0, // test case B
                             27.39445826599846967e0};
+  
+  const double fortran_diffs[] = {0.14e-07, 0.24e-06, 0.16e-07, 0.49e-06};
   double dut1, dlod;
 
   iers2010::utlibr(44239.1e0, dut1, dlod);
-#ifdef STRICT_TEST
-  assert(approxEqual(dut1, results[0]));
-  assert(approxEqual(dlod, results[1]));
-#else
   printf("\ndut1= %12.6e mas", std::abs(dut1 - results[0]));
   printf("\ndlod= %12.6e mas / day", std::abs(dlod - results[1]));
   assert(std::abs(dut1 - results[0]) < _alg_accuracy_ &&
          std::abs(dlod - results[1]) < _alg_accuracy_);
-#endif
+  assert(std::abs(dut1 - results[0]) < fortran_diffs[0] &&
+         std::abs(dlod - results[1]) < fortran_diffs[1]);
 
   dso::datetime<dso::seconds> t(dso::year(1980), dso::month(1),
                                 dso::day_of_month(1), dso::hours(2),
@@ -36,15 +35,12 @@ int main() {
   assert(dut1 == dut1_ && dlod == dlod_);
 
   iers2010::utlibr(55227.4e0, dut1, dlod);
-#ifdef STRICT_TEST
-  assert(approxEqual(dut1, results[2]));
-  assert(approxEqual(dlod, results[3]));
-#else
   printf("\ndut1= %12.6e mas", std::abs(dut1 - results[2]));
   printf("\ndlod= %12.6e mas / day", std::abs(dlod - results[3]));
   assert(std::abs(dut1 - results[2]) < _alg_accuracy_ &&
          std::abs(dlod - results[3]) < _alg_accuracy_);
-#endif
+  assert(std::abs(dut1 - results[2]) < fortran_diffs[2] &&
+         std::abs(dlod - results[3]) < fortran_diffs[3]);
   
   return 0;
 }

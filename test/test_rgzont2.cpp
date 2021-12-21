@@ -15,17 +15,18 @@ int main() {
   const double result_ref[] = {7.983287678576557467E-002,
                                5.035331113978199288E-005,
                                -4.249711616463017E-014};
-  double result[3];
+  double result[3], result2[3];
+
+  dso::datetime<dso::seconds> t(dso::modified_julian_day(54465), dso::seconds(0));
 
   iers2010::rg_zont2(.07995893223819302e0, result[0], result[1], result[2]);
+  iers2010::rg_zont2(t, result2[0], result2[1], result2[2]);
+
   for (int i = 0; i < 3; ++i) {
-#ifdef STRICT_TEST
-    assert(approxEqual(result[i], result_ref[i]));
-#else
     printf("\nargs[%1d] = %12.6e %s", i, std::abs(result[i] - result_ref[i]),
            units[i]);
     assert(std::abs(result[i] - result_ref[i]) < _alg_accuracy_);
-#endif
+    assert(std::abs(result2[i] - result_ref[i]) < _alg_accuracy_);
   }
 
   return 0;

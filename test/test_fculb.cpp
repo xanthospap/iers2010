@@ -11,12 +11,8 @@ int main() {
 
   const double result_ref = 3.800758725284345996e0;
   double f = iers2010::fcul_b(30.67166667e0, 2075e0, 224e0, 15e0);
-#ifdef STRICT_TEST
-  assert(approxEqual(f, result_ref));
-#else
   printf("\nargs[%1d] = %12.6e ", 1, std::abs(f - result_ref));
   assert(approxEqual(f, result_ref));
-#endif
 
   return 0;
 }

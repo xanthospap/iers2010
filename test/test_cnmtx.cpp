@@ -20,12 +20,8 @@ int main() {
 
   iers2010::oeop::cnmtx(54964.0e0, result);
   for (int i = 0; i < 12; ++i) {
-#ifdef STRICT_TEST
-    assert(approxEqual(result[i], result_ref[i]));
-#else
     printf("\nargs[%1d] = %12.6e ", i, std::abs(result[i] - result_ref[i]));
     assert(approxEqual(result[i], result_ref[i]));
-#endif
   }
   return 0;
 }

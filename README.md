@@ -284,38 +284,11 @@ produce identical results.
 
 ### fcnnut <a id="fcnnut-cmp"></a>
 
-FORTRAN (i.e. `FCNNUT.F`) and C++ implementations produce identical results:
-```
-----------------------------------------
-> fcnnut
-----------------------------------------
-
-args[0] = 0.000000e+00 microarcseconds
-args[1] = 1.421085e-14 microarcseconds
-args[2] = 0.000000e+00 microarcseconds
-args[3] = 0.000000e+00 microarcseconds
-```
+FORTRAN (i.e. `FCNNUT.F`) and C++ implementations produce identical results.
 
 ### arg2 <a id="arg2-cmp"></a>
 
-FORTRAN (i.e. `ARG2.F`) and C++ implementations produce identical results:
-```
-----------------------------------------
-> arg2
-----------------------------------------
-
-args[0] = 0.000000e+00 radians
-args[1] = 0.000000e+00 radians
-args[2] = 0.000000e+00 radians
-args[3] = 0.000000e+00 radians
-args[4] = 0.000000e+00 radians
-args[5] = 0.000000e+00 radians
-args[6] = 0.000000e+00 radians
-args[7] = 0.000000e+00 radians
-args[8] = 0.000000e+00 radians
-args[9] = 0.000000e+00 radians
-args[10] = 0.000000e+00 radians
-```
+FORTRAN (i.e. `ARG2.F`) and C++ implementations produce identical results.
 
 ### dehanttideinel <a id="dehanttideinel-cmp"></a>
 
