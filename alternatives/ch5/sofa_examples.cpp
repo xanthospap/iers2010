@@ -1,4 +1,5 @@
 #include "iau.hpp"
+#include <cstdio>
 
 using namespace iers2010;
 
@@ -20,7 +21,7 @@ RotationMatrix3 iau00a_cio(double tt1, double tt2, double ut11, double ut12,
   y += dy00;
 
   // GCRS to CIRS matrix.
-  auto rc2i = c2ixys(x, y, s);
+  // auto rc2i = c2ixys(x, y, s);
 
   // Earth rotation angle.
   double era = era00(ut11, ut12);
@@ -89,8 +90,8 @@ RotationMatrix3 iau00a_eq(double tt1, double tt2, double ut11, double ut12,
 
 // IAU 2006/2000A, CIO based, using classical angles
 RotationMatrix3 iau06a_eq(double tt1, double tt2, double ut11, double ut12,
-                          double xp, double yp, double dx00,
-                          double dy00) noexcept {
+                          double xp, double yp, 
+                          double dx06, double dy06) noexcept {
   // ========================= //
   // IAU 2006/2000A, CIO based //
   // ========================= //
@@ -123,6 +124,17 @@ RotationMatrix3 iau06a_eq(double tt1, double tt2, double ut11, double ut12,
 }
 
 
+void print_rotmat(const RotationMatrix3 &mat) noexcept {
+  for (int r=0; r<3; r++) {
+    printf("|");
+    for (int j=0; j<3; j++) {
+      printf(" %+15.12f ", mat.data[r][j]);
+    }
+    printf("|");
+  }
+  printf("\n");
+}
+
 int main() {
 
     // Polar motion (arcsec->radians).
@@ -130,11 +142,11 @@ int main() {
     const double yp = 0.4833163 * DAS2R;
 
     // UT1-UTC (s).
-    const double dut1 = -0.072073685;
+    // const double dut1 = -0.072073685;
 
     // Nutation corrections wrt IAU 1976/1980 (mas->radians).
-    const double ddp80 = -55.0655 * DMAS2R;
-    const double dde80 = -6.3580 * DMAS2R;
+    // const double ddp80 = -55.0655 * DMAS2R;
+    // const double dde80 = -6.3580 * DMAS2R;
 
     // CIP offsets wrt IAU 2000A (mas->radians).
     const double dx00 = 0.1725 * DMAS2R;
@@ -149,3 +161,19 @@ int main() {
     const double tt2 = 0.500754444444444e0;
     const double ut1 = tt1;
     const double ut2 = 0.499999165813831;
+
+    //  IAU 2000A, CIO based, using classical angles
+    auto ex1 = iau00a_cio(tt1, tt2, ut1, ut1, xp, yp, dx00, dy00);
+
+    // IAU 2000A, equinox based, using classical angles 
+  auto ex2 = iau00a_eq(tt1, tt2, ut1, ut2, xp, yp, dx00, dy00);
+
+  // IAU 2006/2000A, CIO based, using classical angles
+  auto ex3 = iau06a_eq(tt1, tt2, ut1, ut2, xp, yp, dx06, dy06);
+
+  print_rotmat(ex1);
+  print_rotmat(ex2);
+  print_rotmat(ex3);
+
+  return 0;
+}

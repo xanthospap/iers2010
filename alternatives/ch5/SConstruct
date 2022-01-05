@@ -51,5 +51,6 @@ vlib = env.SharedLibrary(source=lib_src_files, target=LIBNAME, CPPPATH=['.'], SH
 
 ## Build ....
 env.Program(source='test_t2c.cc', target='t2c.out', LIBS=[LIBNAME], LIBPATH='.', CPPPATH=['.'])
+env.Program(source='sofa_examples.cpp', target='sofaex.out', LIBS=[LIBNAME], LIBPATH='.', CPPPATH=['.'])
 env.Alias(target='install', source=env.Install(dir=os.path.join(PREFIX, 'lib'), source=vlib))
 env.Alias(target='install', source=env.Install(dir=os.path.join(PREFIX, 'include', INCDIR), source=hdr_src_files))
