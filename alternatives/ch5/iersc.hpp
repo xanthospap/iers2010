@@ -15,6 +15,9 @@ constexpr double TURNAS  =1296000e0;
 /// @brief Arcseconds to radians
 constexpr double DAS2R = 4.848136811095359935899141e-6;
 
+/// @brief Radians to arcseconds
+constexpr double DR2AS = 206264.8062470963551564734e0;
+
 // Milliarcseconds to radians
 constexpr double DMAS2R = DAS2R / 1e3;
 
