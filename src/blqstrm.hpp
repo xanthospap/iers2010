@@ -24,6 +24,9 @@ public:
   /// Move assignment operator
   BlqIn &operator=(BlqIn &&b) = default;
 
+  /// Destructor (does nothing)
+  ~BlqIn() noexcept {};
+
   /// @brief Read next station from (an already open) BlqIn stream
   /// @param[out] sta  If found, the name of the next station BLQ record
   /// @return  An integer, denoting the following:
