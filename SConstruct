@@ -2,9 +2,9 @@ import os, sys, glob
 
 ## Prefic for install(ed) files
 prefix="/usr/local"
-if not os.path.isdir(prefix):
-  print('[ERROR] Cannot find \'prefix\' directory, aka {:}; aborting'.format(prefix), file=sys.stderr)
-  sys.exit(1)
+#if not os.path.isdir(prefix):
+#  print('[ERROR] Cannot find \'prefix\' directory, aka {:}; aborting'.format(prefix), file=sys.stderr)
+#  sys.exit(1)
 
 ## Library version
 lib_version="0.1.0"
