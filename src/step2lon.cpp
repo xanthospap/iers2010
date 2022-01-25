@@ -98,10 +98,8 @@ void iers2010::dhtide::step2lon(const double *xsta, double t,
   const double cosla = xsta[0] / cosphi / rsta;
   const double sinla = xsta[1] / cosphi / rsta;
 
-  double dr_tot = 0e0, dn_tot = 0e0;
-
+  // double dr_tot = 0e0, dn_tot = 0e0;
   xcorsta[0] = xcorsta[1] = xcorsta[2] = 0e0;
-
   double thetaf, dr, dn, de;
   for (int j = 0; j < 5; j++) {
 
@@ -117,8 +115,8 @@ void iers2010::dhtide::step2lon(const double *xsta, double t,
 
     de = 0e0;
 
-    dr_tot += dr;
-    dn_tot += dn;
+    //dr_tot += dr;
+    //dn_tot += dn;
 
     xcorsta[0] += dr * cosla * cosphi - de * sinla - dn * sinphi * cosla;
     xcorsta[1] += dr * sinla * cosphi + de * cosla - dn * sinphi * sinla;

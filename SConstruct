@@ -1,11 +1,7 @@
 import os, sys, glob
 
 ## Prefic for install(ed) files
-prefix="/usr/local"
-#if not os.path.isdir(prefix):
-#  print('[ERROR] Cannot find \'prefix\' directory, aka {:}; aborting'.format(prefix), file=sys.stderr)
-#  sys.exit(1)
-
+## prefix="/usr/local"
 ## Library version
 lib_version="0.1.0"
 ## Library name
@@ -20,6 +16,24 @@ num_cpu = int(os.environ.get('NUM_CPU', 2))
 SetOption('num_jobs', num_cpu)
 print("running with -j %s" % GetOption('num_jobs'))
 
+## user can specify the --prefix variables (expanded to $PREFIX)
+AddOption('--prefix',
+          dest='prefix',
+          type='string',
+          nargs=1,
+          action='store',
+          metavar='DIR',
+          help='installation prefix',
+          default='/usr/local')
+AddOption('--cxx',
+          dest='cxx',
+          type='string',
+          nargs=1,
+          action='store',
+          metavar='CXX',
+          help='C++ Compiler',
+          default='g++')
+
 ## Source files (for lib)
 lib_src_files = glob.glob(r"src/*.cpp")
 
@@ -27,8 +41,8 @@ lib_src_files = glob.glob(r"src/*.cpp")
 hdr_src_files = glob.glob(r"src/*.hpp")
 
 ## Environments ...
-denv = Environment(CXXFLAGS='-std=c++17 -g -pg -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization -DDEBUG')
-penv = Environment(CXXFLAGS='-std=c++17 -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -O2 -march=native')
+denv = Environment(PREFIX = GetOption('prefix'), CXX=GetOption('cxx'), CXXFLAGS='-std=c++17 -g -pg -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization -DDEBUG')
+penv = Environment(PREFIX = GetOption('prefix'), CXX=GetOption('cxx'), CXXFLAGS='-std=c++17 -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -O2 -march=native')
 
 ## Command line arguments ...
 debug = ARGUMENTS.get('debug', 0)
@@ -42,12 +56,13 @@ vlib = env.SharedLibrary(source=lib_src_files, target=lib_name, CPPPATH=['.'], S
 ## Build ....
 env.Program(source='src/hardisp.cpp', target='bin/hardisp',
             LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.', CPPPATH=['src/'])
-env.Alias(target='install', source=env.Install(dir=os.path.join(prefix, 'include', inc_dir), source=hdr_src_files))
-env.Alias(target='install', source=env.InstallVersionedLib(dir=os.path.join(prefix, 'lib'), source=vlib))
+#env.Alias(target='install', source=env.Install(dir=os.path.join(prefix, 'include', inc_dir), source=hdr_src_files))
+#env.Alias(target='install', source=env.InstallVersionedLib(dir=os.path.join(prefix, 'lib'), source=vlib))
+env.Alias(target='install', source=env.Install(dir=os.path.join(GetOption('prefix'), 'include', inc_dir), source=hdr_src_files))
+env.Alias(target='install', source=env.InstallVersionedLib(dir=os.path.join(GetOption('prefix'), 'lib'), source=vlib))
 
 ## Tests ...
 tests_sources = glob.glob(r"test/*.cpp")
-#env.Append(CXXFLAGS='-Wl,-rpath,\'\'')
 env.Append(RPATH=root_dir)
 for tsource in tests_sources:
   ttarget = tsource.replace('_', '-').replace('.cpp', '.out')

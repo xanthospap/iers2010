@@ -1,6 +1,6 @@
 # libiers10++
 
-[![Build Status](https://travis-ci.org/xanthospap/iers2010.svg?branch=master)](https://travis-ci.org/xanthospap/iers2010)
+[![Build Status](https://app.travis-ci.com/xanthospap/iers2010.svg?branch=master)](https://app.travis-ci.com/xanthospap/iers2010)
 
 C++ library implementing the IERS 2010 standards.
 

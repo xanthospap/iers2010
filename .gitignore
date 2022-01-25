@@ -49,6 +49,8 @@ refguide_html/*
 api_html/*
 .deps/*
 test-driver/*
+alternatives/ch5/*
+fortran_impl/*.F
 
 # Html
 *.html

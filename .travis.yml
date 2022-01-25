@@ -19,3 +19,4 @@ before_script:
 script:
   - scons
   - scons debug=1
+  - scons --cxx=clang++
