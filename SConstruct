@@ -32,7 +32,7 @@ AddOption('--cxx',
           action='store',
           metavar='CXX',
           help='C++ Compiler',
-          default='g++')
+          default=None)
 
 ## Source files (for lib)
 lib_src_files = glob.glob(r"src/*.cpp")
@@ -41,14 +41,17 @@ lib_src_files = glob.glob(r"src/*.cpp")
 hdr_src_files = glob.glob(r"src/*.hpp")
 
 ## Environments ...
-denv = Environment(PREFIX = GetOption('prefix'), CXX=GetOption('cxx'), CXXFLAGS='-std=c++17 -g -pg -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization -DDEBUG')
-penv = Environment(PREFIX = GetOption('prefix'), CXX=GetOption('cxx'), CXXFLAGS='-std=c++17 -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -O2 -march=native')
+denv = Environment(PREFIX = GetOption('prefix'), CXXFLAGS='-std=c++17 -g -pg -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization -DDEBUG')
+penv = Environment(PREFIX = GetOption('prefix'), CXXFLAGS='-std=c++17 -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -O2 -march=native')
 
 ## Command line arguments ...
 debug = ARGUMENTS.get('debug', 0)
 
 ## Construct the build enviroment
 env = denv.Clone() if int(debug) else penv.Clone()
+
+## What compiler should we be using ?
+if GetOption('cxx') is not None: env['CXX'] = GetOption('cxx')
 
 ## (shared) library ...
 vlib = env.SharedLibrary(source=lib_src_files, target=lib_name, CPPPATH=['.'], SHLIBVERSION=lib_version)
