@@ -25,74 +25,23 @@ is used in the library functions to handle datetime instances when needed.
 Hence, you should have [ggdatetime](https://github.com/xanthospap/ggdatetime) 
 on your system.
 
-Also *note that the library is still at development phase so users need to 
-configure the project before compiling*. That is, you will need the
-[GNU Autotools](https://en.wikipedia.org/wiki/GNU_Autotools) package to be 
-able to install the software.
+~~Also *note that the library is still at development phase so users need to~~
+~~configure the project before compiling*. That is, you will need the~~
+~~[GNU Autotools](https://en.wikipedia.org/wiki/GNU_Autotools) package to be~~
+~~able to install the software.~~
 
 ## Compilation / Installation
 
-### TL;DR
+> January 2022:
+> From now on, only the [scons](https://scons.org/) build will be supported; 
+> support for autotools is dropped.
 
-Clone, prepare build and make!
+The project is built via the [scons](https://scons.org/) built system:
 
 ```bash
 $> git clone https://github.com/xanthospap/iers2010.git && cd iers2010
-$> ./install_setup.py -c production
-$> autoreconf -if
-$> ./configure
-$> make && sudo make install
-```
-
-### Choosing C++ Standard _(optional read)_
-
-Source code is ISO C++17 but also __compatible with C++14__. 
-Compilation should be trivial using any C++ compiler
-[supporting the c++17](https://en.wikipedia.org/wiki/C%2B%2B17#Compiler_support) 
-or the [c++14](https://en.wikipedia.org/wiki/C%2B%2B14#Compiler_support)
-standard (option `-std=c++17` or -std=c++14` in gcc and clang). By default, the 
-project build files use the C++17 standard; to specify a different one, you can either 
-  * change the standard flag (`-std=c++17`) in every Makefile.am file, in the directories 
-    `src`, `test` and optionally `boost`, or
-  * [set the flag](#install-setup-script) when invoking the `install_setup.py` script (e.g. for C++14,
-    `./install_setup.py -s 14`)
-
-Apart from C++17 and C++14 no other standard has been tested; should you want another, 
-chances are you should probably adapt the source code.
-
-### install setup script _(optional read)_
-
-We provide a python script ([install_setup.py](install_setup.py)) to assist the 
-creation/editing of the needed Makefile.am's; this way you most probably do not need to 
-mess up with any Makefiles. The script has a help message (just pass the `-h` option) 
-where you can see all applicable switches. The basic options are:
-  * choose between a __debug__ or a __production__ build,
-  * [choose a C++ standard](#chossing_c++_standard),
-
-For most users, just running `install_setup.py -c production` should do just fine. This will 
-setup a build enviroment using the default options aka the C++17 standard, a production compilation 
-mode and exclude source code depending on boost.
-
-###  Compilation
-
-For the following, `ROOTDIR` will be the root directory of this repository,
-aka the directory under which `/src`, `/test` and `/doc` folders live.
-
-To prepare the required files for compilation (that is the `Makefile.am` in each 
-of the relevant folders) you need to run the script [install_setup.py](install_setup.py). 
-You can use the `-h` switch to see the help message, but in most cases the 
-command `./install_setup.py -c production` will suffice.
-
-If needed (that is you are not running the script from `ROOTDIR`) specify the 
-`ROOTDIR` path via the `-d` switch.
-
-Then run Autotools and compile:
-
-```bash
-autoreconf -if
-./configure
-make
-sudo make install
+$> scons
+$> sudo scons install
 ```
 
 ## Distributed Data Files
