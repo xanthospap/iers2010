@@ -1,5 +1,5 @@
-#ifndef __BLQ_STREAM_HPP__
-#define __BLQ_STREAM_HPP__
+#ifndef __BLQ_IN_STREAM_HPP__
+#define __BLQ_IN_STREAM_HPP__
 
 #include <fstream>
 
@@ -78,9 +78,8 @@ private:
   std::string __filename;
   std::ifstream __istream;
   pos_type __eoheader;
-
 }; // BlqIn
 
-} // namespace iers2010
+} // iers2010
 
 #endif

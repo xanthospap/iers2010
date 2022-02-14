@@ -39,8 +39,8 @@ int hardisp_impl(int, double, double tamp[3][ntin], double tph[3][ntin],
                  dso::datetime<dso::seconds> epoch, double *du, double *ds,
                  double *dw);
 
-} // namespace hisp
+} // hisp
 
-} // namespace iers2010
+} // iers2010
 
 #endif

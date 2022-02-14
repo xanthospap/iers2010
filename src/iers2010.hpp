@@ -1,5 +1,5 @@
-#ifndef __NGPT_IERS_1010__
-#define __NGPT_IERS_1010__
+#ifndef __DSO__IERS_1010__
+#define __DSO__IERS_1010__
 
 #include "datetime/dtcalendar.hpp"
 #include <cmath>
@@ -21,7 +21,7 @@ template <gconcepts::is_sec_dt S>
 template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
 #endif
 int pmsdnut2(const dso::datetime<S> &t, double &dx, double &dy) noexcept {
-    return pmsdnut2(t.as_mjd(), dx, dy);
+  return pmsdnut2(t.as_mjd(), dx, dy);
 }
 
 /// @brief Compute the subdiurnal librations in UT1.
@@ -34,7 +34,7 @@ template <gconcepts::is_sec_dt S>
 template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
 #endif
 int utlibr(const dso::datetime<S> &t, double &dut1, double &dlod) noexcept {
-    return utlibr(t.as_mjd(), dut1, dlod);
+  return utlibr(t.as_mjd(), dut1, dlod);
 }
 
 /// @brief Compute corrections to the coordinates of the CIP to account for
@@ -48,8 +48,9 @@ template <gconcepts::is_sec_dt S>
 #else
 template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
 #endif
-int fcnnut(const dso::datetime<S> &t, double &x, double &y, double &dx, double &dy) noexcept {
-    return fcnnut(t.as_mjd(), x, y, dx, dy);
+int fcnnut(const dso::datetime<S> &t, double &x, double &y, double &dx,
+           double &dy) noexcept {
+  return fcnnut(t.as_mjd(), x, y, dx, dy);
 }
 
 /// @brief Compute the angular argument which depends on time for 11 tidal
@@ -93,7 +94,7 @@ int ortho_eop(const dso::datetime<S> &t, double &dx, double &dy,
   return ortho_eop(t.as_mjd(), dx, dy, dut1);
 }
 
-/// @brief Evaluate the effects of zonal Earth tides on the rotation of the 
+/// @brief Evaluate the effects of zonal Earth tides on the rotation of the
 ///        Earth.
 int rg_zont2(double t, double &dut, double &dlod, double &domega) noexcept;
 #if __cplusplus >= 202002L
@@ -158,7 +159,7 @@ template <gconcepts::is_sec_dt S>
 template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
 #endif
 int cnmtx(const dso::datetime<S> &t, double *h) noexcept {
-    return cnmtx(t.as_mjd(), h);
+  return cnmtx(t.as_mjd(), h);
 }
 
 } // namespace oeop

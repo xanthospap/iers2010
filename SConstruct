@@ -33,9 +33,25 @@ AddOption('--cxx',
           metavar='CXX',
           help='C++ Compiler',
           default=None)
+AddOption('--std',
+          dest='std',
+          type='string',
+          nargs=1,
+          action='store',
+          metavar='STD',
+          help='C++ Standard [11/14/17/20]',
+          default='17')
 
 ## Source files (for lib)
 lib_src_files = glob.glob(r"src/*.cpp")
+lib_src_files += glob.glob(r"src/iau/*.cpp")
+lib_src_files += glob.glob(r"src/ch5/*.cpp")
+lib_src_files += glob.glob(r"src/ch7/*.cpp")
+lib_src_files += glob.glob(r"src/ch8/*.cpp")
+lib_src_files += glob.glob(r"src/ch9/*.cpp")
+lib_src_files += glob.glob(r"src/hardisp/*.cpp")
+lib_src_files += glob.glob(r"src/dehanttideinel/*.cpp")
+lib_src_files += glob.glob(r"src/extra/atmosphere/*.cpp")
 
 ## Headers (for lib)
 hdr_src_files = glob.glob(r"src/*.hpp")
@@ -53,14 +69,16 @@ env = denv.Clone() if int(debug) else penv.Clone()
 ## What compiler should we be using ?
 if GetOption('cxx') is not None: env['CXX'] = GetOption('cxx')
 
+## Set the C++ standard
+cxxstd = GetOption('std')
+env.Append(CXXFLAGS=' --std=c++{}'.format(cxxstd))
+
 ## (shared) library ...
-vlib = env.SharedLibrary(source=lib_src_files, target=lib_name, CPPPATH=['.'], SHLIBVERSION=lib_version)
+vlib = env.SharedLibrary(source=lib_src_files, target=lib_name, CPPPATH=['src/'], SHLIBVERSION=lib_version)
 
 ## Build ....
 env.Program(source='src/hardisp.cpp', target='bin/hardisp',
             LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.', CPPPATH=['src/'])
-#env.Alias(target='install', source=env.Install(dir=os.path.join(prefix, 'include', inc_dir), source=hdr_src_files))
-#env.Alias(target='install', source=env.InstallVersionedLib(dir=os.path.join(prefix, 'lib'), source=vlib))
 env.Alias(target='install', source=env.Install(dir=os.path.join(GetOption('prefix'), 'include', inc_dir), source=hdr_src_files))
 env.Alias(target='install', source=env.InstallVersionedLib(dir=os.path.join(GetOption('prefix'), 'lib'), source=vlib))
 

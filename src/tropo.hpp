@@ -156,7 +156,7 @@ struct gpt3_grid {
 ///            with the correct size before passed in.
 /// @return Anything other than 0 denotes an error
 int parse_gpt3_grid(const char *gridfn, gpt3_grid *grid) noexcept;
-} // namespace gpt3
+} // gpt3
 
 /// @class gpt3_result A structure to hold GPT3 details returned by the
 ///        corresponding function.
@@ -298,5 +298,5 @@ int vmf3(const dso::gpt3_result *gptres, dso::datetime<dso::nanoseconds> &t,
          const double *vlat, const double *vlon, const double *vzd,
          dso::vmf3_hw *vmfres, int num_sta) noexcept;
 
-} // namespace dso
+} // dso
 #endif

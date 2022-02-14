@@ -50,7 +50,7 @@ inline double sprod(const double *x, const double *y, double &r1,
   return std::inner_product(x, x + 3, y, .0e0);
 }
 
-} // namespace dhtide
+} // dhtide
 
-} // namespace iers2010
+} // iers2010
 #endif
