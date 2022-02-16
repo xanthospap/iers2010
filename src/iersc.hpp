@@ -44,6 +44,9 @@ constexpr const double Re = 6'378'136.6e0;
 /// @brief Geocentric gravitational constant [m^3 / s ^2)]
 constexpr const double GMe = 3.986004418e14;
 
+/// @brief Astronomical unit [m]
+constexpr const double AU = 1.49597870700e11;
+
 /// @brief Normalize angle into the range 0 <= a < 2pi.
 /// @param[in] angle Angle in radians
 /// @return Angle in radians in range [0,2pi)
