@@ -47,6 +47,10 @@ constexpr const double GMe = 3.986004418e14;
 /// @brief Astronomical unit [m]
 constexpr const double AU = 1.49597870700e11;
 
+/// @brief Nominal mean Earth’s angular velocity [1/rads]
+/// @note Table 1.2: Parameters of the Geodetic Reference System GRS80
+constexpr const double OmegaEarth = 7.292115e-5;
+
 /// @brief Normalize angle into the range 0 <= a < 2pi.
 /// @param[in] angle Angle in radians
 /// @return Angle in radians in range [0,2pi)
