@@ -20,6 +20,9 @@ constexpr const double TURNAS = 1'296'000e0;
 /// @brief Arcseconds to radians
 constexpr const double DAS2R = 4.848136811095359935899141e-6;
 
+/// @brief Radians to arcseconds
+constexpr double DR2AS = 206'264.8062470963551564734e0;
+
 /// @brief Milliarcseconds to radians
 constexpr const double DMAS2R = DAS2R / 1e3;
 
@@ -37,6 +40,9 @@ constexpr const double DJM00 = 51'544.5e0;
 
 /// @brief Equatorial radius of the Earth [m].
 constexpr const double Re = 6'378'136.6e0;
+
+/// @brief Geocentric gravitational constant [m^3 / s ^2)]
+constexpr const double GMe = 3.986004418e14;
 
 /// @brief Normalize angle into the range 0 <= a < 2pi.
 /// @param[in] angle Angle in radians

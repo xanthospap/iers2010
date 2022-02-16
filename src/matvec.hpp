@@ -8,6 +8,17 @@ namespace dso {
 
 struct Vector3 {
   double data[3] = {0e0, 0e0, 0e0};
+  constexpr const double &x() const noexcept {return data[0];}
+  constexpr const double &y() const noexcept {return data[1];}
+  constexpr const double &z() const noexcept {return data[2];}
+  constexpr double &x() noexcept {return data[0];}
+  constexpr double &y() noexcept {return data[1];}
+  constexpr double &z() noexcept {return data[2];}
+
+  static constexpr Vector3 to_vec3(const double *vec) noexcept {
+    return Vector3{{vec[0], vec[1], vec[2]}};
+  }
+
   constexpr double norm_squared() const noexcept {
     return data[0] * data[0] + data[1] * data[1] + data[2] * data[2];
   }
@@ -64,7 +75,7 @@ struct Mat3x3 {
   Mat3x3 operator*(const Mat3x3 &b) const noexcept;
 
   /// @brief Multiply a vector by a matrix.
-  Vector3 operator*(const Vector3 &vec) noexcept {
+  Vector3 operator*(const Vector3 &vec) const noexcept {
     double v0 =
         data[0] * vec.data[0] + data[1] * vec.data[1] + data[2] * vec.data[2];
     double v1 =
