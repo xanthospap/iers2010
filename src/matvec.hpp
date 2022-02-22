@@ -64,6 +64,11 @@ struct Vector3 {
 
 };
 
+inline
+Vector3 operator*(double scalar, const Vector3& vec) noexcept {
+  return vec * scalar;
+}
+
 struct Mat3x3 {
   double data[9] = {1e0, 0e0, 0e0, 0e0, 1e0, 0e0, 0e0, 0e0, 1e0};
 
