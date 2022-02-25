@@ -2,12 +2,114 @@
 #define __DSO__IERS_1010__
 
 #include "datetime/dtcalendar.hpp"
+#include "iersc.hpp"
 #include <cmath>
 #ifdef DEBUG
 #include <cstdio>
 #endif
 
 namespace iers2010 {
+/// @brief Secular pole coordinates, aka x_s, y_s
+/// The coordinates of that secular pole designated (Xs, Ys), given in 
+/// milliarcseconds. IERS2010, Chapter 7.1.4, Equation (21)
+/// @param[in] t Datetime
+/// @param[out] xs Secular pole coordinate, X-component in [milliarcseconds]
+/// @param[out] ys Secular pole coordinate, Y-component in [milliarcseconds]
+#if __cplusplus >= 202002L
+template <gconcepts::is_sec_dt S>
+#else
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+#endif
+inline void secular_pole_coordinates(const dso::datetime<S> &t, double &xs,
+                                     double &ys) noexcept {
+  // t is the date in years of 365.25 days
+  constexpr dso::datetime<S> t2000{dso::year(2000), dso::month(1),
+                                   dso::day_of_month(1), S(0)};
+  constexpr double t2000_mjd = t2000.as_mjd();
+  const double dt = (t.as_mjd() - t2000_mjd) / 365.25e0;
+
+  xs = 55e0 + 1.677e0 * dt;
+  ys = 320.5e0 + 3.460e0 * dt;
+}
+
+/// @brief Effect of Solid earth pole tide.
+/// @param[in] t Datetime
+/// @param[in] xp Pole coordinates, X-component [arcsec] (see Chapter 5.5.1)
+/// @param[in] yp Pole coordinates, Y-component [arcsec] (see Chapter 5.5.1)
+/// @param[out] dC21 Changes in the geopotential coefficient C_21 due to the 
+///                  external potential cused by the solid earth pole tide
+/// @param[out] dS21 Changes in the geopotential coefficient S_21 due to the 
+///                  external potential cused by the solid earth pole tide
+/// @see IERS2010, Chapter 6.4
+#if __cplusplus >= 202002L
+template <gconcepts::is_sec_dt S>
+#else
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+#endif
+void solid_earth_pole_tide(const dso::datetime<S> &t, double xp, double yp,
+                           double &dC21, double &dS21) noexcept {
+  // get secular pole coordinates -- transform to [arcsec] from milli[arcsec]
+  double xs, ys;
+  secular_pole_coordinates(t, xs, ys);
+  xs *= 1e-3;
+  ys *= 1e-3;
+
+  // compute m1 and m2 factors, in seconds of arc
+  // Eq. (25), Chapter 7.1.4
+  const double m1 = (xp - xs);
+  const double m2 = -(yp - ys);
+
+  // equivalent to changes in the geopotential coefficients from tidal
+  // deformation (Chapter 6.4)
+  dC21 = -1.333e-9 * (m1 + 0.0115 * m2);
+  dS21 = -1.333e-9 * (m2 - 0.0115 * m1);
+}
+
+/// @brief Effect of Solid earth pole tide.
+/// @param[in] t Datetime
+/// @param[in] lat Latitude [rad]
+/// @param[in] lon Longitude [rad]
+/// @param[in] r Geocentric vector (magnitude) directed toward the site [m]
+/// @param[in] xp Pole coordinates, X-component [arcsec] (see Chapter 5.5.1)
+/// @param[in] yp Pole coordinates, Y-component [arcsec] (see Chapter 5.5.1)
+/// @param[out] dC21 Changes in the geopotential coefficient C_21 due to the 
+///                  external potential cused by the solid earth pole tide
+/// @param[out] dS21 Changes in the geopotential coefficient S_21 due to the 
+///                  external potential cused by the solid earth pole tide
+/// @return Perturbation caused by the pole tide
+/// @see IERS2010, Chapter 6.4
+#if __cplusplus >= 202002L
+template <gconcepts::is_sec_dt S>
+#else
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+#endif
+double solid_earth_pole_tide(const dso::datetime<S> &t, double lat, double lon,
+                             double r, double xp, double yp, double &dC21,
+                             double &dS21) noexcept {
+  // get secular pole coordinates -- transform to [arcsec] from milli[arcsec]
+  double xs, ys;
+  secular_pole_coordinates(t, xs, ys);
+  xs *= 1e-3;
+  ys *= 1e-3;
+
+  // compute m1 and m2 factors, in seconds of arc
+  // Eq. (25), Chapter 7.1.4
+  const double m1 = (xp - xs);
+  const double m2 = -(yp - ys);
+
+  // equivalent to changes in the geopotential coefficients from tidal
+  // deformation (Chapter 6.4)
+  dC21 = -1.333e-9 * (m1 + 0.0115 * m2);
+  dS21 = -1.333e-9 * (m2 - 0.0115 * m1);
+
+  const double m1c = m1 * std::cos(lon);
+  const double m2s = m2 * std::sin(lon);
+  const double s2t = std::sin(2e0 * (DPI / 2e0 - lat));
+  const double factor = s2t * (m1c + m2s);
+
+  return -(OmegaEarth * OmegaEarth) * (r * r * factor) / 2e0;
+}
+
 /// @brief Compute the lunisolar fundamental arguments.
 int fundarg(double tjc, double *fargs) noexcept;
 
