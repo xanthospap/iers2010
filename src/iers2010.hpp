@@ -3,6 +3,7 @@
 
 #include "datetime/dtcalendar.hpp"
 #include "iersc.hpp"
+#include "matvec.hpp"
 #include <cmath>
 #ifdef DEBUG
 #include <cstdio>
@@ -177,8 +178,28 @@ int arg2(const dso::datetime<S> &t, double *angles) noexcept {
 
 /// Compute tidal corrections of station displacements caused by lunar and
 /// solar gravitational attraction.
-int dehanttideinel(const double *, const double *, const double *,
-                   dso::datetime<dso::seconds>, double *);
+dso::Vector3 dehanttideinel_impl(const dso::Vector3 &xsta,
+                                 const dso::Vector3 &xsun,
+                                 const dso::Vector3 &xmon,
+                                 dso::datetime<dso::milliseconds> t) noexcept;
+#if __cplusplus >= 202002L
+template <gconcepts::is_sec_dt S>
+#else
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+#endif
+dso::Vector3 dehanttideinel(const dso::Vector3 &xsta, const dso::Vector3 &xsun,
+                            const dso::Vector3 &xmon,
+                            const dso::datetime<S> &t) noexcept {
+  return dehanttideinel_impl(xsta, xsun, xmon,
+                             t.template cast_to<dso::milliseconds>());
+}
+
+/// Compute tidal corrections of station displacements caused by lunar and
+/// solar gravitational attraction.
+[[deprecated("use the version with Vector3 instead")]] 
+int
+dehanttideinel(const double *, const double *, const double *,
+               dso::datetime<dso::seconds>, double *);
 
 /// @brief Compute the diurnal and semi-diurnal variations in Earth Orientation
 /// Parameters from ocean tides.

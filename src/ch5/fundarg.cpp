@@ -1,7 +1,4 @@
 #include "iers2010.hpp"
-#ifdef USE_EXTERNAL_CONSTS
-#include "iersc.hpp"
-#endif
 
 /// @details This subroutine computes the lunisolar fundamental arguments.
 ///          The model used is from Simon et al. (1994) as recommended by the
@@ -39,17 +36,17 @@
 int iers2010::fundarg(double t, double *fargs) noexcept {
 
 // Set constants
-#ifndef USE_EXTERNAL_CONSTS
+//#ifndef USE_EXTERNAL_CONSTS
+//  // Arcseconds to radians
+//  constexpr double DAS2R(4.848136811095359935899141e-6);
+//  // Arcseconds in a full circle
+//  constexpr double TURNAS(1296000e0);
+//#else
   // Arcseconds to radians
-  constexpr double DAS2R(4.848136811095359935899141e-6);
+  // constexpr const double DAS2R(iers2010::DAS2R);
   // Arcseconds in a full circle
-  constexpr double TURNAS(1296000e0);
-#else
-  // Arcseconds to radians
-  constexpr double DAS2R(iers2010::DAS2R);
-  // Arcseconds in a full circle
-  constexpr double TURNAS(iers2010::TURNAS);
-#endif
+  // constexpr const double TURNAS(iers2010::TURNAS);
+//#endif
 
   //  Compute the fundamental argument L.
   fargs[0] = std::fmod(485868.249036e0 +

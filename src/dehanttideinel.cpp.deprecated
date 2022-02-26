@@ -33,8 +33,7 @@
 ///        coordinates are expressed in meters.
 ///     -# The values are expressed in Coordinated Universal Time (UTC).
 ///     -# The fractional hours in the day is computed as the hour +
-///     minutes/60.0
-///        + sec/3600.0.
+///        minutes/60.0 + sec/3600.0.
 ///     -# The displacement vector is in the geocentric ITRF.  All components
 ///        are expressed in meters.
 ///     -# Parameters jc1 and jc2 constitute the date as Julian Centuries in TT
@@ -75,7 +74,10 @@ int iers2010::dehanttideinel(const double *xsta, const double *xsun,
   double xcorsta[] = {.0e0, .0e0, .0e0};
 
   // nominal second degree and third degree love numbers and shida numbers
-  constexpr double h20{0.6078e0}, l20{0.0847e0}, h3{0.292e0}, l3{0.015e0};
+  constexpr const double h20 = 0.6078e0;
+  constexpr const double l20 = 0.0847e0;
+  constexpr const double h3 = 0.292e0;
+  constexpr const double l3 = 0.015e0;
 
   // scalar product of station vector with sun/moon vector
   double rsta, rsun, rmon;
