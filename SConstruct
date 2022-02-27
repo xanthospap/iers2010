@@ -41,6 +41,11 @@ AddOption('--std',
           metavar='STD',
           help='C++ Standard [11/14/17/20]',
           default='17')
+AddOption('--make-check',
+          dest='check',
+          action='store_true',
+          help='Trigger building of test programs',
+          default=False)
 
 ## Source files (for lib)
 lib_src_files = glob.glob(r"src/*.cpp")
@@ -57,8 +62,10 @@ lib_src_files += glob.glob(r"src/extra/atmosphere/*.cpp")
 hdr_src_files = glob.glob(r"src/*.hpp")
 
 ## Environments ...
-denv = Environment(PREFIX = GetOption('prefix'), CXXFLAGS='-std=c++17 -g -pg -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization -DDEBUG')
-penv = Environment(PREFIX = GetOption('prefix'), CXXFLAGS='-std=c++17 -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -O2 -march=native')
+denv = Environment(PREFIX=GetOption(
+    'prefix'), CXXFLAGS='-std=c++17 -g -pg -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -Wdisabled-optimization -DDEBUG')
+penv = Environment(PREFIX=GetOption(
+    'prefix'), CXXFLAGS='-std=c++17 -Wall -Wextra -Werror -pedantic -W -Wshadow -Winline -O2 -march=native')
 
 ## Command line arguments ...
 debug = ARGUMENTS.get('debug', 0)
@@ -74,17 +81,23 @@ cxxstd = GetOption('std')
 env.Append(CXXFLAGS=' --std=c++{}'.format(cxxstd))
 
 ## (shared) library ...
-vlib = env.SharedLibrary(source=lib_src_files, target=lib_name, CPPPATH=['src/'], SHLIBVERSION=lib_version)
+vlib = env.SharedLibrary(source=lib_src_files, target=lib_name, CPPPATH=[
+                         'src/'], SHLIBVERSION=lib_version)
 
 ## Build ....
 env.Program(source='src/hardisp.cpp', target='bin/hardisp',
             LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.', CPPPATH=['src/'])
-env.Alias(target='install', source=env.Install(dir=os.path.join(GetOption('prefix'), 'include', inc_dir), source=hdr_src_files))
-env.Alias(target='install', source=env.InstallVersionedLib(dir=os.path.join(GetOption('prefix'), 'lib'), source=vlib))
+env.Alias(target='install', source=env.Install(dir=os.path.join(
+    GetOption('prefix'), 'include', inc_dir), source=hdr_src_files))
+env.Alias(target='install', source=env.InstallVersionedLib(
+    dir=os.path.join(GetOption('prefix'), 'lib'), source=vlib))
 
 ## Tests ...
-tests_sources = glob.glob(r"test/*.cpp")
-env.Append(RPATH=root_dir)
-for tsource in tests_sources:
-  ttarget = tsource.replace('_', '-').replace('.cpp', '.out')
-  env.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.')
+## What compiler should we be using ?
+if GetOption('check') is not None and GetOption('check'):
+  tests_sources = glob.glob(r"test/*.cpp")
+  env.Append(RPATH=root_dir)
+  for tsource in tests_sources:
+    ttarget = tsource.replace('_', '-').replace('.cpp', '.out')
+    env.Program(target=ttarget, source=tsource, CPPPATH='src/',
+                LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.')
