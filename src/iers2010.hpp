@@ -176,12 +176,72 @@ int arg2(const dso::datetime<S> &t, double *angles) noexcept {
               angles);
 }
 
-/// Compute tidal corrections of station displacements caused by lunar and
+/// @brief Compute tidal corrections of station displacements caused by lunar and
 /// solar gravitational attraction.
+/// This is just the implementation, use the generic template function instead.
 dso::Vector3 dehanttideinel_impl(const dso::Vector3 &xsta,
                                  const dso::Vector3 &xsun,
                                  const dso::Vector3 &xmon,
                                  dso::datetime<dso::milliseconds> t) noexcept;
+
+/// @details This function computes the station tidal displacement
+///          caused by lunar and solar gravitational attraction (see
+///          References). The computations are calculated by the following
+///          steps:<br> <b>Step 1):</b> General degree 2 and degree 3
+///          corrections
+///          + CALL ST1IDIU + CALL ST1ISEM + CALL ST1L1.<br>
+///          <b>Step 2):</b> CALL STEP2DIU + CALL STEP2LON<br>
+///          It has been decided that the <b>Step 3</b> non-correction for
+///          permanent tide would not be applied in order to avoid a jump in the
+///          reference frame. This Step 3 must be added in order to get the
+///          non-tidal station position and to conform with the IAG Resolution.
+///          This function is a translation/wrapper for the fortran
+///          DEHANTTIDEINEL subroutine, found here :
+///          http://maia.usno.navy.mil/conv2010/software.html
+///
+/// @param[in]  xsta   Geocentric position of the station (Note 1)
+/// @param[in]  xsun   Geocentric position of the Sun (Note 2)
+/// @param[in]  xmon   Geocentric position of the Moon (Note 2)
+/// @param[in]  t      Datetime UTC (Notes 3 and 4)
+/// @return dxtide Displacement vector (Note 5)
+///
+/// @note
+///     -# The station is in ITRF co-rotating frame.  All coordinates,
+///        X, Y, and Z, are expressed in meters.
+///     -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
+///        coordinates are expressed in meters.
+///     -# Time expressed in Coordinated Universal Time (UTC).
+///     -# 
+///     -# The displacement vector is in the geocentric ITRF.  All components
+///        are expressed in meters.
+///     -# Parameters jc1 and jc2 constitute the date as Julian Centuries in TT
+///        time scale. The actual date is given by the addition jc1+jc2.
+///        Either jc1 or jc2 can be set to zero.
+///     -# Status: Class 1
+///     -# This fucnction is part of the package dehanttideinel, see
+///        ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
+///
+/// @version 19.12.2016
+///
+/// @cite
+///     - Groten, E., 2000, Geodesists Handbook 2000, Part 4,
+///     http://www.gfy.ku.dk/~iag/HB2000/part4/groten.htm. See also
+///     "Parameters of Common Relevance of Astronomy, Geodesy, and
+///     Geodynamics", J. Geod., 74, pp. 134-140
+///
+///     - Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
+///     displacements", J. Geophys. Res., 102(B9), pp. 20,469-20,477
+///
+///     - Petit, G. and Luzum, B. (eds.), IERS Conventions (2010),
+///     IERS Technical Note No. 36, BKG (2010)
+///
+///     - Pitjeva, E. and Standish, E. M., 2009, "Proposals for the masses
+///     of the three largest asteroids, the Moon-Earth mass ratio and the
+///     Astronomical Unit", Celest. Mech. Dyn. Astr., 103, pp. 365-372
+///
+///     - Ries, J. C., Eanes, R. J., Shum, C. K. and Watkins, M. M., 1992,
+///     "Progress in the Determination of the Gravitational Coefficient
+///     of the Earth", Geophys. Res. Lett., 19(6), pp. 529-531
 #if __cplusplus >= 202002L
 template <gconcepts::is_sec_dt S>
 #else
