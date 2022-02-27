@@ -21,10 +21,11 @@ iplementation are reported on STDOUT
 
 ## Notes
 
-WARNING! This file is not the original makefile distributed by the           
-IERS2010, it is modified!                                                    
-If you see an error for the DAT/CAL2JD routines, it might be cause in the    
-corresponding source files they are declared as iau_DAT and iau_CAL2JD and   
-the linker cannot find them. Change the declerations in the source files     
-                                                                 
-                                                                 xanthos 02/22
+**WARNING!** This file is not the original makefile distributed by the
+IERS2010, it is modified!
+
+If you see an error for the `DAT`/`CAL2JD` routines, it might be cause in the
+corresponding source files they are declared as `iau_DAT` and `iau_CAL2JD` and
+the linker cannot find them. Change the declerations in the source files
+
+xanthos 02/22
