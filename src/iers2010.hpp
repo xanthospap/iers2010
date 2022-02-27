@@ -195,6 +195,9 @@ dso::Vector3 dehanttideinel_impl(const dso::Vector3 &xsta,
 ///          permanent tide would not be applied in order to avoid a jump in the
 ///          reference frame. This Step 3 must be added in order to get the
 ///          non-tidal station position and to conform with the IAG Resolution.
+///          Details for the implementation can be found in IERS2010, Chapter
+///          "7.1.1 Effects of the solid Earth tides".
+///
 ///          This function is a translation/wrapper for the fortran
 ///          DEHANTTIDEINEL subroutine, found here :
 ///          http://maia.usno.navy.mil/conv2010/software.html
@@ -243,13 +246,14 @@ dso::Vector3 dehanttideinel_impl(const dso::Vector3 &xsta,
 ///     "Progress in the Determination of the Gravitational Coefficient
 ///     of the Earth", Geophys. Res. Lett., 19(6), pp. 529-531
 #if __cplusplus >= 202002L
-template <gconcepts::is_sec_dt S>
+    template <gconcepts::is_sec_dt S>
 #else
-template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+    template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
 #endif
-dso::Vector3 dehanttideinel(const dso::Vector3 &xsta, const dso::Vector3 &xsun,
-                            const dso::Vector3 &xmon,
-                            const dso::datetime<S> &t) noexcept {
+    dso::Vector3 dehanttideinel(const dso::Vector3 &xsta,
+                                const dso::Vector3 &xsun,
+                                const dso::Vector3 &xmon,
+                                const dso::datetime<S> &t) noexcept {
   return dehanttideinel_impl(xsta, xsun, xmon,
                              t.template cast_to<dso::milliseconds>());
 }
