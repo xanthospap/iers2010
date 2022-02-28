@@ -701,13 +701,13 @@ iers2010::dehanttideinel_impl(const Vector3 &xsta, const Vector3 &xsun,
   // --------------------------------------------------------------------
 
   // first, for the diurnal band
-  dxtide += st1idiu(/*xsta, */ xsun, xmon, aux);
+  dxtide += st1idiu(xsun, xmon, aux);
 
   // second, for the semi-diurnal band
-  dxtide += st1isem(/*xsta, */ xsun, xmon, aux);
+  dxtide += st1isem(xsun, xmon, aux);
 
   // corrections for the latitude dependence of love numbers (part l^(1) )
-  dxtide += st1l1(/*xsta, */ xsun, xmon, aux);
+  dxtide += st1l1(xsun, xmon, aux);
 
   // CONSIDER CORRECTIONS FOR STEP 2
   // -------------------------------------------------------------------------
@@ -728,7 +728,7 @@ iers2010::dehanttideinel_impl(const Vector3 &xsta, const Vector3 &xsun,
 
   //  corrections for the long-period band,
   //+ (in-phase and out-of-phase frequency dependence):
-  dxtide += step2lon(/*xsta, */ angles, aux);
+  dxtide += step2lon(angles, aux);
 
   // CONSIDER CORRECTIONS FOR STEP 3
   // --------------------------------------------------------------------------
