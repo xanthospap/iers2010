@@ -51,6 +51,11 @@ constexpr const double AU = 1.49597870700e11;
 /// @note Table 1.2: Parameters of the Geodetic Reference System GRS80
 constexpr const double OmegaEarth = 7.292115e-5;
 
+/// @brief Solar radius [m]
+/// @see IAU, Resolution B3 on recommended nominal conversion constants for 
+///      selected solar and planetary properties, August 13, 2015
+constexpr const double Rs = 6.957e8;
+
 /// @brief Normalize angle into the range 0 <= a < 2pi.
 /// @param[in] angle Angle in radians
 /// @return Angle in radians in range [0,2pi)
