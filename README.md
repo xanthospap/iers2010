@@ -1,6 +1,8 @@
 # libiers10++
 
 [![Build Status](https://app.travis-ci.com/xanthospap/iers2010.svg?branch=master)](https://app.travis-ci.com/xanthospap/iers2010)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/xanthospap/iers2010.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/xanthospap/iers2010/alerts/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/xanthospap/iers2010.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/xanthospap/iers2010/context:python)
 
 C++ library implementing the IERS 2010 standards.
 
