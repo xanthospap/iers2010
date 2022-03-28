@@ -73,6 +73,12 @@ struct Vector3 {
     data[2]-=v.data[2];
     return *this;
   }
+  constexpr Vector3& operator*=(double scalar) noexcept {
+    data[0]*=scalar;
+    data[1]*=scalar;
+    data[2]*=scalar;
+    return *this;
+  }
 
 };
 
