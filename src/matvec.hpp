@@ -67,6 +67,12 @@ struct Vector3 {
     data[2]+=v.data[2];
     return *this;
   }
+  constexpr Vector3& operator-=(const Vector3 &v) noexcept {
+    data[0]-=v.data[0];
+    data[1]-=v.data[1];
+    data[2]-=v.data[2];
+    return *this;
+  }
 
 };
 
