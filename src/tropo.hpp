@@ -184,6 +184,10 @@ struct vmf3_hw {
   double mfw; ///< Wet mapping function
 }; // vmf3_result
 
+int gpt3_fast(double fractional_doy, const double *lat,
+                   const double *lon, const double *hell, int num_stations,
+                   int it, const gpt3::gpt3_grid *gridNxN,
+                   dso::gpt3_result *g3out) noexcept;
 /// @brief Implement GPT3 for a number of stations
 /// This subroutine determines pressure, temperature, temperature lapse rate, 
 /// mean temperature of the water vapor, water vapour pressure, hydrostatic 
@@ -224,9 +228,19 @@ struct vmf3_hw {
 /// @param[out] g3out An instance of gpt3_result where all computed values are
 ///                  stored at.
 /// @return Anything other than 0 denotes an error
-int gpt3_fast(const dso::datetime<dso::nanoseconds> &t, const double *lat,
+#if __cplusplus >= 202002L
+template <gconcepts::is_sec_dt S>
+#else
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+#endif
+int gpt3_fast(const dso::datetime<S> &t, const double *lat,
               const double *lon, const double *hell, int num_stations, int it,
-              const gpt3::gpt3_grid *gridNxN, gpt3_result *g3out) noexcept;
+              const gpt3::gpt3_grid *gridNxN, gpt3_result *g3out) noexcept {
+ const auto yrdoy = t.mjd().to_ydoy();
+ double fraction = t.sec().fractional_days();
+ fraction += static_cast<double>(yrdoy.__doy.as_underlying_type());
+ return gpt3_fast(fraction, lat, lon, hell, num_stations, it, gridNxN, g3out);
+}
 
 /// @brief Implement GPT3 for a number of stations
 /// This subroutine determines pressure, temperature, temperature lapse rate, 

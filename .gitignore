@@ -50,6 +50,7 @@ api_html/*
 .deps/*
 test-driver/*
 alternatives/ch5/*
+alternatives/gpt3/
 fortran_impl/*.F
 
 # Html
