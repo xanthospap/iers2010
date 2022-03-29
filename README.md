@@ -357,45 +357,20 @@ Again, the differences (per line and column) should not exceed 1e<sup>-6</sup>
 GPT3 is a new/refined empirical set of trpospheric mapping functions, described at 
 Landskron & Böhm (2018) VMF3/GPT3: refined discrete and empirical troposphere mapping functions. DOI:10.1007/s00190-017-1066-2.
 It is not included in the IERS2010 standards but we include a C++ version of the 
-core algorithm here, adopted from [gpt3_5_fast.m](https://vmf.geo.tuwien.ac.at/codes/gpt3_5_fast.m). 
+core algorithms here, adopted from [gpt3_5_fast.m](https://vmf.geo.tuwien.ac.at/codes/gpt3_5_fast.m)
+and [gpt3_1_fast.m](https://vmf.geo.tuwien.ac.at/codes/gpt3_1_fast.m. 
 This function is not wrapped in the iers2010 namespace, but in a namespace called 
-`dso`.
+`dso`. Users must also include the `tropo.hpp` header file.
 
 GPT3 needs a grid file to work, which can be downloaded from TU Wienn, at
 https://vmf.geo.tuwien.ac.at/codes/
 
-## Checking gpt3 implementation
-```
-## run the program to randomly check cpp-based results. Store results of gpt3
-## to cpp.test; note that the program will also check the vmf3 and vmf3vec
-## functions. For the latter, a file with results will be created, named
-## vmf3_res.cpp
-test/testGpt3 > cpp.test
-## mv the results to the alternatives folder
-mv cpp.test alternatives/gpt3/
-mv vmf3_res.cpp alternatives/gpt3/
-## the cpp program will also write an octave script to check the same points
-## using the mtlab/octave implementation
-mv test_gpt3.m alternatives/gpt3/
-## got the alternatives/gpt3/ folder; in there the two octave scripts
-## gpt3_5_fast_readGrid.m and
-## gpt3_5_fast.m
-## should be available. We will also need the gpt3 5x5 grid file. To check
-## the vmf3 implementation, a matlabl script named vmf3.m should also be
-## available
-## Now run the octave script
-octave
-[...]
-% load the grid file
-grid=gpt3_5_fast_readGrid();
-% run the scipt to compute results, output at file octave_gpt3_results.txt
-test_gpt3
-% all done
-quit
-## Now use the python script provided to test results
-./compare_gpt3_results.py cpp.test octave_gpt3_results.txt
-./compare_vmf3_results.py vmf3_res.cpp octave_vmf3_results.txt
-```
+### Checking gpt3 implementation
+
+Two dedicated test cases are provided to check the constistency of the original 
+Octave/Matlab implementation provided by TU Vienna, against the one implemented 
+here; these are `test/test_gpt35.cpp` and `test/test_gpt31.cpp`; results from 
+two implementations agree (at least) within 1e-12 in respective units.
 
 ## How to use the library
 
