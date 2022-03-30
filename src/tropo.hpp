@@ -11,9 +11,6 @@
 ///
 
 #include "datetime/dtcalendar.hpp"
-#ifdef DEBUG
-#include <cstdio>
-#endif
 
 namespace dso {
 
@@ -26,14 +23,14 @@ namespace dso {
 /// Translated from the MATLAB source code at TU Vienna:
 /// https://vmf.geo.tuwien.ac.at/codes/asknewet.m
 ///
-/// @param[in] e   water vapor pressure in hPa
-/// @param[in] Tm  mean temperature in Kelvin
+/// @param[in] e   water vapor pressure [hPa]
+/// @param[in] Tm  mean temperature [Kelvin]
 /// @param[in] lambda water vapor lapse rate (see definition in Askne and
 ///            Nordius 1987)
-/// @return zwd:  zenith wet delay in meters
+/// @return zwd: zenith wet delay [meters]
 double asknewet(double e, double Tm, double lambda) noexcept;
 
-/// @brief Compute zenith hydrostatic delay using refined Saastamoinen
+/// @brief Compute zenith hydrostatic delay using refined Saastamoinen model.
 /// This subroutine determines the zenith hydrostatic delay based on the
 /// equation by Saastamoinen (1972) as refined by Davis et al. (1985).
 /// Translated from MATLAB source, originaly found at:
@@ -46,12 +43,13 @@ double asknewet(double e, double Tm, double lambda) noexcept;
 /// Geodesy by Radio Interferometry: Effects of Atmospheric Modeling Errors
 /// on Estimates of Baseline Length, Radio Science, Vol. 20, No. 6,
 /// pp. 1593-1607, 1985.
-/// param[in] p     pressure in hPa
-/// param[in] dlat  ellipsoidal latitude in radians
-/// param[in] dlon  longitude in radians
-/// param[in] hell  ellipsoidal height in m
-/// return zhd: zenith hydrostatic delay in meter
+/// @param[in] p     pressure in [hPa]
+/// @param[in] dlat  ellipsoidal latitude [radians]
+/// @param[in] dlon  longitude [radians]
+/// @param[in] hell  ellipsoidal height [meters]
+/// @return zhd: zenith hydrostatic delay [meters]
 double saasthyd(double p, double dlat, double hell) noexcept;
+
 int vmf3(double ah, double aw, dso::datetime<dso::nanoseconds> &t, double lat,
          double lon, double zd, double &mfh, double &mfw) noexcept;
 
@@ -184,10 +182,54 @@ struct vmf3_hw {
   double mfw; ///< Wet mapping function
 }; // vmf3_result
 
+/// @brief Implement GPT3 for a number of stations
+/// This subroutine determines pressure, temperature, temperature lapse rate, 
+/// mean temperature of the water vapor, water vapour pressure, hydrostatic 
+/// and wet mapping function coefficients ah and aw, water vapour decrease
+/// factor, geoid undulation and empirical tropospheric gradients for 
+/// specific sites near the earth's surface. All output values are valid for
+/// the specified ellipsoidal height hell.
+/// GPT3_5 is based on a 1x1 or 5x5 external grid file ('gpt3_[51].grd') with
+/// mean values as well as sine and cosine amplitudes for the annual and
+/// semiannual variation of the coefficients.
+/// Note that this version is 'agnostic' as to what grid file is used; it takes
+/// as an input parameter a gpt3_grid instance, which should already hold all 
+/// the needed values. The function only know how many rows this instance has 
+/// (and hence can conclude if it is the 1x1 or the 5x5 version).
+/// Translated from MATLAB source, originaly found at:
+/// https://vmf.geo.tuwien.ac.at/codes/gpt3_[51]_fast.m
+/// Reference:
+/// D. Landskron, J. Bohm (2018), VMF3/GPT3: Refined Discrete and Empirical 
+/// Troposphere Mapping Functions, J Geod (2018) 92: 349., 
+/// doi: 10.1007/s00190-017-1066-2. 
+/// Download at: 
+/// https://link.springer.com/content/pdf/10.1007%2Fs00190-017-1066-2.pdf
+/// Translated from the gpt3_[15]_fast.m MATLAB source code, found at:
+/// https://vmf.geo.tuwien.ac.at/codes/ by TU Vienna.
+///
+/// @param[in] fractional_doy the date as fractional day of year to perform 
+///                  computations for
+/// @param[in] lat   ellipsoidal latitude in range (-pi/2:+pi/2), [radians]. 
+///                  Array of size num_stations.
+/// @param[in] lon   longitude in range (-pi:pi) or (0:2pi), [radians]. Array 
+///                  of size num_stations.
+/// @param[in] h_ell ellipsoidal height [meters]. Array of size num_stations.
+/// @param[in] num_stations Number of stations, aka the size of the lat, lon
+///                  and hell arrays
+/// @param[in] it    1: no time variation but static quantities
+///                  0: with time variation (annual and semiannual terms)
+/// @param[in] gridNxN A gpt3_grid instance, holding the needed values to 
+///                  perform the computation. This instance should already
+///                  hold the needed values, aka the corresponding grid file
+///                  should have been parsed and values stored in gridNxN.
+/// @param[out] g3out An instance of gpt3_result where all computed values are
+///                  stored at. Should be at least of size num_stations.
+/// @return Anything other than 0 denotes an error
 int gpt3_fast(double fractional_doy, const double *lat,
                    const double *lon, const double *hell, int num_stations,
                    int it, const gpt3::gpt3_grid *gridNxN,
                    dso::gpt3_result *g3out) noexcept;
+
 /// @brief Implement GPT3 for a number of stations
 /// This subroutine determines pressure, temperature, temperature lapse rate, 
 /// mean temperature of the water vapor, water vapour pressure, hydrostatic 
@@ -214,19 +256,21 @@ int gpt3_fast(double fractional_doy, const double *lat,
 /// https://vmf.geo.tuwien.ac.at/codes/ by TU Vienna.
 ///
 /// @param[in] t     the date to perform computations for
-/// @param[in] lat   ellipsoidal latitude in radians [-pi/2:+pi/2] (vector)
-/// @param[in] lon   longitude in radians [-pi:pi] or [0:2pi] (vector)
-/// @param[in] h_ell ellipsoidal height in m (vector)
+/// @param[in] lat   ellipsoidal latitude in range (-pi/2:+pi/2), [radians]. 
+///                  Array of size num_stations.
+/// @param[in] lon   longitude in range (-pi:pi) or (0:2pi), [radians]. Array 
+///                  of size num_stations.
+/// @param[in] h_ell ellipsoidal height [meters]. Array of size num_stations.
 /// @param[in] num_stations Number of stations, aka the size of the lat, lon
 ///                  and hell arrays
 /// @param[in] it    1: no time variation but static quantities
 ///                  0: with time variation (annual and semiannual terms)
 /// @param[in] gridNxN A gpt3_grid instance, holding the needed values to 
 ///                  perform the computation. This instance should already
-///                  hold the needed values, aka the corresponding grid fil
+///                  hold the needed values, aka the corresponding grid file
 ///                  should have been parsed and values stored in gridNxN.
 /// @param[out] g3out An instance of gpt3_result where all computed values are
-///                  stored at.
+///                  stored at. Should be at least of size num_stations.
 /// @return Anything other than 0 denotes an error
 #if __cplusplus >= 202002L
 template <gconcepts::is_sec_dt S>
@@ -264,9 +308,11 @@ int gpt3_fast(const dso::datetime<S> &t, const double *lat,
 /// https://vmf.geo.tuwien.ac.at/codes/ by TU Vienna.
 ///
 /// @param[in] t     the date to perform computations for
-/// @param[in] lat   ellipsoidal latitude in radians [-pi/2:+pi/2] (vector)
-/// @param[in] lon   longitude in radians [-pi:pi] or [0:2pi] (vector)
-/// @param[in] h_ell ellipsoidal height in m (vector)
+/// @param[in] lat   ellipsoidal latitude in range (-pi/2:+pi/2), [radians]. 
+///                  Array of size num_stations.
+/// @param[in] lon   longitude in range (-pi:pi) or (0:2pi), [radians]. Array 
+///                  of size num_stations.
+/// @param[in] h_ell ellipsoidal height [meters]. Array of size num_stations.
 /// @param[in] num_stations Number of stations, aka the size of the lat, lon
 ///                  and hell arrays
 /// @param[in] it    1: no time variation but static quantities
