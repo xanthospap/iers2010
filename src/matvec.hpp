@@ -79,7 +79,12 @@ struct Vector3 {
     data[2]*=scalar;
     return *this;
   }
-
+  constexpr bool operator==(const Vector3 &v) const noexcept {
+    return ((data[0] == v.data[0]) && (data[1] == v.data[1] && data[2] == v.data[2]));
+  }
+  constexpr bool operator!=(const Vector &v) const noexcept {
+    return !(this->operator==(v));
+  }
 };
 
 inline
