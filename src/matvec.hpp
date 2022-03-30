@@ -67,6 +67,15 @@ struct Vector3 {
     data[2]+=v.data[2];
     return *this;
   }
+  constexpr Vector3& operator+=(double scalar) noexcept {
+    data[0]+=scalar;
+    data[1]+=scalar;
+    data[2]+=scalar;
+    return *this;
+  }
+  constexpr Vector3 operator+(double scalar) const noexcept {
+    return Vector3{{data[0]+scalar, data[1]+scalar, data[2]+scalar}};
+  }
   constexpr Vector3& operator-=(const Vector3 &v) noexcept {
     data[0]-=v.data[0];
     data[1]-=v.data[1];
@@ -93,7 +102,7 @@ Vector3 operator*(double scalar, const Vector3& vec) noexcept {
 }
 inline
 Vector3 operator+(double scalar, const Vector3& vec) noexcept {
-  return vec + scalar;
+  return vec+scalar;
 }
 
 
