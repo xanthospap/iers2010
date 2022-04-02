@@ -19,6 +19,8 @@ struct Vector3 {
     return Vector3{{vec[0], vec[1], vec[2]}};
   }
 
+  constexpr void zero_out() noexcept { data[0]=data[1]=data[2]=0e0; }
+
   constexpr double norm_squared() const noexcept {
     return data[0] * data[0] + data[1] * data[1] + data[2] * data[2];
   }
