@@ -349,7 +349,100 @@ int cnmtx(const dso::datetime<S> &t, double *h) noexcept {
   return cnmtx(t.as_mjd(), h);
 }
 
-} // namespace oeop
+} // oeop
+
+namespace interp {
+
+/// @brief Compute diurnal lunisolar effet on polar motion (")
+/// This function provides, in time domain, the diurnal lunisolar effet on 
+/// polar motion (").
+/// The fundamental lunisolar arguments are those of Simon et al.
+/// These corrections should be added to "average" EOP values to get estimates 
+/// of the instantaneous values.
+/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of 
+/// ocean tidal and libration effects in pole coordinates"
+/// Translated from the FORTRAN subroutine PMUT1_GRAVI in interp.f found at
+/// https://hpiers.obspm.fr/iers/models/
+/// @param[in] tjc Epoch of interest given in Julian Centuries TT
+/// @param[out] cor_x Tidal correction in x (sec. of arc)
+/// @param[out] cor_y Tidal correction in y (sec. of arc)
+int pm_gravi(double t, double &cor_x, double &cor_y) noexcept;
+
+/// @brief Compute tidal effets on polar motion.
+/// This function provides, in time domain, the diurnal/subdiurnal
+/// tidal effets on polar motion ("), UT1 (s) and LOD (s). The tidal terms,
+/// listed in the program above, have been extracted from the procedure   
+/// ortho_eop.f coed by Eanes in 1997.
+/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of 
+/// ocean tidal and libration effects in pole coordinates"
+/// Translated from the FORTRAN subroutine PMUT1_OCEANS in interp.f found at
+/// https://hpiers.obspm.fr/iers/models/
+/// @param[in] tjc Epoch of interest given in Julian Centuries TT
+/// @param[out] cor_x Tidal correction in x (sec. of arc)
+/// @param[out] cor_y Tidal correction in y (sec. of arc)
+/// @param[out] cor_ut1 Tidal correction in UT1-UTC (sec. of time)
+/// @param[out] cor_lod Tidal correction in length of day (sec. of time)
+int pmut1_oceans(double tjc, double &cor_x, double &cor_y, double &cor_ut1,
+                 double &cor_lod) noexcept;
+
+/// @brief Perform Lagrangian interpolation.
+/// This function performs lagrangian interpolation within a set of (x,y) 
+/// pairs to give the y value corresponding to xint. This program uses a 
+/// window of 4 data points to perform the interpolation.
+/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of 
+/// ocean tidal and libration effects in pole coordinates"
+/// Translated from the FORTRAN subroutine LAGINT in interp.f found at
+/// https://hpiers.obspm.fr/iers/models/
+/// @param[in] x array of values of the independent variable; size n
+/// @param[in] y array of function values corresponding to x; size n
+/// @param[in] n number of points, aka size of x and y arrays
+/// @param[in] xint the x-value for which estimate of y is desired
+/// @param[out] yout the y value returned to caller
+/// @param[inout] idx If idx>=0, then this value will be used as the index for 
+///               the interpolation, aka it will be considered that:
+///               xint >= x[idx] && xint < x[idx + 1]                      (1)
+///               holds (so that the function can skip the search).
+///               If idx<0, then it will be ignored and the function will
+///               search for the index.
+///               At output, idx will hold the value/index for which (1)
+///               holds (so that it can be used later if needed).
+/// @return An integer denoting:
+///          0 : success
+///         -1 : success but xint too close to starting x
+///         -2 : success but xint too close to ending x
+///         >0 : error
+int lagint(const double *x, const double *y, int n, double xint, double &yout,
+           int &idx) noexcept;
+}// interp
+
+/// @brief Account of ocean tidal and libration effects in pole coordinates
+/// The subdaily variations are not part of the polar motion values reported 
+/// to and distributed by the IERS and are therefore to be added after 
+/// interpolation. This is appropriately done by this function, which 
+/// interpolates series of X_iers, Y_iers values to a chosen date and then adds 
+/// the contribution for this date of (i) the tidal terms and (ii) the diurnal 
+/// components.
+/// This function takes a series of x, y, and UT1-UTC values and interpolates 
+/// them to an epoch of choice. This routine assumes that the values of x and 
+/// y are in seconds of arc and that UT1-UTC is in seconds of time. At least 
+/// one point before and one point after the epoch of the interpolation point 
+/// are necessary in order for the interpolation scheme to work.
+/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of 
+/// ocean tidal and libration effects in pole coordinates"
+/// Translated from the FORTRAN subroutine INTERP in interp.f found at
+/// https://hpiers.obspm.fr/iers/models/
+/// @param[in] mjd array of the epochs of data (given in mjd TT) of size n 
+/// @param[in] x array of x polar motion (arcsec) of size n
+/// @param[in] y array of y polar motion (arcsec) of size n
+/// @param[in] ut1 array of UT1-UTC (sec) of size n
+/// @param[in] n number of points in arrays (mjd, x, y, ut1)
+/// @param[in] rjd epoch for the interpolated value (given in mjd TT)
+/// @param[out] xint interpolated value of x
+/// @param[out] yint interpolated value of y
+/// @param[out] ut1int interpolated value of ut1-utc
+int interp_pole(const double *mjd, const double *x, const double *y,
+           const double *ut1, int n, double rjd, double &xint, double &yint,
+           double &ut1int) noexcept;
 
 } // namespace iers2010
 
