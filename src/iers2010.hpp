@@ -364,8 +364,8 @@ namespace interp {
 /// Translated from the FORTRAN subroutine PMUT1_GRAVI in interp.f found at
 /// https://hpiers.obspm.fr/iers/models/
 /// @param[in] tjc Epoch of interest given in Julian Centuries TT
-/// @param[out] cor_x Tidal correction in x (sec. of arc)
-/// @param[out] cor_y Tidal correction in y (sec. of arc)
+/// @param[out] cor_x Tidal correction in x [μas]
+/// @param[out] cor_y Tidal correction in y [μas]
 int pm_gravi(double t, double &cor_x, double &cor_y) noexcept;
 
 /// @brief Compute tidal effets on polar motion.
@@ -378,10 +378,10 @@ int pm_gravi(double t, double &cor_x, double &cor_y) noexcept;
 /// Translated from the FORTRAN subroutine PMUT1_OCEANS in interp.f found at
 /// https://hpiers.obspm.fr/iers/models/
 /// @param[in] tjc Epoch of interest given in Julian Centuries TT
-/// @param[out] cor_x Tidal correction in x (sec. of arc)
-/// @param[out] cor_y Tidal correction in y (sec. of arc)
-/// @param[out] cor_ut1 Tidal correction in UT1-UTC (sec. of time)
-/// @param[out] cor_lod Tidal correction in length of day (sec. of time)
+/// @param[out] cor_x Tidal correction in x [μas]
+/// @param[out] cor_y Tidal correction in y [μas]
+/// @param[out] cor_ut1 Tidal correction in UT1-UTC [μsec]
+/// @param[out] cor_lod Tidal correction in length of day [μsec]
 int pmut1_oceans(double tjc, double &cor_x, double &cor_y, double &cor_ut1,
                  double &cor_lod) noexcept;
 
@@ -431,15 +431,18 @@ int lagint(const double *x, const double *y, int n, double xint, double &yout,
 /// ocean tidal and libration effects in pole coordinates"
 /// Translated from the FORTRAN subroutine INTERP in interp.f found at
 /// https://hpiers.obspm.fr/iers/models/
+/// @note The original FORTRAN routine, uses arcseconds/seconds as input/output
+///       units. Here we use [mas] and [ms] respectively (the same units used
+///       in the Bulletin B/C publications).
 /// @param[in] mjd array of the epochs of data (given in mjd TT) of size n 
-/// @param[in] x array of x polar motion (arcsec) of size n
-/// @param[in] y array of y polar motion (arcsec) of size n
-/// @param[in] ut1 array of UT1-UTC (sec) of size n
+/// @param[in] x array of x polar motion (millioarcsec) of size n [mas]
+/// @param[in] y array of y polar motion (milliarcsec) of size n [mas]
+/// @param[in] ut1 array of UT1-UTC (millisec) of size n [ms]
 /// @param[in] n number of points in arrays (mjd, x, y, ut1)
 /// @param[in] rjd epoch for the interpolated value (given in mjd TT)
-/// @param[out] xint interpolated value of x
-/// @param[out] yint interpolated value of y
-/// @param[out] ut1int interpolated value of ut1-utc
+/// @param[out] xint interpolated value of x [mas]
+/// @param[out] yint interpolated value of y [mas]
+/// @param[out] ut1int interpolated value of ut1-utc [ms]
 int interp_pole(const double *mjd, const double *x, const double *y,
            const double *ut1, int n, double rjd, double &xint, double &yint,
            double &ut1int) noexcept;

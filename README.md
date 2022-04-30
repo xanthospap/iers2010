@@ -95,6 +95,7 @@ the executable `testBlq`.
 |         | [VMF1_HT](https://iers-conventions.obspm.fr/content/chapter9/VMF1_HT.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 12.01.20012 | see [vmf1_ht](#vmf1_ht-cmp) |
 |         | [GPT](https://iers-conventions.obspm.fr/content/chapter9/GPT.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 18.10.2011 | see [gpt](#gpt-cmp) |
 |         | [GPT2](https://iers-conventions.obspm.fr/content/chapter9/GPT2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 31.05.2013 | see [gpt2](#gpt2-cmp) |
+| X       | [INTERP](https://hpiers.obspm.fr/iers/models/interp.f) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|            | see [interp](#interp-cmp) |
 
 
 ## Test Cases & FORTRAN vs C++ implementations
@@ -350,6 +351,8 @@ paste onsa.tmp test/test_onsa_results | awk '{printf "%9.6f %9.6f %9.6f\n", $1-$
 ```
 
 Again, the differences (per line and column) should not exceed 1e<sup>-6</sup>
+
+### interp  <a id="interp-cmp"></a>
 
 
 ## gpt3
