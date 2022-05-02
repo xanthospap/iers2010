@@ -357,6 +357,7 @@ double sp00(double date1, double date2) noexcept;
 ///            method.
 /// @param[in] dj2 (dj1) UT1 as a 2-part Julian Date
 /// @return Earth rotation angle (radians), range 0-2pi
+/// @note Equation 5.15 in IERS Conventions 2010
 double era00(double dj1, double dj2) noexcept;
 
 /// Equation of the equinoxes complementary terms, consistent with

@@ -15,9 +15,9 @@ Service (IERS), International Earth Rotation and Reference Systems Service
 | c2t06a        | CIO: celestial to terrestrial matrix                        | IAU 2006/2000A
 | pnm06a        | Equinox: celestial to true matrix                           | IAU 2006/2000A (PNB)
 
-| Routine       | Brief Description                                           | IAU Resolution 
-| :------------ | :----------------                                           | :-------------
-| era00         | Earth Rotation Angle                                        | IAU 2000
+| Routine       | Brief Description                                           | IAU Resolution | Equation from [^1]
+| :------------ | :----------------                                           | :------------- | :-------
+| era00         | Earth Rotation Angle                                        | IAU 2000       | 5.15 
 | gst06a        | Greenwich (apparent) Sidereal Time                          | IAU 2006/2000A
 | nut06a        | Nutation components                                         | IAU 2006/2000A
 | pfw06         | 4-angle Fukushima-Williams precession angles                | IAU 2006
