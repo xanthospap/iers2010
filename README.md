@@ -141,6 +141,7 @@ in the `test` directory, with names `test-[function name].out`.
 | Function | Test Case | Comments |
 |:-------- |:----------|:---------|
 | fcnnut   | Use [test_fcnnut.f](fortran_impl/test_fcnnut.f) to compute results using the original FORTRAN implementation. Copy to [test_fcnnut.cpp](test/test_fcnnut.cpp)| Dispcrepancies < 1e-9 μas |
+| fundarg  | Use [test_fundarg.f](fortran_impl/test_fundarg.f) to compute results using the original FORTRAN implementation. Copy to [test_fundarg.cpp](test/test_fundarg.cpp)| Dispcrepancies < 1e-11 radians |
 
 ~~To compile the test programs, you need to enter the command `make check` at the 
 `ROOTDIR` folder (after you have run `make`). This will build the programs 
