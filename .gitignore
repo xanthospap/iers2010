@@ -1,4 +1,6 @@
 *.bak
+*.old
+*.obsolete
 
 # Compiled Object files
 *.slo
@@ -12,6 +14,7 @@
 *.pch
 
 # Compiled Dynamic libraries
+lib*.so.*
 *.so
 *.dylib
 *.dll
