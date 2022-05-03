@@ -20,7 +20,7 @@ language with (as much as possible) minor modifications. Note that the software
 found at this website is routinely updated.
 
 
-[^2] Gérard Petit and Brian J. Luzum, editors. IERS Conventions (2010), volume 36 of
+[^2]: Gérard Petit and Brian J. Luzum, editors. IERS Conventions (2010), volume 36 of
 IERS Technical Note, 2010. International Earth Rotation and Reference Systems
 Service (IERS), International Earth Rotation and Reference Systems Service
 (IERS).
@@ -61,7 +61,7 @@ namely:
   https://vmf.geo.tuwien.ac.at/codes/gpt3_1.grd . They are needed to use functions 
   related to the GPT3 tropospheric mapping functions.
 
-[^1] VMF Data Server; editing status 2020-12-14; re3data.org - Registry of Research 
+[^1]: VMF Data Server; editing status 2020-12-14; re3data.org - Registry of Research 
 Data Repositories. http://doi.org/10.17616/R3RD2H
 
 ~~This repository includes also the data file [gpt2_5.grd](data/gpt2_5.grd) in the
