@@ -1,25 +1,22 @@
 #include "iers2010.hpp"
-#include <algorithm>
-#include <cassert>
-#include <cmath>
-#ifdef USE_EXTERNAL_CONSTS
 #include "iersc.hpp"
-#endif
+#include <algorithm>
+#include <cmath>
 
 // Block data of amplitudes for X (microas)
 struct tbl_entry {
   double date, mxc, mxs, msx;
-  double xc() const noexcept { return mxc; }
-  double xs() const noexcept { return mxs; }
-  double sx() const noexcept { return msx; }
-  double yc() const noexcept { return mxs; }
-  double ys() const noexcept { return -mxc; }
-  double sy() const noexcept { return msx; }
+  constexpr double xc() const noexcept { return mxc; }
+  constexpr double xs() const noexcept { return mxs; }
+  constexpr double sx() const noexcept { return msx; }
+  constexpr double yc() const noexcept { return mxs; }
+  constexpr double ys() const noexcept { return -mxc; }
+  constexpr double sy() const noexcept { return msx; }
 };
 
 // constexpr std::vector<tbl_entry> table = { ... }
 // ... but std::vector has no constexpr con'tor; use std::array instead
-constexpr std::array<tbl_entry, 30> table = {{
+constexpr const std::array<tbl_entry, 30> table = {{
     {45700.e0, 4.55e0, -36.58e0, 19.72e0},     /// 1984.0
     {46066.e0, -141.82e0, -105.35e0, 11.12e0}, /// 1985.0
     {46431.e0, -246.56e0, -170.21e0, 9.47e0},  /// 1986.0
@@ -51,49 +48,17 @@ constexpr std::array<tbl_entry, 30> table = {{
     {55927.e0, 25.47e0, 271.66e0, 1.07e0},     /// 2012.0
     {56293.e0, 113.42e0, 256.50e0, 1.86e0}     /// 2013.0
 }};
-constexpr int N = table.size();
+constexpr const int N = table.size();
 
-/// @details This subroutine computes the effects of the free core nutation.
-///          Please note that the table is updated each year (see Note 4).
-///          The parameter N needs to be incremented for each additional
-///          year in the table.
-///
-/// @param[in] mjd   Modified Julian Date, TDB (Note 1)
-/// @param[out]  x   CIP offset x component, in microas (Note 2)
-/// @param[out]  y   CIP offset y component, in microas (Note 2)
-/// @param[out] dx   Uncertainty of x component, in microas (Note 3)
-/// @param[out] dy   Uncertainty of y component, in microas (Note 3)
-/// @return          An integer value, always 0.
-///
-/// @warning Contains data table to be updated each year,
-///          see http://syrte.obspm.fr/~lambert/fcn/
-///
-/// @note
-///      -#  Though the Modified Julian Date (MJD) is strictly TDB, it is
-///          usually more convenient to use TT, which makes no significant
-///          difference.
-///      -#  CIP is the Celestial Intermediate Pole. The expression
-///          used is given in microarcseconds.
-///      -#  The expression used is given in microarcseconds.
-///      -#  The updated table is maintained at the website
-///          http://syrte.obspm.fr/~lambert/fcn/.
-///
-/// @version 19.12.2013
-///
-/// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
-///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
-int iers2010::fcnnut(double mjd, double &x, double &y, double &dx, double &dy) noexcept {
+int iers2010::fcnnut(double mjd, double &x, double &y, double &dx,
+                     double &dy) noexcept {
 
-#ifdef USE_EXTERNAL_CONSTS
-  constexpr double PI(iers2010::DPI);
-#else
-  constexpr double PI(3.14159265358979323846e0);
-#endif
+  constexpr const double PI(iers2010::DPI);
 
   // Mean prediction error in microarcseconds per day
-  constexpr double mpe = 0.1325e0;
+  constexpr const double mpe = 0.1325e0;
   // FCN parameters period in days
-  constexpr double per = -430.21e0;
+  constexpr const double per = -430.21e0;
   // Phase in radians
   const double phi = (2e0 * PI / per) * (mjd - 51544.5e0);
 

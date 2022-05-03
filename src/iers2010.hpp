@@ -11,7 +11,7 @@
 
 namespace iers2010 {
 /// @brief Secular pole coordinates, aka x_s, y_s
-/// The coordinates of that secular pole designated (Xs, Ys), given in 
+/// The coordinates of that secular pole designated (Xs, Ys), given in
 /// milliarcseconds. IERS2010, Chapter 7.1.4, Equation (21)
 /// @param[in] t Datetime
 /// @param[out] xs Secular pole coordinate, X-component in [milliarcseconds]
@@ -37,9 +37,9 @@ inline void secular_pole_coordinates(const dso::datetime<S> &t, double &xs,
 /// @param[in] t Datetime
 /// @param[in] xp Pole coordinates, X-component [arcsec] (see Chapter 5.5.1)
 /// @param[in] yp Pole coordinates, Y-component [arcsec] (see Chapter 5.5.1)
-/// @param[out] dC21 Changes in the geopotential coefficient C_21 due to the 
+/// @param[out] dC21 Changes in the geopotential coefficient C_21 due to the
 ///                  external potential cused by the solid earth pole tide
-/// @param[out] dS21 Changes in the geopotential coefficient S_21 due to the 
+/// @param[out] dS21 Changes in the geopotential coefficient S_21 due to the
 ///                  external potential cused by the solid earth pole tide
 /// @see IERS2010, Chapter 6.4
 #if __cplusplus >= 202002L
@@ -73,9 +73,9 @@ void solid_earth_pole_tide(const dso::datetime<S> &t, double xp, double yp,
 /// @param[in] r Geocentric vector (magnitude) directed toward the site [m]
 /// @param[in] xp Pole coordinates, X-component [arcsec] (see Chapter 5.5.1)
 /// @param[in] yp Pole coordinates, Y-component [arcsec] (see Chapter 5.5.1)
-/// @param[out] dC21 Changes in the geopotential coefficient C_21 due to the 
+/// @param[out] dC21 Changes in the geopotential coefficient C_21 due to the
 ///                  external potential cused by the solid earth pole tide
-/// @param[out] dS21 Changes in the geopotential coefficient S_21 due to the 
+/// @param[out] dS21 Changes in the geopotential coefficient S_21 due to the
 ///                  external potential cused by the solid earth pole tide
 /// @return Perturbation caused by the pole tide
 /// @see IERS2010, Chapter 6.4
@@ -140,8 +140,29 @@ int utlibr(const dso::datetime<S> &t, double &dut1, double &dlod) noexcept {
   return utlibr(t.as_mjd(), dut1, dlod);
 }
 
-/// @brief Compute corrections to the coordinates of the CIP to account for
-/// Free Core Nutation.
+/// @details This subroutine computes the effects of the free core nutation.
+///          Please note that the table is updated each year (see Note 4).
+///          The parameter N needs to be incremented for each additional
+///          year in the table.
+/// @param[in] mjd   Modified Julian Date, TDB (Note 1)
+/// @param[out]  x   CIP offset x component, in microas [μas]
+/// @param[out]  y   CIP offset y component, in microas [μas]
+/// @param[out] dx   Uncertainty of x component, in microas [μas]
+/// @param[out] dy   Uncertainty of y component, in microas [μas]
+/// @return          An integer value, always 0.
+///
+/// @warning Contains data table to be updated each year,
+///          see http://syrte.obspm.fr/~lambert/fcn/
+/// @note
+///      -#  Though the Modified Julian Date (MJD) is strictly TDB, it is
+///          usually more convenient to use TT, which makes no significant
+///          difference.
+///      -#  The updated table is maintained at the website
+///          http://syrte.obspm.fr/~lambert/fcn/.
+///
+/// @version 19.12.2013
+/// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
+///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
 int fcnnut(double mjd, double &x, double &y, double &dx, double &dy) noexcept;
 
 /// @brief Compute corrections to the coordinates of the CIP to account for
@@ -176,9 +197,9 @@ int arg2(const dso::datetime<S> &t, double *angles) noexcept {
               angles);
 }
 
-/// @brief Compute tidal corrections of station displacements caused by lunar and
-/// solar gravitational attraction.
-/// This is just the implementation, use the generic template function instead.
+/// @brief Compute tidal corrections of station displacements caused by lunar
+/// and solar gravitational attraction. This is just the implementation, use the
+/// generic template function instead.
 dso::Vector3 dehanttideinel_impl(const dso::Vector3 &xsta,
                                  const dso::Vector3 &xsun,
                                  const dso::Vector3 &xmon,
@@ -214,7 +235,7 @@ dso::Vector3 dehanttideinel_impl(const dso::Vector3 &xsta,
 ///     -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
 ///        coordinates are expressed in meters.
 ///     -# Time expressed in Coordinated Universal Time (UTC).
-///     -# 
+///     -#
 ///     -# The displacement vector is in the geocentric ITRF.  All components
 ///        are expressed in meters.
 ///     -# Parameters jc1 and jc2 constitute the date as Julian Centuries in TT
@@ -246,22 +267,20 @@ dso::Vector3 dehanttideinel_impl(const dso::Vector3 &xsta,
 ///     "Progress in the Determination of the Gravitational Coefficient
 ///     of the Earth", Geophys. Res. Lett., 19(6), pp. 529-531
 #if __cplusplus >= 202002L
-    template <gconcepts::is_sec_dt S>
+template <gconcepts::is_sec_dt S>
 #else
-    template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
 #endif
-    dso::Vector3 dehanttideinel(const dso::Vector3 &xsta,
-                                const dso::Vector3 &xsun,
-                                const dso::Vector3 &xmon,
-                                const dso::datetime<S> &t) noexcept {
+dso::Vector3 dehanttideinel(const dso::Vector3 &xsta, const dso::Vector3 &xsun,
+                            const dso::Vector3 &xmon,
+                            const dso::datetime<S> &t) noexcept {
   return dehanttideinel_impl(xsta, xsun, xmon,
                              t.template cast_to<dso::milliseconds>());
 }
 
 /// Compute tidal corrections of station displacements caused by lunar and
 /// solar gravitational attraction.
-[[deprecated("use the version with Vector3 instead")]] 
-int
+[[deprecated("use the version with Vector3 instead")]] int
 dehanttideinel(const double *, const double *, const double *,
                dso::datetime<dso::seconds>, double *);
 
@@ -349,17 +368,17 @@ int cnmtx(const dso::datetime<S> &t, double *h) noexcept {
   return cnmtx(t.as_mjd(), h);
 }
 
-} // oeop
+} // namespace oeop
 
 namespace interp {
 
 /// @brief Compute diurnal lunisolar effet on polar motion (")
-/// This function provides, in time domain, the diurnal lunisolar effet on 
+/// This function provides, in time domain, the diurnal lunisolar effet on
 /// polar motion (").
 /// The fundamental lunisolar arguments are those of Simon et al.
-/// These corrections should be added to "average" EOP values to get estimates 
+/// These corrections should be added to "average" EOP values to get estimates
 /// of the instantaneous values.
-/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of 
+/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of
 /// ocean tidal and libration effects in pole coordinates"
 /// Translated from the FORTRAN subroutine PMUT1_GRAVI in interp.f found at
 /// https://hpiers.obspm.fr/iers/models/
@@ -371,9 +390,9 @@ int pm_gravi(double t, double &cor_x, double &cor_y) noexcept;
 /// @brief Compute tidal effets on polar motion.
 /// This function provides, in time domain, the diurnal/subdiurnal
 /// tidal effets on polar motion ("), UT1 (s) and LOD (s). The tidal terms,
-/// listed in the program above, have been extracted from the procedure   
+/// listed in the program above, have been extracted from the procedure
 /// ortho_eop.f coed by Eanes in 1997.
-/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of 
+/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of
 /// ocean tidal and libration effects in pole coordinates"
 /// Translated from the FORTRAN subroutine PMUT1_OCEANS in interp.f found at
 /// https://hpiers.obspm.fr/iers/models/
@@ -386,10 +405,10 @@ int pmut1_oceans(double tjc, double &cor_x, double &cor_y, double &cor_ut1,
                  double &cor_lod) noexcept;
 
 /// @brief Perform Lagrangian interpolation.
-/// This function performs lagrangian interpolation within a set of (x,y) 
-/// pairs to give the y value corresponding to xint. This program uses a 
+/// This function performs lagrangian interpolation within a set of (x,y)
+/// pairs to give the y value corresponding to xint. This program uses a
 /// window of 4 data points to perform the interpolation.
-/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of 
+/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of
 /// ocean tidal and libration effects in pole coordinates"
 /// Translated from the FORTRAN subroutine LAGINT in interp.f found at
 /// https://hpiers.obspm.fr/iers/models/
@@ -398,7 +417,7 @@ int pmut1_oceans(double tjc, double &cor_x, double &cor_y, double &cor_ut1,
 /// @param[in] n number of points, aka size of x and y arrays
 /// @param[in] xint the x-value for which estimate of y is desired
 /// @param[out] yout the y value returned to caller
-/// @param[inout] idx If idx>=0, then this value will be used as the index for 
+/// @param[inout] idx If idx>=0, then this value will be used as the index for
 ///               the interpolation, aka it will be considered that:
 ///               xint >= x[idx] && xint < x[idx + 1]                      (1)
 ///               holds (so that the function can skip the search).
@@ -413,28 +432,28 @@ int pmut1_oceans(double tjc, double &cor_x, double &cor_y, double &cor_ut1,
 ///         >0 : error
 int lagint(const double *x, const double *y, int n, double xint, double &yout,
            int &idx) noexcept;
-}// interp
+} // namespace interp
 
 /// @brief Account of ocean tidal and libration effects in pole coordinates
-/// The subdaily variations are not part of the polar motion values reported 
-/// to and distributed by the IERS and are therefore to be added after 
-/// interpolation. This is appropriately done by this function, which 
-/// interpolates series of X_iers, Y_iers values to a chosen date and then adds 
-/// the contribution for this date of (i) the tidal terms and (ii) the diurnal 
+/// The subdaily variations are not part of the polar motion values reported
+/// to and distributed by the IERS and are therefore to be added after
+/// interpolation. This is appropriately done by this function, which
+/// interpolates series of X_iers, Y_iers values to a chosen date and then adds
+/// the contribution for this date of (i) the tidal terms and (ii) the diurnal
 /// components.
-/// This function takes a series of x, y, and UT1-UTC values and interpolates 
-/// them to an epoch of choice. This routine assumes that the values of x and 
-/// y are in seconds of arc and that UT1-UTC is in seconds of time. At least 
-/// one point before and one point after the epoch of the interpolation point 
+/// This function takes a series of x, y, and UT1-UTC values and interpolates
+/// them to an epoch of choice. This routine assumes that the values of x and
+/// y are in seconds of arc and that UT1-UTC is in seconds of time. At least
+/// one point before and one point after the epoch of the interpolation point
 /// are necessary in order for the interpolation scheme to work.
-/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of 
+/// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of
 /// ocean tidal and libration effects in pole coordinates"
 /// Translated from the FORTRAN subroutine INTERP in interp.f found at
 /// https://hpiers.obspm.fr/iers/models/
 /// @note The original FORTRAN routine, uses arcseconds/seconds as input/output
 ///       units. Here we use [mas] and [ms] respectively (the same units used
 ///       in the Bulletin B/C publications).
-/// @param[in] mjd array of the epochs of data (given in mjd TT) of size n 
+/// @param[in] mjd array of the epochs of data (given in mjd TT) of size n
 /// @param[in] x array of x polar motion (millioarcsec) of size n [mas]
 /// @param[in] y array of y polar motion (milliarcsec) of size n [mas]
 /// @param[in] ut1 array of UT1-UTC (millisec) of size n [ms]
@@ -444,8 +463,8 @@ int lagint(const double *x, const double *y, int n, double xint, double &yout,
 /// @param[out] yint interpolated value of y [mas]
 /// @param[out] ut1int interpolated value of ut1-utc [ms]
 int interp_pole(const double *mjd, const double *x, const double *y,
-           const double *ut1, int n, double rjd, double &xint, double &yint,
-           double &ut1int) noexcept;
+                const double *ut1, int n, double rjd, double &xint,
+                double &yint, double &ut1int) noexcept;
 
 } // namespace iers2010
 

@@ -133,52 +133,24 @@ Satellite Geodesy. They include:
 > The discussion below is only a description of the discrepancies between implementations
 > and does **not** depict the actual precission of the models.
 
-## Test Programs _(optional read)_
+### Test Programs _(optional read)_
 
-To compile the test programs, you need to enter the command `make check` at the 
+To build the tests, enter: `scons --make-check`. The test programs will be build 
+in the `test` directory, with names `test-[function name].out`.
+
+| Function | Test Case | Comments |
+|:-------- |:----------|:---------|
+| fcnnut   | Use [test_fcnnut.f](fortran_impl/test_fcnnut.f) to compute results using the original FORTRAN implementation. Copy to [test_fcnnut.cpp](test/test_fcnnut.cpp)| Dispcrepancies < 1e-9 μas |
+
+~~To compile the test programs, you need to enter the command `make check` at the 
 `ROOTDIR` folder (after you have run `make`). This will build the programs 
 to test the implementations of the individual functions in the library. 
-They are compiled into executables in the `test` folder:
-
-  * `testFundarg`
+They are compiled into executables in the `test` folder:`~
   
-  * `testPmsdnut2`
-  
-  * `testUtlibr`
-  
-  * `testFcnnut`
-  
-  * `testDehanttideinel`
-  
-  * `testArg2`
-  
-  * `testCnmtx`
-  
-  * `testOrthoeop`
-  
-  * `testRgZont2`
-  
-  * `testFcula`
-  
-  * `testFculb`
-  
-  * `testFculZdhPa`
-  
-  * `testGmf`
-  
-  * `testVmf1`
-  
-  * `testVmf1Ht`
-  
-  * `testGpt2` (_you need to have run `make install` first for the data file [gpt2_5.grd](#Distributed-Data-Files)
-    to be in place before running this script, otherwise it will fail_)
-
-  * `testGpt`
-  
-  * [testHardisp](test/test_hardisp.cpp) compiled to `test/testHardisp`
+  * ~~[testHardisp](test/test_hardisp.cpp) compiled to `test/testHardisp`
   This program checks the library hardisp program; to run this, you are going to need
   a `BLQ` file with records for the GNSS station 'ONSA' (or you could use the file 
-  [NTUA.BLQ](data/NTUA.BLQ)). For details see [hardisp](#hardisp-cmp).
+  [NTUA.BLQ](data/NTUA.BLQ)). For details see [hardisp](#hardisp-cmp).~~
 
 - ~~[testIers2010](test/test_iers2010.cpp) compiled to `test/testIers2010`
   This program checks the library functions using the test cases provided in the original
@@ -190,10 +162,10 @@ They are compiled into executables in the `test` folder:
   This program checks specifically the library function `dehandtideinel` using the test cases 
   provided in the original FORTRAN routine.~~
 
-These programs check the library functions against the test cases provided in 
+~~These programs check the library functions against the test cases provided in 
 the IERS published FORTRAN source code files. **Note that in some rare occasions, the 
 original FORTRAN implementation may fail (to a given accuracy) the actual test case** 
-(see e.g. [fundarg](#fundarg-cmp))
+(see e.g. [fundarg](#fundarg-cmp))~~
 
 ~~If needed, alternative FORTRAN implementations are provided (in the `fortran_impl` directory) for further testing.
 These can be compiled using the `fortran_impl/Makefile` aka run `make` in the `fortran_impl` folder.
