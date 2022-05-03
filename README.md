@@ -9,8 +9,7 @@ C++ library implementing the IERS 2010 standards.
 ## Introduction
 This project contains a number of functions implementing models defined in
 [IERS Conventions (2010)](https://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html/) 
-as described in 
-[IERS Technical Note No. 36](https://www.iers.org/SharedDocs/Publikationen/EN/IERS/Publications/tn/TechnNote36/tn36.pdf;jsessionid=716AD09DB6CA42AD5E5F2F7061EDAC0A.live2?__blob=publicationFile&v=1).
+as described in [^2].
 The International Earth Rotation and Reference Systems Service ([IERS](https://www.iers.org/IERS/EN/Home/home_node.html))
 publishes the Conventions along with relevant documents, model implementations and 
 respective test cases; the latter two are available in the FORTRAN programming 
@@ -20,17 +19,18 @@ This repository is an effort to translate the algorithms in the C++ programming
 language with (as much as possible) minor modifications. Note that the software 
 found at this website is routinely updated.
 
+
+[^2] Gérard Petit and Brian J. Luzum, editors. IERS Conventions (2010), volume 36 of
+IERS Technical Note, 2010. International Earth Rotation and Reference Systems
+Service (IERS), International Earth Rotation and Reference Systems Service
+(IERS).
+
 ## Prerequisites
 
 The C++ library [ggdatetime](https://github.com/xanthospap/ggdatetime) 
 is used in the library functions to handle datetime instances when needed. 
 Hence, you should have [ggdatetime](https://github.com/xanthospap/ggdatetime) 
 on your system.
-
-~~Also *note that the library is still at development phase so users need to~~
-~~configure the project before compiling*. That is, you will need the~~
-~~[GNU Autotools](https://en.wikipedia.org/wiki/GNU_Autotools) package to be~~
-~~able to install the software.~~
 
 ## Compilation / Installation
 
@@ -46,18 +46,32 @@ $> scons
 $> sudo scons install
 ```
 
-## Distributed Data Files
+## Data Files
 
-> The data file `gpt2_5.grd` is only needed for (i.e. is read by) the function `gpt2`
+A couple of (data) files are needed to use some functions wihtin the library, 
+namely:
 
-This repository includes also the data file [gpt2_5.grd](data/gpt2_5.grd) in the
+  * the data file `gpt2_5.grd` is needed for the function `gpt2` (distributed by 
+  [VMF Data Server](https://vmf.geo.tuwien.ac.at/) at TU Wien [^1]), available 
+  at https://vmf.geo.tuwien.ac.at/codes/gpt2_5.grd
+
+  * either (or both) of the files `gpt3_5.grd` and `gpt3_1.grd` () distributed by 
+  [VMF Data Server](https://vmf.geo.tuwien.ac.at/) at TU Wien [^1]), available 
+  at https://vmf.geo.tuwien.ac.at/codes/gpt3_5.grd and 
+  https://vmf.geo.tuwien.ac.at/codes/gpt3_1.grd . They are needed to use functions 
+  related to the GPT3 tropospheric mapping functions.
+
+[^1] VMF Data Server; editing status 2020-12-14; re3data.org - Registry of Research 
+Data Repositories. http://doi.org/10.17616/R3RD2H
+
+~~This repository includes also the data file [gpt2_5.grd](data/gpt2_5.grd) in the
 `data` directory. This file is needed for computations when the function [gpt2](#gpt2-cmp) in invoked.
 When installing the libary (aka `make install`) this file will be installed in the 
 default `share` directory of the system, under the folder `iers10`. In most *X systems, 
-this means that you'll end up with the file: `/usr/local/share/iers10/gpt2_5.grd`.
+this means that you'll end up with the file: `/usr/local/share/iers10/gpt2_5.grd`.~~
 
-If you want to change the data directory path, you will need to alter the respective 
-Makefile template, that is [data/Makefile.am](data/Makefile.am).
+~~If you want to change the data directory path, you will need to alter the respective 
+Makefile template, that is [data/Makefile.am](data/Makefile.am).~~
 
 ## BLQ format files
 
@@ -95,8 +109,24 @@ the executable `testBlq`.
 |         | [VMF1_HT](https://iers-conventions.obspm.fr/content/chapter9/VMF1_HT.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 12.01.20012 | see [vmf1_ht](#vmf1_ht-cmp) |
 |         | [GPT](https://iers-conventions.obspm.fr/content/chapter9/GPT.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 18.10.2011 | see [gpt](#gpt-cmp) |
 |         | [GPT2](https://iers-conventions.obspm.fr/content/chapter9/GPT2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 31.05.2013 | see [gpt2](#gpt2-cmp) |
-| X       | [INTERP](https://hpiers.obspm.fr/iers/models/interp.f) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>|            | see [interp](#interp-cmp) |
 
+
+## Available functions/models **not** part of the IERS 2010 Conventions
+
+The library includes a number of functions and/or model implementations that are 
+not part of the the IERS 2010 Conventions, but are widely used in the field of 
+Satellite Geodesy. They include:
+
+  * the IERS published function [INTERP](https://hpiers.obspm.fr/iers/models/interp.f)
+  used to ocean tidal and libration effects in pole coordinates
+  
+  * a number functions implementing models of Earth motion and orientation, 
+  astrometry and Celestial to Terrestrial RF transformations. These follow the IAU 
+  Resolutions (2000/2006) and are included via (the header file) [iau.hpp](src/iau.hpp).
+  A list and details are recorded in [readme.md](src/iau/readme.md).
+  
+  * a number functions implementing atmospheric models models, listed in the 
+  directory [extra/atmosphere](src/extra/atmosphere/)
 
 ## Test Cases & FORTRAN vs C++ implementations
 
