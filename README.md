@@ -150,7 +150,7 @@ in the original FORTRAN source code, in the `DATA` matrix. Double-precision nume
 can be extended with `D0` (e.g. `6798.3837D0,  0.0D0,  0.6D0, -0.1D0, -0.1D0,`, 
 instead of `6798.3837, 0.0,   0.6,   -0.1,   -0.1,`)
 
-[^utlibr] Dispcrepancies < 1e-9 [μas] and 1e-8 [μas/day] can be obtained if we change the declerations 
+[^utlibr]: Dispcrepancies < 1e-9 [μas] and 1e-8 [μas/day] can be obtained if we change the declerations 
 in the original FORTRAN source code, in the `DATA` matrix.
 
 ~~To compile the test programs, you need to enter the command `make check` at the 
