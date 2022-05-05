@@ -1,6 +1,24 @@
 #include "iers2010.hpp"
+#include <cstdio>
 
 int iers2010::fundarg(double t, double *fargs) noexcept {
+
+     //double ll = 
+     //485868.249036e0 +
+     //                      t * (1717915923.2178e0 +
+     //                           t * (31.8792e0 +
+     //                                t * (0.051635e0 + t * (-0.00024470e0))));
+     //double lll = std::fmod(485868.249036e0 +
+     //                      t * (1717915923.2178e0 +
+     //                           t * (31.8792e0 +
+     //                                t * (0.051635e0 + t * (-0.00024470e0)))),
+     //                  TURNAS);
+     //double res = std::fmod(485868.249036e0 +
+     //                      t * (1717915923.2178e0 +
+     //                           t * (31.8792e0 +
+     //                                t * (0.051635e0 + t * (-0.00024470e0)))),
+     //                  TURNAS) *
+     //        DAS2R;
 
   //  Compute the fundamental argument L.
   fargs[0] = std::fmod(485868.249036e0 +
@@ -41,6 +59,7 @@ int iers2010::fundarg(double t, double *fargs) noexcept {
                                      t * (0.007702e0 + t * (-0.00005939e0)))),
                        TURNAS) *
              DAS2R;
+//printf("t=%30.20e l=%30.20e ll=%30.20e, res=%30.20e, f=%30.20e\n", t, ll, lll,res,fargs[0]);
 
   // Finished.
   return 0;

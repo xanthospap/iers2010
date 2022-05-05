@@ -118,7 +118,7 @@ double solid_earth_pole_tide(const dso::datetime<S> &t, double lat, double lon,
 ///          Chapter 5 Sections 5.7.1 - 5.7.2 (pp. 57 - 59).
 ///          This function is a translation/wrapper for the fortran FUNDARG
 ///          subroutine, found here :
-///          https://iers-conventions.obspm.fr/content/chapter5/software/FUNDARG.F
+/// https://iers-conventions.obspm.fr/content/chapter5/software/FUNDARG.F
 ///
 /// @param[in]  t     TT, Julian centuries since J2000 (Note 1)
 /// @param[out] fargs A 5-element array containing the computed fundamental
@@ -134,7 +134,7 @@ double solid_earth_pole_tide(const dso::datetime<S> &t, double lat, double lon,
 ///
 /// @note
 ///       -# Though T is strictly TDB, it is usually more convenient to use
-///          TT, which makes no significant difference.  Julian centuries since
+///          TT, which makes no significant difference. Julian centuries since
 ///          J2000 is (JD - 2451545.0)/36525.
 ///       -# The expression used is as adopted in IERS Conventions (2010) and
 ///          is from Simon et al. (1994).  Arguments are in radians.
@@ -157,6 +157,33 @@ int fundarg(const dso::datetime<S> &t, double *fargs) noexcept {
 }
 
 /// @brief Compute the diurnal lunisolar effect on polar motion.
+/// @details This function evaluates the model of polar motion for
+///          a nonrigid Earth due to tidal gravitation. This polar motion
+///          is equivalent to the so-called "subdiurnal nutation." The model
+///          is a sum of a first order polynomial and 25 trigonometric terms
+///          (15 long periodic and 10 quasi diurnal) with coefficients given
+///          in Table 5.1a of the IERS Conventions (2010).
+///          This function is a translation/wrapper for the fortran PMSDNUT2
+///          subroutine, found here :
+///          http://maia.usno.navy.mil/conv2010/software.html
+///
+/// @param[in]  rmjd Time expressed as Modified Julian date
+/// @param[out] dx   The x component of polar motion expressed in
+///                  microarcseconds [μas].
+/// @param[out] dy   The y component of polar motion expressed in
+///                  microarcseconds [μas].
+/// @return          An integer value, always 0.
+///
+/// @warning In the present version this subroutine neglects the linear trend
+///          and the long periodic terms of the expansion, for the reasons
+///          explained in Section 5.5.1.1 of the IERS Conventions (2010). If
+///          the full expansion is needed, set the parameter iband to 0 instead
+///          of 1, that is, replace the decleration of iband in the source code.
+///
+/// @version 13.10.2011
+///
+/// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
+///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
 int pmsdnut2(double mjd, double &dx, double &dy) noexcept;
 
 /// @brief Compute the diurnal lunisolar effect on polar motion.
