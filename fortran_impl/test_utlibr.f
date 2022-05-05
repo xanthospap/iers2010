@@ -1,34 +1,37 @@
       PROGRAM MAIN
 
-C     RESULT REPORTING
-C     CHARACTER(LEN=*), PARAMETER  :: FMT1 = "(F18.15)"
-      CHARACTER(LEN=*), PARAMETER  :: FMT1 = "(E12.6)"
-
 C     ----------------------------------------------
 C     Variables and data for UTLIBR
 C     ----------------------------------------------
       DOUBLE PRECISION  dUT1,  dLOD
-      DOUBLE PRECISION dUT1AR, dUT1BR, dLODAR, dLODBR
-      DATA dUT1AR, dUT1BR, dLODAR, dLODBR/
-     . 2.441143834386761746D0,
-     . -2.655705844335680244D0,
-     . -14.78971247349449492D0,
-     . 27.39445826599846967D0/
+      INTEGER I, NUM_TESTS, IMJD, MJD_MAX, MJD_MIN
+      DOUBLE PRECISION RND, MJD, JD
+      
+      MJD_MIN = 38761D0
+      MJD_MAX = 62502D0
+      NUM_TESTS = 1000
 
-C     CALL UTLIBR
-      CALL UTLIBR(44239.1D0, dUT1, dLOD)
+C
+C     Random Tests
+C     
+      DO I=1,NUM_TESTS
+        IMJD = IRAND(0)
+        IF (IMJD.gt.62502) IMJD = IMJD / 62502 + 38761
+        IF (IMJD.lt.38761) IMJD = 38761 + IMJD / 1000
+        CALL RANDOM_NUMBER(RND)
+        MJD = IMJD + RND
+C       JD = MJD + 2400000.5D0
+C       T = (JD - 2451545D0)/36525D0
+      
+        CALL UTLIBR(MJD, dUT1, dLOD)
+        WRITE(*, '(A17,E30.20,X,A14)') 'iers2010::utlibr(', MJD,
+     . ', dut1, dlod);'
+        WRITE(*, '(A22,E30.20,A15)') 'assert(std::abs(dut1-(',dUT1,
+     .  '))<PRECISION1);'
+        WRITE(*, '(A22,E30.20,A15)') 'assert(std::abs(dlod-(',dLOD,
+     .  '))<PRECISION2);'
 
-C     REPORT RESULTS
-      PRINT *, '----------------------------------------'
-      PRINT *, '> UTLIBR Results:'
-      PRINT *, '----------------------------------------'
-      WRITE(*, FMT1) DABS(dUT1-dUT1AR)
-      WRITE(*, FMT1) DABS(dLOD-dLODAR)
-
-      CALL UTLIBR(55227.4D0, dUT1, dLOD)
-C     REPORT RESULTS
-      WRITE(*, FMT1) DABS(dUT1-dUT1BR)
-      WRITE(*, FMT1) DABS(dLOD-dLODBR)
+      END DO
 
 C     ALL DONE
       END
