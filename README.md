@@ -159,6 +159,8 @@ in the `test` directory, with names `test-[function name].out`.
 | fundarg  | Use [test_fundarg.f](fortran_impl/test_fundarg.f) to compute results using the original FORTRAN implementation. Copy to [test_fundarg.cpp](test/test_fundarg.cpp)| Dispcrepancies < 1e-11 radians |
 | pmsdnut2 | Use [test_pmsdnut2.f](fortran_impl/test_pmsdnut2.f) to compute results using the original FORTRAN implementation. Copy to [test_pmsdnut2.cpp](test/test_pmsdnut2.cpp)| Dispcrepancies < 1e-6 μas [^pmsdnut2]|
 | utlibr | Use [test_utlibr.f](fortran_impl/test_utlibr.f) to compute results using the original FORTRAN implementation. Copy to [test_utlibr.cpp](test/test_utlibr.cpp)| Dispcrepancies [^utlibr] <ul><li> < 1e-7 μas for dut1 and</li><li> < 1e-5 μas/day for dlod</li></ul> |
+| arg2  | Use [test_arg2.f](fortran_impl/test_arg2.f) to compute results using the original FORTRAN implementation. Copy to [test_arg2.cpp](test/test_arg2.cpp)| Dispcrepancies < 1e-10 radians |
+| ortho_eop  | Use [test_orthoeop.f](fortran_impl/test_orthoeop.f) to compute results using the original FORTRAN implementation. Copy to [test_orthoeop.cpp](test/test_orthoeop.cpp)| Dispcrepancies < 1e-12 [μas] |
 
 [^pmsdnut2]: Dispcrepancies < 1e-9 μas can be obtained if we change the declerations 
 in the original FORTRAN source code, in the `DATA` matrix. Double-precision numerics, 

@@ -1,36 +1,42 @@
       PROGRAM MAIN
 
 C     RESULT REPORTING
-C     CHARACTER(LEN=*), PARAMETER  :: FMT1 = "(F18.15)"
-      CHARACTER(LEN=*), PARAMETER  :: FMT1 = "(E12.6)"
+      CHARACTER(LEN=*), PARAMETER  :: FMT2 = "(A15,I4,A1,E30.20,A10)"
+      CHARACTER(LEN=*), PARAMETER  :: FMT1 = "(A23,I2,A3,E30.20,A15)"
 
 C     ----------------------------------------------
 C     Variables and data for ARG2
 C     ----------------------------------------------
-      INTEGER I
-      DOUBLE PRECISION ANGLE_REF(11), ANGLE(11)
-      DATA (ANGLE_REF(I),I=1,11) /
-     .   2.849663065753787805D0,
-     .   6.28318080000000023D0,
-     .   4.926040134021299366D0,
-     .   1.608450491115348768D0,
-     .   2.375021572352622456D0,
-     .   0.4746414933980958040D0,
-     .   3.908159227647345801D0,
-     .   2.551018561669245344D0,
-     .   5.041990012540757959D0,
-     .   4.206816878908014701D0,
-     .   1.608463638294885811D0/
+      DOUBLE PRECISION ANGLE(11)
+      INTEGER I, NUM_TESTS, J
+      INTEGER IYEAR, IDOY
+      DOUBLE PRECISION FDOY, RND
 
-C     REPORT RESULTS
-      PRINT *, '----------------------------------------'
-      PRINT *, '> ARG2 Results'
-      PRINT *, '----------------------------------------'
+      NUM_TESTS = 100
+      
+      DO I=1,NUM_TESTS
+        CALL RANDOM_NUMBER(RND)
+        IYEAR = 1973 + FLOOR(80 * RND)
+        IF (IYEAR.gt.2050) IYEAR = 2050
+        IF (IYEAR.lt.1974) IYEAR = 1974
 
-      CALL ARG2(2008, 311.5D0, ANGLE)
-      DO 500 I = 1, 11
-        WRITE(*, FMT1) DABS(ANGLE_REF(I)-ANGLE(I))
-  500 CONTINUE
+        CALL RANDOM_NUMBER(RND)
+        IDOY = FLOOR( RND * 366 )
+        IF (IDOY.gt.365) IDOY = 365
+        IF (IDOY.gt.400) IDOY = 0
+
+        CALL RANDOM_NUMBER(RND)
+        FDOY = IDOY + RND
+        
+        CALL ARG2(IYEAR, FDOY, ANGLE)
+        WRITE(*, FMT2) 'iers2010::arg2(',IYEAR,',',FDOY,
+     . ', angles);'
+        DO J=1,11
+          WRITE(*, FMT1) 'assert(std::abs(angles[',J-1,']-(',ANGLE(J),
+     .    '))<PRECISION);'
+        END DO
+
+      END DO
 
 C     ALL DONE
       END

@@ -2,9 +2,6 @@
 #ifdef DEBUG
 #include <cassert>
 #endif
-#ifdef USE_EXTERNAL_CONSTS
-#include "iersc.hpp"
-#endif
 
 // tidal potential model for 71 diurnal and semidiurnal lines
 constexpr struct {
@@ -115,11 +112,7 @@ int nlines = sizeof(x) / sizeof(x[0]);
 ///      "Diurnal and Semidiurnal Variations in the Earth's Rotation
 ///      Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
 int iers2010::oeop::cnmtx(double dmjd, double *h) noexcept {
-#ifdef USE_EXTERNAL_CONSTS
-  constexpr double TWOPI(iers2010::D2PI);
-#else
-  constexpr double TWOPI(6.283185307179586476925287e0);
-#endif
+  constexpr const double TWOPI(iers2010::D2PI);
 
   // Define the orthotide weight factors
   constexpr double sp[2][6] = {
