@@ -6,8 +6,23 @@
 
 C++ library implementing the IERS 2010 standards.
 
-## Introduction
-This project contains a number of functions implementing models defined in
+Table of Contents
+1. [Introduction](#introduction)
+2. [Prerequisites](#introduction)
+3. [Compilation / Installation](#installation)
+4. [Data Files](#data-files)
+5. [BLQ format files](#blq-files)
+6. [Status of the Library _(or translated routines)_](#library-status)
+7. [Available functions/models **not** part of the IERS 2010 Conventions](#library-extra)
+8. [Test Cases & FORTRAN vs C++ implementations](#test-cases)
+  1. [Test Programs _(optional read)_](#test-programs)
+9. [How to use the library](#how-to)
+10. [Documentation & Library API (TODO)](#dox)
+11. [TODO](#todo)
+12. [Bugs & Maintanance](#bugs)
+
+# Introduction <a name="introduction"></a>
+his project contains a number of functions implementing models defined in
 [IERS Conventions (2010)](https://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html/) 
 as described in [^2].
 The International Earth Rotation and Reference Systems Service ([IERS](https://www.iers.org/IERS/EN/Home/home_node.html))
@@ -25,14 +40,14 @@ IERS Technical Note, 2010. International Earth Rotation and Reference Systems
 Service (IERS), International Earth Rotation and Reference Systems Service
 (IERS).
 
-## Prerequisites
+# Prerequisites <a name="introduction"></a>
 
 The C++ library [ggdatetime](https://github.com/xanthospap/ggdatetime) 
 is used in the library functions to handle datetime instances when needed. 
 Hence, you should have [ggdatetime](https://github.com/xanthospap/ggdatetime) 
 on your system.
 
-## Compilation / Installation
+# Compilation / Installation <a name="installation"></a>
 
 > January 2022:
 > From now on, only the [scons](https://scons.org/) build will be supported; 
@@ -46,7 +61,7 @@ $> scons
 $> sudo scons install
 ```
 
-## Data Files
+# Data Files <a name="data-files"></a>
 
 A couple of (data) files are needed to use some functions wihtin the library, 
 namely:
@@ -73,7 +88,7 @@ this means that you'll end up with the file: `/usr/local/share/iers10/gpt2_5.grd
 ~~If you want to change the data directory path, you will need to alter the respective 
 Makefile template, that is [data/Makefile.am](data/Makefile.am).~~
 
-## BLQ format files
+# BLQ format files <a name="blq-files"></a>
 
 The library includes a helper class, i.e. `iers2010::BlqIn` (declared in 
 [blqstrm.hpp](src/blqstrm.hpp)) to assist reading records off from a BLQ file. 
@@ -84,7 +99,7 @@ The file [test_blq.cpp](test/test_blq.cpp) includes a test case usage of the
 source code for reading and manipulating BLQ files; the source code is compiled to 
 the executable `testBlq`.
 
-## Status of the Library _(or translated routines)_
+# Status of the Library _(or translated routines)_ <a name="library-status"></a>
 
 | Chapter | (Sub)Routine | Translated | Tested | Version  | Comments |
 |:--------|:-------------|:----------:|:------:|:---------|:---------|
@@ -111,7 +126,7 @@ the executable `testBlq`.
 |         | [GPT2](https://iers-conventions.obspm.fr/content/chapter9/GPT2.F) | <ul><li>- [x] </li></ul>|<ul><li>- [x] </li></ul>| 31.05.2013 | see [gpt2](#gpt2-cmp) |
 
 
-## Available functions/models **not** part of the IERS 2010 Conventions
+# Available functions/models **not** part of the IERS 2010 Conventions <a name="library-extra"></a>
 
 The library includes a number of functions and/or model implementations that are 
 not part of the the IERS 2010 Conventions, but are widely used in the field of 
@@ -128,12 +143,12 @@ Satellite Geodesy. They include:
   * a number functions implementing atmospheric models models, listed in the 
   directory [extra/atmosphere](src/extra/atmosphere/)
 
-## Test Cases & FORTRAN vs C++ implementations
+# Test Cases & FORTRAN vs C++ implementations <a name="test-cases"></a>
 
 > The discussion below is only a description of the discrepancies between implementations
 > and does **not** depict the actual precission of the models.
 
-### Test Programs _(optional read)_
+### Test Programs _(optional read)_ <a name="test-programs"></a>
 
 To build the tests, enter: `scons --make-check`. The test programs will be build 
 in the `test` directory, with names `test-[function name].out`.
@@ -156,7 +171,7 @@ in the original FORTRAN source code, in the `DATA` matrix.
 ~~To compile the test programs, you need to enter the command `make check` at the 
 `ROOTDIR` folder (after you have run `make`). This will build the programs 
 to test the implementations of the individual functions in the library. 
-They are compiled into executables in the `test` folder:`~
+They are compiled into executables in the `test` folder:~~
   
   * ~~[testHardisp](test/test_hardisp.cpp) compiled to `test/testHardisp`
   This program checks the library hardisp program; to run this, you are going to need
@@ -388,9 +403,9 @@ Octave/Matlab implementation provided by TU Vienna, against the one implemented
 here; these are `test/test_gpt35.cpp` and `test/test_gpt31.cpp`; results from 
 two implementations agree (at least) within 1e-12 in respective units.
 
-## How to use the library
+# How to use the library <a name="how-to"></a>
 
-### Namespaces
+## Namespaces
 
 - __namespace `iers2010` includes all model implementation functions.__
 
@@ -404,16 +419,16 @@ two implementations agree (at least) within 1e-12 in respective units.
   the `orthoeop` funtion. You should probably never have to use this.
 
 
-### Linking
+## Linking
 
 - static
 - dynamic
 
-## Documentation & Library API (TODO)
+# Documentation & Library API (TODO) <a name="dox"></a>
 
 - build dox with doxygen (or link to dox)
 
-## TODO
+# TODO <a name="todo"></a>
 
 - [x] ~~test compilation against c++17 (gcc)~~
 - [x] ~~the new version of dehanttidenl has a new example test case; use it!~~
@@ -424,7 +439,6 @@ Three test programs fail:
  - testOrthoeop
  - testRgZont2
 
-## Bugs & Maintanance
+# Bugs & Maintanance <a name="bugs"></a>
 Xanthos, xanthos@mail.ntua.gr
 Mitsos, danast@mail.ntua.gr
-
