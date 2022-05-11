@@ -739,24 +739,6 @@ inline double gst06a(double uta, double utb, double tta, double ttb) noexcept {
   return gst06(uta, utb, tta, ttb, rnpb);
 }
 
-/// Equation of the equinoxes, compatible with IAU 2000 resolutions and 
-/// IAU 2006/2000A precession-nutation.
-/// The result, which is in radians, operates in the following sense:
-/// Greenwich apparent ST = GMST + equation of the equinoxes
-/// @param[in] tta TT as a 2-part Julian Date. The J2000 method is best matched 
-/// to the way the argument is handled internally and will deliver the optimum 
-/// resolution. The MJD method and the date & time methods are both good 
-/// compromises between resolution and convenience.
-/// @param[in] ttb TT as a 2-part Julian Date (see above)
-/// @return equation of the equinoxes in range [0,2pi) [radians]
-inline double ee06a(double tt1, double tt2) noexcept {
-  // Apparent and mean sidereal times
-  const double gst06a_ = gst06a(0e0, 0e0, tt1, tt2);
-  const double gmst06_ = gmst06(0e0, 0e0, tt1, tt2);
-  // Equation of the equinoxes.
-  return nang_02pi(gst06a_ - gmst06_);
-}
-
 /// @brief Equation of the origins
 /// Equation of the origins, given the classical NPB matrix and the quantity s.
 /// The equation of the origins is the distance between the true equinox and the
@@ -1101,6 +1083,24 @@ inline double gmst06(double uta, double utb, double tta, double ttb) noexcept {
            t) *
           iers2010::DAS2R);
   return gmst;
+}
+
+/// Equation of the equinoxes, compatible with IAU 2000 resolutions and 
+/// IAU 2006/2000A precession-nutation.
+/// The result, which is in radians, operates in the following sense:
+/// Greenwich apparent ST = GMST + equation of the equinoxes
+/// @param[in] tta TT as a 2-part Julian Date. The J2000 method is best matched 
+/// to the way the argument is handled internally and will deliver the optimum 
+/// resolution. The MJD method and the date & time methods are both good 
+/// compromises between resolution and convenience.
+/// @param[in] ttb TT as a 2-part Julian Date (see above)
+/// @return equation of the equinoxes in range [0,2pi) [radians]
+inline double ee06a(double tt1, double tt2) noexcept {
+  // Apparent and mean sidereal times
+  const double gst06a_ = gst06a(0e0, 0e0, tt1, tt2);
+  const double gmst06_ = gmst06(0e0, 0e0, tt1, tt2);
+  // Equation of the equinoxes.
+  return nang_02pi(gst06a_ - gmst06_);
 }
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean anomaly of
