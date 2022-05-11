@@ -106,7 +106,7 @@ dso::Mat3x3 iers2010::sofa::num06a(double date1, double date2) noexcept {
   return iers2010::sofa::numat(eps, dp, de);
 }
 
-double iers2010::sofa::eors(dso::Mat3x3 &rnpb, double s) noexcept {
+double iers2010::sofa::eors(const dso::Mat3x3 &rnpb, double s) noexcept {
   // Evaluate Wallace & Capitaine (2006) expression (16).
   const double x = rnpb.data /*[2][0]*/[6];
   const double ax = x / (1e0 + rnpb.data /*[2][2]*/[8]);
@@ -123,7 +123,7 @@ double iers2010::sofa::eors(dso::Mat3x3 &rnpb, double s) noexcept {
 }
 
 double iers2010::sofa::gst06(double uta, double utb, double tta, double ttb,
-                             dso::Mat3x3 &rnpb) noexcept {
+                             const dso::Mat3x3 &rnpb) noexcept {
   // Extract CIP coordinates.
   // iauBpn2xy(rnpb, &x, &y);
   const double x = rnpb.data /*[2][0]*/[6];

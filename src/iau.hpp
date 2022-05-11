@@ -713,7 +713,49 @@ dso::Mat3x3 num06a(double date1, double date2) noexcept;
 /// @param[in] rnpb nutation x precession x bias matrix
 /// @return Greenwich apparent sidereal time (radians in range [0,2pi))
 double gst06(double uta, double utb, double tta, double ttb,
-             dso::Mat3x3 &rnpb) noexcept;
+             const dso::Mat3x3 &rnpb) noexcept;
+
+/// Greenwich apparent sidereal time (consistent with IAU 2000 and 2006 
+/// resolutions).
+/// Both UT1 and TT are required, UT1 to predict the Earth rotation 
+/// and TT to predict the effects of precession-nutation.  If UT1 is 
+/// used for both purposes, errors of order 100 microarcseconds result.
+/// This GAST is compatible with the IAU 2000/2006 resolutions and must be used 
+/// only in conjunction with IAU 2006 precession and IAU 2000A nutation.
+/// @param[in] uta  UT1 as a 2-part Julian Date
+/// @param[in] utb  UT1 as a 2-part Julian Date. For UT, the date & time
+///            method is best matched to the algorithm that is used by the Earth
+///            rotation angle function, called internally:  maximum precision is
+///            delivered when the uta argument is for 0hrs UT1 on the day in
+///            question and the utb argument lies in the range 0 to 1, or vice
+///            versa.
+/// @param[in] tta TT as a 2-part Julian Date
+/// @param[in] ttb TT as a 2-part Julian Date
+/// @return Greenwich apparent sidereal time in range [0,2pi) [radians]
+inline double gst06a(double uta, double utb, double tta, double ttb) noexcept {
+  // Classical nutation x precession x bias matrix, IAU 2000A.
+  const auto rnpb = pnm06a(tta, ttb);
+  // Greenwich apparent sidereal time.
+  return gst06(uta, utb, tta, ttb, rnpb);
+}
+
+/// Equation of the equinoxes, compatible with IAU 2000 resolutions and 
+/// IAU 2006/2000A precession-nutation.
+/// The result, which is in radians, operates in the following sense:
+/// Greenwich apparent ST = GMST + equation of the equinoxes
+/// @param[in] tta TT as a 2-part Julian Date. The J2000 method is best matched 
+/// to the way the argument is handled internally and will deliver the optimum 
+/// resolution. The MJD method and the date & time methods are both good 
+/// compromises between resolution and convenience.
+/// @param[in] ttb TT as a 2-part Julian Date (see above)
+/// @return equation of the equinoxes in range [0,2pi) [radians]
+inline double ee06a(double tt1, double tt2) noexcept {
+  // Apparent and mean sidereal times
+  const double gst06a_ = gst06a(0e0, 0e0, tt1, tt2);
+  const double gmst06_ = gmst06(0e0, 0e0, tt1, tt2);
+  // Equation of the equinoxes.
+  return nang_02pi(gst06a_ - gmst06_);
+}
 
 /// @brief Equation of the origins
 /// Equation of the origins, given the classical NPB matrix and the quantity s.
@@ -725,7 +767,7 @@ double gst06(double uta, double utb, double tta, double ttb,
 /// @param[in] rnpb  classical nutation x precession x bias matrix
 /// @param[in] s     the quantity s (the CIO locator) in radians
 /// @return  the equation of the origins in radians
-double eors(dso::Mat3x3 &rnpb, double s) noexcept;
+double eors(const dso::Mat3x3 &rnpb, double s) noexcept;
 
 /// @brief Frame bias and precession, IAU 2000.
 /// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
@@ -1024,6 +1066,40 @@ inline double gmst00(double uta, double utb, double tta, double ttb) noexcept {
            t) *
           iers2010::DAS2R);
 
+  return gmst;
+}
+
+/// @brief Greenwich mean sidereal time (consistent with IAU 2006 precession).
+/// Both UT1 and TT are required, UT1 to predict the Earth rotation 
+/// and TT to predict the effects of precession.  If UT1 is used for
+/// both purposes, errors of order 100 microarcseconds result.
+/// The GMST is compatible with the IAU 2006 precession and must not be used 
+/// with other precession models.
+/// @param[in] uta  UT1 as a 2-part Julian Date. For UT, the date & time
+///            method is best matched to the algorithm that is used by the
+///            Earth Rotation Angle function, called internally: maximum
+///            precision is delivered when the uta argument is for 0hrs UT1 on
+///            the day in question and the utb argument lies in the range 0
+///            to 1, or vice versa.
+/// @param[in] utb  UT1 as a 2-part Julian Date. See above
+/// @param[in] tta TT as a 2-part Julian Date
+/// @param[in] ttb TT as a 2-part Julian Date
+/// @return Greenwich mean sidereal time (radians). The result is returned in
+///            the range 0 to 2pi.
+inline double gmst06(double uta, double utb, double tta, double ttb) noexcept {
+  // TT Julian centuries since J2000.0.
+  const double t = ((tta - iers2010::DJ00) + ttb) / iers2010::DJC;
+
+  // Greenwich mean sidereal time, IAU 2006.
+  const double gmst = nang_02pi(
+      era00(uta, utb) +
+      (0.014506e0 +
+       (4612.156534e0 +
+        (1.3915817e0 +
+         (-0.00000044e0 + (-0.000029956e0 + (-0.0000000368e0) * t) * t) * t) *
+            t) *
+           t) *
+          iers2010::DAS2R);
   return gmst;
 }
 
