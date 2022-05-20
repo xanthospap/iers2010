@@ -130,7 +130,7 @@ struct Mat3x3 {
   void mult_inplace(const Mat3x3 &b) noexcept;
 
   /// @brief Transpose a 3x3 matric (in place)
-  void transpose_inplace() noexcept;
+  Mat3x3& transpose_inplace() noexcept;
 
   /// @brief Transpose a 3x3 matric
   Mat3x3 transpose() noexcept;
