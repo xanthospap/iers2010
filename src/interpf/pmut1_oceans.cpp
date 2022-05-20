@@ -2,7 +2,7 @@
 #include "iers2010.hpp"
 #include <cmath>
 
-constexpr const double halfpi = iers2010::DPI / 2e0;
+//constexpr const double halfpi = iers2010::DPI / 2e0;
 constexpr const double secrad = iers2010::DPI / (180e0*3600e0);
 constexpr const double secfac = 1296000e0; // see 5.4 in IERS Conventions 2010
 constexpr const double dayscentury = 36525e0;

@@ -1,6 +1,11 @@
 #ifndef __MATVEC_3X3_SIMPLE_HPP__
 #define __MATVEC_3X3_SIMPLE_HPP__
 
+// todo
+// When constexpr math becomes available, fix some declerations. By 'fix', i
+// mean have them declared as constexpr
+//
+
 #include <cmath>
 #include <cstring>
 
@@ -24,7 +29,8 @@ struct Vector3 {
   constexpr double norm_squared() const noexcept {
     return data[0] * data[0] + data[1] * data[1] + data[2] * data[2];
   }
-  constexpr double norm() const noexcept {
+  /* constexpr when std::sqrt is constrexpr */
+  double norm() const noexcept {
     return std::sqrt(this->norm_squared());
   }
   constexpr double dot_product(const Vector3 &v) const noexcept {
@@ -41,11 +47,13 @@ struct Vector3 {
     out.data[1] = data[2] * v.data[0] - data[0] * v.data[2];
     out.data[2] = data[0] * v.data[1] - data[1] * v.data[0];
   }
-  constexpr Vector3 normalize() const noexcept {
+  /* constexpr when std::sqrt is constrexpr */
+  Vector3 normalize() const noexcept {
     const double norm = this->norm();
     return Vector3{{data[0] / norm, data[1] / norm, data[2] / norm}};
   }
-  constexpr void normalize() noexcept {
+  /* constexpr when std::sqrt is constrexpr */
+  void normalize() noexcept {
     const double norm = this->norm();
     data[0] /= norm;
     data[1] /= norm;
@@ -88,7 +96,8 @@ struct Vector3 {
     return *this;
   }
   constexpr bool operator==(const Vector3 &v) const noexcept {
-    return ((data[0] == v.data[0]) && (data[1] == v.data[1] && data[2] == v.data[2]));
+    return ((data[0] == v.data[0]) &&
+            (data[1] == v.data[1] && data[2] == v.data[2]));
   }
   constexpr bool operator!=(const Vector3 &v) const noexcept {
     return !(this->operator==(v));

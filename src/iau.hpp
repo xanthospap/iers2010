@@ -1224,7 +1224,7 @@ inline double fame03(double t) noexcept {
 /// @param[in] t TDB, Julian centuries since J2000.0
 /// @return mean longitude of Venus, radians
 inline double fave03(double t) noexcept {
-  return std::fmod(3.176146697 + 1021.3285546211 * t, iers2010::D2PI);
+  return std::fmod(3.176146697e0 + 1021.3285546211e0 * t, iers2010::D2PI);
 }
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
@@ -1237,7 +1237,7 @@ inline double fave03(double t) noexcept {
 /// @param[in] t TDB, Julian centuries since J2000.0
 /// @return mean longitude of Earth, radians
 inline double fae03(double t) noexcept {
-  return std::fmod(1.753470314 + 628.3075849991 * t, iers2010::D2PI);
+  return std::fmod(1.753470314e0 + 628.3075849991e0 * t, iers2010::D2PI);
 }
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
@@ -1250,7 +1250,7 @@ inline double fae03(double t) noexcept {
 /// @param[in] t TDB, Julian centuries since J2000.0
 /// @return mean longitude of Mars, radians
 inline double fama03(double t) noexcept {
-  return std::fmod(6.203480913 + 334.0612426700 * t, iers2010::D2PI);
+  return std::fmod(6.203480913e0 + 334.0612426700e0 * t, iers2010::D2PI);
 }
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
@@ -1263,7 +1263,7 @@ inline double fama03(double t) noexcept {
 /// @param[in] t TDB, Julian centuries since J2000.0
 /// @return mean longitude of Jupiter, radians
 inline double faju03(double t) noexcept {
-  return std::fmod(0.599546497 + 52.9690962641 * t, iers2010::D2PI);
+  return std::fmod(0.599546497e0 + 52.9690962641e0 * t, iers2010::D2PI);
 }
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
@@ -1276,7 +1276,7 @@ inline double faju03(double t) noexcept {
 /// @param[in] t TDB, Julian centuries since J2000.0
 /// @return mean longitude of Saturn, radians
 inline double fasa03(double t) noexcept {
-  return std::fmod(0.874016757 + 21.3299104960 * t, iers2010::D2PI);
+  return std::fmod(0.874016757e0 + 21.3299104960e0 * t, iers2010::D2PI);
 }
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
@@ -1289,7 +1289,7 @@ inline double fasa03(double t) noexcept {
 /// @param[in] t TDB, Julian centuries since J2000.0
 /// @return mean longitude of Uranus, radians
 inline double faur03(double t) noexcept {
-  return std::fmod(5.481293872 + 7.4781598567 * t, iers2010::D2PI);
+  return std::fmod(5.481293872e0 + 7.4781598567e0 * t, iers2010::D2PI);
 }
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
@@ -1302,7 +1302,7 @@ inline double faur03(double t) noexcept {
 /// @param[in] t TDB, Julian centuries since J2000.0
 /// @return mean longitude of Neptune, radians
 inline double fane03(double t) noexcept {
-  return std::fmod(5.311886287 + 3.8133035638 * t, iers2010::D2PI);
+  return std::fmod(5.311886287e0 + 3.8133035638e0 * t, iers2010::D2PI);
 }
 
 /// @brief Fundamental argument, IERS Conventions (2003): general accumulated
@@ -1316,9 +1316,9 @@ inline double fane03(double t) noexcept {
 /// @param[in] t TDB, Julian centuries since J2000.0
 /// @return general precession in longitude, radians
 inline double fapa03(double t) noexcept {
-  return (0.024381750 + 0.00000538691 * t) * t;
+  return (0.024381750e0 + 0.00000538691e0 * t) * t;
 }
 
-} // namespace sofa
-} // namespace iers2010
+}// namespace sofa
+}// namespace iers2010
 #endif
