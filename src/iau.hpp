@@ -2,7 +2,7 @@
 #define __IAU_IERS10_SOFA_CPP_HPP__
 
 #include "iersc.hpp"
-#include "matvec.hpp"
+#include "matvec/matvec.hpp"
 #include <cmath>
 #include <cstring>
 

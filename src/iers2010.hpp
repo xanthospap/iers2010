@@ -3,7 +3,7 @@
 
 #include "datetime/dtcalendar.hpp"
 #include "iersc.hpp"
-#include "matvec.hpp"
+#include "matvec/matvec.hpp"
 #include <cmath>
 #ifdef DEBUG
 #include <cstdio>

@@ -1,5 +1,4 @@
 #include "iau.hpp"
-#include "matvec.hpp"
 
 using dso::Mat3x3;
 using dso::Vector3;

@@ -1,6 +1,11 @@
 *.bak
 *.old
 *.obsolete
+.sconsign.dblite
+.vscode/
+data/gpt3_?.grd
+
+var/gpt3/matlab/*.m
 
 # Compiled Object files
 *.slo
