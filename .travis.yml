@@ -11,6 +11,9 @@ before_script:
   - git clone https://github.com/xanthospap/ggdatetime.git && cd ggdatetime
   - sudo scons install
   - cd ../
+  - git clone https://github.com/xanthospap/matvec.git && cd matvec
+  - sudo scons install
+  - cd ../
   - git clone https://github.com/xanthospap/ggeodesy.git && cd ggeodesy
   - sudo scons install
   - cd ../
