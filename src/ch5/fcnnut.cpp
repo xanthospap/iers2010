@@ -2,6 +2,7 @@
 #include "iersc.hpp"
 #include <algorithm>
 #include <cmath>
+#include <array>
 
 // Block data of amplitudes for X (microas)
 struct tbl_entry {
