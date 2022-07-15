@@ -17,19 +17,19 @@ Service (IERS), International Earth Rotation and Reference Systems Service
 
 | Routine       | Brief Description                                           | IAU Resolution | Equation from [^1] | Test Against SOFA/IAU
 | :------------ | :----------------                                           | :------------- | :----------------- | :--------------------
-| ee06a         | Equation of the equinoxes                                   | IAU 2006/2000A |                    | [x]
-| era00         | Earth Rotation Angle                                        | IAU 2000       | 5.15               | [x]
-| gst06a        | Greenwich (apparent) Sidereal Time                          | IAU 2006/2000A |                    | [x]
-| gmst06a       | Greenwich Mean Sidereal Time                                | IAU 2006/2000A |                    | [x]
-| nut06a        | Nutation components                                         | IAU 2006/2000A |                    | [x]
-| pfw06         | 4-angle Fukushima-Williams precession angles                | IAU 2006       |                    | [x]
-| pn06          | Bias, precession, nutation matrices given Δψ, Δε (B, P, N, NPB) | IAU 2006/2000A |                | [ ]
-| pom00         | Polar motion matrix                                         | IAU 2006/2000A |                    | [x]
-| s06           | CIO locator s, given X and Y                                | IAU 2006       |                    | [x]
-| s06a          | CIO locator s                                               | IAU 2006/2000A |                    | [-]
-| sp00          | TIO locator s'                                              | IAU 2000       |                    | [ ]
-| xy06          | X, Y from semi-analytical series                            | IAU 2006/2000A |                    | [ ]
-| xys06a        | X, Y, s                                                     | IAU 2006/2000A |                    | [ ]
+| ee06a         | Equation of the equinoxes                                   | IAU 2006/2000A |                    | - [x]
+| era00         | Earth Rotation Angle                                        | IAU 2000       | 5.15               | - [x]
+| gst06a        | Greenwich (apparent) Sidereal Time                          | IAU 2006/2000A |                    | - [x]
+| gmst06a       | Greenwich Mean Sidereal Time                                | IAU 2006/2000A |                    | - [x]
+| nut06a        | Nutation components                                         | IAU 2006/2000A |                    | - [x]
+| pfw06         | 4-angle Fukushima-Williams precession angles                | IAU 2006       |                    | - [x]
+| pn06          | Bias, precession, nutation matrices given Δψ, Δε (B, P, N, NPB) | IAU 2006/2000A |                | - [ ]
+| pom00         | Polar motion matrix                                         | IAU 2006/2000A |                    | - [x]
+| s06           | CIO locator s, given X and Y                                | IAU 2006       |                    | - [x]
+| s06a          | CIO locator s                                               | IAU 2006/2000A |                    | - [-]
+| sp00          | TIO locator s'                                              | IAU 2000       |                    | - [ ]
+| xy06          | X, Y from semi-analytical series                            | IAU 2006/2000A |                    | - [ ]
+| xys06a        | X, Y, s                                                     | IAU 2006/2000A |                    | - [ ]
 
 | Routine       | Brief Description                                                 |
 | :------------ | :----------------                                                 |
