@@ -46,6 +46,11 @@ AddOption('--make-check',
           action='store_true',
           help='Trigger building of test programs',
           default=False)
+AddOption('--make-sofa-check',
+          dest='sofa_check',
+          action='store_true',
+          help='Trigger building of test programs against the SOFA IAU library. The library must be available in the system (header/library)',
+          default=False)
 
 ## Source files (for lib)
 lib_src_files = glob.glob(r"src/*.cpp")
@@ -94,11 +99,19 @@ env.Alias(target='install', source=env.InstallVersionedLib(
     dir=os.path.join(GetOption('prefix'), 'lib'), source=vlib))
 
 ## Tests ...
-## What compiler should we be using ?
 if GetOption('check') is not None and GetOption('check'):
-  tests_sources = glob.glob(r"test/*.cpp")
+  tests_sources = glob.glob(r"test/test*.cpp")
   env.Append(RPATH=root_dir)
   for tsource in tests_sources:
     ttarget = tsource.replace('_', '-').replace('.cpp', '.out')
     env.Program(target=ttarget, source=tsource, CPPPATH='src/',
                 LIBS=vlib+['geodesy', 'datetime','matvec'], LIBPATH='.')
+
+## Build tests against SOFA lib
+if GetOption('sofa_check') is not None and GetOption('sofa_check'):
+  tests_sources = glob.glob(r"test/sofa_unit_tests/sofa*.cpp")
+  env.Append(RPATH=root_dir)
+  for tsource in tests_sources:
+    ttarget = tsource.replace('_', '-').replace('.cpp', '.out')
+    env.Program(target=ttarget, source=tsource, CPPPATH='src/',
+                LIBS=vlib+['geodesy', 'datetime','matvec', 'sofa_c'], LIBPATH='.')

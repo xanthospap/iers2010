@@ -152,10 +152,10 @@ dso::Mat3x3 pnm06a(double date1, double date2) noexcept;
 ///
 ///     The nutation-only and precession-only matrices can if necessary
 ///     be obtained by combining these three appropriately.
-/// @param[in]   gamb F-W angle gamma_bar (radians)
-/// @param[in]   phib F-W angle phi_bar (radians)
-/// @param[in]   psi  F-W angle psi (radians)
-/// @param[in]   eps  F-W angle epsilon (radians)
+/// @param[in]   gamb F-W angle gamma_bar [radians]
+/// @param[in]   phib F-W angle phi_bar   [radians]
+/// @param[in]   psi  F-W angle psi       [radians]
+/// @param[in]   eps  F-W angle epsilon   [radians]
 /// @return the formulated rotation matrix
 dso::Mat3x3 fw2m(double gamb, double phib, double psi, double eps) noexcept;
 
@@ -170,9 +170,9 @@ dso::Mat3x3 fw2m(double gamb, double phib, double psi, double eps) noexcept;
 ///            deliver the optimum resolution.
 /// @param[in] date2 (date1) TT as a 2-part Julian Date. See above
 /// @param[out] dpsi nutation (luni-solar+planetary) longtitude component in
-///             radians
+///             [radians]
 /// @param[out] deps nutation (luni-solar+planetary) obliquity component in
-///             radians
+///             [radians]
 void nut06a(double date1, double date2, double &dpsi, double &deps) noexcept;
 
 /// @brief Nutation, IAU 2000A model
@@ -301,12 +301,21 @@ void pfw06(double date1, double date2, double &gamb, double &phib, double &psib,
 /// the final rotation when computing the pointing direction to a celestial
 /// source.
 /// See iers2010, 5.4.1
-/// @param[in] xp X-coordinate of the pole (radians). The arguments xp and yp
+/// @param[in] xp X-coordinate of the pole [radians]. The arguments xp and yp
 ///            are the coordinates (in radians) of the Celestial Intermediate
 ///            Pole with respect to the International Terrestrial Reference
 ///            System (see IERS Conventions 2003), measured along the meridians
 ///            0 and 90 deg west respectively.
-/// @param[in] yp Y-coordinate of the pole (radians). See above
+/// @param[in] yp Y-coordinate of the pole [radians]. See above
+/// @param[in] sp The TIO locator s' [radians]. The argument sp is the TIO
+///            locator s', in radians, which positions the Terrestrial 
+///            Intermediate Origin on the equator.It is obtained from polar 
+///            motion observations by numerical integration, and so is in 
+///            essence unpredictable. However, it is dominated by a secular 
+///            drift of about 47 microarcseconds per century, and so can be 
+///            taken into account by using s' = -47*t, where t is centuries 
+///            since J2000 .0. The function iauSp00 implements this 
+///            approximation.
 /// @return rpom, polar-motion matrix
 dso::Mat3x3 pom00(double xp, double yp, double sp) noexcept;
 
@@ -347,7 +356,7 @@ void pr00(double date1, double date2, double &dpsipr, double &depspr) noexcept;
 ///            the argument is handled internally and will deliver the
 ///            optimum resolution.
 /// @param[in] date2  TT as a 2-part Julian Date (see above)
-/// @return the TIO locator s' in radians
+/// @return the TIO locator s' in [radians]
 double sp00(double date1, double date2) noexcept;
 
 /// @brief Earth rotation angle (IAU 2000 model).
@@ -356,7 +365,7 @@ double sp00(double date1, double date2) noexcept;
 ///            arguments dj1 and dj2. Optimally use the 'date & time method'
 ///            method.
 /// @param[in] dj2 (dj1) UT1 as a 2-part Julian Date
-/// @return Earth rotation angle (radians), range 0-2pi
+/// @return Earth rotation angle [radians], range 0-2pi
 /// @note Equation 5.15 in IERS Conventions 2010
 double era00(double dj1, double dj2) noexcept;
 
@@ -521,7 +530,7 @@ void xys06a(double date1, double date2, double &x, double &y,
 /// @param[in] date2 (see above)
 /// @param[in] x CIP X coordinate (see xy06)
 /// @param[in] x CIP Y coordinate (see xy06)
-/// @return the CIO locator s in radians
+/// @return the CIO locator s in [radians]
 double s06(double date1, double date2, double x, double y) noexcept;
 
 /// The CIO locator s, positioning the Celestial Intermediate Origin on
