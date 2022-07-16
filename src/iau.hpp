@@ -503,8 +503,9 @@ void xys00a(double date1, double date2, double &x, double &y,
 ///            Intermediate Pole coordinates are the x,y components of the unit
 ///            vector in the Geocentric Celestial Reference System.
 /// @param[out] y  Celestial Intermediate Pole, Y-component
-/// @param[out] s  the CIO locator s. The CIO locator s (in radians) positions
-///            the Celestial Intermediate Origin on the equator of the CIP.
+/// @param[out] s  the CIO locator s [radians]. The CIO locator s (in radians) 
+///            positions the Celestial Intermediate Origin on the equator of 
+///            the CIP.
 void xys06a(double date1, double date2, double &x, double &y,
             double &s) noexcept;
 

@@ -103,7 +103,10 @@ if GetOption('check') is not None and GetOption('check'):
   tests_sources = glob.glob(r"test/test*.cpp")
   env.Append(RPATH=root_dir)
   for tsource in tests_sources:
-    ttarget = tsource.replace('_', '-').replace('.cpp', '.out')
+    pth = os.path.dirname(tsource)
+    bsn = os.path.basename(tsource)
+    ttarget = os.path.join(pth, bsn.replace(
+        '_', '-').replace('.cpp', '.out'))
     env.Program(target=ttarget, source=tsource, CPPPATH='src/',
                 LIBS=vlib+['geodesy', 'datetime','matvec'], LIBPATH='.')
 
@@ -112,6 +115,9 @@ if GetOption('sofa_check') is not None and GetOption('sofa_check'):
   tests_sources = glob.glob(r"test/sofa_unit_tests/sofa*.cpp")
   env.Append(RPATH=root_dir)
   for tsource in tests_sources:
-    ttarget = tsource.replace('_', '-').replace('.cpp', '.out')
+    pth = os.path.dirname(tsource)
+    bsn = os.path.basename(tsource)
+    ttarget = os.path.join(pth, bsn.replace(
+        '_', '-').replace('.cpp', '.out'))
     env.Program(target=ttarget, source=tsource, CPPPATH='src/',
                 LIBS=vlib+['geodesy', 'datetime','matvec', 'sofa_c'], LIBPATH='.')
