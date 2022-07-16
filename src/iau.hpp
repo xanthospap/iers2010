@@ -881,9 +881,9 @@ void p06e(double date1, double date2, double &eps0, double &psia, double &oma,
 ///             is best matched to the way the argument is handled
 ///             internally and will deliver the optimum resolution.
 /// @param[in]  date2 (date1)  TT as a 2-part Julian Date.
-/// @param[in]  dpsi nutation component in longtitude (radians), see
+/// @param[in]  dpsi nutation component in longtitude [radians], see
 ///             iers2010, 5.5.4
-/// @param[in]  deps nutation component in obliguity (radians)
+/// @param[in]  deps nutation component in obliguity [radians]
 /// @param[out] epsa mean obliquity; the returned mean obliquity is
 ///             consistent with the IAU 2006 precession.
 /// @param[out] rb  frame bias matrix; the matrix rb transforms vectors

@@ -42,7 +42,9 @@ int main() {
 
     // max_diff and average
     double df;
-    if ((df=std::abs(angle1-angle2)) > max_diff) max_diff = df;
+    if ((df=std::abs(angle1-angle2)) > max_diff) {
+      max_diff = df;
+    }
     ave_diff += angle1 - angle2;
   }
 

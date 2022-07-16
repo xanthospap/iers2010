@@ -23,7 +23,7 @@ Service (IERS), International Earth Rotation and Reference Systems Service
 | gmst06a       | Greenwich Mean Sidereal Time                                | IAU 2006/2000A |                    | :white_check_mark:
 | nut06a        | Nutation components                                         | IAU 2006/2000A |                    | :white_check_mark:
 | pfw06         | 4-angle Fukushima-Williams precession angles                | IAU 2006       |                    | :white_check_mark:
-| pn06          | Bias, precession, nutation matrices given Δψ, Δε (B, P, N, NPB) | IAU 2006/2000A |                | - [ ]
+| pn06          | Bias, precession, nutation matrices given Δψ, Δε (B, P, N, NPB) | IAU 2006/2000A |                | :white_check_mark:
 | pom00         | Polar motion matrix                                         | IAU 2006/2000A |                    | :white_check_mark:
 | s06           | CIO locator s, given X and Y                                | IAU 2006       |                    | :white_check_mark:
 | s06a          | CIO locator s                                               | IAU 2006/2000A |                    | :heavy_exclamation_mark:
