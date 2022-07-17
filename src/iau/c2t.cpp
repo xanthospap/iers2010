@@ -1,6 +1,8 @@
 #include "iau.hpp"
 #include "iersc.hpp"
 
+#include <cstdio>
+
 dso::Mat3x3 iers2010::sofa::c2t06a(double tta, double ttb, double uta,
                                    double utb, double xp, double yp) noexcept {
 
