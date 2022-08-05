@@ -622,15 +622,17 @@ int lagint(const double *x, const double *y, int n, double xint, double &yout,
 /// @note The original FORTRAN routine, uses arcseconds/seconds as input/output
 ///       units. Here we use [mas] and [ms] respectively (the same units used
 ///       in the Bulletin B/C publications).
-/// @param[in] mjd array of the epochs of data (given in mjd TT) of size n
+/// @param[in] mjd array of the epochs of data as MJD of size n (see note)
 /// @param[in] x array of x polar motion (millioarcsec) of size n [mas]
 /// @param[in] y array of y polar motion (milliarcsec) of size n [mas]
 /// @param[in] ut1 array of UT1-UTC (millisec) of size n [ms]
 /// @param[in] n number of points in arrays (mjd, x, y, ut1)
-/// @param[in] rjd epoch for the interpolated value (given in mjd TT)
+/// @param[in] rjd epoch for the interpolated value, as MJD (see note)
 /// @param[out] xint interpolated value of x [mas]
 /// @param[out] yint interpolated value of y [mas]
 /// @param[out] ut1int interpolated value of ut1-utc [ms]
+///
+/// @note The time scales in params mjd and rjd should be the same.
 int interp_pole(const double *mjd, const double *x, const double *y,
                 const double *ut1, int n, double rjd, double &xint,
                 double &yint, double &ut1int) noexcept;
