@@ -2,6 +2,9 @@
 
 int iers2010::interp::lagint(const double *x, const double *y, int n,
                              double xint, double &yout, int &idx) noexcept {
+  constexpr const int window = 4;
+  if (n<window) return 1;
+
   int status = 0;
   yout = 0e0;
   int k = idx;
@@ -14,6 +17,8 @@ int iers2010::interp::lagint(const double *x, const double *y, int n,
     }
   }
 
+  // we are going to use window points for the interpolation
+  // at least one point before and two after should be available
   if (k < 1) {
     k = 1;
     status = -1;
