@@ -56,6 +56,12 @@ constexpr const double OmegaEarth = 7.292115e-5;
 ///      selected solar and planetary properties, August 13, 2015
 constexpr const double Rs = 6.957e8;
 
+/// @brief 1 - d(TT)/d(TCG)
+/// @see Table 1.1: IERS numerical standards, IERS 2010
+/// @note This quantity is U_geo / c^2, where U_geo is the potential on the
+///      Earth's geoid.
+constexpr const double LG = 6.9692901341e-10;
+
 /// @brief Normalize angle into the range 0 <= a < 2pi.
 /// @param[in] angle Angle in radians
 /// @return Angle in radians in range [0,2pi)
