@@ -62,6 +62,10 @@ constexpr const double Rs = 6.957e8;
 ///      Earth's geoid.
 constexpr const double LG = 6.9692901341e-10;
 
+/// @brief Speed of light [m/sec]
+/// @see Table 1.1: IERS numerical standards, IERS 2010
+constexpr const double C = 299792458e0;
+
 /// @brief Normalize angle into the range 0 <= a < 2pi.
 /// @param[in] angle Angle in radians
 /// @return Angle in radians in range [0,2pi)
