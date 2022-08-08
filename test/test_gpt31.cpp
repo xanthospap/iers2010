@@ -22,12 +22,12 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  // gpt3_1 grid
+  /* Deprecated ______________________________________________________________
   dso::gpt3::gpt3_grid grid31(dso::gpt3::gpt3_grid_attributes<dso::gpt3::Gpt3Grid::grid1x1>::num_lines);
   if (dso::gpt3::parse_gpt3_grid(argv[1], &grid31)) {
     fprintf(stderr, "ERROR. Failed parsing input 1x1 grid!\n");
     return 1;
-  }
+  }*/
 
 dso::modified_julian_day mjd{54665};
 dso::nanoseconds nanosec{22740649282280L};
@@ -1036,25 +1036,6 @@ const dso::gpt3_result res35it0[] = {{919.227961243410391,20.302976060457841,-8.
 {934.724882556083230,13.102458663816753,-8.595285850042034,283.847702324885461,12.493478288256952,0.001266878806058,0.000572892633942,3.332512236117099,49.390926489621975,-0.000100847855016,-0.000056352911656,0.000059068230221,-0.000083121871470},
 {759.449089461392987,3.705242493335894,-8.406367592668198,286.545847771740398,8.090012642364666,0.001272508364755,0.000610096085543,2.906278697211190,-35.001037560918391,-0.000060463818645,0.000053944532619,-0.000050513127804,-0.000023536233915},
 {929.901913650613551,10.812923228712496,-6.721566390680616,274.700804201424432,8.854401316234741,0.001240967076691,0.000549290047737,2.751336423826502,-32.865348269428942,-0.000150821586912,-0.000141524029194,-0.000058155532490,-0.000039636478541}};
-if (dso::gpt3_fast(t, lats, lons, hgts, 1000, 0, &grid31, gout)) {
-  fprintf(stderr,"ERROR. Failed call to gpt3_fast\n");
-  return 5;
-}
-for (int i=0; i<1000; i++) {
-  assert(std::abs(gout[i].p-res35it0[i].p) < PRECISION);
-  assert(std::abs(gout[i].T-res35it0[i].T) < PRECISION);
-  assert(std::abs(gout[i].dT-res35it0[i].dT) < PRECISION);
-  assert(std::abs(gout[i].Tm-res35it0[i].Tm) < PRECISION);
-  assert(std::abs(gout[i].e-res35it0[i].e) < PRECISION);
-  assert(std::abs(gout[i].ah-res35it0[i].ah) < PRECISION);
-  assert(std::abs(gout[i].aw-res35it0[i].aw) < PRECISION);
-  assert(std::abs(gout[i].la-res35it0[i].la) < PRECISION);
-  assert(std::abs(gout[i].undu-res35it0[i].undu) < PRECISION);
-  assert(std::abs(gout[i].Gn_h-res35it0[i].Gn_h) < PRECISION);
-  assert(std::abs(gout[i].Ge_h-res35it0[i].Ge_h) < PRECISION);
-  assert(std::abs(gout[i].Gn_w-res35it0[i].Gn_w) < PRECISION);
-  assert(std::abs(gout[i].Ge_w-res35it0[i].Ge_w) < PRECISION);
-}
 const dso::gpt3_result res35it1[] = {{921.131658900965135,16.155155548586304,-9.001801352823220,285.096914095541138,15.595522842394390,0.001272191217072,0.000602512208780,2.828085620660022,44.077759396653697,-0.000186068688847,0.000004003362590,-0.000094178251714,-0.000013539072472},
 {846.292954054396660,10.769700984379405,-9.472695082989320,288.691574363819427,10.446607579353238,0.001277051894951,0.000565371674540,3.621454028153699,-10.953639395177884,0.000081350063020,0.000058300646276,0.000151896897247,0.000017194980754},
 {1022.244130838247543,-7.251910531649004,-0.513068136895027,258.684427371566642,5.575426848673303,0.001201620189803,0.000546983114339,1.886330452324373,14.020697074129247,-0.000079668712789,0.000026513881149,-0.000012759263322,-0.000009315255028},
@@ -2055,10 +2036,53 @@ const dso::gpt3_result res35it1[] = {{921.131658900965135,16.155155548586304,-9.
 {931.869846688576672,10.013309762923976,-8.720945042207777,279.696545986567571,9.977172364493551,0.001249782634932,0.000558091604953,3.468984827680398,49.390926489621975,-0.000134726266425,-0.000054305215349,0.000006810480415,-0.000047212550701},
 {753.887596992982367,-2.063161297139239,-8.900000000000000,282.762682775156009,5.437861383295073,0.001258539567051,0.000574926633129,3.170287719498776,-35.001037560918391,-0.000196744128344,0.000043625308628,-0.000051176629689,0.000006218819036},
 {928.055004965898661,-6.206072577470325,0.476494097394551,260.624525956427249,3.832366804482988,0.001205090557167,0.000559352669293,1.911020317626705,-32.865348269428942,-0.000201901657073,-0.000166555699238,-0.000040108374263,-0.000024892051535}};
+
+/* DEPRECATED________________________________________________________________
 if (dso::gpt3_fast(t, lats, lons, hgts, 1000, 1, &grid31, gout)) {
   fprintf(stderr,"ERROR. Failed call to gpt3_fast\n");
   return 5;
+}*/
+  dso::Gpt3Grid grid(argv[1]);
+  dso::gpt3_result gout0[1000];
+  
+  double **input;
+  input = new double* [1000];
+  for (int i=0; i<1000; i++){
+    input[i] = new double[3];
+    input[i][0] = lons[i];
+    input[i][1] = lats[i];
+    input[i][2] = hgts[i];
+  }
+/* DEPRECATED________________________________________________________________
+if (dso::gpt3_fast(t, lats, lons, hgts, 1000, 0, &grid31, gout)) {
+  fprintf(stderr,"ERROR. Failed call to gpt3_fast\n");
+  return 5;
+}*/
+  if (dso::gpt3_fast(t, input, 1000, 0, grid, gout0)) {
+    fprintf(stderr,"ERROR. Failed call to gpt3_fast\n");
+    return 9;
+  }
+for (int i=0; i<1000; i++) {
+  assert(std::abs(gout0[i].p-res35it0[i].p) < PRECISION);
+  assert(std::abs(gout0[i].T-res35it0[i].T) < PRECISION);
+  assert(std::abs(gout0[i].dT-res35it0[i].dT) < PRECISION);
+  assert(std::abs(gout0[i].Tm-res35it0[i].Tm) < PRECISION);
+  assert(std::abs(gout0[i].e-res35it0[i].e) < PRECISION);
+  assert(std::abs(gout0[i].ah-res35it0[i].ah) < PRECISION);
+  assert(std::abs(gout0[i].aw-res35it0[i].aw) < PRECISION);
+  assert(std::abs(gout0[i].la-res35it0[i].la) < PRECISION);
+  assert(std::abs(gout0[i].undu-res35it0[i].undu) < PRECISION);
+  assert(std::abs(gout0[i].Gn_h-res35it0[i].Gn_h) < PRECISION);
+  assert(std::abs(gout0[i].Ge_h-res35it0[i].Ge_h) < PRECISION);
+  assert(std::abs(gout0[i].Gn_w-res35it0[i].Gn_w) < PRECISION);
+  assert(std::abs(gout0[i].Ge_w-res35it0[i].Ge_w) < PRECISION);
 }
+  
+  if (dso::gpt3_fast(t, input, 1000, 1, grid, gout0)) {
+    fprintf(stderr,"ERROR. Failed call to gpt3_fast\n");
+    return 9;
+  }
+
 for (int i=0; i<1000; i++) {
   assert(std::abs(gout[i].p-res35it1[i].p) < PRECISION);
   assert(std::abs(gout[i].T-res35it1[i].T) < PRECISION);
