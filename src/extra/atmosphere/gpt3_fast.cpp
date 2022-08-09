@@ -13,9 +13,12 @@ using dso::gpt3::Gpt3GridResolution;
 
 template <typename T> int sgn(T val) { return (T(0) < val) - (val < T(0)); }
 
-int dso::gpt3_fast(double fractional_doy, double **ell,
-                     int num_stations, int it, const dso::Gpt3Grid &grid,
-                     dso::gpt3_result *g3out) noexcept {
+int dso::gpt3_fast(double fractional_doy, const std::vector<std::array<double,3>> &ellipsoidal, 
+                     int it, const dso::Gpt3Grid &grid,
+                     std::vector<dso::gpt3_result> &g3out) noexcept {
+
+  g3out.clear();
+  g3out = std::vector<dso::gpt3_result>(ellipsoidal.size(), dso::gpt3_result());
 
   // grid info
   double grid_tick, half_grid_tick;
@@ -72,10 +75,11 @@ int dso::gpt3_fast(double fractional_doy, double **ell,
   int indx[4];
 
   // loop over stations
-  for (int k = 0; k < num_stations; k++) {
-    const double lon = ell[k][0];
-    const double lat = ell[k][1];
-    const double hell = ell[k][2];
+  for (auto ell=ellipsoidal.cbegin(); ell != ellipsoidal.cend(); ++ell) {
+    int k = std::distance(ellipsoidal.cbegin(), ell);
+    const double lon = ell->operator[](0);
+    const double lat = ell->operator[](1);
+    const double hell = ell->operator[](2);
 
     // only positive longitude in degrees
     const double plon = dso::rad2deg(lon + (lon < 0) * 2e0 * pi);
@@ -120,7 +124,7 @@ int dso::gpt3_fast(double fractional_doy, double **ell,
 
       // transforming ellipsoidal height to orthometric height
       g3out[k].undu = grid.u_grid(ix);
-      const double hgt = /*ell[k][2]*/ hell - g3out[k].undu;
+      const double hgt = hell - g3out[k].undu;
 
       // pressure, temperature at the height of the grid
       const double T0 = grid.t_grid(ix, 0) + grid.t_grid(ix, 1) * cosfy +

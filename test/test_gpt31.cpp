@@ -2043,22 +2043,16 @@ if (dso::gpt3_fast(t, lats, lons, hgts, 1000, 1, &grid31, gout)) {
   return 5;
 }*/
   dso::Gpt3Grid grid(argv[1]);
-  dso::gpt3_result gout0[1000];
+  std::vector<dso::gpt3_result> gout0;
   
-  double **input;
-  input = new double* [1000];
-  for (int i=0; i<1000; i++){
-    input[i] = new double[3];
-    input[i][0] = lons[i];
-    input[i][1] = lats[i];
-    input[i][2] = hgts[i];
-  }
+  std::vector<std::array<double,3>> input;
+  for (int i=0; i<1000; i++) input.emplace_back(std::array<double,3>{lons[i],lats[i],hgts[i]});
 /* DEPRECATED________________________________________________________________
 if (dso::gpt3_fast(t, lats, lons, hgts, 1000, 0, &grid31, gout)) {
   fprintf(stderr,"ERROR. Failed call to gpt3_fast\n");
   return 5;
 }*/
-  if (dso::gpt3_fast(t, input, 1000, 0, grid, gout0)) {
+  if (dso::gpt3_fast(t, input, 0, grid, gout0)) {
     fprintf(stderr,"ERROR. Failed call to gpt3_fast\n");
     return 9;
   }
@@ -2078,7 +2072,7 @@ for (int i=0; i<1000; i++) {
   assert(std::abs(gout0[i].Ge_w-res35it0[i].Ge_w) < PRECISION);
 }
   
-  if (dso::gpt3_fast(t, input, 1000, 1, grid, gout0)) {
+  if (dso::gpt3_fast(t, input, 1, grid, gout0)) {
     fprintf(stderr,"ERROR. Failed call to gpt3_fast\n");
     return 9;
   }

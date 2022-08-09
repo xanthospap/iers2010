@@ -12,6 +12,8 @@
 
 #include "datetime/dtcalendar.hpp"
 #include <stdexcept>
+#include <vector>
+#include <array>
 
 namespace dso {
 
@@ -364,9 +366,10 @@ struct vmf3_hw {
 /// @param[out] g3out An instance of gpt3_result where all computed values are
 ///                  stored at. Should be at least of size num_stations.
 /// @return Anything other than 0 denotes an error
-int gpt3_fast(double fractional_doy, double **ellipsoidal,
-                     int num_stations, int it, const Gpt3Grid &grid,
-                     dso::gpt3_result *g3out) noexcept;
+int gpt3_fast(double fractional_doy,
+              const std::vector<std::array<double, 3>> &ellipsoidal,
+              int it, const Gpt3Grid &grid,
+              std::vector<dso::gpt3_result> &g3out) noexcept;
 
 /// @brief Implement GPT3 for a number of stations
 /// This subroutine determines pressure, temperature, temperature lapse rate, 
@@ -415,15 +418,15 @@ template <gconcepts::is_sec_dt S>
 #else
 template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
 #endif
-int gpt3_fast(const dso::datetime<S> &t, double **ellipsoidal,
-              int num_stations, int it, const Gpt3Grid &grid,
-              dso::gpt3_result *g3out) noexcept {
+int gpt3_fast(const dso::datetime<S> &t, const std::vector<std::array<double,3>> &ellipsoidal,
+              int it, const Gpt3Grid &grid,
+              std::vector<dso::gpt3_result> &g3out) noexcept {
  
  const auto yrdoy = t.mjd().to_ydoy();
  double fraction = t.sec().fractional_days();
  fraction += static_cast<double>(yrdoy.__doy.as_underlying_type());
  
- return gpt3_fast(fraction, ellipsoidal, num_stations, it, grid, g3out);
+ return gpt3_fast(fraction, ellipsoidal, it, grid, g3out);
 }
 
 
