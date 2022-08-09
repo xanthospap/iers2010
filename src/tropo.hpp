@@ -456,9 +456,9 @@ int gpt3_fast(const dso::datetime<S> &t, const std::vector<std::array<double,3>>
 /// @param[out] vmfres results array; each element includes the values for
 ///            - mfh: hydrostatic mapping factor and
 ///            - mfw: wet mapping factor
-int vmf3(const dso::gpt3_result *gptres, dso::datetime<dso::nanoseconds> &t,
+/*int vmf3(const dso::gpt3_result *gptres, dso::datetime<dso::nanoseconds> &t,
          const double *vlat, const double *vlon, const double *vzd,
-         dso::vmf3_hw *vmfres, int num_sta) noexcept;
+         dso::vmf3_hw *vmfres, int num_sta) noexcept;*/
 
 } // dso
 #endif
