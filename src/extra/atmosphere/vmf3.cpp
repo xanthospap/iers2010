@@ -1424,7 +1424,7 @@ const double bnm_cw[91][5] = {
     {2.66203457773766e-16, -7.67224608659658e-17, 3.51487351031864e-18,
      4.10287131339291e-17, -6.72171711728514e-17}};
 
-int dso::vmf3(double ah, double aw, dso::datetime<dso::nanoseconds> &t,
+int dso::vmf3(double ah, double aw, const dso::datetime<dso::nanoseconds> &t,
               double lat, double lon, double zd, double &mfh,
               double &mfw) noexcept {
 #ifdef USE_EXTERNAL_CONSTS

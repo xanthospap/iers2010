@@ -53,7 +53,7 @@ double asknewet(double e, double Tm, double lambda) noexcept;
 /// @return zhd: zenith hydrostatic delay [meters]
 double saasthyd(double p, double dlat, double hell) noexcept;
 
-int vmf3(double ah, double aw, dso::datetime<dso::nanoseconds> &t, double lat,
+int vmf3(double ah, double aw, const dso::datetime<dso::nanoseconds> &t, double lat,
          double lon, double zd, double &mfh, double &mfw) noexcept;
 
 /// @brief gpt3 namespace holds declerations of gpt3 implementation
