@@ -21,24 +21,25 @@ C     TEST CASE 1; units [m]
       WRITE(*,'(A17I3A15A30)') 'SUBCASE("Example ',EX,': Checking for ',
      $ 'descripancies  > PRECISION") {'
       CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
-      WRITE(*,'(A9F15.4A13F15.4A13F15.4A3)') 'xsta.x()=', XSTA(1), 
-     $ 'e0; xsta.y()=', XSTA(2), 'e0; xsta.z()=', XSTA(3), 'e0;'
-      WRITE(*,'(A9F20.4A13F20.4A13F20.4A3)') 'xsun.x()=', XSUN(1), 
-     $ 'e0; xsun.y()=', XSUN(2), 'e0; xsun.z()=', XSUN(3) , 'e0;'
-      WRITE(*,'(A9F20.7A13F20.7A13F20.7A3)') 'xmon.x()=', XMON(1), 
-     $ 'e0; xmon.y()=', XMON(2), 'e0; xmon.z()=', XMON(3), 'e0;'
+      WRITE(*,'(A8F15.4A12F15.4A12F15.4A3)') 'xsta(0)=', XSTA(1), 
+     $ 'e0; xsta(1)=', XSTA(2), 'e0; xsta(2)=', XSTA(3), 'e0;'
+      WRITE(*,'(A8F20.4A12F20.4A12F20.4A3)') 'xsun(0)=', XSUN(1), 
+     $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
+      WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
+     $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
       WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
      $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
      $ FHR*3600D0, '));'
-      WRITE(*,'(A10F20.10A14F20.10A14F20.10A3)') 'xtide.x()=',
-     $ DXTIDE(1), 'e0; xtide.y()=', DXTIDE(2), 'e0; xtide.z()=', 
+      WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
+     $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
-      WRITE(*,'(A37)') 'res=dehanttideinel(xsta,xsun,xmon,t);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.x()-xtide.x())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.y()-xtide.y())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.z()-xtide.z())<PRECISION);'
+      WRITE(*,'(A46)') 'res=dehanttideinel_from_utc(xsta,xsun,xmon,t);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(0)-xtide(0))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(1)-xtide(1))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(2)-xtide(2))<PRECISION);'
       WRITE(*,'(A4)') '}'
 
+C     gradually increase fractional hours, 1hour every step
       DO I=1,23,3
       FHR = I
       EX = EX + 1
@@ -46,22 +47,22 @@ C     TEST CASE 1; units [m]
       WRITE(*,'(A17I3A15A30)') 'SUBCASE("Example ',EX,': Checking for ',
      $ 'descripancies  > PRECISION") {'
       CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
-      WRITE(*,'(A9F15.4A13F15.4A13F15.4A3)') 'xsta.x()=', XSTA(1), 
-     $ 'e0; xsta.y()=', XSTA(2), 'e0; xsta.z()=', XSTA(3), 'e0;'
-      WRITE(*,'(A9F20.4A13F20.4A13F20.4A3)') 'xsun.x()=', XSUN(1), 
-     $ 'e0; xsun.y()=', XSUN(2), 'e0; xsun.z()=', XSUN(3) , 'e0;'
-      WRITE(*,'(A9F20.7A13F20.7A13F20.7A3)') 'xmon.x()=', XMON(1), 
-     $ 'e0; xmon.y()=', XMON(2), 'e0; xmon.z()=', XMON(3), 'e0;'
+      WRITE(*,'(A8F15.4A12F15.4A12F15.4A3)') 'xsta(0)=', XSTA(1), 
+     $ 'e0; xsta(1)=', XSTA(2), 'e0; xsta(2)=', XSTA(3), 'e0;'
+      WRITE(*,'(A8F20.4A12F20.4A12F20.4A3)') 'xsun(0)=', XSUN(1), 
+     $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
+      WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
+     $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
       WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
      $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
      $ FHR*3600D0, '));'
-      WRITE(*,'(A10F20.10A14F20.10A14F20.10A3)') 'xtide.x()=',
-     $ DXTIDE(1), 'e0; xtide.y()=', DXTIDE(2), 'e0; xtide.z()=', 
+      WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
+     $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
-      WRITE(*,'(A37)') 'res=dehanttideinel(xsta,xsun,xmon,t);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.x()-xtide.x())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.y()-xtide.y())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.z()-xtide.z())<PRECISION);'
+      WRITE(*,'(A46)') 'res=dehanttideinel_from_utc(xsta,xsun,xmon,t);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(0)-xtide(0))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(1)-xtide(1))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(2)-xtide(2))<PRECISION);'
       WRITE(*,'(A4)') '}'
       END DO
 
@@ -83,24 +84,25 @@ C     TEST CASE 2; units [m]
       WRITE(*,'(A17I3A15A30)') 'SUBCASE("Example ',EX,': Checking for ',
      $ 'descripancies  > PRECISION") {'
       CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
-      WRITE(*,'(A9F15.4A13F15.4A13F15.4A3)') 'xsta.x()=', XSTA(1), 
-     $ 'e0; xsta.y()=', XSTA(2), 'e0; xsta.z()=', XSTA(3), 'e0;'
-      WRITE(*,'(A9F20.4A13F20.4A13F20.4A3)') 'xsun.x()=', XSUN(1), 
-     $ 'e0; xsun.y()=', XSUN(2), 'e0; xsun.z()=', XSUN(3) , 'e0;'
-      WRITE(*,'(A9F20.7A13F20.7A13F20.7A3)') 'xmon.x()=', XMON(1), 
-     $ 'e0; xmon.y()=', XMON(2), 'e0; xmon.z()=', XMON(3), 'e0;'
+      WRITE(*,'(A8F15.4A12F15.4A12F15.4A3)') 'xsta(0)=', XSTA(1), 
+     $ 'e0; xsta(1)=', XSTA(2), 'e0; xsta(2)=', XSTA(3), 'e0;'
+      WRITE(*,'(A8F20.4A12F20.4A12F20.4A3)') 'xsun(0)=', XSUN(1), 
+     $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
+      WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
+     $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
       WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
      $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
      $ FHR*3600D0, '));'
-      WRITE(*,'(A10F20.10A14F20.10A14F20.10A3)') 'xtide.x()=',
-     $ DXTIDE(1), 'e0; xtide.y()=', DXTIDE(2), 'e0; xtide.z()=', 
+      WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
+     $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
-      WRITE(*,'(A37)') 'res=dehanttideinel(xsta,xsun,xmon,t);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.x()-xtide.x())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.y()-xtide.y())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.z()-xtide.z())<PRECISION);'
+      WRITE(*,'(A46)') 'res=dehanttideinel_from_utc(xsta,xsun,xmon,t);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(0)-xtide(0))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(1)-xtide(1))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(2)-xtide(2))<PRECISION);'
       WRITE(*,'(A4)') '}'
 
+C     gradually increase fractional hours, 1hour every step
       DO I=2,23,3
       FHR = I
       EX = EX + 1
@@ -108,22 +110,22 @@ C     TEST CASE 2; units [m]
       WRITE(*,'(A17I3A15A30)') 'SUBCASE("Example ',EX,': Checking for ',
      $ 'descripancies  > PRECISION") {'
       CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
-      WRITE(*,'(A9F15.4A13F15.4A13F15.4A3)') 'xsta.x()=', XSTA(1), 
-     $ 'e0; xsta.y()=', XSTA(2), 'e0; xsta.z()=', XSTA(3), 'e0;'
-      WRITE(*,'(A9F20.4A13F20.4A13F20.4A3)') 'xsun.x()=', XSUN(1), 
-     $ 'e0; xsun.y()=', XSUN(2), 'e0; xsun.z()=', XSUN(3) , 'e0;'
-      WRITE(*,'(A9F20.7A13F20.7A13F20.7A3)') 'xmon.x()=', XMON(1), 
-     $ 'e0; xmon.y()=', XMON(2), 'e0; xmon.z()=', XMON(3), 'e0;'
+      WRITE(*,'(A8F15.4A12F15.4A12F15.4A3)') 'xsta(0)=', XSTA(1), 
+     $ 'e0; xsta(1)=', XSTA(2), 'e0; xsta(2)=', XSTA(3), 'e0;'
+      WRITE(*,'(A8F20.4A12F20.4A12F20.4A3)') 'xsun(0)=', XSUN(1), 
+     $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
+      WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
+     $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
       WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
      $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
      $ FHR*3600D0, '));'
-      WRITE(*,'(A10F20.10A14F20.10A14F20.10A3)') 'xtide.x()=',
-     $ DXTIDE(1), 'e0; xtide.y()=', DXTIDE(2), 'e0; xtide.z()=', 
+      WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
+     $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
-      WRITE(*,'(A37)') 'res=dehanttideinel(xsta,xsun,xmon,t);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.x()-xtide.x())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.y()-xtide.y())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.z()-xtide.z())<PRECISION);'
+      WRITE(*,'(A46)') 'res=dehanttideinel_from_utc(xsta,xsun,xmon,t);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(0)-xtide(0))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(1)-xtide(1))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(2)-xtide(2))<PRECISION);'
       WRITE(*,'(A4)') '}'
       END DO
       
@@ -145,22 +147,22 @@ C     TEST CASE 3; units [m]
       WRITE(*,'(A17I3A15A30)') 'SUBCASE("Example ',EX,': Checking for ',
      $ 'descripancies  > PRECISION") {'
       CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
-      WRITE(*,'(A9F15.4A13F15.4A13F15.4A3)') 'xsta.x()=', XSTA(1), 
-     $ 'e0; xsta.y()=', XSTA(2), 'e0; xsta.z()=', XSTA(3), 'e0;'
-      WRITE(*,'(A9F20.4A13F20.4A13F20.4A3)') 'xsun.x()=', XSUN(1), 
-     $ 'e0; xsun.y()=', XSUN(2), 'e0; xsun.z()=', XSUN(3) , 'e0;'
-      WRITE(*,'(A9F20.7A13F20.7A13F20.7A3)') 'xmon.x()=', XMON(1), 
-     $ 'e0; xmon.y()=', XMON(2), 'e0; xmon.z()=', XMON(3), 'e0;'
+      WRITE(*,'(A8F15.4A12F15.4A12F15.4A3)') 'xsta(0)=', XSTA(1), 
+     $ 'e0; xsta(1)=', XSTA(2), 'e0; xsta(2)=', XSTA(3), 'e0;'
+      WRITE(*,'(A8F20.4A12F20.4A12F20.4A3)') 'xsun(0)=', XSUN(1), 
+     $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
+      WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
+     $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
       WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
      $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
      $ FHR*3600D0, '));'
-      WRITE(*,'(A10F20.10A14F20.10A14F20.10A3)') 'xtide.x()=',
-     $ DXTIDE(1), 'e0; xtide.y()=', DXTIDE(2), 'e0; xtide.z()=', 
+      WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
+     $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
-      WRITE(*,'(A37)') 'res=dehanttideinel(xsta,xsun,xmon,t);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.x()-xtide.x())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.y()-xtide.y())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.z()-xtide.z())<PRECISION);'
+      WRITE(*,'(A46)') 'res=dehanttideinel_from_utc(xsta,xsun,xmon,t);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(0)-xtide(0))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(1)-xtide(1))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(2)-xtide(2))<PRECISION);'
       WRITE(*,'(A4)') '}'
 
 C     DO I=3,23,3
@@ -173,22 +175,22 @@ C     IF (FHR.GT.24) FHR = 23.99D0
       WRITE(*,'(A17I3A15A30)') 'SUBCASE("Example ',EX,': Checking for ',
      $ 'descripancies  > PRECISION") {'
       CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
-      WRITE(*,'(A9F15.4A13F15.4A13F15.4A3)') 'xsta.x()=', XSTA(1), 
-     $ 'e0; xsta.y()=', XSTA(2), 'e0; xsta.z()=', XSTA(3), 'e0;'
-      WRITE(*,'(A9F20.4A13F20.4A13F20.4A3)') 'xsun.x()=', XSUN(1), 
-     $ 'e0; xsun.y()=', XSUN(2), 'e0; xsun.z()=', XSUN(3) , 'e0;'
-      WRITE(*,'(A9F20.7A13F20.7A13F20.7A3)') 'xmon.x()=', XMON(1), 
-     $ 'e0; xmon.y()=', XMON(2), 'e0; xmon.z()=', XMON(3), 'e0;'
+      WRITE(*,'(A8F15.4A12F15.4A12F15.4A3)') 'xsta(0)=', XSTA(1), 
+     $ 'e0; xsta(1)=', XSTA(2), 'e0; xsta(2)=', XSTA(3), 'e0;'
+      WRITE(*,'(A8F20.4A12F20.4A12F20.4A3)') 'xsun(0)=', XSUN(1), 
+     $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
+      WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
+     $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
       WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
      $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
      $ FHR*3600D0, '));'
-      WRITE(*,'(A10F20.10A14F20.10A14F20.10A3)') 'xtide.x()=',
-     $ DXTIDE(1), 'e0; xtide.y()=', DXTIDE(2), 'e0; xtide.z()=', 
+      WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
+     $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
-      WRITE(*,'(A37)') 'res=dehanttideinel(xsta,xsun,xmon,t);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.x()-xtide.x())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.y()-xtide.y())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.z()-xtide.z())<PRECISION);'
+      WRITE(*,'(A46)') 'res=dehanttideinel_from_utc(xsta,xsun,xmon,t);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(0)-xtide(0))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(1)-xtide(1))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(2)-xtide(2))<PRECISION);'
       WRITE(*,'(A4)') '}'
       END DO
 
@@ -210,22 +212,22 @@ C     TEST CASE 4; units [m]
       WRITE(*,'(A17I3A15A30)') 'SUBCASE("Example ',EX,': Checking for ',
      $ 'descripancies  > PRECISION") {'
       CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
-      WRITE(*,'(A9F15.4A13F15.4A13F15.4A3)') 'xsta.x()=', XSTA(1), 
-     $ 'e0; xsta.y()=', XSTA(2), 'e0; xsta.z()=', XSTA(3), 'e0;'
-      WRITE(*,'(A9F20.4A13F20.4A13F20.4A3)') 'xsun.x()=', XSUN(1), 
-     $ 'e0; xsun.y()=', XSUN(2), 'e0; xsun.z()=', XSUN(3) , 'e0;'
-      WRITE(*,'(A9F20.7A13F20.7A13F20.7A3)') 'xmon.x()=', XMON(1), 
-     $ 'e0; xmon.y()=', XMON(2), 'e0; xmon.z()=', XMON(3), 'e0;'
+      WRITE(*,'(A8F15.4A12F15.4A12F15.4A3)') 'xsta(0)=', XSTA(1), 
+     $ 'e0; xsta(1)=', XSTA(2), 'e0; xsta(2)=', XSTA(3), 'e0;'
+      WRITE(*,'(A8F20.4A12F20.4A12F20.4A3)') 'xsun(0)=', XSUN(1), 
+     $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
+      WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
+     $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
       WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
      $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
      $ FHR*3600D0, '));'
-      WRITE(*,'(A10F20.10A14F20.10A14F20.10A3)') 'xtide.x()=',
-     $ DXTIDE(1), 'e0; xtide.y()=', DXTIDE(2), 'e0; xtide.z()=', 
+      WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
+     $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
-      WRITE(*,'(A37)') 'res=dehanttideinel(xsta,xsun,xmon,t);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.x()-xtide.x())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.y()-xtide.y())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.z()-xtide.z())<PRECISION);'
+      WRITE(*,'(A46)') 'res=dehanttideinel_from_utc(xsta,xsun,xmon,t);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(0)-xtide(0))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(1)-xtide(1))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(2)-xtide(2))<PRECISION);'
       WRITE(*,'(A4)') '}'
 
 C     DO I=4,23,3
@@ -238,22 +240,22 @@ C     IF (FHR.GT.24) FHR = 23.99D0
       WRITE(*,'(A17I3A15A30)') 'SUBCASE("Example ',EX,': Checking for ',
      $ 'descripancies  > PRECISION") {'
       CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
-      WRITE(*,'(A9F15.4A13F15.4A13F15.4A3)') 'xsta.x()=', XSTA(1), 
-     $ 'e0; xsta.y()=', XSTA(2), 'e0; xsta.z()=', XSTA(3), 'e0;'
-      WRITE(*,'(A9F20.4A13F20.4A13F20.4A3)') 'xsun.x()=', XSUN(1), 
-     $ 'e0; xsun.y()=', XSUN(2), 'e0; xsun.z()=', XSUN(3) , 'e0;'
-      WRITE(*,'(A9F20.7A13F20.7A13F20.7A3)') 'xmon.x()=', XMON(1), 
-     $ 'e0; xmon.y()=', XMON(2), 'e0; xmon.z()=', XMON(3), 'e0;'
+      WRITE(*,'(A8F15.4A12F15.4A12F15.4A3)') 'xsta(0)=', XSTA(1), 
+     $ 'e0; xsta(1)=', XSTA(2), 'e0; xsta(2)=', XSTA(3), 'e0;'
+      WRITE(*,'(A8F20.4A12F20.4A12F20.4A3)') 'xsun(0)=', XSUN(1), 
+     $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
+      WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
+     $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
       WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
      $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
      $ FHR*3600D0, '));'
-      WRITE(*,'(A10F20.10A14F20.10A14F20.10A3)') 'xtide.x()=',
-     $ DXTIDE(1), 'e0; xtide.y()=', DXTIDE(2), 'e0; xtide.z()=', 
+      WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
+     $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
-      WRITE(*,'(A37)') 'res=dehanttideinel(xsta,xsun,xmon,t);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.x()-xtide.x())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.y()-xtide.y())<PRECISION);'
-      WRITE(*,'(A50)') 'REQUIRE(std::abs(res.z()-xtide.z())<PRECISION);'
+      WRITE(*,'(A46)') 'res=dehanttideinel_from_utc(xsta,xsun,xmon,t);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(0)-xtide(0))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(1)-xtide(1))<PRECISION);'
+      WRITE(*,'(A50)') 'REQUIRE(std::abs(res(2)-xtide(2))<PRECISION);'
       WRITE(*,'(A4)') '}'
       END DO
       END

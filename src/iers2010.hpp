@@ -4,6 +4,7 @@
 #include "datetime/dtcalendar.hpp"
 #include "iersc.hpp"
 #include "matvec/matvec.hpp"
+#include "eigen3/Eigen/Eigen"
 #include <cmath>
 #ifdef DEBUG
 #include <cstdio>
@@ -345,10 +346,11 @@ int arg2(const dso::datetime<S> &t, double *angles) noexcept {
 /// @brief Compute tidal corrections of station displacements caused by lunar
 /// and solar gravitational attraction. This is just the implementation, use the
 /// generic template function instead.
-dso::Vector3 dehanttideinel_impl(const dso::Vector3 &xsta,
-                                 const dso::Vector3 &xsun,
-                                 const dso::Vector3 &xmon,
-                                 dso::datetime<dso::milliseconds> t) noexcept;
+Eigen::Matrix<double, 3, 1>
+dehanttideinel_impl(const Eigen::Matrix<double, 3, 1> &xsta,
+                    const Eigen::Matrix<double, 3, 1> &xsun,
+                    const Eigen::Matrix<double, 3, 1> &xmon,
+                    const dso::datetime<dso::milliseconds> &t) noexcept;
 
 /// @details This function computes the station tidal displacement
 ///          caused by lunar and solar gravitational attraction (see
@@ -416,9 +418,32 @@ template <gconcepts::is_sec_dt S>
 #else
 template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
 #endif
-dso::Vector3 dehanttideinel(const dso::Vector3 &xsta, const dso::Vector3 &xsun,
-                            const dso::Vector3 &xmon,
-                            const dso::datetime<S> &t) noexcept {
+Eigen::Matrix<double, 3, 1>
+dehanttideinel(const Eigen::Matrix<double, 3, 1> &xsta,
+               const Eigen::Matrix<double, 3, 1> &xsun,
+               const Eigen::Matrix<double, 3, 1> &xmon,
+               const dso::datetime<S> &t) noexcept {
+  return dehanttideinel_impl(xsta, xsun, xmon,
+                             t.template cast_to<dso::milliseconds>());
+}
+
+/* Never use this, it is just for debugging/testing purposes */
+#if __cplusplus >= 202002L
+template <gconcepts::is_sec_dt S>
+#else
+template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+#endif
+Eigen::Matrix<double, 3, 1>
+dehanttideinel_from_utc(const Eigen::Matrix<double, 3, 1> &xsta,
+               const Eigen::Matrix<double, 3, 1> &xsun,
+               const Eigen::Matrix<double, 3, 1> &xmon,
+               const dso::datetime<S> &tutc) noexcept {
+  auto t = tutc;
+  printf("Note T=%20.12f, FHR=%20.12f\n", tutc.jcenturies_sinceJ2000(), t.sec().to_fractional_seconds()/3600e0);
+  // need to convert UTC to TT
+  int dat = dso::dat(t.mjd());
+  t.add_seconds(dso::milliseconds(dat * 1e3) + dso::milliseconds(32184));
+  printf("Dsec=%20.12f\n", (double)dat+32184e-3); 
   return dehanttideinel_impl(xsta, xsun, xmon,
                              t.template cast_to<dso::milliseconds>());
 }

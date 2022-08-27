@@ -1,16 +1,56 @@
 #include "iers2010.hpp"
+#include <datetime/dtfund.hpp>
 
 using dso::Vector3;
 
 // Set constants
 constexpr const double DEG2RAD = iers2010::D2PI / 360e0;
 
+// coefficients for computations in step2diu
+const double s2d_datdi[][9] = {
+      {-3e0, 0e0, 2e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
+      {-3e0, 2e0, 0e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
+      {-2e0, 0e0, 1e0, -1e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
+      {-2e0, 0e0, 1e0, 0e0, 0e0, -0.08e0, 0e0, -0.01e0, 0.01e0},
+      {-2e0, 2e0, -1e0, 0e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
+      {-1e0, 0e0, 0e0, -1e0, 0e0, -0.10e0, 0e0, 0e0, 0e0},
+      {-1e0, 0e0, 0e0, 0e0, 0e0, -0.51e0, 0e0, -0.02e0, 0.03e0},
+      {-1e0, 2e0, 0e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
+      {0e0, -2e0, 1e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
+      {0e0, 0e0, -1e0, 0e0, 0e0, 0.02e0, 0e0, 0e0, 0e0},
+      {0e0, 0e0, 1e0, 0e0, 0e0, 0.06e0, 0e0, 0e0, 0e0},
+      {0e0, 0e0, 1e0, 1e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
+      {0e0, 2e0, -1e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
+      {1e0, -3e0, 0e0, 0e0, 1e0, -0.06e0, 0e0, 0e0, 0e0},
+      {1e0, -2e0, 0e0, -1e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
+      {1e0, -2e0, 0e0, 0e0, 0e0, -1.23e0, -0.07e0, 0.06e0, 0.01e0},
+      {1e0, -1e0, 0e0, 0e0, -1e0, 0.02e0, 0e0, 0e0, 0e0},
+      {1e0, -1e0, 0e0, 0e0, 1e0, 0.04e0, 0e0, 0e0, 0e0},
+      {1e0, 0e0, 0e0, -1e0, 0e0, -0.22e0, 0.01e0, 0.01e0, 0e0},
+      {1e0, 0e0, 0e0, 0e0, 0e0, 12.00e0, -0.80e0, -0.67e0, -0.03e0},
+      {1e0, 0e0, 0e0, 1e0, 0e0, 1.73e0, -0.12e0, -0.10e0, 0e0},
+      {1e0, 0e0, 0e0, 2e0, 0e0, -0.04e0, 0e0, 0e0, 0e0},
+      {1e0, 1e0, 0e0, 0e0, -1e0, -0.50e0, -0.01e0, 0.03e0, 0e0},
+      {1e0, 1e0, 0e0, 0e0, 1e0, 0.01e0, 0e0, 0e0, 0e0},
+      {0e0, 1e0, 0e0, 1e0, -1e0, -0.01e0, 0e0, 0e0, 0e0},
+      {1e0, 2e0, -2e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
+      {1e0, 2e0, 0e0, 0e0, 0e0, -0.11e0, 0.01e0, 0.01e0, 0e0},
+      {2e0, -2e0, 1e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
+      {2e0, 0e0, -1e0, 0e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
+      {3e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0},
+      {3e0, 0e0, 0e0, 1e0, 0e0, 0e0, 0e0, 0e0, 0e0}};
+
 /// @brief Structure to hold a number of angles used to compute the Step 2
 ///        tidal displacement for a point on earth. See function step2diu and
 ///        step2lon. Instead of computing them within these functions, they are
 ///        computed once, and stored in a Step2Angles instance.
 struct Step2Angles {
-  Step2Angles(double t, double fhr) noexcept {
+  /// @param[in] tms Datetime in milliseond resolution, TT
+  Step2Angles(const dso::datetime<dso::milliseconds> &tms) noexcept {
+    const double t = tms.jcenturies_sinceJ2000(); // julian centuries TT
+    // fractional hours of day
+    const double fhr = tms.sec().to_fractional_seconds() / 3600e0; 
+    printf("Note T=%20.12f, FHR=%20.12f\n", t, fhr);
     // Compute the phase angles in degrees.
     s = 218.31664563e0 +
         (481267.88194e0 + (-0.0014663889e0 + (0.00000185139e0) * t) * t) * t;
@@ -66,15 +106,17 @@ struct Step2Angles {
 ///        step2diu and step2lon) but we can only compute them once and store
 ///        the in a TideAux instance.
 struct TideAux {
-  TideAux(const Vector3 *xsta, const Vector3 *xsun, const Vector3 *xmon,
-          double fsun, double fmon) noexcept {
-    rsta = xsta->norm();
-    sinphi = xsta->z() / rsta;
-    cosphi = std::sqrt(xsta->x() * xsta->x() + xsta->y() * xsta->y()) / rsta;
-    sinla = xsta->y() / cosphi / rsta;
-    cosla = xsta->x() / cosphi / rsta;
-    rsun = xsun->norm();
-    rmon = xmon->norm();
+  TideAux(const Eigen::Matrix<double, 3, 1> &xsta,
+          const Eigen::Matrix<double, 3, 1> &xsun,
+          const Eigen::Matrix<double, 3, 1> &xmon, double fsun,
+          double fmon) noexcept {
+    rsta = xsta.norm();
+    sinphi = xsta(2) / rsta;
+    cosphi = std::sqrt(xsta(0) * xsta(0) + xsta(1) * xsta(1)) / rsta;
+    sinla = xsta(1) / cosphi / rsta;
+    cosla = xsta(0) / cosphi / rsta;
+    rsun = xsun.norm();
+    rmon = xmon.norm();
     fac2sun = fsun;
     fac2mon = fmon;
   };
@@ -123,8 +165,9 @@ struct TideAux {
 ///       1991b, Forced nutations of the Earth: Influence of inner core
 ///       Dynamics 2. Numerical results and comparisons, J. Geophys. Res.,
 ///       96, 8243-8257
-Vector3 st1l1(/*const Vector3 &xsta,*/ const Vector3 &xsun, const Vector3 &xmon,
-              const TideAux &aux) noexcept {
+Eigen::Matrix<double, 3, 1> st1l1(const Eigen::Matrix<double, 3, 1> &xsun,
+                                  const Eigen::Matrix<double, 3, 1> &xmon,
+                                  const TideAux &aux) noexcept {
   constexpr const double l1d = 0.0012e0;
   constexpr const double l1sd = 0.0024e0;
 
@@ -147,56 +190,57 @@ Vector3 st1l1(/*const Vector3 &xsta,*/ const Vector3 &xsun, const Vector3 &xmon,
   double l1 = l1d;
   const double fac2sun = aux.fac2sun;
   const double fac2mon = aux.fac2mon;
-  double dnsun = -l1 * sinphi2 * fac2sun * xsun.z() *
-                 (xsun.x() * cosla + xsun.y() * sinla) / rsun2;
-  double dnmon = -l1 * sinphi2 * fac2mon * xmon.z() *
-                 (xmon.x() * cosla + xmon.y() * sinla) / rmon2;
-  double desun = l1 * sinphi * (cosphi2 - sinphi2) * fac2sun * xsun.z() *
-                 (xsun.x() * sinla - xsun.y() * cosla) / rsun2;
-  double demon = l1 * sinphi * (cosphi2 - sinphi2) * fac2mon * xmon.z() *
-                 (xmon.x() * sinla - xmon.y() * cosla) / rmon2;
+  double dnsun = -l1 * sinphi2 * fac2sun * xsun(2) *
+                 (xsun(0) * cosla + xsun(1) * sinla) / rsun2;
+  double dnmon = -l1 * sinphi2 * fac2mon * xmon(2) *
+                 (xmon(0) * cosla + xmon(1) * sinla) / rmon2;
+  double desun = l1 * sinphi * (cosphi2 - sinphi2) * fac2sun * xsun(2) *
+                 (xsun(0) * sinla - xsun(1) * cosla) / rsun2;
+  double demon = l1 * sinphi * (cosphi2 - sinphi2) * fac2mon * xmon(2) *
+                 (xmon(0) * sinla - xmon(1) * cosla) / rmon2;
 
   double de = 3e0 * (desun + demon);
   double dn = 3e0 * (dnsun + dnmon);
 
-  Vector3 xcorsta{{-de * sinla - dn * sinphi * cosla,
-                   de * cosla - dn * sinphi * sinla, dn * cosphi}};
+  const double xcorsta_[]={-de * sinla - dn * sinphi * cosla,
+                   de * cosla - dn * sinphi * sinla, dn * cosphi};
+  Eigen::Matrix<double,3,1> xcorsta(xcorsta_);
 
   // Compute the station corrections for the semi-diurnal band.
   l1 = l1sd;
   const double costwola = cosla * cosla - sinla * sinla;
   const double sintwola = 2e0 * cosla * sinla;
-  const double xsun_x2 = std::pow(xsun.x(), 2);
-  const double xsun_y2 = std::pow(xsun.y(), 2);
-  const double xmon_x2 = std::pow(xmon.x(), 2);
-  const double xmon_y2 = std::pow(xmon.y(), 2);
+  const double xsun_x2 = std::pow(xsun(0), 2);
+  const double xsun_y2 = std::pow(xsun(1), 2);
+  const double xmon_x2 = std::pow(xmon(0), 2);
+  const double xmon_y2 = std::pow(xmon(1), 2);
 
   dnsun =
       -l1 / 2e0 * sinphi * cosphi * fac2sun *
-      ((xsun_x2 - xsun_y2) * costwola + 2e0 * xsun.x() * xsun.y() * sintwola) /
+      ((xsun_x2 - xsun_y2) * costwola + 2e0 * xsun(0) * xsun(1) * sintwola) /
       rsun2;
 
   dnmon =
       -l1 / 2e0 * sinphi * cosphi * fac2mon *
-      ((xmon_x2 - xmon_y2) * costwola + 2e0 * xmon.x() * xmon.y() * sintwola) /
+      ((xmon_x2 - xmon_y2) * costwola + 2e0 * xmon(0) * xmon(1) * sintwola) /
       rmon2;
 
   desun =
       -l1 / 2e0 * sinphi2 * cosphi * fac2sun *
-      ((xsun_x2 - xsun_y2) * sintwola - 2e0 * xsun.x() * xsun.y() * costwola) /
+      ((xsun_x2 - xsun_y2) * sintwola - 2e0 * xsun(0) * xsun(1) * costwola) /
       rsun2;
 
   demon =
       -l1 / 2e0 * sinphi2 * cosphi * fac2mon *
-      ((xmon_x2 - xmon_y2) * sintwola - 2e0 * xmon.x() * xmon.y() * costwola) /
+      ((xmon_x2 - xmon_y2) * sintwola - 2e0 * xmon(0) * xmon(1) * costwola) /
       rmon2;
 
   de = 3e0 * (desun + demon);
   dn = 3e0 * (dnsun + dnmon);
 
-  xcorsta.data[0] += (-de * sinla - dn * sinphi * cosla);
-  xcorsta.data[1] += (de * cosla - dn * sinphi * sinla);
-  xcorsta.data[2] += (dn * cosphi);
+  xcorsta(0) += (-de * sinla - dn * sinphi * cosla);
+  xcorsta(1) += (de * cosla - dn * sinphi * sinla);
+  xcorsta(2) += (dn * cosphi);
 
   // Finished
   return xcorsta;
@@ -231,8 +275,9 @@ Vector3 st1l1(/*const Vector3 &xsta,*/ const Vector3 &xsun, const Vector3 &xmon,
 /// @cite iers2010,
 ///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
 ///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477
-Vector3 st1isem(/*const Vector3 &xsta,*/ const Vector3 &xsun,
-                const Vector3 &xmon, const TideAux &aux) noexcept {
+Eigen::Matrix<double, 3, 1> st1isem(const Eigen::Matrix<double, 3, 1> &xsun,
+                                    const Eigen::Matrix<double, 3, 1> &xmon,
+                                    const TideAux &aux) noexcept {
 
   constexpr const double dhi = -0.0022e0;
   constexpr const double dli = -0.0007e0;
@@ -255,43 +300,44 @@ Vector3 st1isem(/*const Vector3 &xsta,*/ const Vector3 &xsun,
 
   // (minor modification) compute some helpfull intermediate quantities,
   // to reduce the following computation lines.
-  const double xs0m1 = xsun.x() * xsun.x() - xsun.y() * xsun.y();
-  const double xm0m1 = xmon.x() * xmon.x() - xmon.y() * xmon.y();
+  const double xs0m1 = xsun(0) * xsun(0) - xsun(1) * xsun(1);
+  const double xm0m1 = xmon(0) * xmon(0) - xmon(1) * xmon(1);
   const double fac2sun = aux.fac2sun;
   const double fac2mon = aux.fac2mon;
 
   const double drsun =
       -3e0 / 4e0 * dhi * cosphi * cosphi * fac2sun *
-      (xs0m1 * sintwola - 2e0 * xsun.x() * xsun.y() * costwola) / rsun2;
+      (xs0m1 * sintwola - 2e0 * xsun(0) * xsun(1) * costwola) / rsun2;
 
   const double drmon =
       -3e0 / 4e0 * dhi * cosphi * cosphi * fac2mon *
-      (xm0m1 * sintwola - 2e0 * xmon.x() * xmon.y() * costwola) / rmon2;
+      (xm0m1 * sintwola - 2e0 * xmon(0) * xmon(1) * costwola) / rmon2;
 
   const double dnsun =
       3e0 / 2e0 * dli * sinphi * cosphi * fac2sun *
-      (xs0m1 * sintwola - 2e0 * xsun.x() * xsun.y() * costwola) / rsun2;
+      (xs0m1 * sintwola - 2e0 * xsun(0) * xsun(1) * costwola) / rsun2;
 
   const double dnmon =
       3e0 / 2e0 * dli * sinphi * cosphi * fac2mon *
-      (xm0m1 * sintwola - 2e0 * xmon.x() * xmon.y() * costwola) / rmon2;
+      (xm0m1 * sintwola - 2e0 * xmon(0) * xmon(1) * costwola) / rmon2;
 
   const double desun =
       -3e0 / 2e0 * dli * cosphi * fac2sun *
-      (xs0m1 * costwola + 2e0 * xsun.x() * xsun.y() * sintwola) / rsun2;
+      (xs0m1 * costwola + 2e0 * xsun(0) * xsun(1) * sintwola) / rsun2;
 
   const double demon =
       -3e0 / 2e0 * dli * cosphi * fac2mon *
-      (xm0m1 * costwola + 2e0 * xmon.x() * xmon.y() * sintwola) / rmon2;
+      (xm0m1 * costwola + 2e0 * xmon(0) * xmon(1) * sintwola) / rmon2;
 
   const double dr = drsun + drmon;
   const double dn = dnsun + dnmon;
   const double de = desun + demon;
 
   // Compute the corrections for the station.
-  return {{dr * cosla * cosphi - de * sinla - dn * sinphi * cosla,
+  const double _data[] = {dr * cosla * cosphi - de * sinla - dn * sinphi * cosla,
            dr * sinla * cosphi + de * cosla - dn * sinphi * sinla,
-           dr * sinphi + dn * cosphi}};
+           dr * sinphi + dn * cosphi};
+  return Eigen::Matrix<double,3,1>(_data);
 
   // Finished
 }
@@ -326,8 +372,9 @@ Vector3 st1isem(/*const Vector3 &xsta,*/ const Vector3 &xsun,
 /// @cite iers2010,
 ///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
 ///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477
-Vector3 st1idiu(/*const Vector3 &xsta,*/ const Vector3 &xsun,
-                const Vector3 &xmon, const TideAux &aux) noexcept {
+Eigen::Matrix<double, 3, 1> st1idiu(const Eigen::Matrix<double, 3, 1> &xsun,
+                                    const Eigen::Matrix<double, 3, 1> &xmon,
+                                    const TideAux &aux) noexcept {
   constexpr const double dhi = -0.0025e0;
   constexpr const double dli = -0.0007e0;
 
@@ -348,31 +395,32 @@ Vector3 st1idiu(/*const Vector3 &xsta,*/ const Vector3 &xsun,
   const double fac2mon = aux.fac2mon;
 
   const double drsun = -3e0 * dhi * sinphi * cosphi * fac2sun * xsun.z() *
-                       (xsun.x() * sinla - xsun.y() * cosla) / rsun2;
+                       (xsun(0) * sinla - xsun(1) * cosla) / rsun2;
 
   const double drmon = -3e0 * dhi * sinphi * cosphi * fac2mon * xmon.z() *
-                       (xmon.x() * sinla - xmon.y() * cosla) / rmon2;
+                       (xmon(0) * sinla - xmon(1) * cosla) / rmon2;
 
   const double dnsun = -3e0 * dli * cos2phi * fac2sun * xsun.z() *
-                       (xsun.x() * sinla - xsun.y() * cosla) / rsun2;
+                       (xsun(0) * sinla - xsun(1) * cosla) / rsun2;
 
   const double dnmon = -3e0 * dli * cos2phi * fac2mon * xmon.z() *
-                       (xmon.x() * sinla - xmon.y() * cosla) / rmon2;
+                       (xmon(0) * sinla - xmon(1) * cosla) / rmon2;
 
   const double desun = -3e0 * dli * sinphi * fac2sun * xsun.z() *
-                       (xsun.x() * cosla + xsun.y() * sinla) / rsun2;
+                       (xsun(0) * cosla + xsun(1) * sinla) / rsun2;
 
   const double demon = -3e0 * dli * sinphi * fac2mon * xmon.z() *
-                       (xmon.x() * cosla + xmon.y() * sinla) / rmon2;
+                       (xmon(0) * cosla + xmon(1) * sinla) / rmon2;
 
   const double dr = drsun + drmon;
   const double dn = dnsun + dnmon;
   const double de = desun + demon;
 
   // Compute the corrections for the station.
-  return Vector3{{dr * cosla * cosphi - de * sinla - dn * sinphi * cosla,
+  const double _data[]={dr * cosla * cosphi - de * sinla - dn * sinphi * cosla,
                   dr * sinla * cosphi + de * cosla - dn * sinphi * sinla,
-                  dr * sinphi + dn * cosphi}};
+                  dr * sinphi + dn * cosphi};
+  return Eigen::Matrix<double,3,1>(_data);
 
   // Finished
 }
@@ -405,41 +453,9 @@ Vector3 st1idiu(/*const Vector3 &xsta,*/ const Vector3 &xsun,
 /// @cite iers2010,
 ///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
 ///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
-Vector3 step2diu(const Vector3 &xsta, const Step2Angles &angles,
-                 const TideAux &aux) noexcept {
-
-  constexpr double datdi[][9] = {
-      {-3e0, 0e0, 2e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
-      {-3e0, 2e0, 0e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
-      {-2e0, 0e0, 1e0, -1e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
-      {-2e0, 0e0, 1e0, 0e0, 0e0, -0.08e0, 0e0, -0.01e0, 0.01e0},
-      {-2e0, 2e0, -1e0, 0e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
-      {-1e0, 0e0, 0e0, -1e0, 0e0, -0.10e0, 0e0, 0e0, 0e0},
-      {-1e0, 0e0, 0e0, 0e0, 0e0, -0.51e0, 0e0, -0.02e0, 0.03e0},
-      {-1e0, 2e0, 0e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
-      {0e0, -2e0, 1e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
-      {0e0, 0e0, -1e0, 0e0, 0e0, 0.02e0, 0e0, 0e0, 0e0},
-      {0e0, 0e0, 1e0, 0e0, 0e0, 0.06e0, 0e0, 0e0, 0e0},
-      {0e0, 0e0, 1e0, 1e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
-      {0e0, 2e0, -1e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
-      {1e0, -3e0, 0e0, 0e0, 1e0, -0.06e0, 0e0, 0e0, 0e0},
-      {1e0, -2e0, 0e0, -1e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
-      {1e0, -2e0, 0e0, 0e0, 0e0, -1.23e0, -0.07e0, 0.06e0, 0.01e0},
-      {1e0, -1e0, 0e0, 0e0, -1e0, 0.02e0, 0e0, 0e0, 0e0},
-      {1e0, -1e0, 0e0, 0e0, 1e0, 0.04e0, 0e0, 0e0, 0e0},
-      {1e0, 0e0, 0e0, -1e0, 0e0, -0.22e0, 0.01e0, 0.01e0, 0e0},
-      {1e0, 0e0, 0e0, 0e0, 0e0, 12.00e0, -0.80e0, -0.67e0, -0.03e0},
-      {1e0, 0e0, 0e0, 1e0, 0e0, 1.73e0, -0.12e0, -0.10e0, 0e0},
-      {1e0, 0e0, 0e0, 2e0, 0e0, -0.04e0, 0e0, 0e0, 0e0},
-      {1e0, 1e0, 0e0, 0e0, -1e0, -0.50e0, -0.01e0, 0.03e0, 0e0},
-      {1e0, 1e0, 0e0, 0e0, 1e0, 0.01e0, 0e0, 0e0, 0e0},
-      {0e0, 1e0, 0e0, 1e0, -1e0, -0.01e0, 0e0, 0e0, 0e0},
-      {1e0, 2e0, -2e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
-      {1e0, 2e0, 0e0, 0e0, 0e0, -0.11e0, 0.01e0, 0.01e0, 0e0},
-      {2e0, -2e0, 1e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
-      {2e0, 0e0, -1e0, 0e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
-      {3e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0},
-      {3e0, 0e0, 0e0, 1e0, 0e0, 0e0, 0e0, 0e0, 0e0}};
+Eigen::Matrix<double, 3, 1> step2diu(const Eigen::Matrix<double, 3, 1> &xsta,
+                                     const Step2Angles &angles,
+                                     const TideAux &aux) noexcept {
 
   // Compute the phase angles in degrees.
   const double s = angles.s;
@@ -456,30 +472,31 @@ Vector3 step2diu(const Vector3 &xsta, const Step2Angles &angles,
   const double sinla = aux.sinla;
   const double zla = std::atan2(xsta.y(), xsta.x());
 
-  Vector3 xcorsta{{0e0, 0e0, 0e0}};
+  Eigen::Matrix<double,3,1> xcorsta = Eigen::Matrix<double,3,1>::Zero();
 
   double thetaf, dr, dn, de;
   const double f1 = 2e0 * sinphi * cosphi;
   const double g1 = cosphi * cosphi - sinphi * sinphi;
   for (int j = 0; j < 31; j++) {
     // Convert from degrees to radians.
-    thetaf = (tau + datdi[j][0] * s + datdi[j][1] * h + datdi[j][2] * p +
-              datdi[j][3] * zns + datdi[j][4] * ps) *
-             DEG2RAD;
+    thetaf =
+        (tau + s2d_datdi[j][0] * s + s2d_datdi[j][1] * h + s2d_datdi[j][2] * p +
+         s2d_datdi[j][3] * zns + s2d_datdi[j][4] * ps) *
+        DEG2RAD;
 
     const double stz = std::sin(thetaf + zla);
     const double ctz = std::cos(thetaf + zla);
-    dr = datdi[j][5] * f1 * stz + datdi[j][6] * f1 * ctz;
+    dr = s2d_datdi[j][5] * f1 * stz + s2d_datdi[j][6] * f1 * ctz;
 
-    dn = datdi[j][7] * g1 * stz + datdi[j][8] * g1 * ctz;
+    dn = s2d_datdi[j][7] * g1 * stz + s2d_datdi[j][8] * g1 * ctz;
 
     // DE=DATDI(8,J)*SINPHI*COS(THETAF+ZLA)+
     // Modified 20 June 2007
-    de = datdi[j][7] * sinphi * ctz - datdi[j][8] * sinphi * stz;
+    de = s2d_datdi[j][7] * sinphi * ctz - s2d_datdi[j][8] * sinphi * stz;
 
-    xcorsta.data[0] += dr * cosla * cosphi - de * sinla - dn * sinphi * cosla;
-    xcorsta.data[1] += dr * sinla * cosphi + de * cosla - dn * sinphi * sinla;
-    xcorsta.data[2] += dr * sinphi + dn * cosphi;
+    xcorsta(0) += dr * cosla * cosphi - de * sinla - dn * sinphi * cosla;
+    xcorsta(1) += dr * sinla * cosphi + de * cosla - dn * sinphi * sinla;
+    xcorsta(2) += dr * sinphi + dn * cosphi;
   }
 
   // Finished
@@ -510,8 +527,8 @@ Vector3 step2diu(const Vector3 &xsta, const Step2Angles &angles,
 /// @cite iers2010,
 ///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
 ///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
-Vector3 step2lon(/*const Vector3 &xsta,*/ const Step2Angles &angles,
-                 const TideAux &aux) noexcept {
+Eigen::Matrix<double, 3, 1> step2lon(const Step2Angles &angles,
+                                     const TideAux &aux) noexcept {
 
   constexpr double datdi[][9] = {
       {0e0, 0e0, 0e0, 1e0, 0e0, 0.47e0, 0.23e0, 0.16e0, 0.07e0},
@@ -536,7 +553,8 @@ Vector3 step2lon(/*const Vector3 &xsta,*/ const Step2Angles &angles,
   const double sinla = aux.sinla;
 
   // double dr_tot = 0e0, dn_tot = 0e0;
-  Vector3 xcorsta{{0e0, 0e0, 0e0}};
+  Eigen::Matrix<double,3,1> xcorsta = Eigen::Matrix<double,3,1>::Zero();
+
   double thetaf, dr, dn, de;
   const double f1 = (3e0 * sinphi * sinphi - 1e0) / 2e0;
   const double f2 = cosphi * sinphi * 2e0;
@@ -558,9 +576,9 @@ Vector3 step2lon(/*const Vector3 &xsta,*/ const Step2Angles &angles,
     // dr_tot += dr;
     // dn_tot += dn;
 
-    xcorsta.data[0] += dr * cosla * cosphi - de * sinla - dn * sinphi * cosla;
-    xcorsta.data[1] += dr * sinla * cosphi + de * cosla - dn * sinphi * sinla;
-    xcorsta.data[2] += dr * sinphi + dn * cosphi;
+    xcorsta(0) += dr * cosla * cosphi - de * sinla - dn * sinphi * cosla;
+    xcorsta(1) += dr * sinla * cosphi + de * cosla - dn * sinphi * sinla;
+    xcorsta(2) += dr * sinphi + dn * cosphi;
   }
 
   // Finished.
@@ -585,11 +603,8 @@ Vector3 step2lon(/*const Vector3 &xsta,*/ const Step2Angles &angles,
 /// @param[in]  xsta   Geocentric position of the station (Note 1)
 /// @param[in]  xsun   Geocentric position of the Sun (Note 2)
 /// @param[in]  xmon   Geocentric position of the Moon (Note 2)
-/// @param[in]  yr     Year (Note 3)
-/// @param[in]  month  Month (Note 3)
-/// @param[in]  day    Day of Month (Note 3)
-/// @param[in]  fhr    Hour in the day (Notes 3 and 4)
-/// @return dxtide Displacement vector (Note 5)
+/// @param[in]  t      Datetime in TT     
+/// @return dxtide Displacement vector (Note 3)
 /// @return            Always 0.
 ///
 /// @note
@@ -597,9 +612,6 @@ Vector3 step2lon(/*const Vector3 &xsta,*/ const Step2Angles &angles,
 ///        X, Y, and Z, are expressed in meters.
 ///     -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
 ///        coordinates are expressed in meters.
-///     -# The values are expressed in Coordinated Universal Time (UTC).
-///     -# The fractional hours in the day is computed as the hour +
-///        minutes/60.0 + sec/3600.0.
 ///     -# The displacement vector is in the geocentric ITRF.  All components
 ///        are expressed in meters.
 ///     -# Parameters jc1 and jc2 constitute the date as Julian Centuries in TT
@@ -631,10 +643,11 @@ Vector3 step2lon(/*const Vector3 &xsta,*/ const Step2Angles &angles,
 ///     Ries, J. C., Eanes, R. J., Shum, C. K. and Watkins, M. M., 1992,
 ///     ''Progress in the Determination of the Gravitational Coefficient
 ///     of the Earth," Geophys. Res. Lett., 19(6), pp. 529-531
-Vector3
-iers2010::dehanttideinel_impl(const Vector3 &xsta, const Vector3 &xsun,
-                              const Vector3 &xmon,
-                              dso::datetime<dso::milliseconds> epoch) noexcept {
+Eigen::Matrix<double, 3, 1> iers2010::dehanttideinel_impl(
+    const Eigen::Matrix<double, 3, 1> &xsta,
+    const Eigen::Matrix<double, 3, 1> &xsun,
+    const Eigen::Matrix<double, 3, 1> &xmon,
+    const dso::datetime<dso::milliseconds> &t) noexcept {
   // nominal second degree and third degree love numbers and shida numbers
   constexpr const double h20 = 0.6078e0;
   constexpr const double l20 = 0.0847e0;
@@ -642,12 +655,12 @@ iers2010::dehanttideinel_impl(const Vector3 &xsta, const Vector3 &xsun,
   constexpr const double l3 = 0.015e0;
 
   // scalar product of station vector with sun/moon vector
-  TideAux aux(&xsta, &xsun, &xmon, 0e0, 0e0);
+  TideAux aux(xsta, xsun, xmon, 0e0, 0e0);
   const double rmon = aux.rmon;
   const double rsta = aux.rsta;
   const double rsun = aux.rsun;
-  const double scm = xsta.dot_product(xmon);
-  const double scs = xsta.dot_product(xsun);
+  const double scm = xsta.dot(xmon);
+  const double scs = xsta.dot(xsun);
   const double scsun = scs / rsta / rsun;
   const double scmon = scm / rsta / rmon;
 
@@ -688,10 +701,11 @@ iers2010::dehanttideinel_impl(const Vector3 &xsta, const Vector3 &xsun,
   //              fac3sun * (x3sun * xsun[i] / rsun + p3sun * xsta[i] / rsta) +
   //              fac3mon * (x3mon * xmon[i] / rmon + p3mon * xsta[i] / rsta);
   //}
-  Vector3 dxtide = fac2sun * (x2sun * xsun / rsun + p2sun * xsta / rsta) +
-                   fac2mon * (x2mon * xmon / rmon + p2mon * xsta / rsta) +
-                   fac3sun * (x3sun * xsun / rsun + p3sun * xsta / rsta) +
-                   fac3mon * (x3mon * xmon / rmon + p3mon * xsta / rsta);
+  Eigen::Matrix<double, 3, 1> dxtide =
+      fac2sun * (x2sun * xsun / rsun + p2sun * xsta / rsta) +
+      fac2mon * (x2mon * xmon / rmon + p2mon * xsta / rsta) +
+      fac3sun * (x3sun * xsun / rsun + p3sun * xsta / rsta) +
+      fac3mon * (x3mon * xmon / rmon + p3mon * xsta / rsta);
   aux.fac2mon = fac2mon;
   aux.fac2sun = fac2sun;
 
@@ -714,12 +728,12 @@ iers2010::dehanttideinel_impl(const Vector3 &xsta, const Vector3 &xsun,
   // corrections for the diurnal band:
   // first, we need to know the date converted in julian centuries
   // UTC to TT time
-  double fhr = epoch.sec().to_fractional_seconds();
-  fhr /= 3600e0;
-  int dat = dso::dat(epoch.mjd());
-  epoch.add_seconds(dso::milliseconds(dat * 1e3) + dso::milliseconds(32184));
-  double t = (epoch.as_mjd() + dso::mjd0_jd - dso::j2000_jd) / 36525e0;
-  Step2Angles angles(t, fhr);
+  //double fhr = epoch.sec().to_fractional_seconds();
+  //fhr /= 3600e0;
+  //int dat = dso::dat(epoch.mjd());
+  //epoch.add_seconds(dso::milliseconds(dat * 1e3) + dso::milliseconds(32184));
+  //double t = (epoch.as_mjd() + dso::mjd0_jd - dso::j2000_jd) / 36525e0;
+  Step2Angles angles(t);
 
   //  second, we can call the subroutine step2diu, for the diurnal band
   //+ corrections, (in-phase and out-of-phase frequency dependence):
