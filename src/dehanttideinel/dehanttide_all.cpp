@@ -46,11 +46,10 @@ const double s2d_datdi[][9] = {
 ///        computed once, and stored in a Step2Angles instance.
 struct Step2Angles {
   /// @param[in] tms Datetime in milliseond resolution, TT
-  Step2Angles(const dso::datetime<dso::milliseconds> &tms) noexcept {
-    const double t = tms.jcenturies_sinceJ2000(); // julian centuries TT
-    // fractional hours of day
-    const double fhr = tms.sec().to_fractional_seconds() / 3600e0; 
-    printf("Note T=%20.12f, FHR=%20.12f\n", t, fhr);
+  Step2Angles(double julian_centuries_tt, double fhr_ut) noexcept {
+    const double t = julian_centuries_tt;
+    const double fhr = fhr_ut;
+    
     // Compute the phase angles in degrees.
     s = 218.31664563e0 +
         (481267.88194e0 + (-0.0014663889e0 + (0.00000185139e0) * t) * t) * t;
@@ -647,7 +646,7 @@ Eigen::Matrix<double, 3, 1> iers2010::dehanttideinel_impl(
     const Eigen::Matrix<double, 3, 1> &xsta,
     const Eigen::Matrix<double, 3, 1> &xsun,
     const Eigen::Matrix<double, 3, 1> &xmon,
-    const dso::datetime<dso::milliseconds> &t) noexcept {
+    double julian_centuries_tt, double fhr_ut) noexcept {
   // nominal second degree and third degree love numbers and shida numbers
   constexpr const double h20 = 0.6078e0;
   constexpr const double l20 = 0.0847e0;
@@ -715,12 +714,15 @@ Eigen::Matrix<double, 3, 1> iers2010::dehanttideinel_impl(
 
   // first, for the diurnal band
   dxtide += st1idiu(xsun, xmon, aux);
+  //printf("step1a: %.12f %.12f %.12f\n", dxtide(0), dxtide(1), dxtide(2));
 
   // second, for the semi-diurnal band
   dxtide += st1isem(xsun, xmon, aux);
+  //printf("step1b: %.12f %.12f %.12f\n", dxtide(0), dxtide(1), dxtide(2));
 
   // corrections for the latitude dependence of love numbers (part l^(1) )
   dxtide += st1l1(xsun, xmon, aux);
+  //printf("step1c: %.12f %.12f %.12f\n", dxtide(0), dxtide(1), dxtide(2));
 
   // CONSIDER CORRECTIONS FOR STEP 2
   // -------------------------------------------------------------------------
@@ -733,15 +735,17 @@ Eigen::Matrix<double, 3, 1> iers2010::dehanttideinel_impl(
   //int dat = dso::dat(epoch.mjd());
   //epoch.add_seconds(dso::milliseconds(dat * 1e3) + dso::milliseconds(32184));
   //double t = (epoch.as_mjd() + dso::mjd0_jd - dso::j2000_jd) / 36525e0;
-  Step2Angles angles(t);
+  Step2Angles angles(julian_centuries_tt, fhr_ut);
 
   //  second, we can call the subroutine step2diu, for the diurnal band
   //+ corrections, (in-phase and out-of-phase frequency dependence):
   dxtide += step2diu(xsta, angles, aux);
+  //printf("step2a: %.12f %.12f %.12f\n", dxtide(0), dxtide(1), dxtide(2));
 
   //  corrections for the long-period band,
   //+ (in-phase and out-of-phase frequency dependence):
   dxtide += step2lon(angles, aux);
+  //printf("step2b: %.12f %.12f %.12f\n", dxtide(0), dxtide(1), dxtide(2));
 
   // CONSIDER CORRECTIONS FOR STEP 3
   // --------------------------------------------------------------------------

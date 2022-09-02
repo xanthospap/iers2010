@@ -27,9 +27,9 @@ C     TEST CASE 1; units [m]
      $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
       WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
      $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
-      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
-     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
-     $ FHR*3600D0, '));'
+      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<msec>(year(',
+     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), msec(', 
+     $ FHR*3600D3, '));'
       WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
      $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
@@ -53,9 +53,9 @@ C     gradually increase fractional hours, 1hour every step
      $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
       WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
      $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
-      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
-     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
-     $ FHR*3600D0, '));'
+      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<msec>(year(',
+     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), msec(', 
+     $ FHR*3600D3, '));'
       WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
      $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
@@ -90,9 +90,9 @@ C     TEST CASE 2; units [m]
      $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
       WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
      $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
-      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
-     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
-     $ FHR*3600D0, '));'
+      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<msec>(year(',
+     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), msec(', 
+     $ FHR*3600D3, '));'
       WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
      $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
@@ -116,9 +116,9 @@ C     gradually increase fractional hours, 1hour every step
      $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
       WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
      $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
-      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
-     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
-     $ FHR*3600D0, '));'
+      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<msec>(year(',
+     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), msec(', 
+     $ FHR*3600D3, '));'
       WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
      $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
@@ -153,9 +153,9 @@ C     TEST CASE 3; units [m]
      $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
       WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
      $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
-      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
-     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
-     $ FHR*3600D0, '));'
+      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<msec>(year(',
+     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), msec(', 
+     $ FHR*3600D3, '));'
       WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
      $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
@@ -181,9 +181,9 @@ C     IF (FHR.GT.24) FHR = 23.99D0
      $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
       WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
      $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
-      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
-     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
-     $ FHR*3600D0, '));'
+      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<msec>(year(',
+     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), msec(', 
+     $ FHR*3600D3, '));'
       WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
      $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
@@ -218,9 +218,9 @@ C     TEST CASE 4; units [m]
      $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
       WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
      $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
-      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
-     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
-     $ FHR*3600D0, '));'
+      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<msec>(year(',
+     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), msec(', 
+     $ FHR*3600D3, '));'
       WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
      $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'
@@ -246,9 +246,9 @@ C     IF (FHR.GT.24) FHR = 23.99D0
      $ 'e0; xsun(1)=', XSUN(2), 'e0; xsun(2)=', XSUN(3) , 'e0;'
       WRITE(*,'(A8F20.7A12F20.7A12F20.7A3)') 'xmon(0)=', XMON(1), 
      $ 'e0; xmon(1)=', XMON(2), 'e0; xmon(2)=', XMON(3), 'e0;'
-      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<seconds>(year(',
-     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), seconds(', 
-     $ FHR*3600D0, '));'
+      WRITE(*,'(A25I4A9I2A17I2A11F10.0A3)') 't=datetime<msec>(year(',
+     $ YR, '), month(', MONTH,'), day_of_month(', DAY,'), msec(', 
+     $ FHR*3600D3, '));'
       WRITE(*,'(A9F20.10A13F20.10A13F20.10A3)') 'xtide(0)=',
      $ DXTIDE(1), 'e0; xtide(1)=', DXTIDE(2), 'e0; xtide(2)=', 
      $ DXTIDE(3), 'e0;'

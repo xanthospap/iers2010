@@ -350,7 +350,7 @@ Eigen::Matrix<double, 3, 1>
 dehanttideinel_impl(const Eigen::Matrix<double, 3, 1> &xsta,
                     const Eigen::Matrix<double, 3, 1> &xsun,
                     const Eigen::Matrix<double, 3, 1> &xmon,
-                    const dso::datetime<dso::milliseconds> &t) noexcept;
+                    double julian_centuries_tt, double fhr_ut) noexcept;
 
 /// @details This function computes the station tidal displacement
 ///          caused by lunar and solar gravitational attraction (see
@@ -413,40 +413,21 @@ dehanttideinel_impl(const Eigen::Matrix<double, 3, 1> &xsta,
 ///     - Ries, J. C., Eanes, R. J., Shum, C. K. and Watkins, M. M., 1992,
 ///     "Progress in the Determination of the Gravitational Coefficient
 ///     of the Earth", Geophys. Res. Lett., 19(6), pp. 529-531
-#if __cplusplus >= 202002L
-template <gconcepts::is_sec_dt S>
-#else
-template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
-#endif
-Eigen::Matrix<double, 3, 1>
-dehanttideinel(const Eigen::Matrix<double, 3, 1> &xsta,
-               const Eigen::Matrix<double, 3, 1> &xsun,
-               const Eigen::Matrix<double, 3, 1> &xmon,
-               const dso::datetime<S> &t) noexcept {
-  return dehanttideinel_impl(xsta, xsun, xmon,
-                             t.template cast_to<dso::milliseconds>());
-}
+//#if __cplusplus >= 202002L
+//template <gconcepts::is_sec_dt S>
+//#else
+//template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+//#endif
+//Eigen::Matrix<double, 3, 1>
+//dehanttideinel(const Eigen::Matrix<double, 3, 1> &xsta,
+//               const Eigen::Matrix<double, 3, 1> &xsun,
+//               const Eigen::Matrix<double, 3, 1> &xmon,
+//               const dso::datetime<S> &t) noexcept {
+//  return dehanttideinel_impl(xsta, xsun, xmon,
+//                             t.template cast_to<dso::milliseconds>());
+//}
 
 /* Never use this, it is just for debugging/testing purposes */
-#if __cplusplus >= 202002L
-template <gconcepts::is_sec_dt S>
-#else
-template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
-#endif
-Eigen::Matrix<double, 3, 1>
-dehanttideinel_from_utc(const Eigen::Matrix<double, 3, 1> &xsta,
-               const Eigen::Matrix<double, 3, 1> &xsun,
-               const Eigen::Matrix<double, 3, 1> &xmon,
-               const dso::datetime<S> &tutc) noexcept {
-  auto t = tutc;
-  printf("Note T=%20.12f, FHR=%20.12f\n", tutc.jcenturies_sinceJ2000(), t.sec().to_fractional_seconds()/3600e0);
-  // need to convert UTC to TT
-  int dat = dso::dat(t.mjd());
-  t.add_seconds(dso::milliseconds(dat * 1e3) + dso::milliseconds(32184));
-  printf("Dsec=%20.12f\n", (double)dat+32184e-3); 
-  return dehanttideinel_impl(xsta, xsun, xmon,
-                             t.template cast_to<dso::milliseconds>());
-}
 
 /// Compute tidal corrections of station displacements caused by lunar and
 /// solar gravitational attraction.
