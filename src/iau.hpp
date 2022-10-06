@@ -5,6 +5,10 @@
 #include "matvec/matvec.hpp"
 #include <cmath>
 #include <cstring>
+#ifdef USE_EIGEN
+#include "eigen3/Eigen/Eigen"
+#include "eigen3/Eigen/Geometry"
+#endif
 
 /// @note Note on 2-part dates:
 /// The whatever date dj1+dj2 is a Julian Date, apportioned in any
@@ -318,6 +322,9 @@ void pfw06(double date1, double date2, double &gamb, double &phib, double &psib,
 ///            approximation.
 /// @return rpom, polar-motion matrix
 dso::Mat3x3 pom00(double xp, double yp, double sp) noexcept;
+#ifdef USE_EIGEN
+Eigen::Matrix<double,3,3> pom00_e(double xp, double yp, double sp) noexcept;
+#endif
 
 /// @brief Precession-rate part of the IAU 2000 precession-nutation models
 /// (part of MHB2000).
@@ -446,6 +453,9 @@ inline double ee00(double date1, double date2, double epsa,
 ///              the Celestial Intermediate Origin on the equator of the CIP.
 /// @return rc2i, celestial-to-intermediate matrix
 dso::Mat3x3 c2ixys(double x, double y, double s) noexcept;
+#ifdef USE_EIGEN
+Eigen::Matrix<double,3,3> c2ixys_e(double x, double y, double s) noexcept;
+#endif
 
 /// @brief X,Y coordinates of celestial intermediate pole from series based
 /// on IAU 2006 precession and IAU 2000A nutation.

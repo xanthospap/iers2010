@@ -51,6 +51,11 @@ AddOption('--make-sofa-check',
           action='store_true',
           help='Trigger building of test programs against the SOFA IAU library. The library must be available in the system (header/library)',
           default=False)
+AddOption('--use-eigen',
+          dest='use_eigen',
+          action='store_true',
+          help='Trigger building using (also) Eigen-compatible functions',
+          default=False)
 
 ## Source files (for lib)
 lib_src_files = glob.glob(r"src/*.cpp")
@@ -81,6 +86,10 @@ env = denv.Clone() if int(debug) else penv.Clone()
 
 ## What compiler should we be using ?
 if GetOption('cxx') is not None: env['CXX'] = GetOption('cxx')
+
+## Use eigen ?
+if GetOption('use_eigen') is not None and GetOption('use_eigen'): 
+    env.Append(CXXFLAGS=' -DUSE_EIGEN')
 
 ## Set the C++ standard
 cxxstd = GetOption('std')

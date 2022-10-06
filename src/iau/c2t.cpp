@@ -1,6 +1,5 @@
 #include "iau.hpp"
 #include "iersc.hpp"
-
 #include <cstdio>
 
 dso::Mat3x3 iers2010::sofa::c2t06a(double tta, double ttb, double uta,
@@ -68,16 +67,6 @@ dso::Mat3x3 iers2010::sofa::fw2m(double gamb, double phib, double psi,
   r.rotz(-psi);
   r.rotx(-eps);
   return r;
-}
-
-dso::Mat3x3 iers2010::sofa::pom00(double xp, double yp, double sp) noexcept {
-  // initialize to identity matrix
-  dso::Mat3x3 rpom;
-  // apply three rotations ... W(t) = R3(−sp) x R2(xp) x R1(yp),
-  rpom.rotz(sp);
-  rpom.roty(-xp);
-  rpom.rotx(-yp);
-  return rpom;
 }
 
 double iers2010::sofa::sp00(double date1, double date2) noexcept {
