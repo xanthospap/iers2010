@@ -637,11 +637,12 @@ int lagint(const double *x, const double *y, int n, double xint, double &yout,
 /// @param[out] xint interpolated value of x [mas]
 /// @param[out] yint interpolated value of y [mas]
 /// @param[out] ut1int interpolated value of ut1-utc [ms]
+/// @param[out] corlod tidal correction in length of day (LOD) in [ms]
 ///
 /// @note The time scales in params mjd and rjd should be the same.
 int interp_pole(const double *mjd, const double *x, const double *y,
                 const double *ut1, int n, double rjd, double &xint,
-                double &yint, double &ut1int) noexcept;
+                double &yint, double &ut1int, double &corlod) noexcept;
 
 } // namespace iers2010
 

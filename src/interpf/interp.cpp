@@ -3,7 +3,8 @@
 
 int iers2010::interp_pole(const double *mjd, const double *x, const double *y,
                           const double *ut1, int n, double rjd, double &xint,
-                          double &yint, double &ut1int) noexcept {
+                          double &yint, double &ut1int,
+                          double &corlod) noexcept {
   // quick return in case the passed in date is out of bounds ...
   if (rjd<*mjd || rjd>=mjd[n-1]) {
     fprintf(stderr,
@@ -27,7 +28,7 @@ int iers2010::interp_pole(const double *mjd, const double *x, const double *y,
   }
 
   // corrections
-  double corx, cory, corut1, corlod;
+  double corx, cory, corut1;
 
   // compute julian centuries
   const double tjc = (rjd - 51544.5e0)/36525.0e0;
@@ -37,6 +38,7 @@ int iers2010::interp_pole(const double *mjd, const double *x, const double *y,
   xint += (corx * 1e-3);
   yint += (cory * 1e-3);
   ut1int += (corut1 * 1e-3);
+  corlod *= 1e-3;
 
   // lunisolar effect (results in [μas])
   iers2010::interp::pm_gravi(tjc, corx, cory);
