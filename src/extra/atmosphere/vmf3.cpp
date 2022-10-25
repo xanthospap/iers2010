@@ -1439,7 +1439,7 @@ int dso::vmf3(double ah, double aw, const dso::datetime<dso::nanoseconds> &t,
   double mjd;
   double fdoy = static_cast<double>(idoy) + std::modf(t.as_mjd(), &mjd);
 
-  // conversions
+  // conversions [rad]
   const double el = pi / 2e0 - zd;
   const double polDist = pi / 2e0 - lat;
 
