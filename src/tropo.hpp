@@ -356,8 +356,8 @@ struct vmf3_hw {
 /// @param[in] ellipsoidal An array of 3-dimensional arrays containing 
 ///            ellipsoidal coordinates for num_stations stations. These arrays
 ///            should hold longitude/latitude/height as:
+///            * ellipsoidal longitude in range (-pi:pi) or (0:2pi), [radians]
 ///            * ellipsoidal latitude in range (-pi/2:+pi/2), [radians]
-///            * longitude in range (-pi:pi) or (0:2pi), [radians]
 ///            * ellipsoidal height [meters]
 /// @param[in] num_stations Number of stations, aka the size of ellipsoidal
 /// @param[in] it    1: no time variation but static quantities

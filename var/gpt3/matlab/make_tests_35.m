@@ -8,7 +8,7 @@ grid = gpt3_5_fast_readGrid();
 
 printf("constexpr const int num_tests = %d;\n", num_tests);
 
-mjd = unifrnd(44239e0, 62502e0, num_tests, 1); % random MJD in range 1980-2030
+mjd = unifrnd(44239e0, 62502e0); % random MJD in range 1980-2030
 printf("dso::modified_julian_day mjd{%d};\n", floor(mjd));
 
 % mjd fraction to nanoseconds
@@ -75,4 +75,13 @@ for i=1:num_tests-1
   printf("\t{%.20f,%.20f},\n",mfh, mfw);
 end
 [ mfh , mfw ] = vmf3 ( ah(num_tests) , aw(num_tests) , mjd , lat(num_tests) , lon(num_tests) , zd(num_tests) );
+printf("\t{%.20f,%.20f},\n};",mfh, mfw);
+
+% vmf3_ht
+printf("const double resvmf3_ht[][2] = {\n");
+for i=1:num_tests-1
+  [ mfh , mfw ] = vmf3_ht( ah(i) , aw(i) , mjd , lat(i) , lon(i) , h_ell(i), zd(i) );
+  printf("\t{%.20f,%.20f},\n",mfh, mfw);
+end
+[ mfh , mfw ] = vmf3_ht( ah(num_tests) , aw(num_tests) , mjd , lat(num_tests) , lon(num_tests) , h_ell(num_tests), zd(num_tests) );
 printf("\t{%.20f,%.20f},\n};",mfh, mfw);
