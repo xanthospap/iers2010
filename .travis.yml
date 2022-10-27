@@ -6,19 +6,20 @@ compiler:
 
 before_install:
   - sudo apt-get install -y scons
+  - sudo apt install libeigen3-dev
 
 before_script:
   - git clone https://github.com/xanthospap/ggdatetime.git && cd ggdatetime
   - sudo scons install
   - cd ../
-  - git clone https://github.com/xanthospap/matvec.git && cd matvec
-  - sudo scons install
-  - cd ../
+  #- git clone https://github.com/xanthospap/matvec.git && cd matvec
+  #- sudo scons install
+  #- cd ../
   - git clone https://github.com/xanthospap/ggeodesy.git && cd ggeodesy
   - sudo scons install
   - cd ../
   - sudo ldconfig
 
 script:
-  - scons
-  - scons debug=1
+  - scons --use-eigen
+  - scons debug=1 --use-eigen
