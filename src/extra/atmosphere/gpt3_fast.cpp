@@ -1,9 +1,9 @@
 #include "datetime/dtcalendar.hpp"
 #include "geodesy/units.hpp"
+#include "iersc.hpp"
 #include "tropo.hpp"
 #include <cmath>
 #include <fstream>
-#include "iersc.hpp"
 #ifdef DEBUG
 #include <cassert>
 #endif
@@ -13,9 +13,10 @@ using dso::gpt3::Gpt3GridResolution;
 
 template <typename T> int sgn(T val) { return (T(0) < val) - (val < T(0)); }
 
-int dso::gpt3_fast(double fractional_doy, const std::vector<std::array<double,3>> &ellipsoidal, 
-                     int it, const dso::Gpt3Grid &grid,
-                     std::vector<dso::gpt3_result> &g3out) noexcept {
+int dso::gpt3_fast(double fractional_doy,
+                   const std::vector<std::array<double, 3>> &ellipsoidal,
+                   int it, const dso::Gpt3Grid &grid,
+                   std::vector<dso::gpt3_result> &g3out) noexcept {
 
   g3out.clear();
   g3out = std::vector<dso::gpt3_result>(ellipsoidal.size(), dso::gpt3_result());
@@ -75,7 +76,7 @@ int dso::gpt3_fast(double fractional_doy, const std::vector<std::array<double,3>
   int indx[4];
 
   // loop over stations
-  for (auto ell=ellipsoidal.cbegin(); ell != ellipsoidal.cend(); ++ell) {
+  for (auto ell = ellipsoidal.cbegin(); ell != ellipsoidal.cend(); ++ell) {
     int k = std::distance(ellipsoidal.cbegin(), ell);
     const double lon = ell->operator[](0);
     const double lat = ell->operator[](1);
@@ -149,7 +150,8 @@ int dso::gpt3_fast(double fractional_doy, const std::vector<std::array<double,3>
 
       // temperature at station height in Celsius
       g3out[k].T = T0 + g3out[k].dT * redh - 273.15e0;
-      //printf("T = %.9f + %.9f * %.9f - %.9f\n", T0, g3out[k].dT, redh, 273.15);
+      // printf("T = %.9f + %.9f * %.9f - %.9f\n", T0, g3out[k].dT, redh,
+      // 273.15);
 
       // temperature lapse rate in degrees / km
       g3out[k].dT *= 1e3;
@@ -236,7 +238,7 @@ int dso::gpt3_fast(double fractional_doy, const std::vector<std::array<double,3>
           },
              hgt[4];
       for (int i = 0; i < 4; i++) {
-        hgt[i] = /*ell[k][2]*/hell - undul[i];
+        hgt[i] = /*ell[k][2]*/ hell - undul[i];
       }
 
       // pressure, temperature at the height of the grid
@@ -247,7 +249,7 @@ int dso::gpt3_fast(double fractional_doy, const std::vector<std::array<double,3>
                 grid.t_grid(indx[i], 3) * coshy +
                 grid.t_grid(indx[i], 4) * sinhy;
       }
-      //printf("T = %.9f + %.9f + %.9f + %.9f \n", T0[0],T0[1],T0[2],T0[3]);
+      // printf("T = %.9f + %.9f + %.9f + %.9f \n", T0[0],T0[1],T0[2],T0[3]);
       for (int i = 0; i < 4; i++) {
         p0[i] = grid.p_grid(indx[i], 0) + grid.p_grid(indx[i], 1) * cosfy +
                 grid.p_grid(indx[i], 2) * sinfy +

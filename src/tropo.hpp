@@ -14,6 +14,8 @@
 #include <stdexcept>
 #include <vector>
 #include <array>
+#include <cstring>
+#include <fstream>
 
 namespace dso {
 
@@ -326,6 +328,91 @@ struct vmf3_hw {
   double mfw; ///< Wet mapping function
 }; // vmf3_result
 
+namespace vmf3_details {
+
+/// @brief A struct to hold meteo and date records of a VMF3 GR file, see
+/// https://vmf.geo.tuwien.ac.at/ Products
+struct SiteVMF3GRMeteoRecord {
+  double mjd{std::numeric_limits<double>::max()};
+  double ah;   ///< hydrostatic "a" coefficient
+  double aw;   ///< wet "a" coefficient
+  double zhd;  ///< zenith hydrostatic delay [m]
+  double zwd;  ///< zenith wet delay [m]
+  double pres; ///< pressure at the site [hPa]
+  double temp; ///< temperature at the site [°C]
+  double wvp;  ///< water vapor pressure at the site [hPa]
+  double hng;  ///< hydrostatic north gradient Gn_h [mm]
+  double heg;  ///< hydrostatic east gradient Ge_h [mm]
+  double wng;  ///< wet north gradient Gn_w [mm]
+  double weg;  ///< wet east gradient Ge_w [mm]
+}; // SiteVMF3MeteoRecord
+
+/// @brief A struct to hold all records of a VMF3 GR file, see
+/// https://vmf.geo.tuwien.ac.at/ Products
+struct SiteVMF3GRRecord {
+  char site[10] = {'\0'};
+  SiteVMF3GRMeteoRecord mrec{};
+
+  /// @param[in] site_name Name of site (see below)
+  /// @param[in] site_length Number of chars in site_name that specify the
+  ///                 site's name. That is, when copying to the member
+  ///                 instance SiteV3GRRecord::site, only the first
+  ///                 site_length are going to be considered. If site_length<0,
+  ///                 then the string is assumed to be null-terminated, and
+  ///                 we are considering the full string length.
+  SiteVMF3GRRecord(const char *site_name = nullptr,
+                   int site_length = -1) noexcept;
+}; // SiteVMF3GRRecord
+
+int parse_v3gr_line(const char *line, SiteVMF3GRRecord &rec) noexcept;
+
+/*template <int N>*/
+constexpr const int NDIM = 2;
+struct SiteVMF3Records {
+  char site[10] = {'\0'};
+  std::array<SiteVMF3GRMeteoRecord, NDIM> meteo_arr;
+
+  SiteVMF3Records(const char *site_nm=nullptr) noexcept : meteo_arr{} {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+    if (site_nm) std::strncpy(site, site_nm, 10);
+#pragma GCC diagnostic pop
+  }
+  
+  SiteVMF3GRMeteoRecord
+  interpolate(const dso::datetime<dso::nanoseconds> &t) noexcept;
+}; // SiteVmf3Records
+}// vmf3_details
+
+/// @brief Site-wise VMF3 parameters
+/// @see https://vmf.geo.tuwien.ac.at/products.html VMF3 -> Site Wise VMF3
+struct SiteVMF3Feed {
+private:
+  char filename[128];
+  std::ifstream fin;
+  char cline[256];
+  double ct1{std::numeric_limits<double>::max()};
+  double ct2{std::numeric_limits<double>::min()};
+  std::vector<vmf3_details::SiteVMF3Records> recs;
+
+  int find_site(const char *site) const noexcept;
+
+  int get_sites_for_current_epoch(int store_at_index, int &sites_collected,
+                                  double &next_mjd) noexcept;
+
+  /// Mjd intervals in the file are every .25 of day, that is every 6 hours
+  int interval(const dso::datetime<dso::nanoseconds> &t) noexcept;
+
+  int feed(const dso::datetime<dso::nanoseconds> &t) noexcept;
+
+public:
+  SiteVMF3Feed(const char *fn, std::vector<const char *> &sites);
+  vmf3_details::SiteVMF3GRMeteoRecord
+  interpolate(const char *site,
+              const dso::datetime<dso::nanoseconds> &t) noexcept;
+
+}; // SiteVMF3
+
 /// @brief Implement GPT3 for a number of stations
 /// This subroutine determines pressure, temperature, temperature lapse rate, 
 /// mean temperature of the water vapor, water vapour pressure, hydrostatic 
@@ -356,8 +443,8 @@ struct vmf3_hw {
 /// @param[in] ellipsoidal An array of 3-dimensional arrays containing 
 ///            ellipsoidal coordinates for num_stations stations. These arrays
 ///            should hold longitude/latitude/height as:
+///            * ellipsoidal longitude in range (-pi:pi) or (0:2pi), [radians]
 ///            * ellipsoidal latitude in range (-pi/2:+pi/2), [radians]
-///            * longitude in range (-pi:pi) or (0:2pi), [radians]
 ///            * ellipsoidal height [meters]
 /// @param[in] num_stations Number of stations, aka the size of ellipsoidal
 /// @param[in] it    1: no time variation but static quantities
