@@ -1,5 +1,4 @@
 # Testing the C++ implementation
-================================
 
 This folder contains C++ source code for testing the C++ implementation 
 (libiers2010) against the IERS-distributed FORTRAN source code.
@@ -19,3 +18,7 @@ re-produced using the respective FORTRAN source code, named
 
 To compile the test programs in this folder, use the `--make-check` switch 
 when invoking the `scons` build command (in the ROOT folder).
+
+| Chapter | (Sub)Routine | Tested | Revision         | Comments |
+|:--------|:-------------|:------:|:-----------------|:---------|
+| 8       | rg_zont2     | [x]    | 2011 December 20 |          |
