@@ -81,8 +81,8 @@ constexpr int nfund[nzont][5] = {
     {0, 0, 0, 0, 2},
     {0, 0, 0, 0, 1}};
 
-// Multiple of     DUT          DLOD              DOMEGA
-// sin         cos       cos       sin        cos       sin
+// Multiple of DUT, DLOD, DOMEGA
+//   sin         cos      cos       sin        cos       sin
 constexpr double tide[nzont][6] = {
     // DATA ( ( TIDE(I,J), I=1,6 ), J = 1,20 ) /
     {-0.0235e0, 0.0000e0, 0.2617e0, 0.0000e0, -0.2209e0, 0.0000e0},
@@ -162,30 +162,22 @@ constexpr double tide[nzont][6] = {
 ///          subroutine, found here :
 ///          http://maia.usno.navy.mil/conv2010/software.html
 ///
-/// @param[in]  t      Julian centuries since J2000 (Note 1)
-/// @param[out] dut    Effect on UT1 (Note 2)
-/// @param[out] dlod   Effect on excess length of day (LOD) (Note 3)
-/// @param[out] domega Effect on rotational speed (Note 4)
+/// @param[in]  t      Julian centuries since J2000 TT. Though T is strictly 
+///                    TDB, it is usually more convenient to use TT, which 
+///                    makes no significant difference.  Julian centuries 
+///                    since J2000 is (JD - 2451545.0)/36525.
+/// @param[out] dut    Effect on UT1 [seconds] 
+/// @param[out] dlod   Effect on excess length of day (LOD) [seconds/day]. The 
+///                    phrase 'per day' is generally understood, so it has 
+///                    been omitted commonly in speech and literature. See: 
+///                    Stephenson, F. R., Morrison, L. V., Whitrow, G. J., 1984,
+///                    "Long-Term Changes in the Rotation of the Earth: 700 
+///                    B. C. to A. D. 1980 [and Discussion]", Phil. Trans. Roy. 
+///                    Soc. of London. Series A, 313, pp. 47 - 70.
+/// @param[out] domega Effect on rotational speed [radians/second]
 /// @return            An integer value always 0.
 ///
 /// @note
-///  -# Though T is strictly TDB, it is usually more convenient to use
-///     TT, which makes no significant difference.  Julian centuries since
-///     J2000 is (JD - 2451545.0)/36525.
-///  -# The expression used is as adopted in IERS Conventions (2010).
-///     DUT is expressed in seconds and is double precision.
-///  -# The expression used is as adopted in IERS Conventions (2010).
-///     DLOD is the excess in LOD and is expressed in seconds per day
-///     and is double precision.  The phrase 'per day' is generally
-///     understood, so it has been omitted commonly in speech and
-///     literature.
-///     See: Stephenson, F. R., Morrison, L. V., Whitrow, G. J., 1984,
-///     "Long-Term Changes in the Rotation of the Earth: 700 B. C. to
-///     A. D. 1980 [and Discussion]", Phil. Trans. Roy. Soc. of London.
-///     Series A, 313, pp. 47 - 70.
-///  -# The expression used is as adopted in IERS Conventions (2010).
-///     Rotational speed is expressed in radians per second and is
-///     double precision.
 ///  -# Status:  Class 3 model
 ///
 /// @version 20.12.2011
@@ -221,6 +213,7 @@ int iers2010::rg_zont2(double t, double &dut, double &dlod,
   // Computation of fundamental arguments
   double fargs[5]; // (l, lp, f, d, om)
   iers2010::fundarg(t, fargs);
+  
   const double l = fargs[0];
   const double lp = fargs[1];
   const double f = fargs[2];

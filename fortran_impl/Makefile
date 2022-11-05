@@ -55,7 +55,8 @@ all: test_iers \
 	testVmf1Ht \
 	testGpt \
 	testGpt2 \
-	validateFcnnut
+	validateFcnnut \
+	makeTestRgZont2
 
 test_iers: MAIN.F $(IERS_OBS)
 	$(FC) -o $@ MAIN.F $(IERS_OBS)
@@ -99,6 +100,8 @@ testGpt: test_gpt.f $(IERS_OBS)
 	$(FC) -o $@ test_gpt.f $(IERS_OBS)
 testGpt2: test_gpt2.f $(IERS_OBS)
 	$(FC) -o $@ test_gpt2.f $(IERS_OBS)
+makeTestRgZont2: make_test_rgzont2.f $(IERS_OBS)
+	$(FC) -o $@ make_test_rgzont2.f $(IERS_OBS)
 
 FUNDARG.o : FUNDARG.F
 	$(FC) $(FF) -o $@ FUNDARG.F

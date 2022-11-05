@@ -7,10 +7,15 @@ constexpr const double secrad = iers2010::DPI / (180e0*3600e0);
 constexpr const double secfac = 1296000e0; // see 5.4 in IERS Conventions 2010
 constexpr const double dayscentury = 36525e0;
 
+/// @brief Tables 8.2a and 8.2b from IERS-2010 (Doodson numbers and periods
+///        not relevant here).
+/// @see IERS Conventions 8.2 and the routine interp.f at 
+///      https://hpiers.obspm.fr/iers/models/interp.readme &
+///      https://hpiers.obspm.fr/iers/models/interp.f (SUBROUTINE PMUT1_OCEANS)
 struct {
-  // Multipliers of GMST+pi and Delaunay arguments.
+  ///< Multipliers of GMST+pi and Delaunay arguments.
   int narg[6];
-  // Oceanic tidal terms present in x (microas),y(microas),ut1(microseconds)
+  ///< Oceanic tidal terms present in x (microas),y(microas),ut1(microseconds)
   double xsin,xcos,ysin,ycos,utsin,utcos;
 } data[] = {
    {{1,-1, 0,-2,-2,-2},  -0.05e0,   0.94e0,  -0.94e0,  -0.05e0,  0.396e0, -0.078e0},
