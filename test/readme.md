@@ -21,4 +21,4 @@ when invoking the `scons` build command (in the ROOT folder).
 
 | Chapter | (Sub)Routine | Tested | Revision         | Comments |
 |:--------|:-------------|:------:|:-----------------|:---------|
-| 8       | rg_zont2     | [x]    | 2011 December 20 |          |
+| 8       | rg_zont2     | - [x]  | 2011 December 20 |          |
