@@ -16,9 +16,13 @@ The latter test programs (`test_$(program_name)_random.cpp`), can be
 re-produced using the respective FORTRAN source code, named 
 `make_test_$(program_name).f` found in the `fortran_impl` directory.
 
+## Compilation
+
 To compile the test programs in this folder, use the `--make-check` switch 
 when invoking the `scons` build command (in the ROOT folder).
 
+## Status
+
 | Chapter | (Sub)Routine | Tested | Revision         | Comments |
 |:--------|:-------------|:------:|:-----------------|:---------|
-| 8       | rg_zont2     | - [x]  | 2011 December 20 |          |
+| 8       | rg_zont2     | :heavy_check_mark:  | 2011 December 20 |          |
