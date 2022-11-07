@@ -179,10 +179,10 @@ int iers2010::interp::pmut1_oceans(double t /*in julian centuries*/,
   }
 
   // Units
-  // cor_x *= 1e-6;   // arcseconds ('')
-  // cor_y *= 1e-6;   // arcseconds ('')
-  // cor_ut1 *= 1e-6; // seconds (s)
-  // cor_lod *= 1e-6; // seconds (s)
+  cor_x *= 1e-6;   // arcseconds ('')
+  cor_y *= 1e-6;   // arcseconds ('')
+  cor_ut1 *= 1e-6; // seconds (s)
+  cor_lod *= 1e-6; // seconds (s)
 
   return 0;
 }

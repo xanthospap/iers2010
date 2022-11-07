@@ -435,11 +435,11 @@ dehanttideinel_impl(const Eigen::Matrix<double, 3, 1> &xsta,
 dehanttideinel(const double *, const double *, const double *,
                dso::datetime<dso::seconds>, double *);
 
-/// @brief Compute the diurnal and semi-diurnal variations in Earth Orientation
-/// Parameters from ocean tides.
+/// @brief Compute the diurnal and semi-diurnal variations in EOPs from ocean 
+///        tides.
 /// @details  The purpose of the function is to compute the diurnal and semi-
-///           diurnal variations in Earth Orientation Parameters (x,y, UT1) from
-///           ocean tides.
+///           diurnal variations in Earth Orientation Parameters (x,y, UT1)
+///           from ocean tides.
 ///           This function is a translation/wrapper for the fortran ORTHO_EOP
 ///           subroutine, found here :
 ///           http://maia.usno.navy.mil/conv2010/software.html
@@ -447,7 +447,7 @@ dehanttideinel(const double *, const double *, const double *,
 /// @param[in]  dmjd  Modified Julian Date
 /// @param[out] dx    delta_x, in microarcseconds [μas]
 /// @param[out] dy    delta_y, in microarcseconds [μas]
-/// @param[out] dut1  delta_UT1, in microseconds [μas]
+/// @param[out] dut1  delta_UT1, in microseconds [μs]
 /// @return           An integer, always 0.
 ///
 /// @note
@@ -558,9 +558,9 @@ namespace interp {
 /// Translated from the FORTRAN subroutine PMUT1_GRAVI in interp.f found at
 /// https://hpiers.obspm.fr/iers/models/
 /// @param[in] tjc Epoch of interest given in Julian Centuries TT
-/// @param[out] cor_x Tidal correction in x [μas]
-/// @param[out] cor_y Tidal correction in y [μas]
-int pm_gravi(double t, double &cor_x, double &cor_y) noexcept;
+/// @param[out] cor_x Tidal correction in x ['', arcssec]
+/// @param[out] cor_y Tidal correction in y ['', arcsex]
+int pm_gravi(double tjc, double &cor_x, double &cor_y) noexcept;
 
 /// @brief Compute tidal effets on polar motion.
 /// This function provides, in time domain, the diurnal/subdiurnal
@@ -572,21 +572,25 @@ int pm_gravi(double t, double &cor_x, double &cor_y) noexcept;
 /// Translated from the FORTRAN subroutine PMUT1_OCEANS in interp.f found at
 /// https://hpiers.obspm.fr/iers/models/
 /// @param[in] tjc Epoch of interest given in Julian Centuries TT
-/// @param[out] cor_x Tidal correction in x [μas]
-/// @param[out] cor_y Tidal correction in y [μas]
-/// @param[out] cor_ut1 Tidal correction in UT1-UTC [μsec]
-/// @param[out] cor_lod Tidal correction in length of day [μsec]
+/// @param[out] cor_x Tidal correction in x ['', arcsec]
+/// @param[out] cor_y Tidal correction in y ['', arcsec]
+/// @param[out] cor_ut1 Tidal correction in UT1-UTC [sec]
+/// @param[out] cor_lod Tidal correction in length of day [sec]
 int pmut1_oceans(double tjc, double &cor_x, double &cor_y, double &cor_ut1,
                  double &cor_lod) noexcept;
 
 /// @brief Perform Lagrangian interpolation.
+///
 /// This function performs lagrangian interpolation within a set of (x,y)
 /// pairs to give the y value corresponding to xint. This program uses a
-/// window of 4 data points to perform the interpolation.
+/// window of 4 data points to perform the interpolation, but this can change
+/// via the order parameter.
+///
 /// For more information see IERS Conventions 2010, sec. 5.5.1.1 "Account of
 /// ocean tidal and libration effects in pole coordinates"
 /// Translated from the FORTRAN subroutine LAGINT in interp.f found at
 /// https://hpiers.obspm.fr/iers/models/
+/// 
 /// @param[in] x array of values of the independent variable; size n
 /// @param[in] y array of function values corresponding to x; size n
 /// @param[in] n number of points, aka size of x and y arrays
@@ -600,13 +604,14 @@ int pmut1_oceans(double tjc, double &cor_x, double &cor_y, double &cor_ut1,
 ///               search for the index.
 ///               At output, idx will hold the value/index for which (1)
 ///               holds (so that it can be used later if needed).
+/// @param[in] order Lagrangian interpolation order. The number of data points 
+///               to be used for the interpolation will be order+1. This 
+///               parameter should have an odd, integer value.
 /// @return An integer denoting:
 ///          0 : success
-///         -1 : success but xint too close to starting x
-///         -2 : success but xint too close to ending x
 ///         >0 : error
 int lagint(const double *x, const double *y, int n, double xint, double &yout,
-           int &idx) noexcept;
+           int &idx, int order = 3) noexcept;
 } // namespace interp
 
 /// @brief Account of ocean tidal and libration effects in pole coordinates
@@ -629,15 +634,15 @@ int lagint(const double *x, const double *y, int n, double xint, double &yout,
 ///       units. Here we use [mas] and [ms] respectively (the same units used
 ///       in the Bulletin B/C publications).
 /// @param[in] mjd array of the epochs of data as MJD of size n (see note)
-/// @param[in] x array of x polar motion (millioarcsec) of size n [mas]
-/// @param[in] y array of y polar motion (milliarcsec) of size n [mas]
-/// @param[in] ut1 array of UT1-UTC (millisec) of size n [ms]
-/// @param[in] n number of points in arrays (mjd, x, y, ut1)
+/// @param[in] x array of x polar motion (arcsec) of size n [arcsec]
+/// @param[in] y array of y polar motion (arcsec) of size n [arcsec]
+/// @param[in] ut1 array of UT1-UTC (sec) of size n [sec]
+/// @param[in] n number of points in arrays (mjd, x, y, dut)
 /// @param[in] rjd epoch for the interpolated value, as MJD (see note)
-/// @param[out] xint interpolated value of x [mas]
-/// @param[out] yint interpolated value of y [mas]
-/// @param[out] ut1int interpolated value of ut1-utc [ms]
-/// @param[out] corlod tidal correction in length of day (LOD) in [ms]
+/// @param[out] xint interpolated value of x [arcsec]
+/// @param[out] yint interpolated value of y [arcsec]
+/// @param[out] ut1int interpolated value of ut1-utc [sec]
+/// @param[out] corlod tidal correction in length of day (LOD) in [sec]
 ///
 /// @note The time scales in params mjd and rjd should be the same.
 int interp_pole(const double *mjd, const double *x, const double *y,

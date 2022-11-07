@@ -77,7 +77,7 @@ int iers2010::interp::pm_gravi(double t, double &cor_x,
   }
 
   // Units
-  // cor_x *= 1e-6; // arcseconds ('')
-  // cor_y *= 1e-6; // arcseconds ('')
+  cor_x *= 1e-6; // arcseconds ('')
+  cor_y *= 1e-6; // arcseconds ('')
   return 0;
 }

@@ -86,6 +86,11 @@ constexpr struct {
     {2, 2, 1.17e0, 9.1574019e0, 13.06071921e0, "295.555"}};
 int nlines = sizeof(x) / sizeof(x[0]);
 
+// Define the orthotide weight factors
+constexpr double sp[2][6] = {
+    {0.0298e0, 0.1408e0, +0.0805e0, 0.6002e0, +0.3025e0, 0.1517e0},
+    {0.0200e0, 0.0905e0, +0.0638e0, 0.3476e0, +0.1645e0, 0.0923e0}};
+
 /// @details  The purpose of the subroutine is to compute the time dependent
 ///           part of second degree diurnal and semidiurnal tidal potential
 ///           from the dominant spectral lines in the Cartwright-Tayler-Edden
@@ -113,11 +118,6 @@ int nlines = sizeof(x) / sizeof(x[0]);
 ///      Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
 int iers2010::oeop::cnmtx(double dmjd, double *h) noexcept {
   constexpr const double TWOPI(iers2010::D2PI);
-
-  // Define the orthotide weight factors
-  constexpr double sp[2][6] = {
-      {0.0298e0, 0.1408e0, +0.0805e0, 0.6002e0, +0.3025e0, 0.1517e0},
-      {0.0200e0, 0.0905e0, +0.0638e0, 0.3476e0, +0.1645e0, 0.0923e0}};
 
   constexpr double dt = 2e0;
   constexpr int nmax = 2;
@@ -182,4 +182,35 @@ int iers2010::oeop::cnmtx(double dmjd, double *h) noexcept {
 
   // Finished
   return 0;
+}
+
+int iers2010::oeop::cnmtx2(double dmjd, double *h) noexcept {
+  constexpr const double TWOPI(iers2010::D2PI);
+
+  constexpr double dt = 2e0;
+  constexpr int nmax = 2;
+  constexpr double d1960 = 37076.5e0;
+
+  double anm2[4][3], anm3[4][3], bnm2[4][3], bnm3[4][3];
+
+  // Compute the time dependent potential matrix
+  double dt60, pinm, alpha;
+  int fk;
+  for (int k = 0; k < 2; k++) {
+    fk = k - 1;
+    dt60 = (dmjd - fk * dt) - d1960;
+    anm2[1][k] = 0e0;
+    anm2[2][k] = 0e0;
+    bnm2[1][k] = 0e0;
+    bnm2[2][k] = 0e0;
+    for (int j = 0; j < nlines; j++) {
+      const int nn = x[j].nj;
+      const int mm = x[j].mj;
+      pinm = (static_cast<double>((nn + mm) % 2)) * TWOPI / 4e0;
+      alpha = std::fmod(x[j].phase - pinm, TWOPI) +
+              std::fmod(x[j].freq * dt60, TWOPI);
+      anm[nn - 2][mm][k + 1] += x[j].hs * std::cos(alpha);
+      bnm[nn - 2][mm][k + 1] -= x[j].hs * std::sin(alpha);
+    }
+  }
 }
