@@ -184,6 +184,7 @@ int iers2010::oeop::cnmtx(double dmjd, double *h) noexcept {
   return 0;
 }
 
+#ifdef _DO_NOT_USE
 int iers2010::oeop::cnmtx2(double dmjd, double *h) noexcept {
   constexpr const double TWOPI(iers2010::D2PI);
 
@@ -214,3 +215,4 @@ int iers2010::oeop::cnmtx2(double dmjd, double *h) noexcept {
     }
   }
 }
+#endif
