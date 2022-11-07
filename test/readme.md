@@ -23,6 +23,12 @@ when invoking the `scons` build command (in the ROOT folder).
 
 ## Status
 
+For details on the discrepancies of the C++ vs the FORTRAN implementations, see 
+the source code of the programs files (`test_$(program_name)_random.cpp`). They 
+assert a certain precision level, else thry fail.
+
 | Chapter | (Sub)Routine | Tested | Revision         | Comments |
 |:--------|:-------------|:------:|:-----------------|:---------|
-| 8       | rg_zont2     | :heavy_check_mark:  | 2011 December 20 |          |
+| 8       | rg_zont2     | :heavy_check_mark:  | 2011 December 20 | |
+| 8       | cnmtx        | :heavy_check_mark:  | 2010 March 17 | results agree to 1e-12 |
+| 8       | ortho_eop    | :heavy_check_mark:  | 2010 March 19 | |

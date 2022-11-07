@@ -1,3 +1,4 @@
+#ifdef USE_OLD_CNMTX_IMPL
 #include "iers2010.hpp"
 #ifdef DEBUG
 #include <cassert>
@@ -184,35 +185,4 @@ int iers2010::oeop::cnmtx(double dmjd, double *h) noexcept {
   return 0;
 }
 
-#ifdef _DO_NOT_USE
-int iers2010::oeop::cnmtx2(double dmjd, double *h) noexcept {
-  constexpr const double TWOPI(iers2010::D2PI);
-
-  constexpr double dt = 2e0;
-  constexpr int nmax = 2;
-  constexpr double d1960 = 37076.5e0;
-
-  double anm2[4][3], anm3[4][3], bnm2[4][3], bnm3[4][3];
-
-  // Compute the time dependent potential matrix
-  double dt60, pinm, alpha;
-  int fk;
-  for (int k = 0; k < 2; k++) {
-    fk = k - 1;
-    dt60 = (dmjd - fk * dt) - d1960;
-    anm2[1][k] = 0e0;
-    anm2[2][k] = 0e0;
-    bnm2[1][k] = 0e0;
-    bnm2[2][k] = 0e0;
-    for (int j = 0; j < nlines; j++) {
-      const int nn = x[j].nj;
-      const int mm = x[j].mj;
-      pinm = (static_cast<double>((nn + mm) % 2)) * TWOPI / 4e0;
-      alpha = std::fmod(x[j].phase - pinm, TWOPI) +
-              std::fmod(x[j].freq * dt60, TWOPI);
-      anm[nn - 2][mm][k + 1] += x[j].hs * std::cos(alpha);
-      bnm[nn - 2][mm][k + 1] -= x[j].hs * std::sin(alpha);
-    }
-  }
-}
 #endif
