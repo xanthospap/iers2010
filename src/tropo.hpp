@@ -378,9 +378,9 @@ struct SiteVMF3Records {
     if (site_nm) std::strncpy(site, site_nm, 10);
 #pragma GCC diagnostic pop
   }
-  
-  SiteVMF3GRMeteoRecord
-  interpolate(const dso::datetime<dso::nanoseconds> &t) noexcept;
+
+  int interpolate(const dso::datetime<dso::nanoseconds> &t,
+                  SiteVMF3GRMeteoRecord &mrec) noexcept;
 }; // SiteVmf3Records
 }// vmf3_details
 
@@ -407,9 +407,8 @@ private:
 
 public:
   SiteVMF3Feed(const char *fn, std::vector<const char *> &sites);
-  vmf3_details::SiteVMF3GRMeteoRecord
-  interpolate(const char *site,
-              const dso::datetime<dso::nanoseconds> &t) noexcept;
+  int interpolate(const char *site, const dso::datetime<dso::nanoseconds> &t,
+                  vmf3_details::SiteVMF3GRMeteoRecord &irec) noexcept;
 
 }; // SiteVMF3
 

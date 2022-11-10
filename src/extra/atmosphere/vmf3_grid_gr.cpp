@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cstring>
 #include <charconv>
+#include <stdexcept>
 
 dso::vmf3_details::SiteVMF3GRRecord::SiteVMF3GRRecord(const char *site_name,
                                     int site_length) noexcept {
@@ -70,18 +71,25 @@ int dso::vmf3_details::parse_v3gr_line(
   return error;
 }
 
-dso::vmf3_details::SiteVMF3GRMeteoRecord
-dso::vmf3_details::SiteVMF3Records::interpolate(
-    const dso::datetime<dso::nanoseconds> &t) noexcept {
+int dso::vmf3_details::SiteVMF3Records::interpolate(
+    const dso::datetime<dso::nanoseconds> &t,
+    dso::vmf3_details::SiteVMF3GRMeteoRecord &irecs) noexcept {
   const double cmjd = t.as_mjd();
-  assert(cmjd >= meteo_arr[0].mjd && cmjd <= meteo_arr[1].mjd);
-  // printf("interpolating with:\n");
-  // meteo_arr[0].dump();
-  // meteo_arr[1].dump();
+
+  // it might happen that we have not collecetd this site, i.e. site is
+  // missing
+  // assert(cmjd >= meteo_arr[0].mjd && cmjd <= meteo_arr[1].mjd);
+  if (!(cmjd >= meteo_arr[0].mjd && cmjd <= meteo_arr[1].mjd)) {
+    fprintf(stderr,
+            "[ERROR] Failed to interpolate VMF3 for MJD=%.9f (traceback: %s)\n",
+            cmjd, __func__);
+    return 1;
+  }
+
   const double x1x0 = meteo_arr[1].mjd - meteo_arr[0].mjd;
   const double xx0 = -meteo_arr[0].mjd + cmjd;
   const double x1x = meteo_arr[1].mjd - cmjd;
-  dso::vmf3_details::SiteVMF3GRMeteoRecord irecs;
+
   irecs.mjd = cmjd;
   irecs.ah = (x1x * meteo_arr[0].ah + xx0 * meteo_arr[1].ah) / x1x0;
   irecs.aw = (x1x * meteo_arr[0].aw + xx0 * meteo_arr[1].aw) / x1x0;
@@ -94,7 +102,8 @@ dso::vmf3_details::SiteVMF3Records::interpolate(
   irecs.heg = (x1x * meteo_arr[0].heg + xx0 * meteo_arr[1].heg) / x1x0;
   irecs.wng = (x1x * meteo_arr[0].wng + xx0 * meteo_arr[1].wng) / x1x0;
   irecs.weg = (x1x * meteo_arr[0].weg + xx0 * meteo_arr[1].weg) / x1x0;
-  return irecs;
+
+  return 0;
 }
 
 int dso::SiteVMF3Feed::find_site(const char *site) const noexcept {
@@ -105,25 +114,41 @@ int dso::SiteVMF3Feed::find_site(const char *site) const noexcept {
   return (it == recs.end()) ? -1 : std::distance(recs.begin(), it);
 }
 
-dso::vmf3_details::SiteVMF3GRMeteoRecord dso::SiteVMF3Feed::interpolate(
-    const char *site, const dso::datetime<dso::nanoseconds> &t) noexcept {
+int dso::SiteVMF3Feed::interpolate(
+    const char *site, const dso::datetime<dso::nanoseconds> &t,
+    dso::vmf3_details::SiteVMF3GRMeteoRecord &imrec) noexcept {
+  
   // already in interval
   if (t.as_mjd() >= ct1 && t.as_mjd() <= ct2) {
     int idx = find_site(site);
     assert(idx >= 0 && idx < (int)recs.size());
-    return recs[idx].interpolate(t);
+    if (recs[idx].interpolate(t, imrec)) {
+      fprintf(stderr,
+              "[ERROR] Failed to interpolate for site: %s (traceback: %s)\n",
+              site, __func__);
+      return 2;
+    }
+    return 0;
   }
+
   // search for interval and then interpolate
-  if (this->feed(t)) {
+  if (this->feed(t)>0) {
     fprintf(stderr,
             "[ERROR] Failed to find suitable interval for interpolation! "
             "mjd=%.9f (traceback: %s)\n",
             t.as_mjd(), __func__);
-    assert(1 == 0);
+    return 1;
   }
+
   int idx = find_site(site);
   assert(idx >= 0 && idx < (int)recs.size());
-  return recs[idx].interpolate(t);
+  if (recs[idx].interpolate(t, imrec)) {
+    fprintf(stderr,
+            "[ERROR] Failed to interpolate for site: %s (traceback: %s)\n",
+            site, __func__);
+    return 2;
+  }
+  return 0;
 }
 
 dso::SiteVMF3Feed::SiteVMF3Feed(const char *fn,
@@ -214,6 +239,8 @@ int dso::SiteVMF3Feed::feed(const dso::datetime<dso::nanoseconds> &t) noexcept {
     return feed(t);
   }
 
+  bool sites_missing = false;
+
   // we need to go forward ...
   int num_sites = recs.size();
   int error = 0;
@@ -229,12 +256,26 @@ int dso::SiteVMF3Feed::feed(const dso::datetime<dso::nanoseconds> &t) noexcept {
     double next_mjd;
     int sites_collected;
     error = get_sites_for_current_epoch(1, sites_collected, next_mjd);
-    error += (sites_collected == num_sites) ? 0 : 100;
+    sites_missing += (sites_collected == num_sites) ? 0 : 100;
+    if (sites_missing) {
+      fprintf(stderr,
+              "[ERROR] Failed to collect VMF3 info for all sites (%d/%d) "
+              "(traceback: %s)\n",
+              sites_collected, num_sites, __func__);
+    }
     ct2 = recs.begin()->meteo_arr[1].mjd;
     // are we ok now ?
     if (t.as_mjd() >= ct1 && t.as_mjd() <= ct2)
       break;
   }
 
-  return error;
+  if (error) {
+    fprintf(stderr,
+            "[ERROR] An error occured while reading VMF3 grid file \"%s\" "
+            "(traceback: %s)\n",
+            filename, __func__);
+    return error;
+  }
+
+  return sites_missing ? -1 : 0;
 }
