@@ -1,44 +1,43 @@
 #include "iers2010.hpp"
 #include <datetime/dtfund.hpp>
 
-using dso::Vector3;
-
+namespace {
 // Set constants
 constexpr const double DEG2RAD = iers2010::D2PI / 360e0;
 
 // coefficients for computations in step2diu
 const double s2d_datdi[][9] = {
-      {-3e0, 0e0, 2e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
-      {-3e0, 2e0, 0e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
-      {-2e0, 0e0, 1e0, -1e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
-      {-2e0, 0e0, 1e0, 0e0, 0e0, -0.08e0, 0e0, -0.01e0, 0.01e0},
-      {-2e0, 2e0, -1e0, 0e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
-      {-1e0, 0e0, 0e0, -1e0, 0e0, -0.10e0, 0e0, 0e0, 0e0},
-      {-1e0, 0e0, 0e0, 0e0, 0e0, -0.51e0, 0e0, -0.02e0, 0.03e0},
-      {-1e0, 2e0, 0e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
-      {0e0, -2e0, 1e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
-      {0e0, 0e0, -1e0, 0e0, 0e0, 0.02e0, 0e0, 0e0, 0e0},
-      {0e0, 0e0, 1e0, 0e0, 0e0, 0.06e0, 0e0, 0e0, 0e0},
-      {0e0, 0e0, 1e0, 1e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
-      {0e0, 2e0, -1e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
-      {1e0, -3e0, 0e0, 0e0, 1e0, -0.06e0, 0e0, 0e0, 0e0},
-      {1e0, -2e0, 0e0, -1e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
-      {1e0, -2e0, 0e0, 0e0, 0e0, -1.23e0, -0.07e0, 0.06e0, 0.01e0},
-      {1e0, -1e0, 0e0, 0e0, -1e0, 0.02e0, 0e0, 0e0, 0e0},
-      {1e0, -1e0, 0e0, 0e0, 1e0, 0.04e0, 0e0, 0e0, 0e0},
-      {1e0, 0e0, 0e0, -1e0, 0e0, -0.22e0, 0.01e0, 0.01e0, 0e0},
-      {1e0, 0e0, 0e0, 0e0, 0e0, 12.00e0, -0.80e0, -0.67e0, -0.03e0},
-      {1e0, 0e0, 0e0, 1e0, 0e0, 1.73e0, -0.12e0, -0.10e0, 0e0},
-      {1e0, 0e0, 0e0, 2e0, 0e0, -0.04e0, 0e0, 0e0, 0e0},
-      {1e0, 1e0, 0e0, 0e0, -1e0, -0.50e0, -0.01e0, 0.03e0, 0e0},
-      {1e0, 1e0, 0e0, 0e0, 1e0, 0.01e0, 0e0, 0e0, 0e0},
-      {0e0, 1e0, 0e0, 1e0, -1e0, -0.01e0, 0e0, 0e0, 0e0},
-      {1e0, 2e0, -2e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
-      {1e0, 2e0, 0e0, 0e0, 0e0, -0.11e0, 0.01e0, 0.01e0, 0e0},
-      {2e0, -2e0, 1e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
-      {2e0, 0e0, -1e0, 0e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
-      {3e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0},
-      {3e0, 0e0, 0e0, 1e0, 0e0, 0e0, 0e0, 0e0, 0e0}};
+    {-3e0, 0e0, 2e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
+    {-3e0, 2e0, 0e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
+    {-2e0, 0e0, 1e0, -1e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
+    {-2e0, 0e0, 1e0, 0e0, 0e0, -0.08e0, 0e0, -0.01e0, 0.01e0},
+    {-2e0, 2e0, -1e0, 0e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
+    {-1e0, 0e0, 0e0, -1e0, 0e0, -0.10e0, 0e0, 0e0, 0e0},
+    {-1e0, 0e0, 0e0, 0e0, 0e0, -0.51e0, 0e0, -0.02e0, 0.03e0},
+    {-1e0, 2e0, 0e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
+    {0e0, -2e0, 1e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
+    {0e0, 0e0, -1e0, 0e0, 0e0, 0.02e0, 0e0, 0e0, 0e0},
+    {0e0, 0e0, 1e0, 0e0, 0e0, 0.06e0, 0e0, 0e0, 0e0},
+    {0e0, 0e0, 1e0, 1e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
+    {0e0, 2e0, -1e0, 0e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
+    {1e0, -3e0, 0e0, 0e0, 1e0, -0.06e0, 0e0, 0e0, 0e0},
+    {1e0, -2e0, 0e0, -1e0, 0e0, 0.01e0, 0e0, 0e0, 0e0},
+    {1e0, -2e0, 0e0, 0e0, 0e0, -1.23e0, -0.07e0, 0.06e0, 0.01e0},
+    {1e0, -1e0, 0e0, 0e0, -1e0, 0.02e0, 0e0, 0e0, 0e0},
+    {1e0, -1e0, 0e0, 0e0, 1e0, 0.04e0, 0e0, 0e0, 0e0},
+    {1e0, 0e0, 0e0, -1e0, 0e0, -0.22e0, 0.01e0, 0.01e0, 0e0},
+    {1e0, 0e0, 0e0, 0e0, 0e0, 12.00e0, -0.80e0, -0.67e0, -0.03e0},
+    {1e0, 0e0, 0e0, 1e0, 0e0, 1.73e0, -0.12e0, -0.10e0, 0e0},
+    {1e0, 0e0, 0e0, 2e0, 0e0, -0.04e0, 0e0, 0e0, 0e0},
+    {1e0, 1e0, 0e0, 0e0, -1e0, -0.50e0, -0.01e0, 0.03e0, 0e0},
+    {1e0, 1e0, 0e0, 0e0, 1e0, 0.01e0, 0e0, 0e0, 0e0},
+    {0e0, 1e0, 0e0, 1e0, -1e0, -0.01e0, 0e0, 0e0, 0e0},
+    {1e0, 2e0, -2e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
+    {1e0, 2e0, 0e0, 0e0, 0e0, -0.11e0, 0.01e0, 0.01e0, 0e0},
+    {2e0, -2e0, 1e0, 0e0, 0e0, -0.01e0, 0e0, 0e0, 0e0},
+    {2e0, 0e0, -1e0, 0e0, 0e0, -0.02e0, 0e0, 0e0, 0e0},
+    {3e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0},
+    {3e0, 0e0, 0e0, 1e0, 0e0, 0e0, 0e0, 0e0, 0e0}};
 
 /// @brief Structure to hold a number of angles used to compute the Step 2
 ///        tidal displacement for a point on earth. See function step2diu and
@@ -49,7 +48,10 @@ struct Step2Angles {
   Step2Angles(double julian_centuries_tt, double fhr_ut) noexcept {
     const double t = julian_centuries_tt;
     const double fhr = fhr_ut;
-    
+
+    //printf("targ = %.12f\n", t);
+    //printf("tfhr = %.12f\n", fhr);
+
     // Compute the phase angles in degrees.
     s = 218.31664563e0 +
         (481267.88194e0 + (-0.0014663889e0 + (0.00000185139e0) * t) * t) * t;
@@ -105,68 +107,67 @@ struct Step2Angles {
 ///        step2diu and step2lon) but we can only compute them once and store
 ///        the in a TideAux instance.
 struct TideAux {
-  TideAux(const Eigen::Matrix<double, 3, 1> &xsta,
-          const Eigen::Matrix<double, 3, 1> &xsun,
-          const Eigen::Matrix<double, 3, 1> &xmon, double fsun,
-          double fmon) noexcept {
-    rsta = xsta.norm();
-    sinphi = xsta(2) / rsta;
-    cosphi = std::sqrt(xsta(0) * xsta(0) + xsta(1) * xsta(1)) / rsta;
-    sinla = xsta(1) / cosphi / rsta;
-    cosla = xsta(0) / cosphi / rsta;
-    rsun = xsun.norm();
-    rmon = xmon.norm();
-    fac2sun = fsun;
-    fac2mon = fmon;
-  };
+  TideAux(const Eigen::Matrix<double, 3, 1> &ixsta,
+          const Eigen::Matrix<double, 3, 1> &ixsun,
+          const Eigen::Matrix<double, 3, 1> &ixmon) noexcept
+      : xsta(&ixsta), xsun(&ixsun), xmon(&ixmon), rsta(ixsta.norm()),
+        sinphi(ixsta(2) / rsta),
+        cosphi(std::sqrt(ixsta(0) * ixsta(0) + ixsta(1) * ixsta(1)) / rsta),
+        sinla(ixsta(1) / cosphi / rsta), cosla(ixsta(0) / cosphi / rsta),
+        rsun(ixsun.norm()), rmon(ixmon.norm()) {
+    planet_factors();
+  }
 
+  // set member variables fac2sun and fac2mon using IERS constants
+  void planet_factors() noexcept {
+    constexpr double mass_ratio_sun = 332946.0482e0;
+    constexpr double mass_ratio_moon = 0.0123000371e0;
+    constexpr double re = iers2010::Re;
+    fac2sun = mass_ratio_sun * re * std::pow(re / rsun, 3);
+    fac2mon = mass_ratio_moon * re * std::pow(re / rmon, 3);
+  }
+
+  void set_site(const Eigen::Matrix<double, 3, 1> &ixsta) noexcept {
+    xsta = &ixsta;
+    rsta = ixsta.norm();
+    sinphi = ixsta(2) / rsta;
+    cosphi = std::sqrt(ixsta(0) * ixsta(0) + ixsta(1) * ixsta(1)) / rsta;
+    sinla = ixsta(1) / cosphi / rsta;
+    cosla = ixsta(0) / cosphi / rsta;
+  }
+
+  const Eigen::Matrix<double, 3, 1> *xsta, *xsun, *xmon;
   double rsta;
-  double rsun;
-  double rmon;
   double sinphi;
   double cosphi;
   double sinla;
   double cosla;
+  double rsun;
+  double rmon;
   double fac2sun;
   double fac2mon;
 }; // TideAux
 
+} // namespace
+
 /// @details This function gives the corrections induced by the latitude
-///          dependence given by L^1 in Mathews et al. 1991 (See References).
+///          dependence given by L^1 in Mathews et al. 1991
+///
 ///          This function is a translation/wrapper for the fortran ST1L1
 ///          subroutine, found here :
 ///          http://maia.usno.navy.mil/conv2010/software.html
 ///
-/// @param[in]  xsta    Geocentric position of the IGS station (Note 1)
-/// @param[in]  xsun    Geocentric position of the Sun (Note 2)
-/// @param[in]  xmon    Geocentric position of the Moon (Note 2)
-/// @param[in]  fac2sun Degree 2 TGP factor for the Sun (Note 3)
-/// @param[in]  fac2mon Degree 2 TGP factor for the Moon (Note 3)
+/// @param[in] aux An instance of type TideAux, containing information for the
+///            site and "planets" (xsta in ECEF [m]), xsun in ECEF [m] and
+///            xmon ECEF [m]), as well as the fac2sun and fac2mon (degree 2
+///            TGP factor for the Sun and Moon respectively)
 /// @return  xcorsta Out of phase station corrections for semi-diurnal band
 ///
-/// @note
-///    -# The IGS station is in ITRF co-rotating frame. All coordinates are
-///       expressed in meters, as arrays, i.e. [x,y,z].
-///    -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
-///       coordinates are expressed in meters, as arrays, i.e. [x,y,z].
-///    -# The expressions are computed in the main program. TGP is the tide
-///       generated potential. The units are inverse meters.
-///    -# Status: Class 1
-///    -# This fucnction is part of the package dehanttideinel, see
+/// @note This fucnction is part of the package dehanttideinel, see
 ///       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
 ///
 /// @version 31.07.2009
-///
-/// @cite iers2010,
-///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
-///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
-///       Mathews, P. M., Buffett, B. A., Herring, T. A., Shapiro, I. I.,
-///       1991b, Forced nutations of the Earth: Influence of inner core
-///       Dynamics 2. Numerical results and comparisons, J. Geophys. Res.,
-///       96, 8243-8257
-Eigen::Matrix<double, 3, 1> st1l1(const Eigen::Matrix<double, 3, 1> &xsun,
-                                  const Eigen::Matrix<double, 3, 1> &xmon,
-                                  const TideAux &aux) noexcept {
+Eigen::Matrix<double, 3, 1> st1l1(const TideAux &aux) noexcept {
   constexpr const double l1d = 0.0012e0;
   constexpr const double l1sd = 0.0024e0;
 
@@ -189,50 +190,58 @@ Eigen::Matrix<double, 3, 1> st1l1(const Eigen::Matrix<double, 3, 1> &xsun,
   double l1 = l1d;
   const double fac2sun = aux.fac2sun;
   const double fac2mon = aux.fac2mon;
-  double dnsun = -l1 * sinphi2 * fac2sun * xsun(2) *
-                 (xsun(0) * cosla + xsun(1) * sinla) / rsun2;
-  double dnmon = -l1 * sinphi2 * fac2mon * xmon(2) *
-                 (xmon(0) * cosla + xmon(1) * sinla) / rmon2;
-  double desun = l1 * sinphi * (cosphi2 - sinphi2) * fac2sun * xsun(2) *
-                 (xsun(0) * sinla - xsun(1) * cosla) / rsun2;
-  double demon = l1 * sinphi * (cosphi2 - sinphi2) * fac2mon * xmon(2) *
-                 (xmon(0) * sinla - xmon(1) * cosla) / rmon2;
+  double dnsun =
+      -l1 * sinphi2 * fac2sun * aux.xsun->operator()(2) *
+      (aux.xsun->operator()(0) * cosla + aux.xsun->operator()(1) * sinla) /
+      rsun2;
+  double dnmon =
+      -l1 * sinphi2 * fac2mon * aux.xmon->operator()(2) *
+      (aux.xmon->operator()(0) * cosla + aux.xmon->operator()(1) * sinla) /
+      rmon2;
+  double desun =
+      l1 * sinphi * (cosphi2 - sinphi2) * fac2sun * aux.xsun->operator()(2) *
+      (aux.xsun->operator()(0) * sinla - aux.xsun->operator()(1) * cosla) /
+      rsun2;
+  double demon =
+      l1 * sinphi * (cosphi2 - sinphi2) * fac2mon * aux.xmon->operator()(2) *
+      (aux.xmon->operator()(0) * sinla - aux.xmon->operator()(1) * cosla) /
+      rmon2;
 
   double de = 3e0 * (desun + demon);
   double dn = 3e0 * (dnsun + dnmon);
 
-  const double xcorsta_[]={-de * sinla - dn * sinphi * cosla,
-                   de * cosla - dn * sinphi * sinla, dn * cosphi};
-  Eigen::Matrix<double,3,1> xcorsta(xcorsta_);
+  const double xcorsta_[] = {-de * sinla - dn * sinphi * cosla,
+                             de * cosla - dn * sinphi * sinla, dn * cosphi};
+  Eigen::Matrix<double, 3, 1> xcorsta(xcorsta_);
 
   // Compute the station corrections for the semi-diurnal band.
   l1 = l1sd;
   const double costwola = cosla * cosla - sinla * sinla;
   const double sintwola = 2e0 * cosla * sinla;
-  const double xsun_x2 = std::pow(xsun(0), 2);
-  const double xsun_y2 = std::pow(xsun(1), 2);
-  const double xmon_x2 = std::pow(xmon(0), 2);
-  const double xmon_y2 = std::pow(xmon(1), 2);
+  const double xsun_x2 = std::pow(aux.xsun->operator()(0), 2);
+  const double xsun_y2 = std::pow(aux.xsun->operator()(1), 2);
+  const double xmon_x2 = std::pow(aux.xmon->operator()(0), 2);
+  const double xmon_y2 = std::pow(aux.xmon->operator()(1), 2);
 
-  dnsun =
-      -l1 / 2e0 * sinphi * cosphi * fac2sun *
-      ((xsun_x2 - xsun_y2) * costwola + 2e0 * xsun(0) * xsun(1) * sintwola) /
-      rsun2;
+  dnsun = -l1 / 2e0 * sinphi * cosphi * fac2sun *
+          ((xsun_x2 - xsun_y2) * costwola +
+           2e0 * aux.xsun->operator()(0) * aux.xsun->operator()(1) * sintwola) /
+          rsun2;
 
-  dnmon =
-      -l1 / 2e0 * sinphi * cosphi * fac2mon *
-      ((xmon_x2 - xmon_y2) * costwola + 2e0 * xmon(0) * xmon(1) * sintwola) /
-      rmon2;
+  dnmon = -l1 / 2e0 * sinphi * cosphi * fac2mon *
+          ((xmon_x2 - xmon_y2) * costwola +
+           2e0 * aux.xmon->operator()(0) * aux.xmon->operator()(1) * sintwola) /
+          rmon2;
 
-  desun =
-      -l1 / 2e0 * sinphi2 * cosphi * fac2sun *
-      ((xsun_x2 - xsun_y2) * sintwola - 2e0 * xsun(0) * xsun(1) * costwola) /
-      rsun2;
+  desun = -l1 / 2e0 * sinphi2 * cosphi * fac2sun *
+          ((xsun_x2 - xsun_y2) * sintwola -
+           2e0 * aux.xsun->operator()(0) * aux.xsun->operator()(1) * costwola) /
+          rsun2;
 
-  demon =
-      -l1 / 2e0 * sinphi2 * cosphi * fac2mon *
-      ((xmon_x2 - xmon_y2) * sintwola - 2e0 * xmon(0) * xmon(1) * costwola) /
-      rmon2;
+  demon = -l1 / 2e0 * sinphi2 * cosphi * fac2mon *
+          ((xmon_x2 - xmon_y2) * sintwola -
+           2e0 * aux.xmon->operator()(0) * aux.xmon->operator()(1) * costwola) /
+          rmon2;
 
   de = 3e0 * (desun + demon);
   dn = 3e0 * (dnsun + dnmon);
@@ -247,42 +256,25 @@ Eigen::Matrix<double, 3, 1> st1l1(const Eigen::Matrix<double, 3, 1> &xsun,
 
 /// @details This function gives the out-of-phase corrections induced by
 ///          mantle anelasticity in the semi-diurnal band.
+///
 ///          This function is a translation/wrapper for the fortran ST1ISEM
 ///          subroutine, found here :
 ///          http://maia.usno.navy.mil/conv2010/software.html
 ///
-/// @param[in]  xsta    Geocentric position of the IGS station (Note 1)
-/// @param[in]  xsun    Geocentric position of the Sun (Note 2)
-/// @param[in]  xmon    Geocentric position of the Moon (Note 2)
-/// @param[in]  fac2sun Degree 2 TGP factor for the Sun (Note 3)
-/// @param[in]  fac2mon Degree 2 TGP factor for the Moon (Note 3)
+/// @param[in] aux An instance of type TideAux, containing information for the
+///            site and "planets" (xsta in ECEF [m]), xsun in ECEF [m] and
+///            xmon ECEF [m]), as well as the fac2sun and fac2mon (degree 2
+///            TGP factor for the Sun and Moon respectively)
 /// @return xcorsta Out of phase station corrections for semi-diurnal band
 ///
-/// @note
-///     -# The IGS station is in ITRF co-rotating frame. All coordinates are
-///        expressed in meters, as arrays, i.e. [x,y,z].
-///     -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
-///        coordinates are expressed in meters, as arrays, i.e. [x,y,z].
-///     -# The expressions are computed in the main program. TGP is the tide
-///        generated potential. The units are inverse meters.
-///     -# Status: Class 1
-///     -# This fucnction is part of the package dehanttideinel, see
-///        ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
+/// @note This fucnction is part of the package dehanttideinel, see
+///       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
 ///
 /// @version 31.07.2009
-///
-/// @cite iers2010,
-///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
-///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477
-Eigen::Matrix<double, 3, 1> st1isem(const Eigen::Matrix<double, 3, 1> &xsun,
-                                    const Eigen::Matrix<double, 3, 1> &xmon,
-                                    const TideAux &aux) noexcept {
+Eigen::Matrix<double, 3, 1> st1isem(const TideAux &aux) noexcept {
 
   constexpr const double dhi = -0.0022e0;
   constexpr const double dli = -0.0007e0;
-
-  // Compute the normalized position vector of the IGS station.
-  // const double rsta = aux.rsta;
 
   const double sinphi = aux.sinphi;
   const double cosphi = aux.cosphi;
@@ -299,81 +291,82 @@ Eigen::Matrix<double, 3, 1> st1isem(const Eigen::Matrix<double, 3, 1> &xsun,
 
   // (minor modification) compute some helpfull intermediate quantities,
   // to reduce the following computation lines.
-  const double xs0m1 = xsun(0) * xsun(0) - xsun(1) * xsun(1);
-  const double xm0m1 = xmon(0) * xmon(0) - xmon(1) * xmon(1);
+  const double xs0m1 = aux.xsun->operator()(0) * aux.xsun->operator()(0) -
+                       aux.xsun->operator()(1) * aux.xsun->operator()(1);
+  const double xm0m1 = aux.xmon->operator()(0) * aux.xmon->operator()(0) -
+                       aux.xmon->operator()(1) * aux.xmon->operator()(1);
   const double fac2sun = aux.fac2sun;
   const double fac2mon = aux.fac2mon;
 
   const double drsun =
       -3e0 / 4e0 * dhi * cosphi * cosphi * fac2sun *
-      (xs0m1 * sintwola - 2e0 * xsun(0) * xsun(1) * costwola) / rsun2;
+      (xs0m1 * sintwola -
+       2e0 * aux.xsun->operator()(0) * aux.xsun->operator()(1) * costwola) /
+      rsun2;
 
   const double drmon =
       -3e0 / 4e0 * dhi * cosphi * cosphi * fac2mon *
-      (xm0m1 * sintwola - 2e0 * xmon(0) * xmon(1) * costwola) / rmon2;
+      (xm0m1 * sintwola -
+       2e0 * aux.xmon->operator()(0) * aux.xmon->operator()(1) * costwola) /
+      rmon2;
 
   const double dnsun =
       3e0 / 2e0 * dli * sinphi * cosphi * fac2sun *
-      (xs0m1 * sintwola - 2e0 * xsun(0) * xsun(1) * costwola) / rsun2;
+      (xs0m1 * sintwola -
+       2e0 * aux.xsun->operator()(0) * aux.xsun->operator()(1) * costwola) /
+      rsun2;
 
   const double dnmon =
       3e0 / 2e0 * dli * sinphi * cosphi * fac2mon *
-      (xm0m1 * sintwola - 2e0 * xmon(0) * xmon(1) * costwola) / rmon2;
+      (xm0m1 * sintwola -
+       2e0 * aux.xmon->operator()(0) * aux.xmon->operator()(1) * costwola) /
+      rmon2;
 
   const double desun =
       -3e0 / 2e0 * dli * cosphi * fac2sun *
-      (xs0m1 * costwola + 2e0 * xsun(0) * xsun(1) * sintwola) / rsun2;
+      (xs0m1 * costwola +
+       2e0 * aux.xsun->operator()(0) * aux.xsun->operator()(1) * sintwola) /
+      rsun2;
 
   const double demon =
       -3e0 / 2e0 * dli * cosphi * fac2mon *
-      (xm0m1 * costwola + 2e0 * xmon(0) * xmon(1) * sintwola) / rmon2;
+      (xm0m1 * costwola +
+       2e0 * aux.xmon->operator()(0) * aux.xmon->operator()(1) * sintwola) /
+      rmon2;
 
   const double dr = drsun + drmon;
   const double dn = dnsun + dnmon;
   const double de = desun + demon;
 
   // Compute the corrections for the station.
-  const double _data[] = {dr * cosla * cosphi - de * sinla - dn * sinphi * cosla,
-           dr * sinla * cosphi + de * cosla - dn * sinphi * sinla,
-           dr * sinphi + dn * cosphi};
-  return Eigen::Matrix<double,3,1>(_data);
+  const double _data[] = {
+      dr * cosla * cosphi - de * sinla - dn * sinphi * cosla,
+      dr * sinla * cosphi + de * cosla - dn * sinphi * sinla,
+      dr * sinphi + dn * cosphi};
+  return Eigen::Matrix<double, 3, 1>(_data);
 
   // Finished
 }
 
 /// @details This function gives the out-of-phase corrections induced by
 ///          mantle anelasticity in the diurnal band.
+///
 ///          This function is a translation/wrapper for the fortran ST1IDIU
 ///          subroutine, found here :
 ///          http://maia.usno.navy.mil/conv2010/software.html
 ///
-/// @param[in]  xsta    Geocentric position of the station (Note 1)
-/// @param[in]  xsun    Geocentric position of the Sun (Note 2)
-/// @param[in]  xmon    Geocentric position of the Moon (Note 2)
-/// @param[in]  fac2sun Degree 2 TGP factor for the Sun (Note 3)
-/// @param[in]  fac2mon Degree 2 TGP factor for the Moon (Note 3)
+/// @param[in] aux An instance of type TideAux, containing information for the
+///            site and "planets" (xsta in ECEF [m]), xsun in ECEF [m] and
+///            xmon ECEF [m]), as well as the fac2sun and fac2mon (degree 2
+///            TGP factor for the Sun and Moon respectively)
 /// @return xcorsta Out of phase station corrections for diurnal band
-///                     (3d vector)
+///            (3d vector)
 ///
-/// @note
-///   -# The (IGS) station is in ITRF co-rotating frame. All coordinates are
-///      expressed in meters, as arrays, i.e. [x,y,z].
-///   -# The position is in Earth Centered Earth Fixed (ECEF) frame.  All
-///      coordinates are expressed in meters, as arrays, i.e. [x,y,z].
-///   -# The expressions are computed in the main program. TGP is the tide
-///      generated potential. The units are inverse meters.
-///   -# Status: Class 1
-///   -# This fucnction is part of the package dehanttideinel, see
-///      ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
+/// @note This fucnction is part of the package dehanttideinel, see
+///       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
 ///
 /// @version 31.07.2009
-///
-/// @cite iers2010,
-///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
-///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477
-Eigen::Matrix<double, 3, 1> st1idiu(const Eigen::Matrix<double, 3, 1> &xsun,
-                                    const Eigen::Matrix<double, 3, 1> &xmon,
-                                    const TideAux &aux) noexcept {
+Eigen::Matrix<double, 3, 1> st1idiu(const TideAux &aux) noexcept {
   constexpr const double dhi = -0.0025e0;
   constexpr const double dli = -0.0007e0;
 
@@ -393,33 +386,49 @@ Eigen::Matrix<double, 3, 1> st1idiu(const Eigen::Matrix<double, 3, 1> &xsun,
   const double fac2sun = aux.fac2sun;
   const double fac2mon = aux.fac2mon;
 
-  const double drsun = -3e0 * dhi * sinphi * cosphi * fac2sun * xsun.z() *
-                       (xsun(0) * sinla - xsun(1) * cosla) / rsun2;
+  const double drsun =
+      -3e0 * dhi * sinphi * cosphi * fac2sun * aux.xsun->operator()(2) *
+      (aux.xsun->operator()(0) * sinla - aux.xsun->operator()(1) * cosla) /
+      rsun2;
+  //printf("drsun: %.9f %.9f %.9f %.9f %.9f\n", sinphi, cosphi, fac2sun, sinla, cosla);
+  //printf("drsun: %.9f %.9f %.9f\n", aux.xsun->operator()(0), aux.xsun->operator()(1), aux.xsun->operator()(2));
+  //printf("drsun: %.9f\n", drsun);
 
-  const double drmon = -3e0 * dhi * sinphi * cosphi * fac2mon * xmon.z() *
-                       (xmon(0) * sinla - xmon(1) * cosla) / rmon2;
+  const double drmon =
+      -3e0 * dhi * sinphi * cosphi * fac2mon * aux.xmon->operator()(2) *
+      (aux.xmon->operator()(0) * sinla - aux.xmon->operator()(1) * cosla) /
+      rmon2;
+  //printf("drmon: %.9f\n", drmon);
 
-  const double dnsun = -3e0 * dli * cos2phi * fac2sun * xsun.z() *
-                       (xsun(0) * sinla - xsun(1) * cosla) / rsun2;
+  const double dnsun =
+      -3e0 * dli * cos2phi * fac2sun * aux.xsun->operator()(2) *
+      (aux.xsun->operator()(0) * sinla - aux.xsun->operator()(1) * cosla) /
+      rsun2;
 
-  const double dnmon = -3e0 * dli * cos2phi * fac2mon * xmon.z() *
-                       (xmon(0) * sinla - xmon(1) * cosla) / rmon2;
+  const double dnmon =
+      -3e0 * dli * cos2phi * fac2mon * aux.xmon->operator()(2) *
+      (aux.xmon->operator()(0) * sinla - aux.xmon->operator()(1) * cosla) /
+      rmon2;
 
-  const double desun = -3e0 * dli * sinphi * fac2sun * xsun.z() *
-                       (xsun(0) * cosla + xsun(1) * sinla) / rsun2;
+  const double desun =
+      -3e0 * dli * sinphi * fac2sun * aux.xsun->operator()(2) *
+      (aux.xsun->operator()(0) * cosla + aux.xsun->operator()(1) * sinla) /
+      rsun2;
 
-  const double demon = -3e0 * dli * sinphi * fac2mon * xmon.z() *
-                       (xmon(0) * cosla + xmon(1) * sinla) / rmon2;
+  const double demon =
+      -3e0 * dli * sinphi * fac2mon * aux.xmon->operator()(2) *
+      (aux.xmon->operator()(0) * cosla + aux.xmon->operator()(1) * sinla) /
+      rmon2;
 
   const double dr = drsun + drmon;
   const double dn = dnsun + dnmon;
   const double de = desun + demon;
 
   // Compute the corrections for the station.
-  const double _data[]={dr * cosla * cosphi - de * sinla - dn * sinphi * cosla,
-                  dr * sinla * cosphi + de * cosla - dn * sinphi * sinla,
-                  dr * sinphi + dn * cosphi};
-  return Eigen::Matrix<double,3,1>(_data);
+  return Eigen::Matrix<double, 3, 1>(
+      dr * cosla * cosphi - de * sinla - dn * sinphi * cosla,
+      dr * sinla * cosphi + de * cosla - dn * sinphi * sinla,
+      dr * sinphi + dn * cosphi);
 
   // Finished
 }
@@ -430,30 +439,21 @@ Eigen::Matrix<double, 3, 1> st1idiu(const Eigen::Matrix<double, 3, 1> &xsun,
 ///          subroutine, found here at
 ///          http://maia.usno.navy.mil/conv2010/software.html
 ///
-/// @param[in]  xsta    Geocentric position of the IGS station (Note 1)
-/// @param[in]  fhr     Fractional hours in the day (Note 2)
-/// @param[in]  t       Centuries since J2000
+/// @param[in] aux An instance of type TideAux, containing information for the
+///            site and "planets" (xsta in ECEF [m]), xsun in ECEF [m] and
+///            xmon ECEF [m]), as well as the fac2sun and fac2mon (degree 2
+///            TGP factor for the Sun and Moon respectively)
+/// @param[in] angles An instance of type Step2Angles where all relevant
+///            angles/variables to be used are store, for the passed in
+///            datetime
 /// @return xcorsta In phase and out of phase station corrections
-///                     for diurnal band (Note 4)
+///            for diurnal band
 ///
-/// @note
-///    -# The IGS station is in ITRF co-rotating frame. All coordinates are
-///       expressed in meters, as arrays, i.e. [x,y,z].
-///    -# The fractional hours in the day is computed as the hour + minutes/60.0
-///       + sec/3600.0.  The unit is expressed in Universal Time (UT).
-///    -# ----
-///    -# All coordinates are expressed in meters.
-///    -# Status: Class 1
-///    -# This fucnction is part of the package dehanttideinel, see
+/// @note This fucnction is part of the package dehanttideinel, see
 ///       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
 ///
 /// @version 20.10.2010
-///
-/// @cite iers2010,
-///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
-///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
-Eigen::Matrix<double, 3, 1> step2diu(const Eigen::Matrix<double, 3, 1> &xsta,
-                                     const Step2Angles &angles,
+Eigen::Matrix<double, 3, 1> step2diu(const Step2Angles &angles,
                                      const TideAux &aux) noexcept {
 
   // Compute the phase angles in degrees.
@@ -469,9 +469,10 @@ Eigen::Matrix<double, 3, 1> step2diu(const Eigen::Matrix<double, 3, 1> &xsta,
   const double cosphi = aux.cosphi;
   const double cosla = aux.cosla;
   const double sinla = aux.sinla;
-  const double zla = std::atan2(xsta.y(), xsta.x());
+  const double zla =
+      std::atan2(aux.xsta->operator()(1), aux.xsta->operator()(0));
 
-  Eigen::Matrix<double,3,1> xcorsta = Eigen::Matrix<double,3,1>::Zero();
+  Eigen::Matrix<double, 3, 1> xcorsta = Eigen::Matrix<double, 3, 1>::Zero();
 
   double thetaf, dr, dn, de;
   const double f1 = 2e0 * sinphi * cosphi;
@@ -504,28 +505,25 @@ Eigen::Matrix<double, 3, 1> step2diu(const Eigen::Matrix<double, 3, 1> &xsta,
 
 /// @details This function gives the in-phase and out-of-phase corrections
 ///          induced by mantle anelasticity in the long period band.
+///
 ///          This function is a translation/wrapper for the fortran STEP2LON
 ///          subroutine, found here :
 ///          http://maia.usno.navy.mil/conv2010/software.html
 ///
-/// @param[in]  xsta    Geocentric position of the IGS station (Note 1)
-/// @param[in]  t       Centuries since J2000
+/// @param[in] aux An instance of type TideAux, containing information for the
+///            site and "planets" (xsta in ECEF [m]), xsun in ECEF [m] and
+///            xmon ECEF [m]), as well as the fac2sun and fac2mon (degree 2
+///            TGP factor for the Sun and Moon respectively)
+/// @param[in] angles An instance of type Step2Angles where all relevant
+///            angles/variables to be used are store, for the passed in
+///            datetime
 /// @param[out] xcorsta In phase and out of phase station corrections
-///                     for diurnal band (Note 2)
+///            for diurnal band
 ///
-/// @note
-///    -# The IGS station is in ITRF co-rotating frame. All coordinates are
-///       expressed in meters, as arrays, i.e. [x,y,z].
-///    -# All coordinates are expressed in meters.
-///    -# Status: Class 1
-///    -# This fucnction is part of the package dehanttideinel, see
+/// @note This fucnction is part of the package dehanttideinel, see
 ///       ftp://maia.usno.navy.mil/conv2010/convupdt/chapter7/dehanttideinel/
 ///
 /// @version 20.10.2010
-///
-/// @cite iers2010,
-///       Mathews, P. M., Dehant, V., and Gipson, J. M., 1997, "Tidal station
-///       displacements," J. Geophys. Res., 102(B9), pp. 20,469-20,477,
 Eigen::Matrix<double, 3, 1> step2lon(const Step2Angles &angles,
                                      const TideAux &aux) noexcept {
 
@@ -552,7 +550,7 @@ Eigen::Matrix<double, 3, 1> step2lon(const Step2Angles &angles,
   const double sinla = aux.sinla;
 
   // double dr_tot = 0e0, dn_tot = 0e0;
-  Eigen::Matrix<double,3,1> xcorsta = Eigen::Matrix<double,3,1>::Zero();
+  Eigen::Matrix<double, 3, 1> xcorsta = Eigen::Matrix<double, 3, 1>::Zero();
 
   double thetaf, dr, dn, de;
   const double f1 = (3e0 * sinphi * sinphi - 1e0) / 2e0;
@@ -602,7 +600,7 @@ Eigen::Matrix<double, 3, 1> step2lon(const Step2Angles &angles,
 /// @param[in]  xsta   Geocentric position of the station (Note 1)
 /// @param[in]  xsun   Geocentric position of the Sun (Note 2)
 /// @param[in]  xmon   Geocentric position of the Moon (Note 2)
-/// @param[in]  t      Datetime in TT     
+/// @param[in]  t      Datetime in TT
 /// @return dxtide Displacement vector (Note 3)
 /// @return            Always 0.
 ///
@@ -642,127 +640,121 @@ Eigen::Matrix<double, 3, 1> step2lon(const Step2Angles &angles,
 ///     Ries, J. C., Eanes, R. J., Shum, C. K. and Watkins, M. M., 1992,
 ///     ''Progress in the Determination of the Gravitational Coefficient
 ///     of the Earth," Geophys. Res. Lett., 19(6), pp. 529-531
-Eigen::Matrix<double, 3, 1> iers2010::dehanttideinel_impl(
-    const Eigen::Matrix<double, 3, 1> &xsta,
+int iers2010::dehanttideinel_impl(
+    double julian_centuries_tt, double fhr_ut,
     const Eigen::Matrix<double, 3, 1> &xsun,
     const Eigen::Matrix<double, 3, 1> &xmon,
-    double julian_centuries_tt, double fhr_ut) noexcept {
+    const std::vector<Eigen::Matrix<double, 3, 1>> &xsta_vec,
+    std::vector<Eigen::Matrix<double, 3, 1>> &xcor_vec) noexcept {
+
+  // clear result vector and allocate
+  if (xcor_vec.capacity() < xsta_vec.size())
+    xcor_vec.reserve(xsta_vec.size());
+  xcor_vec.clear();
+
   // nominal second degree and third degree love numbers and shida numbers
   constexpr const double h20 = 0.6078e0;
   constexpr const double l20 = 0.0847e0;
   constexpr const double h3 = 0.292e0;
   constexpr const double l3 = 0.015e0;
 
-  // scalar product of station vector with sun/moon vector
-  TideAux aux(xsta, xsun, xmon, 0e0, 0e0);
-  const double rmon = aux.rmon;
-  const double rsta = aux.rsta;
-  const double rsun = aux.rsun;
-  const double scm = xsta.dot(xmon);
-  const double scs = xsta.dot(xsun);
-  const double scsun = scs / rsta / rsun;
-  const double scmon = scm / rsta / rmon;
+  // compute angles/variables dependent (only) on datetime (used in Step 2
+  // corrections)
+  const Step2Angles angles(julian_centuries_tt, fhr_ut);
 
-  // computation of new h2 and l2 (Equation 2, Chapter 7)
-  const double cosphi = aux.cosphi;
-  const double h2 = h20 - 0.0006e0 * (1e0 - 3e0 / 2e0 * cosphi * cosphi);
-  const double l2 = l20 + 0.0002e0 * (1e0 - 3e0 / 2e0 * cosphi * cosphi);
+  for (const auto &xsta : xsta_vec) {
 
-  // P2 term (Equation 5, Chapter 7)
-  const double p2sun = 3e0 * (h2 / 2e0 - l2) * scsun * scsun - h2 / 2e0;
-  const double p2mon = 3e0 * (h2 / 2e0 - l2) * scmon * scmon - h2 / 2e0;
+    // scalar product of station vector with sun/moon vector
+    TideAux aux(xsta, xsun, xmon);
+    const double rmon = aux.rmon;
+    const double rsta = aux.rsta;
+    const double rsun = aux.rsun;
+    const double scm = xsta.dot(xmon);
+    const double scs = xsta.dot(xsun);
+    const double scsun = scs / rsta / rsun;
+    const double scmon = scm / rsta / rmon;
 
-  // P3 term (Equation 6, Chapter 7)
-  const double p3sun = 5e0 / 2e0 * (h3 - 3e0 * l3) * std::pow(scsun, 3) +
-                       3e0 / 2e0 * (l3 - h3) * scsun;
-  const double p3mon = 5e0 / 2e0 * (h3 - 3e0 * l3) * std::pow(scmon, 3) +
-                       3e0 / 2e0 * (l3 - h3) * scmon;
+    // computation of new h2 and l2 (Equation 2, Chapter 7)
+    const double cosphi = aux.cosphi;
+    const double h2 = h20 - 0.0006e0 * (1e0 - 3e0 / 2e0 * cosphi * cosphi);
+    const double l2 = l20 + 0.0002e0 * (1e0 - 3e0 / 2e0 * cosphi * cosphi);
 
-  // term in direction of sun/moon vector
-  const double x2sun = 3e0 * l2 * scsun;
-  const double x2mon = 3e0 * l2 * scmon;
-  const double x3sun = 3e0 * l3 / 2e0 * (5e0 * scsun * scsun - 1e0);
-  const double x3mon = 3e0 * l3 / 2e0 * (5e0 * scmon * scmon - 1e0);
+    // P2 term (Equation 5, Chapter 7)
+    const double p2sun = 3e0 * (h2 / 2e0 - l2) * scsun * scsun - h2 / 2e0;
+    const double p2mon = 3e0 * (h2 / 2e0 - l2) * scmon * scmon - h2 / 2e0;
 
-  // factors for sun/moon using iau current best estimates (see references)
-  const double mass_ratio_sun = 332946.0482e0;
-  const double mass_ratio_moon = 0.0123000371e0;
-  const double re = /*6378136.6e0*/ iers2010::Re;
-  const double fac2sun = mass_ratio_sun * re * std::pow(re / rsun, 3);
-  const double fac2mon = mass_ratio_moon * re * std::pow(re / rmon, 3);
-  const double fac3sun = fac2sun * (re / rsun);
-  const double fac3mon = fac2mon * (re / rmon);
+    // P3 term (Equation 6, Chapter 7)
+    const double p3sun = 5e0 / 2e0 * (h3 - 3e0 * l3) * std::pow(scsun, 3) +
+                         3e0 / 2e0 * (l3 - h3) * scsun;
+    const double p3mon = 5e0 / 2e0 * (h3 - 3e0 * l3) * std::pow(scmon, 3) +
+                         3e0 / 2e0 * (l3 - h3) * scmon;
 
-  // total displacement
-  // for (int i = 0; i < 3; i++) {
-  //  dxtide[i] = fac2sun * (x2sun * xsun[i] / rsun + p2sun * xsta[i] / rsta) +
-  //              fac2mon * (x2mon * xmon[i] / rmon + p2mon * xsta[i] / rsta) +
-  //              fac3sun * (x3sun * xsun[i] / rsun + p3sun * xsta[i] / rsta) +
-  //              fac3mon * (x3mon * xmon[i] / rmon + p3mon * xsta[i] / rsta);
-  //}
-  Eigen::Matrix<double, 3, 1> dxtide =
-      fac2sun * (x2sun * xsun / rsun + p2sun * xsta / rsta) +
-      fac2mon * (x2mon * xmon / rmon + p2mon * xsta / rsta) +
-      fac3sun * (x3sun * xsun / rsun + p3sun * xsta / rsta) +
-      fac3mon * (x3mon * xmon / rmon + p3mon * xsta / rsta);
-  aux.fac2mon = fac2mon;
-  aux.fac2sun = fac2sun;
+    // term in direction of sun/moon vector
+    const double x2sun = 3e0 * l2 * scsun;
+    const double x2mon = 3e0 * l2 * scmon;
+    const double x3sun = 3e0 * l3 / 2e0 * (5e0 * scsun * scsun - 1e0);
+    const double x3mon = 3e0 * l3 / 2e0 * (5e0 * scmon * scmon - 1e0);
 
-  // corrections for the out-of-phase part of love numbers (part h_2^(0)i
-  // and l_2^(0)i )
-  // --------------------------------------------------------------------
+    // total displacement
+    const double fac3sun = aux.fac2sun * (iers2010::Re / rsun);
+    const double fac3mon = aux.fac2mon * (iers2010::Re / rmon);
+    Eigen::Matrix<double, 3, 1> dxtide =
+        aux.fac2sun * (x2sun * xsun / rsun + p2sun * xsta / rsta) +
+        aux.fac2mon * (x2mon * xmon / rmon + p2mon * xsta / rsta) +
+        fac3sun * (x3sun * xsun / rsun + p3sun * xsta / rsta) +
+        fac3mon * (x3mon * xmon / rmon + p3mon * xsta / rsta);
+    //printf("dxtide initial: %12.9f%12.9f%12.9f\n", dxtide(0), dxtide(1), dxtide(2));
 
-  // first, for the diurnal band
-  dxtide += st1idiu(xsun, xmon, aux);
-  //printf("step1a: %.12f %.12f %.12f\n", dxtide(0), dxtide(1), dxtide(2));
+    // corrections for the out-of-phase part of love numbers (part h_2^(0)i
+    // and l_2^(0)i )
 
-  // second, for the semi-diurnal band
-  dxtide += st1isem(xsun, xmon, aux);
-  //printf("step1b: %.12f %.12f %.12f\n", dxtide(0), dxtide(1), dxtide(2));
+    // first, for the diurnal band
+    //Eigen::Matrix<double,3,1> dxtide_tmp = st1idiu(aux);
+    //printf("step1 diu corr: %12.9f%12.9f%12.9f\n", dxtide_tmp(0), dxtide_tmp(1), dxtide_tmp(2));
+    dxtide += st1idiu(aux);
+    // second, for the semi-diurnal band
+    //dxtide_tmp = st1isem(aux);
+    //printf("step1 sem corr: %12.9f%12.9f%12.9f\n", dxtide_tmp(0), dxtide_tmp(1), dxtide_tmp(2));
+    dxtide += st1isem(aux);
+    // corrections for the latitude dependence of love numbers (part l^(1) )
+    //dxtide_tmp = st1l1(aux);
+    //printf("step1  li corr: %12.9f%12.9f%12.9f\n", dxtide_tmp(0), dxtide_tmp(1), dxtide_tmp(2));
+    dxtide += st1l1(aux);
 
-  // corrections for the latitude dependence of love numbers (part l^(1) )
-  dxtide += st1l1(xsun, xmon, aux);
-  //printf("step1c: %.12f %.12f %.12f\n", dxtide(0), dxtide(1), dxtide(2));
+    // CONSIDER CORRECTIONS FOR STEP 2
+    // -------------------------------------------------------------------------
 
-  // CONSIDER CORRECTIONS FOR STEP 2
-  // -------------------------------------------------------------------------
+    //  second, we can call the subroutine step2diu, for the diurnal band
+    //+ corrections, (in-phase and out-of-phase frequency dependence):
+    //dxtide_tmp = step2diu(angles, aux);
+    //printf("step2 diu corr: %12.9f%12.9f%12.9f\n", dxtide_tmp(0), dxtide_tmp(1), dxtide_tmp(2));
+    dxtide += step2diu(angles, aux);
 
-  // corrections for the diurnal band:
-  // first, we need to know the date converted in julian centuries
-  // UTC to TT time
-  //double fhr = epoch.sec().to_fractional_seconds();
-  //fhr /= 3600e0;
-  //int dat = dso::dat(epoch.mjd());
-  //epoch.add_seconds(dso::milliseconds(dat * 1e3) + dso::milliseconds(32184));
-  //double t = (epoch.as_mjd() + dso::mjd0_jd - dso::j2000_jd) / 36525e0;
-  Step2Angles angles(julian_centuries_tt, fhr_ut);
+    //  corrections for the long-period band,
+    //+ (in-phase and out-of-phase frequency dependence):
+    //dxtide_tmp = step2lon(angles, aux);
+    //printf("step2 lon corr: %12.9f%12.9f%12.9f\n", dxtide_tmp(0), dxtide_tmp(1), dxtide_tmp(2));
+    dxtide += step2lon(angles, aux);
 
-  //  second, we can call the subroutine step2diu, for the diurnal band
-  //+ corrections, (in-phase and out-of-phase frequency dependence):
-  dxtide += step2diu(xsta, angles, aux);
-  //printf("step2a: %.12f %.12f %.12f\n", dxtide(0), dxtide(1), dxtide(2));
+    // CONSIDER CORRECTIONS FOR STEP 3
+    // --------------------------------------------------------------------------
 
-  //  corrections for the long-period band,
-  //+ (in-phase and out-of-phase frequency dependence):
-  dxtide += step2lon(angles, aux);
-  //printf("step2b: %.12f %.12f %.12f\n", dxtide(0), dxtide(1), dxtide(2));
+    // uncorrect for the permanent tide
+    /*
+     * double sinphi = xsta[2]/rsta;
+     * double cosphi = sqrt( xsta[0]*xsta[0]+xsta[1]*xsta[1] ) / rsta;
+     * double cosla  = xsta[0]/cosphi/rsta;
+     * double sinla  = xsta[1]/cosphi/rsta;
+     * double dr     =
+     * -sqrt(5e0/4e0/PI)*h2*0.31460e0*(3e0/2e0*sinphi*sinphi-0.5e0); double dn =
+     * -sqrt(5e0/4e0/PI)*l2*0.31460e0*3e0*cosphi*sinphi; dxtide[0]    +=
+     * -dr*cosla*cosphi+dn*cosla*sinphi; dxtide[1]    +=
+     * -dr*sinla*cosphi+dn*sinla*sinphi; dxtide[2]    += -dr*sinphi -dn*cosphi;
+     */
 
-  // CONSIDER CORRECTIONS FOR STEP 3
-  // --------------------------------------------------------------------------
-
-  // uncorrect for the permanent tide
-  /*
-   * double sinphi = xsta[2]/rsta;
-   * double cosphi = sqrt( xsta[0]*xsta[0]+xsta[1]*xsta[1] ) / rsta;
-   * double cosla  = xsta[0]/cosphi/rsta;
-   * double sinla  = xsta[1]/cosphi/rsta;
-   * double dr     =
-   * -sqrt(5e0/4e0/PI)*h2*0.31460e0*(3e0/2e0*sinphi*sinphi-0.5e0); double dn =
-   * -sqrt(5e0/4e0/PI)*l2*0.31460e0*3e0*cosphi*sinphi; dxtide[0]    +=
-   * -dr*cosla*cosphi+dn*cosla*sinphi; dxtide[1]    +=
-   * -dr*sinla*cosphi+dn*sinla*sinphi; dxtide[2]    += -dr*sinphi -dn*cosphi;
-   */
+    xcor_vec.push_back(dxtide);
+  }
 
   // Finished.
-  return dxtide;
+  return 0;
 }

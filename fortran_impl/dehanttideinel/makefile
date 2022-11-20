@@ -56,19 +56,23 @@ IERS_OBS = CAL2JD.o \
            ZERO_VEC8.o \
 	   DEHANTTIDEINEL.o
 
-EXE = makecc_test_cases.out
+EXE1 = makecc_test_cases.out
+EXE2 = check.out
 
 #-----------------------------------------------------------------------
 
-default: $(IERS_LIB) $(EXE)
+default: $(IERS_LIB) $(EXE1) $(EXE2)
 
 # Make and install the library.
 
 $(IERS_LIB): $(IERS_OBS)
 	ar ru $(IERS_LIB) $?
 
-$(EXE): $(IERS_OBS) MAIN.F
+$(EXE1): $(IERS_OBS) MAIN.F
 	$(FC) -o $@ MAIN.F $(IERS_OBS)
+
+$(EXE2): $(IERS_OBS) provided_test_cases.f
+	$(FC) -o $@ provided_test_cases.f $(IERS_OBS)
 
 # Clean up.
 
