@@ -160,7 +160,7 @@ in the `test` directory, with names `test-[function name].out`.
 | pmsdnut2 | Use [test_pmsdnut2.f](fortran_impl/test_pmsdnut2.f) to compute results using the original FORTRAN implementation. Copy to [test_pmsdnut2.cpp](test/test_pmsdnut2.cpp)| Dispcrepancies < 1e-6 [μas] [^pmsdnut2]|
 | utlibr | Use [test_utlibr.f](fortran_impl/test_utlibr.f) to compute results using the original FORTRAN implementation. Copy to [test_utlibr.cpp](test/test_utlibr.cpp)| Dispcrepancies [^utlibr] <ul><li> < 1e-7 [μas] for dut1 and</li><li> < 1e-5 [μas/day] for dlod</li></ul> |
 | arg2  | Use [test_arg2.f](fortran_impl/test_arg2.f) to compute results using the original FORTRAN implementation. Copy to [test_arg2.cpp](test/test_arg2.cpp)| Dispcrepancies < 1e-10 radians |
-| oeop::cnmtx | x | Not explicitelly tested; however, `ortho_eop` uses this function, hence kind-of-tested ... |
+| oeop::cnmtx | Use [make_test_cnmtx](fortran_impl/make_test_cnmtx.f) and copy output to [test_cnmtx_random.cpp](test/test_cnmtx_random.cpp) | Note that the function is used within `ortho_eop`. Results agree to better than 1e-12 [-] |
 | ortho_eop  | Use [test_orthoeop.f](fortran_impl/test_orthoeop.f) to compute results using the original FORTRAN implementation. Copy to [test_orthoeop.cpp](test/test_orthoeop.cpp)| Dispcrepancies < 1e-12 [μas] |
 | dehanttideinel | Use [dehanttideinel/MAIN.F](fortran_impl/dehanttideinel/MAIN.F) to compute results using the original FORTRAN implementation. Copy to [test_dehanttideinel.cpp](test/test_dehanttideinel.cpp); see [readme](fortran_impl/dehanttideinel/readme.md) in the folder | Dispcrepancies < 1e-12 [m]. Note that this routine is altered quite heavily, towards computing displacements for a number of sites, at the same instant in time. |
 

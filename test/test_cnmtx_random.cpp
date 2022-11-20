@@ -5,7 +5,7 @@ constexpr double PRECISION = 1e-12;
 
 int main() {
   printf("Testing CNMTX results vs Fortran\n"); 
-  printf("Precision for artials = %.15e [-]\n", PRECISION);
+  printf("Precision for partials = %.15e [-]\n", PRECISION);
 
   double h[12];
 
