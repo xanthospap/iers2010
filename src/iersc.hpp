@@ -39,9 +39,11 @@ constexpr const double DJM0 = 2'400'000.5e0;
 constexpr const double DJM00 = 51'544.5e0;
 
 /// @brief Equatorial radius of the Earth [m].
+/// @see Table 1.1: IERS numerical standards, IERS 2010
 constexpr const double Re = 6'378'136.6e0;
 
 /// @brief Geocentric gravitational constant [m^3 / s ^2)]
+/// @see Table 1.1: IERS numerical standards, IERS 2010
 constexpr const double GMe = 3.986004418e14;
 
 /// @brief Astronomical unit [m]
@@ -65,6 +67,10 @@ constexpr const double LG = 6.9692901341e-10;
 /// @brief Speed of light [m/sec]
 /// @see Table 1.1: IERS numerical standards, IERS 2010
 constexpr const double C = 299792458e0;
+
+/// @brief Heliocentric gravitational constant in [m^2/s^2]
+/// @see Table 1.1: IERS numerical standards, IERS 2010
+constexpr const double GMSun = 1.32712442099e20;
 
 /// @brief Normalize angle into the range 0 <= a < 2pi.
 /// @param[in] angle Angle in radians
