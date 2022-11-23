@@ -1,7 +1,7 @@
 #include "tropo.hpp"
 #include <algorithm>
 #include <cstring>
-#if defined(__GNUC__) && (__GNUC__ > 7)
+#if defined(__GNUC__) && (__GNUC__ >= 8)
 #  include <charconv>
 #else
 #  include <cstdlib>
@@ -24,13 +24,13 @@ dso::vmf3_details::SiteVMF3GRRecord::SiteVMF3GRRecord(
 int dso::vmf3_details::parse_v3gr_line(
     const char *line, dso::vmf3_details::SiteVMF3GRRecord &rec) noexcept {
   // copy site name
-#if defined(__GNUC__) && (__GNUC__ > 7)
+#if defined(__GNUC__) && (__GNUC__ >= 8)
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wstringop-truncation"
-#endif
   std::strncpy(rec.site, line, 10);
-#if defined(__GNUC__) && (__GNUC__ > 7)
 #  pragma GCC diagnostic pop
+#else
+  std::strncpy(rec.site, line, 10);
 #endif
   {
     // probably there are some extra trailing whitespace characters ...
@@ -39,7 +39,7 @@ int dso::vmf3_details::parse_v3gr_line(
       rec.site[i--] = '\0';
   }
 
-#if defined(__GNUC__) && (__GNUC__ <= 7)
+#if defined(__GNUC__) && (__GNUC__ < 8)
   // for this version we are using errno to signal errors in string to double
   // conversions. Clear it
   errno = 0;
@@ -47,10 +47,10 @@ int dso::vmf3_details::parse_v3gr_line(
 
   double nums[12];
   const auto sz = std::strlen(line);
-#if defined(__GNUC__) && (__GNUC__ > 7)
+#if defined(__GNUC__) && (__GNUC__ >= 8)
   const char *end = line + sz;
 #else
-  char *end = line + sz;
+  char *end;
 #endif
   const char *start = line + 10;
   int error = 0;
@@ -58,7 +58,7 @@ int dso::vmf3_details::parse_v3gr_line(
   // resolve numeric values
   for (int i = 0; i < 12; i++) {
     // note that <charconv> is only available after gcc 7.7
-#if defined(__GNUC__) && (__GNUC__ > 7)
+#if defined(__GNUC__) && (__GNUC__ >= 8)
     const auto res = std::from_chars(start, end, nums[i]);
     error += (end == start) + (res.ec != std::errc{});
 #else
@@ -72,7 +72,7 @@ int dso::vmf3_details::parse_v3gr_line(
               "[ERROR] Failed parsing numeric value nr %d from line \"%s\" "
               "(traceback: %s)\n",
               i + 1, line, __func__);
-#if defined(__GNUC__) && (__GNUC__ <= 7)
+#if defined(__GNUC__) && (__GNUC__ < 8)
       // for this version we are using errno to signal errors in string to
       // double conversions. Clear it
       errno = 0;
@@ -80,7 +80,7 @@ int dso::vmf3_details::parse_v3gr_line(
     }
 #endif
 
-#if defined(__GNUC__) && (__GNUC__ > 7)
+#if defined(__GNUC__) && (__GNUC__ >= 8)
     start = res.ptr;
 #else
     start = end;
