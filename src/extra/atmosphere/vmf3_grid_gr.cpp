@@ -24,10 +24,14 @@ dso::vmf3_details::SiteVMF3GRRecord::SiteVMF3GRRecord(
 int dso::vmf3_details::parse_v3gr_line(
     const char *line, dso::vmf3_details::SiteVMF3GRRecord &rec) noexcept {
   // copy site name
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#if defined(__GNUC__) && (__GNUC__ > 7)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
   std::strncpy(rec.site, line, 10);
-#pragma GCC diagnostic pop
+#if defined(__GNUC__) && (__GNUC__ > 7)
+#  pragma GCC diagnostic pop
+#endif
   {
     // probably there are some extra trailing whitespace characters ...
     int i = 9;
@@ -54,7 +58,7 @@ int dso::vmf3_details::parse_v3gr_line(
     const auto res = std::from_chars(start, end, nums[i]);
     error += (end == start) + (res.ec != std::errc{});
 #else
-    nums[i] = std::strtod(start, end);
+    nums[i] = std::strtod(start, &end);
     error += (end == start) && (errno == 0);
 #endif
 
