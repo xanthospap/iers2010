@@ -46,8 +46,8 @@ int dso::vmf3_details::parse_v3gr_line(
 #endif
 
   double nums[12];
-  const auto sz = std::strlen(line);
 #if defined(__GNUC__) && (__GNUC__ >= 8)
+  const auto sz = std::strlen(line);
   const char *end = line + sz;
 #else
   char *end;
