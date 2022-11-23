@@ -1,11 +1,16 @@
 #include "tropo.hpp"
 #include <algorithm>
 #include <cstring>
-#include <charconv>
+#if defined(__GNUC__) && (__GNUC__ > 7)
+#  include <charconv>
+#else
+#  include <cstdlib>
+#  include <cerrno>
+#endif 
 #include <stdexcept>
 
-dso::vmf3_details::SiteVMF3GRRecord::SiteVMF3GRRecord(const char *site_name,
-                                    int site_length) noexcept {
+dso::vmf3_details::SiteVMF3GRRecord::SiteVMF3GRRecord(
+    const char *site_name, int site_length) noexcept {
   if (site_name) {
     if (site_length < 0) {
       std::strcpy(site, site_name);
@@ -30,6 +35,12 @@ int dso::vmf3_details::parse_v3gr_line(
       rec.site[i--] = '\0';
   }
 
+#if defined(__GNUC__) && (__GNUC__ <= 7)
+  // for this version we are using errno to signal errors in string to double
+  // conversions. Clear it
+  errno = 0;
+#endif
+
   double nums[12];
   const auto sz = std::strlen(line);
   const char *end = line + sz;
@@ -38,17 +49,34 @@ int dso::vmf3_details::parse_v3gr_line(
 
   // resolve numeric values
   for (int i = 0; i < 12; i++) {
+    // note that <charconv> is only available after gcc 7.7
+#if defined(__GNUC__) && (__GNUC__ > 7)
     const auto res = std::from_chars(start, end, nums[i]);
     error += (end == start) + (res.ec != std::errc{});
+#else
+    nums[i] = std::strtod(start, end);
+    error += (end == start) && (errno == 0);
+#endif
+
 #ifdef DEBUG
     if (error) {
       fprintf(stderr,
               "[ERROR] Failed parsing numeric value nr %d from line \"%s\" "
               "(traceback: %s)\n",
               i + 1, line, __func__);
+#if defined(__GNUC__) && (__GNUC__ <= 7)
+      // for this version we are using errno to signal errors in string to
+      // double conversions. Clear it
+      errno = 0;
+#endif
     }
 #endif
+
+#if defined(__GNUC__) && (__GNUC__ > 7)
     start = res.ptr;
+#else
+    start = end;
+#endif
     while (*start && *start == ' ')
       ++start;
   }
@@ -117,7 +145,7 @@ int dso::SiteVMF3Feed::find_site(const char *site) const noexcept {
 int dso::SiteVMF3Feed::interpolate(
     const char *site, const dso::datetime<dso::nanoseconds> &t,
     dso::vmf3_details::SiteVMF3GRMeteoRecord &imrec) noexcept {
-  
+
   // already in interval
   if (t.as_mjd() >= ct1 && t.as_mjd() <= ct2) {
     int idx = find_site(site);
@@ -132,7 +160,7 @@ int dso::SiteVMF3Feed::interpolate(
   }
 
   // search for interval and then interpolate
-  if (this->feed(t)>0) {
+  if (this->feed(t) > 0) {
     fprintf(stderr,
             "[ERROR] Failed to find suitable interval for interpolation! "
             "mjd=%.9f (traceback: %s)\n",
