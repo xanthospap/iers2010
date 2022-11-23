@@ -24,7 +24,7 @@ dso::vmf3_details::SiteVMF3GRRecord::SiteVMF3GRRecord(
 int dso::vmf3_details::parse_v3gr_line(
     const char *line, dso::vmf3_details::SiteVMF3GRRecord &rec) noexcept {
   // copy site name
-#if defined(__GNUC__) && (__GNUC__ >= 111111111111)
+#if defined(__GNUC__) && (__GNUC__ >= 8)
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wstringop-truncation"
   std::strncpy(rec.site, line, 10);
