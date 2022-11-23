@@ -1,5 +1,9 @@
 language: c++
-dist: bionic
+dist: 
+  - bionic
+  - focal
+  - jammy
+
 compiler:
   - gcc
   - clang
