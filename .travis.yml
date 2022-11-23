@@ -5,12 +5,18 @@ os:
 matrix:
   include: 
     - dist: bionic
+      compiler:
+        - gcc
+        - clang
     - dist: focal
+      compiler:
+        - gcc
+        - clang
     - dist: jammy
+      compiler:
+      - gcc
+      - clang
 
-compiler:
-  - gcc
-  - clang
 
 before_install:
   - sudo apt-get install -y scons
