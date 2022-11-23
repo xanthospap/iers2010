@@ -373,10 +373,15 @@ struct SiteVMF3Records {
   std::array<SiteVMF3GRMeteoRecord, NDIM> meteo_arr;
 
   SiteVMF3Records(const char *site_nm=nullptr) noexcept : meteo_arr{} {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstringop-truncation"
+// for gcc <= 7, the following #pragma fails; disable it
+#if defined(__GNUC__) && (__GNUC__ > 7)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
     if (site_nm) std::strncpy(site, site_nm, 10);
-#pragma GCC diagnostic pop
+#if defined(__GNUC__) && (__GNUC__ > 7)
+#  pragma GCC diagnostic pop
+#endif
   }
 
   int interpolate(const dso::datetime<dso::nanoseconds> &t,
