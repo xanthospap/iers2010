@@ -1,8 +1,12 @@
 language: c++
-dist: 
-  - bionic
-  - focal
-  - jammy
+os:
+  - linux
+
+matrix:
+  include: 
+    - dist: bionic
+    - dist: focal
+    - dist: jammy
 
 compiler:
   - gcc
