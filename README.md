@@ -15,7 +15,7 @@ Table of Contents
 6. [Status of the Library _(or translated routines)_](#library-status)
 7. [Available functions/models **not** part of the IERS 2010 Conventions](#library-extra)
 8. [Test Cases & FORTRAN vs C++ implementations](#test-cases)
-  1. [Test Programs _(optional read)_](#test-programs)
+1. [Test Programs _(optional read)_](#test-programs)
 9. [How to use the library](#how-to)
 10. [Documentation & Library API (TODO)](#dox)
 11. [TODO](#todo)

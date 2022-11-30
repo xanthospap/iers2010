@@ -38,8 +38,6 @@ IERS_OBS_D0 = PMSDNUT2_D0.o \
 all: test_iers \
 	test_iers_d0 \
 	testFundarg \
-	testPmsdnut2 \
-	testPmsdnut2_d0 \
 	testUtlibr \
 	testUtlibr_d0 \
 	testFcnnut \
@@ -58,7 +56,9 @@ all: test_iers \
 	validateFcnnut \
 	makeTestRgZont2 \
 	makeTestCnmtx \
-	makeTestOrthoEop
+	makeTestOrthoEop \
+	makeTestPmsdnut2 \
+	makeTestPmsdnut2_d0
 
 test_iers: MAIN.F $(IERS_OBS)
 	$(FC) -o $@ MAIN.F $(IERS_OBS)
@@ -66,10 +66,10 @@ test_iers_d0: MAIN.F $(IERS_OBS_D0)
 	$(FC) -o $@ MAIN.F $(IERS_OBS_D0)
 testFundarg: test_fundarg.f $(IERS_OBS)
 	$(FC) -o $@ test_fundarg.f $(IERS_OBS)
-testPmsdnut2: test_pmsdnut2.f $(IERS_OBS)
-	$(FC) -o $@ test_pmsdnut2.f $(IERS_OBS)
-testPmsdnut2_d0: test_pmsdnut2.f $(IERS_OBS_D0)
-	$(FC) -o $@ test_pmsdnut2.f $(IERS_OBS_D0)
+makeTestPmsdnut2: make_test_pmsdnut2.f $(IERS_OBS)
+	$(FC) -o $@ make_test_pmsdnut2.f $(IERS_OBS)
+makeTestPmsdnut2_d0: make_test_pmsdnut2.f $(IERS_OBS_D0)
+	$(FC) -o $@ make_test_pmsdnut2.f $(IERS_OBS_D0)
 testUtlibr: test_utlibr.f $(IERS_OBS)
 	$(FC) -o $@ test_utlibr.f $(IERS_OBS)
 testUtlibr_d0: test_utlibr.f $(IERS_OBS_D0)
