@@ -35,5 +35,5 @@ before_script:
   - sudo ldconfig
 
 script:
-  - scons --use-eigen
-  - scons debug=1 --use-eigen
+  - scons eigen=1
+  - scons debug=1 eigen=1
