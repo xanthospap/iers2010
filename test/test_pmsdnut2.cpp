@@ -3,7 +3,7 @@
 
 int main() {
   double x,y;
-  constexpr const double PRECISION = 1e-6;
+  [[maybe_unused]]constexpr const double PRECISION = 1e-6;
 
   // copy output of makeTestPmsdnut2 here ....
 iers2010::pmsdnut2(.38777273437500000000E+05,x,y);
@@ -3007,6 +3007,7 @@ iers2010::pmsdnut2(.47118035156250000000E+05,x,y);
 assert(std::abs(x-(   -0.21857044812792061350E+02))<PRECISION);
 assert(std::abs(y-(    0.24812847810230822532E+01))<PRECISION);
   // ... to here
+  // iers2010::pmsdnut2(.47118589843750000000E+05,x,y);
 
   return 0;
 }

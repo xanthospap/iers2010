@@ -28,6 +28,7 @@ int iers2010::interp::lagint(const double *x, const double *y, int n,
   status += !(k>=npts-1) + !(k<n-npts);
   if (status) return status;
 
+
   for (int m = k + 1 - npts; m <= k + npts; m++) {
     double term = y[m];
     for (int j = k + 1 - npts; j < m; j++)
