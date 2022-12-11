@@ -1,5 +1,6 @@
 #include "iers2010.hpp"
 
+namespace {
 //  Coefficients of the quasi semidiurnal terms in dUT1, dLOD
 //+ Source: IERS Conventions (2010), Table 5.1b
 constexpr const struct {
@@ -18,8 +19,12 @@ constexpr const struct {
          {{2, 0, 0, 0, 0, -1}, 0.4985982e0, 0.06e0, -0.04e0, -0.4e0, -0.8e0}};
 constexpr const int M{sizeof(x) / sizeof(x[0])};
 static_assert(M == 11, "Invalid size for quasi semidiurnal terms in utlibr.");
+}// unnamed namespace
 
-int iers2010::utlibr(double rmjd, double &dut1, double &dlod) noexcept {
+// fargs should have been computed using the compute_fargs function (size=6)
+int iers2010::utils::utlibr([[maybe_unused]] double fmjd,
+                            const double *const fargs, double &dut1,
+                            double &dlod) noexcept {
   /*
    *         ----------------------------
    *           D E F I N I T I O N S
@@ -41,52 +46,31 @@ int iers2010::utlibr(double rmjd, double &dut1, double &dlod) noexcept {
    *           angle = Sum(i=1:6) iarg(i,j)*arg(i), for j=1,11
    */
 
-  // Set constants
-  // Modified Julian date of J2000
-  constexpr double RMJD0(51544.5e0);
-  constexpr double PI(3.141592653589793238462643e0);
-  constexpr double TWOPI(6.283185307179586476925287e0);
-  // Radians to seconds
-  constexpr double RAD2SEC(86400e0 / TWOPI);
-
-  //  Compute the harmonic model of dUT1 and dLOD
-  //+ dUT1 and dLOD are set to zero first
-  dut1 = dlod = .0e0;
-
-  //  Evaluate the vector of the fundamental arguments
-  //+ arg(1:6) = [ GMST+pi, el, elp, f, d, om ] at t = rmjd
-
-  // Convert the input epoch to Julian centuries of TDB since J2000
-  const double t = (rmjd - RMJD0) / 36525e0;
-
-  // Compute GMST + pi
-  const double gmst =
-      std::fmod(67310.54841e0 + t * ((8640184.812866e0 + 3155760000e0) +
-                                     t * (0.093104e0 + t * (-0.0000062e0))),
-                86400e0);
-
-  // Fundamental arguments
-  double fargs[6];
-  iers2010::fundarg(t, fargs + 1);
-  fargs[0] = gmst / RAD2SEC + PI;
-  fargs[0] = std::fmod(fargs[0], TWOPI);
-
-  double angle, sina, cosa;
+  // Compute the harmonic model of dUT1 and dLOD
+  // dUT1 and dLOD are set to zero first
+  dut1 = dlod = 0e0;
+  
   for (int j = 0; j < M; j++) {
-    //  For the j-th term of the trigonometric expansion, compute the angular
-    //+ argument angle of sine and cosine functions as a linear integer
-    //+ combination of the 6 fundamental arguments
-    angle = 0e0;
+    // For the j-th term of the trigonometric expansion, compute the angular
+    // argument angle of sine and cosine functions as a linear integer
+    // combination of the 6 fundamental arguments
+    double angle = 0e0;
     for (int i = 0; i < 6; i++)
       angle += (double(x[j].iarg[i]) * fargs[i]);
-    angle = std::fmod(angle, TWOPI);
+    angle = std::fmod(angle, iers2010::D2PI);
     // Compute contribution from the j-th term of expansion to dUT1 and dLOD
-    sina = std::sin(angle);
-    cosa = std::cos(angle);
-    dut1 += x[j].dut1s * sina + x[j].dut1c * cosa;
-    dlod += x[j].dlods * sina + x[j].dlodc * cosa;
+    const double sa = std::sin(angle);
+    const double ca = std::cos(angle);
+    dut1 += x[j].dut1s * sa + x[j].dut1c * ca;
+    dlod += x[j].dlods * sa + x[j].dlodc * ca;
   }
 
   // Finished.
   return 0;
+}
+
+int iers2010::utlibr(double fmjd, double &dut1, double &dlod) noexcept {
+  double fargs[6];
+  iers2010::utils::eop_fundarg(fmjd,fargs);
+  return utils::utlibr(fmjd,fargs,dut1,dlod);
 }

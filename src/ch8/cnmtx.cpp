@@ -4,6 +4,7 @@
 #include <cassert>
 #endif
 
+namespace {
 // tidal potential model for 71 diurnal and semidiurnal lines
 constexpr struct {
   int nj, mj;
@@ -91,6 +92,7 @@ int nlines = sizeof(x) / sizeof(x[0]);
 constexpr double sp[2][6] = {
     {0.0298e0, 0.1408e0, +0.0805e0, 0.6002e0, +0.3025e0, 0.1517e0},
     {0.0200e0, 0.0905e0, +0.0638e0, 0.3476e0, +0.1645e0, 0.0923e0}};
+}// unnamed namespace
 
 /// @details  The purpose of the subroutine is to compute the time dependent
 ///           part of second degree diurnal and semidiurnal tidal potential
@@ -118,7 +120,6 @@ constexpr double sp[2][6] = {
 ///      "Diurnal and Semidiurnal Variations in the Earth's Rotation
 ///      Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
 int iers2010::oeop::cnmtx(double dmjd, double *h) noexcept {
-  constexpr const double TWOPI(iers2010::D2PI);
 
   constexpr double dt = 2e0;
   constexpr int nmax = 2;
@@ -136,9 +137,9 @@ int iers2010::oeop::cnmtx(double dmjd, double *h) noexcept {
     for (int j = 0; j < nlines; j++) {
       nn = x[j].nj;
       mm = x[j].mj;
-      pinm = ((double)((nn + mm) % 2)) * TWOPI / 4e0;
-      alpha = std::fmod(x[j].phase - pinm, TWOPI) +
-              std::fmod(x[j].freq * dt60, TWOPI);
+      pinm = ((double)((nn + mm) % 2)) * dso::D2PI / 4e0;
+      alpha = std::fmod(x[j].phase - pinm, dso::D2PI) +
+              std::fmod(x[j].freq * dt60, dso::D2PI);
       anm[nn - 2][mm][k + 1] += x[j].hs * std::cos(alpha);
       bnm[nn - 2][mm][k + 1] -= x[j].hs * std::sin(alpha);
     }

@@ -13,6 +13,12 @@
 #endif
 
 namespace iers2010 {
+
+namespace utils {
+// used within pmsdnut2 and utlibr
+int eop_fundarg(double tt_fmjd, double *fargs) noexcept;
+} // iers2010::utils
+
 /// @brief Secular pole coordinates, aka x_s, y_s
 /// The coordinates of that secular pole designated (Xs, Ys), given in
 /// milliarcseconds. IERS2010, Chapter 7.1.4, Equation (21)
@@ -188,6 +194,10 @@ int fundarg(const dso::datetime<S> &t, double *fargs) noexcept {
 /// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
 ///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
 int pmsdnut2(double mjd, double &dx, double &dy) noexcept;
+namespace utils {
+int pmsdnut2(double fmjd, const double *const fargs, double &dx,
+             double &dy) noexcept;
+} // namespace utils
 
 /// @brief Compute the diurnal lunisolar effect on polar motion.
 #if __cplusplus >= 202002L
@@ -225,6 +235,10 @@ int pmsdnut2(const dso::datetime<S> &t, double &dx, double &dy) noexcept {
 /// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
 ///       Technical Note No. 36, BKG (2010); Chapter 5.5.3.3
 int utlibr(double mjd, double &dut1, double &dlod) noexcept;
+namespace utils {
+int utlibr(double mjd, const double *const fargs, double &dut1,
+           double &dlod) noexcept;
+}// iers2010::utils
 
 /// @brief Compute the subdiurnal librations in UT1.
 #if __cplusplus >= 202002L

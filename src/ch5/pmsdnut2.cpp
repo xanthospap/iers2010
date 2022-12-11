@@ -40,9 +40,11 @@ constexpr const struct {
 
 constexpr const int M{sizeof(x) / sizeof(x[0])};
 static_assert(M == 25, "Invalid quasi diurnal terms in pmsdnut2.");
-} // namespace
+}// unnamed namespace
 
-int iers2010::pmsdnut2(double fmjd, double &dx, double &dy) noexcept {
+// fargs should have been computed using the compute_fargs function (size=6)
+int iers2010::utils::pmsdnut2(double fmjd, const double *const fargs,
+                                   double &dx, double &dy) noexcept {
   /*
    *         ----------------------------
    *           D E F I N I T I O N S
@@ -79,37 +81,6 @@ int iers2010::pmsdnut2(double fmjd, double &dx, double &dy) noexcept {
   // Coordinates of the pole are set to zero first
   dx = dy = 0e0;
 
-  // Convert the input epoch to Julian centuries of TDB since J2000
-  double it;
-  double ft = std::modf(fmjd, &it);
-  const double t = (it - dso::j2000_mjd) / dso::days_in_julian_cent +
-                   ft / dso::days_in_julian_cent;
-
-  // Evaluate the vector of the fundamental arguments
-  // farg = [ GMST+pi, el, elp, f, d, om ] at t = fmjd
-
-  // 1. Compute GMST ('')
-  const double gmst =
-      std::fmod(67310.54841e0 + t * ((8640184.812866e0 + 3155760000e0) +
-                                     t * (0.093104e0 + t * (-0.0000062e0))),
-                86400e0);
-
-  // 24hours are 24*60*60 seconds, hence gmst is ...
-  // gmst * 2π / 86400 [radians]
-
-  // 2. Fundamental arguments -> GMST+pi, l, lp, f, d, om
-  double fargs[6];
-  fargs[0] = std::fmod(gmst * dso::D2PI / 86400e0 + dso::DPI, dso::D2PI);
-  iers2010::fundarg(t, fargs + 1);
-  /*const double fargs[] = {
-    std::fmod(gmst * dso::D2PI / 86400e0 + dso::DPI, dso::D2PI),
-    iers2010::sofa::fal03(t),
-    iers2010::sofa::falp03(t),
-    iers2010::sofa::faf03(t),
-    iers2010::sofa::fad03(t),
-    iers2010::sofa::faom03(t),
-  };*/
-
   const int jstart = (iband == 1) ? 15 : 0;
   for (int j = jstart; j < M; j++) {
     // For the j-th term of the trigonometric expansion, compute the angular
@@ -120,7 +91,7 @@ int iers2010::pmsdnut2(double fmjd, double &dx, double &dy) noexcept {
       angle += x[j].iarg[i] * fargs[i];
     // WRONG ! we must keep negative signs!
     // angle = dso::norm_angle<double, dso::AngleUnit::Radians>(angle);
-    angle = std::fmod(angle, dso::D2PI);
+    angle = std::fmod(angle, iers2010::D2PI);
     // Compute contribution from the j-th term to the polar motion coordinates
     const double sa = std::sin(angle);
     const double ca = std::cos(angle);
@@ -129,13 +100,23 @@ int iers2010::pmsdnut2(double fmjd, double &dx, double &dy) noexcept {
   }
 
   if (iband != 1) {
-    // Add the secular term of the model
+    // split date ...
+    double it;
+    double ft = std::modf(fmjd, &it);
+    // ... and convert to fractional years
     const double fyears = (it - dso::j2000_mjd) / dso::days_in_julian_year +
                           ft / dso::days_in_julian_year;
+    // Add the secular term of the model
     dx += xrate * fyears;
     dy += yrate * fyears;
   }
 
   //  Finished
   return 0;
+}
+
+int iers2010::pmsdnut2(double fmjd, double &dx, double &dy) noexcept {
+  double fargs[6];
+  iers2010::utils::eop_fundarg(fmjd,fargs);
+  return utils::pmsdnut2(fmjd,fargs,dx,dy);
 }
