@@ -3,6 +3,8 @@
 #include "iersc.hpp"
 #endif
 
+namespace {
+
 // Zonal Earth tide model
 // Number of terms in the zonal Earth tide model
 constexpr int nzont = 62;
@@ -150,6 +152,7 @@ constexpr double tide[nzont][6] = {
     // DATA ( ( TIDE(I,J), I=1,6 ), J = 61,62 ) /
     {7.8998e0, 0.0000e0, 0.1460e0, 0.0000e0, -0.1232e0, 0.0000e0},
     {-1617.2681e0, 0.0000e0, -14.9471e0, 0.0000e0, 12.6153e0, 0.0000e0}};
+}// unnamed namespace
 
 /// @details This function evaluates the effects of zonal Earth tides on the
 ///          rotation of the Earth.  The model used is a combination of Yoder
@@ -177,9 +180,6 @@ constexpr double tide[nzont][6] = {
 /// @param[out] domega Effect on rotational speed [radians/second]
 /// @return            An integer value always 0.
 ///
-/// @note
-///  -# Status:  Class 3 model
-///
 /// @version 20.12.2011
 ///
 /// @cite iers2010,
@@ -200,19 +200,12 @@ constexpr double tide[nzont][6] = {
 ///
 ///     Petit, G. and Luzum, B. (eds.), IERS Conventions (2010),
 ///     IERS Technical Note No. 36, BKG (2010)
-int iers2010::rg_zont2(double t, double &dut, double &dlod,
+int iers2010::rg_zont2(double tjc, double &dut, double &dlod,
                        double &domega) noexcept {
-
-  // Set constants
-#ifdef USE_EXTERNAL_CONSTS
-  constexpr double TWOPI(iers2010::D2PI);
-#else
-  constexpr double TWOPI(6.283185307179586476925287e0);
-#endif
 
   // Computation of fundamental arguments
   double fargs[5]; // (l, lp, f, d, om)
-  iers2010::fundarg(t, fargs);
+  iers2010::fundarg(tjc, fargs);
   
   const double l = fargs[0];
   const double lp = fargs[1];
@@ -226,22 +219,22 @@ int iers2010::rg_zont2(double t, double &dut, double &dlod,
   domega = 0e0;
 
   //  Sum zonal tide terms.
-  double arg, dsinarg, dcosarg;
   for (int i = 0; i < nzont; i++) {
     // Formation of multiples of arguments.
-    arg = std::fmod((double)nfund[i][0] * l + (double)nfund[i][1] * lp +
-                        (double)nfund[i][2] * f + (double)nfund[i][3] * d +
-                        (double)nfund[i][4] * om,
-                    TWOPI);
-    while (arg < 0e0)
-      arg += TWOPI;
+    double arg =
+        std::fmod((double)nfund[i][0] * l + (double)nfund[i][1] * lp +
+                      (double)nfund[i][2] * f + (double)nfund[i][3] * d +
+                      (double)nfund[i][4] * om,
+                  iers2010::D2PI);
+    
+    arg += (arg<0e0) ? iers2010::D2PI : 0e0;
 
     // Evaluate zonal tidal terms.
-    dsinarg = std::sin(arg);
-    dcosarg = std::cos(arg);
-    dut += tide[i][0] * dsinarg + tide[i][1] * dcosarg;
-    dlod += tide[i][2] * dcosarg + tide[i][3] * dsinarg;
-    domega += tide[i][4] * dcosarg + tide[i][5] * dsinarg;
+    const double sa = std::sin(arg);
+    const double ca = std::cos(arg);
+    dut += tide[i][0] * sa + tide[i][1] * ca;
+    dlod += tide[i][2] * ca + tide[i][3] * sa;
+    domega += tide[i][4] * ca + tide[i][5] * sa;
   }
 
   // Rescale corrections so that they are in units involving seconds.
