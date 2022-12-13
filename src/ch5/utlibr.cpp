@@ -1,4 +1,5 @@
 #include "iers2010.hpp"
+#include <datetime/dtcalendar.hpp>
 
 namespace {
 //  Coefficients of the quasi semidiurnal terms in dUT1, dLOD
@@ -22,7 +23,7 @@ static_assert(M == 11, "Invalid size for quasi semidiurnal terms in utlibr.");
 }// unnamed namespace
 
 // fargs should have been computed using the compute_fargs function (size=6)
-int iers2010::utils::utlibr([[maybe_unused]] double fmjd,
+int iers2010::utils::utlibr([[maybe_unused]] const dso::TwoPartDate &mjd,
                             const double *const fargs, double &dut1,
                             double &dlod) noexcept {
   /*
@@ -69,8 +70,8 @@ int iers2010::utils::utlibr([[maybe_unused]] double fmjd,
   return 0;
 }
 
-int iers2010::utlibr(double fmjd, double &dut1, double &dlod) noexcept {
+int iers2010::utlibr(const dso::TwoPartDate &mjd, double &dut1, double &dlod) noexcept {
   double fargs[6];
-  iers2010::utils::eop_fundarg(fmjd,fargs);
-  return utils::utlibr(fmjd,fargs,dut1,dlod);
+  iers2010::utils::eop_fundarg(mjd,fargs);
+  return utils::utlibr(mjd,fargs,dut1,dlod);
 }

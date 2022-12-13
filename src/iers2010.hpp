@@ -16,8 +16,10 @@ namespace iers2010 {
 
 namespace utils {
 // used within pmsdnut2 and utlibr
-int eop_fundarg(double tt_fmjd, double *fargs) noexcept;
+int eop_fundarg(const dso::TwoPartDate &tt_fmjd, double *fargs) noexcept;
 } // iers2010::utils
+
+dso::TwoPartDate split_fmjd(double fmjd) noexcept;
 
 /// @brief Secular pole coordinates, aka x_s, y_s
 /// The coordinates of that secular pole designated (Xs, Ys), given in
@@ -193,21 +195,22 @@ int fundarg(const dso::datetime<S> &t, double *fargs) noexcept {
 ///
 /// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
 ///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
-int pmsdnut2(double mjd, double &dx, double &dy) noexcept;
+int pmsdnut2(const dso::TwoPartDate &mjd, double &dx, double &dy) noexcept;
 namespace utils {
-int pmsdnut2(double fmjd, const double *const fargs, double &dx,
+int pmsdnut2(const dso::TwoPartDate &mjd, const double *const fargs, double &dx,
              double &dy) noexcept;
 } // namespace utils
+int pmsdnut2(double fmjd, double &dx, double &dy) noexcept;
 
 /// @brief Compute the diurnal lunisolar effect on polar motion.
-#if __cplusplus >= 202002L
-template <gconcepts::is_sec_dt S>
-#else
-template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
-#endif
-int pmsdnut2(const dso::datetime<S> &t, double &dx, double &dy) noexcept {
-  return pmsdnut2(t.as_mjd(), dx, dy);
-}
+//#if __cplusplus >= 202002L
+//template <gconcepts::is_sec_dt S>
+//#else
+//template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+//#endif
+//int pmsdnut2(const dso::datetime<S> &t, double &dx, double &dy) noexcept {
+//  return pmsdnut2(t.as_mjd(), dx, dy);
+//}
 
 /// @brief Compute the subdiurnal librations in UT1.
 /// @details This function evaluates the model of subdiurnal libration
@@ -234,21 +237,22 @@ int pmsdnut2(const dso::datetime<S> &t, double &dx, double &dy) noexcept {
 ///
 /// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
 ///       Technical Note No. 36, BKG (2010); Chapter 5.5.3.3
-int utlibr(double mjd, double &dut1, double &dlod) noexcept;
+int utlibr(const dso::TwoPartDate &mjd, double &dut1, double &dlod) noexcept;
 namespace utils {
-int utlibr(double mjd, const double *const fargs, double &dut1,
+int utlibr(const dso::TwoPartDate &mjd, const double *const fargs, double &dut1,
            double &dlod) noexcept;
 }// iers2010::utils
+int utlibr(double fmjd, double &dut1, double &dlod) noexcept;
 
 /// @brief Compute the subdiurnal librations in UT1.
-#if __cplusplus >= 202002L
-template <gconcepts::is_sec_dt S>
-#else
-template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
-#endif
-int utlibr(const dso::datetime<S> &t, double &dut1, double &dlod) noexcept {
-  return utlibr(t.as_mjd(), dut1, dlod);
-}
+//#if __cplusplus >= 202002L
+//template <gconcepts::is_sec_dt S>
+//#else
+//template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+//#endif
+//int utlibr(const dso::datetime<S> &t, double &dut1, double &dlod) noexcept {
+//  return utlibr(t.as_mjd(), dut1, dlod);
+//}
 
 /// @details This subroutine computes the effects of the free core nutation.
 ///          Please note that the table is updated each year (see Note 4).
@@ -463,19 +467,21 @@ dehanttideinel(const double *, const double *, const double *,
 /// @cite Ray, R. D., Steinberg, D. J., Chao, B. F., and Cartwright, D. E.,
 ///       "Diurnal and Semidiurnal Variations in the Earth's Rotation
 ///        Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
-int ortho_eop(double dmjd, double &dx, double &dy, double &dut1);
+int ortho_eop(const dso::TwoPartDate &mjd, double &dx, double &dy,
+              double &dut1) noexcept;
+int ortho_eop(double fmjd, double &dx, double &dy, double &dut1) noexcept;
 
 /// @brief Compute the diurnal and semi-diurnal variations in Earth Orientation
 /// Parameters from ocean tides.
-#if __cplusplus >= 202002L
-template <gconcepts::is_sec_dt S>
-#else
-template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
-#endif
-int ortho_eop(const dso::datetime<S> &t, double &dx, double &dy,
-              double &dut1) noexcept {
-  return ortho_eop(t.as_mjd(), dx, dy, dut1);
-}
+//#if __cplusplus >= 202002L
+//template <gconcepts::is_sec_dt S>
+//#else
+//template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+//#endif
+//int ortho_eop(const dso::datetime<S> &t, double &dx, double &dy,
+//              double &dut1) noexcept {
+//  return ortho_eop(t.as_mjd(), dx, dy, dut1);
+//}
 
 /// @brief Evaluate the effects of zonal Earth tides on the rotation of the
 ///        Earth.
@@ -532,18 +538,19 @@ int gpt2(double dmjd, double dlat, double dlon, double hell, int it, double &p,
 namespace oeop {
 /// @brief Compute the time dependent part of second degree diurnal and
 /// semidiurnal tidal potential.
-int cnmtx(double dmjd, double *h) noexcept;
+int cnmtx(const dso::TwoPartDate &mjd, double *h) noexcept;
+int cnmtx(double fmjd, double *h) noexcept;
 
 /// @brief Compute the time dependent part of second degree diurnal and
 /// semidiurnal tidal potential.
-#if __cplusplus >= 202002L
-template <gconcepts::is_sec_dt S>
-#else
-template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
-#endif
-int cnmtx(const dso::datetime<S> &t, double *h) noexcept {
-  return cnmtx(t.as_mjd(), h);
-}
+//#if __cplusplus >= 202002L
+//template <gconcepts::is_sec_dt S>
+//#else
+//template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
+//#endif
+//int cnmtx(const dso::datetime<S> &t, double *h) noexcept {
+//  return cnmtx(t.as_mjd(), h);
+//}
 
 } // namespace oeop
 

@@ -1,6 +1,7 @@
 #include "datetime/dtfund.hpp"
 #include "geodesy/units.hpp"
 #include "iers2010.hpp"
+#include <datetime/dtcalendar.hpp>
 
 namespace {
 // Coefficients of the long and quasi diurnal periodic terms in polar motion
@@ -43,8 +44,9 @@ static_assert(M == 25, "Invalid quasi diurnal terms in pmsdnut2.");
 }// unnamed namespace
 
 // fargs should have been computed using the compute_fargs function (size=6)
-int iers2010::utils::pmsdnut2(double fmjd, const double *const fargs,
-                                   double &dx, double &dy) noexcept {
+int iers2010::utils::pmsdnut2(const dso::TwoPartDate &mjd,
+                              const double *const fargs, double &dx,
+                              double &dy) noexcept {
   /*
    *         ----------------------------
    *           D E F I N I T I O N S
@@ -100,12 +102,7 @@ int iers2010::utils::pmsdnut2(double fmjd, const double *const fargs,
   }
 
   if (iband != 1) {
-    // split date ...
-    double it;
-    double ft = std::modf(fmjd, &it);
-    // ... and convert to fractional years
-    const double fyears = (it - dso::j2000_mjd) / dso::days_in_julian_year +
-                          ft / dso::days_in_julian_year;
+    const double fyears = mjd.as_fractional_years();
     // Add the secular term of the model
     dx += xrate * fyears;
     dy += yrate * fyears;
@@ -115,8 +112,8 @@ int iers2010::utils::pmsdnut2(double fmjd, const double *const fargs,
   return 0;
 }
 
-int iers2010::pmsdnut2(double fmjd, double &dx, double &dy) noexcept {
+int iers2010::pmsdnut2(const dso::TwoPartDate &mjd, double &dx, double &dy) noexcept {
   double fargs[6];
-  iers2010::utils::eop_fundarg(fmjd,fargs);
-  return utils::pmsdnut2(fmjd,fargs,dx,dy);
+  iers2010::utils::eop_fundarg(mjd,fargs);
+  return utils::pmsdnut2(mjd,fargs,dx,dy);
 }

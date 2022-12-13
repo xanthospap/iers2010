@@ -1,11 +1,9 @@
 #include "iers2010.hpp"
 
-int iers2010::utils::eop_fundarg(double fmjd, double *fargs) noexcept {
+int iers2010::utils::eop_fundarg(const dso::TwoPartDate &t_tt,
+                                 double *fargs) noexcept {
   // Convert the input epoch to Julian centuries of TDB since J2000
-  double it;
-  double ft = std::modf(fmjd, &it);
-  const double t = (it - dso::j2000_mjd) / dso::days_in_julian_cent +
-                   ft / dso::days_in_julian_cent;
+  const double t = t_tt.jcenturies_sinceJ2000();
 
   // Evaluate the vector of the fundamental arguments
   // farg = [ GMST+pi, el, elp, f, d, om ] at t = fmjd

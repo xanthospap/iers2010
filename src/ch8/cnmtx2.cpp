@@ -129,7 +129,7 @@ constexpr double sp[2][6] = {
 /// Ray,R. D., Steinberg, D. J., Chao, B. F., and Cartwright, D. E.,
 ///      "Diurnal and Semidiurnal Variations in the Earth's Rotation
 ///      Rate Induced by Ocean Tides", 1994, Science, 264, pp. 830-832
-int iers2010::oeop::cnmtx(double dmjd, double *h) noexcept {
+int iers2010::oeop::cnmtx(const dso::TwoPartDate &mjd, double *h) noexcept {
 
   constexpr double dt = 2e0;
   constexpr double d1960 = 37076.5e0;
@@ -143,7 +143,9 @@ int iers2010::oeop::cnmtx(double dmjd, double *h) noexcept {
   for (int k = -1; k < 2; k++) {
     constexpr const int nn = 2;
     constexpr const int mm = 1;
-    dt60 = (dmjd - k * dt) - d1960;
+    // dt60 = (dmjd - k * dt) - d1960;
+    dt60 = mjd._small;
+    dt60 += (mjd._big - k * dt) - d1960;
     anm2[mm - 1][k + 1] = 0e0;
     bnm2[mm - 1][k + 1] = 0e0;
     constexpr const double pinm = ((double)((nn + mm) % 2)) * iers2010::D2PI / 4e0;
@@ -159,7 +161,9 @@ int iers2010::oeop::cnmtx(double dmjd, double *h) noexcept {
   for (int k = -1; k < 2; k++) {
     constexpr const int nn = 2;
     constexpr const int mm = 2;
-    dt60 = (dmjd - k * dt) - d1960;
+    // dt60 = (dmjd - k * dt) - d1960;
+    dt60 = mjd._small;
+    dt60 += (mjd._big - k * dt) - d1960;
     anm2[mm - 1][k + 1] = 0e0;
     bnm2[mm - 1][k + 1] = 0e0;
     constexpr const double pinm = ((double)((nn + mm) % 2)) * iers2010::D2PI / 4e0;
