@@ -262,7 +262,6 @@ int iers2010::hisp::admint(const double *ampin, const double *phin,
         k++;
       }
     }
-  }
 
   // Done going through constituents; there are k of them.
   // Have specified admittance at a number of points. Sort these by frequency

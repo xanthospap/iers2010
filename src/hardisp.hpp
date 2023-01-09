@@ -3,10 +3,33 @@
 
 #include "datetime/dtcalendar.hpp"
 #include <cmath>
+#include <vector>
 
 namespace iers2010 {
 
+constexpr const int NTIN = 11;
+constexpr const int MAX_LINE_SZ = 256;
+
+struct BlqSiteInfo {
+  char site[32] = {'\0'};      ///< site name
+  double amplitudes[NTIN * 3]; ///< amplitudes (meter), radial, west, south
+  double phases[NTIN * 3];     ///< corresponding phase values (degrees)
+
+  int parse_site_name(const char *line) noexcept;
+};// BlqSiteInfo
+
+/// @brief Read a BLQ file and parse site-dependent info (amplittudes and 
+///        phases)
+int parse_blq(const char *blqfn,
+                        std::vector<BlqSiteInfo> &blqInfoVec,
+                        const std::vector<const char *> *sites) noexcept;
+
 namespace hisp {
+
+struct Constituent {
+  dso::DoodsonNumber;
+  double amplitude;
+};// Constituent
 
 // Parameters below set the buffer size for computing the tides recursively
 
