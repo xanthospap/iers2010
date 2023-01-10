@@ -1,6 +1,7 @@
 #include "hardisp.hpp"
 #include "iau.hpp"
 #include "fundarg.hpp"
+#include "cspline.hpp"
 #include <numeric>
 #include <algorithm>
 #ifdef DEBUG
@@ -433,16 +434,20 @@ int iers2010::Hardisp::admint(const dso::BlqSiteInfo &blq) noexcept {
       rf[i] = tmp[k[i]];
     }
   }
+  
   // indexes for spline interpolation based on frequencies
   int nlp = 0;
   int ndi = 0;
   int nsd = 0;
+  for (i=0; i<NTIN; i++) {
+    if (rf[i] < .5e0)
+      ++nlp;
+    else if (rf[i] < 1.5e0)
+      ++ndi;
+    else if (rf[i] < 2.5e0)
+      ++nsd;
+  }
 
-  /*
-   * IF(RF(I).LT.0.5) NLP = NLP + 1
-   * IF(RF(I).LT.1.5.AND.RF(I).GT.0.5) NDI = NDI + 1
-   * IF(RF(I).LT.2.5.AND.RF(I).GT.1.5) NSD = NSD + 1
-   */
   
 
 }
