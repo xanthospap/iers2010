@@ -338,6 +338,7 @@ int iers2010::hisp::admint(const double *ampin, const double *phin,
   }
 
   nout = j - 1;
+  }
 
   // Finished
   return 0;

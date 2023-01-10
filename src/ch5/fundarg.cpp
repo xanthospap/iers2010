@@ -1,11 +1,11 @@
-#include "iers2010.hpp"
+#include "fundarg.hpp"
 
 namespace {
 constexpr const double fTURNAS = 1296000e0;
 constexpr const double fDAS2R = 4.848136811095359935899141e-6;
 }
 
-int iers2010::fundarg(double t, double *fargs) noexcept {
+void iers2010::fundarg(double t, double *fargs) noexcept {
 
   //  Compute the fundamental argument L.
   fargs[0] = std::fmod(485868.249036e0 +
@@ -48,5 +48,5 @@ int iers2010::fundarg(double t, double *fargs) noexcept {
              fDAS2R;
 
   // Finished.
-  return 0;
+  return;
 }

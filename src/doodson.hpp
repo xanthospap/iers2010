@@ -2,9 +2,10 @@
 #define __DOODSON_NUMBER_DEFINES_HPP__
 
 #include <cstring>
-#include <datetime/dtfund.hpp>
+#include <initializer_list>
 #include "geodesy/units.hpp"
-#include "ggdatetime/dtcalendar.hpp"
+#include "datetime/dtcalendar.hpp"
+#include <cassert>
 
 namespace dso {
 
@@ -26,6 +27,16 @@ public:
   explicit DoodsonNumber(const int *ar = nullptr) {
     if (ar)
       std::memcpy(iar, ar, sizeof(int) * 6);
+  }
+
+  constexpr explicit DoodsonNumber(std::initializer_list<int> l) noexcept {
+    assert(l.size() == 6);
+    iar[0] = *(l.begin()+0);
+    iar[1] = *(l.begin()+1);
+    iar[2] = *(l.begin()+2);
+    iar[3] = *(l.begin()+3);
+    iar[4] = *(l.begin()+4);
+    iar[5] = *(l.begin()+5);
   }
 
   /// @brief Transform to a Doodson-number string
@@ -55,12 +66,14 @@ public:
 
   static double *doodson_freq_vars(const dso::TwoPartDate &tt_mjd,
                                    double *args) noexcept;
+  /// @brief Frequency of constituent in [rad/day]
   double frequency(const double *const doodson_freq_vars) const noexcept {
     return (doodson_freq_vars[0] * iar[0] + doodson_freq_vars[1] * iar[1] +
             doodson_freq_vars[2] * iar[2] + doodson_freq_vars[3] * iar[3] +
             doodson_freq_vars[4] * iar[4] + doodson_freq_vars[5] * iar[5]) /
            dso::days_in_julian_cent;
   }
+  /// @brief Frequency of constituent in [rad/day]
   double frequency(const dso::TwoPartDate &tt_mjd) noexcept {
     double fargs[6];
     DoodsonNumber::doodson_freq_vars(tt_mjd, fargs);
@@ -84,9 +97,9 @@ public:
 ///   * [0] τ  : GMST + π - s
 ///   * [1] s  : Moon's mean longitude [rad]
 ///   * [2] h  : Sun's mean longitude [rad]
-///   * [3] p  : Longitude of Moon's mean perigee
-///   * [4] N' : Negative longitude of Moon's mean node
-///   * [5] pl : Longitude of Sun's mean perigee
+///   * [3] p  : Longitude of Moon's mean perigee [rad]
+///   * [4] N' : Negative longitude of Moon's mean node [rad]
+///   * [5] pl : Longitude of Sun's mean perigee [rad]
 inline int fundarg2doodson(const double *const fundarg, double gmst,
                            double *doodson) noexcept {
   doodson[1] = dso::anp(fundarg[2] + fundarg[4]);

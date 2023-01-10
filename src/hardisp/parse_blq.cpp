@@ -102,7 +102,7 @@ int iers2010::parse_blq(const char *blqfn,
       }
       // go to the next non-comment line, and read three consecutive lines
       // these are the phase coefficients (in radial, west, south). NTIN
-      // values per line. Units [deg]
+      // values per line. Units [deg] in file, transformed to [rad]
       for (int k = 0; k < 3; k++) {
         // skip any comment lines
         do {
@@ -116,6 +116,7 @@ int iers2010::parse_blq(const char *blqfn,
           error += (cres.ec != std::errc{});
           cpos = cres.ptr;
         }
+        for (int i=0; i<11; i++) d11[i] = dso::deg2rad(d11[i]);
         std::memcpy(siteinfo.phases + k * NTIN, d11, sizeof(double) * NTIN);
       }
       if (error) {

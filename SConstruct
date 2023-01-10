@@ -104,7 +104,7 @@ env.Alias(target='install', source=env.InstallVersionedLib(
 
 ## Tests ...
 if GetOption('check') is not None and GetOption('check'):
-  tests_sources = glob.glob(r"test/test*.cpp")
+  tests_sources = glob.glob(r"test/*.cpp")
   env.Append(RPATH=root_dir)
   for tsource in tests_sources:
     pth = os.path.dirname(tsource)
