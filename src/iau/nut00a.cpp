@@ -1679,7 +1679,7 @@ void iers2010::sofa::nut00a(double date1, double date2, double &dpsi,
   constexpr double U2R = iers2010::DAS2R / 1e7;
 
   // Interval between fundamental date J2000.0 and given date (JC).
-  const double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   /* LUNI-SOLAR NUTATION */
 

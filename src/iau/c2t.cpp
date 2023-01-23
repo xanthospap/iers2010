@@ -71,7 +71,7 @@ dso::Mat3x3 iers2010::sofa::fw2m(double gamb, double phib, double psi,
 
 double iers2010::sofa::sp00(double date1, double date2) noexcept {
   // Interval between fundamental epoch J2000.0 and current date (JC).
-  double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
   // Approximate s'.
   return -47e-6 * t * iers2010::DAS2R;
 }
@@ -152,7 +152,7 @@ void iers2010::sofa::pr00(double date1, double date2, double &dpsipr,
   constexpr double OBLCOR = -0.02524e0 * iers2010::DAS2R;
 
   // Interval between fundamental epoch J2000.0 and given date (JC)
-  const double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   // Precession rate contributions with respect to IAU 1976/80.
   dpsipr = PRECOR * t;
@@ -183,7 +183,7 @@ void iers2010::sofa::bp00(double date1, double date2, dso::Mat3x3 &rb,
   //     oma, rbw[3][3];
 
   // Interval between fundamental epoch J2000.0 and current date (JC).
-  const double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   // Frame bias.
   double dpsibi, depsbi, dra0;

@@ -5,6 +5,8 @@
 #include "matvec/matvec.hpp"
 #include <cmath>
 #include <cstring>
+#include "datetime/dtfund.hpp"
+#include "geodesy/units.hpp"
 #ifdef USE_EIGEN
 #include "eigen3/Eigen/Eigen"
 #include "eigen3/Eigen/Geometry"
@@ -598,7 +600,7 @@ void bi00(double &dpsibi, double &depsbi, double &dra) noexcept;
 /// the ecliptic and mean equator of date date1+date2.
 inline double obl80(double date1, double date2) noexcept {
   // Interval between fundamental epoch J2000.0 and given date (JC).
-  const double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   // Mean obliquity of date.
   const double eps0 =
@@ -619,7 +621,7 @@ inline double obl80(double date1, double date2) noexcept {
 /// @param[in] date2 (date1)  TT as a 2-part Julian Date.
 /*inline double obl06a(double date1, double date2) noexcept {
   // Interval between fundamental date J2000.0 and given date (JC).
-  const double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
   // Mean obliguity
   const double eps0 =
       (84'381.406e0 +
@@ -643,7 +645,7 @@ inline double obl80(double date1, double date2) noexcept {
 ///         the ecliptic and mean equator of date date1+date2.
 inline double obl06(double date1, double date2) noexcept {
   // Interval between fundamental date J2000.0 and given date (JC).
-  const double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   // Mean obliquity.
   const double eps0 =
@@ -1057,10 +1059,10 @@ inline dso::Mat3x3 pnm00a(double date1, double date2) noexcept {
 ///            the range 0 to 2pi.
 inline double gmst00(double uta, double utb, double tta, double ttb) noexcept {
   // TT Julian centuries since J2000.0.
-  const double t = ((tta - iers2010::DJ00) + ttb) / iers2010::DJC;
+  const double t = ((tta - dso::j2000_jd) + ttb) / dso::days_in_julian_cent;
 
   // Greenwich Mean Sidereal Time, IAU 2000.
-  const double gmst = nang_02pi(
+  const double gmst = dso::anp(
       era00(uta, utb) +
       (0.014506e0 +
        (4612.15739966e0 +
@@ -1090,10 +1092,10 @@ inline double gmst00(double uta, double utb, double tta, double ttb) noexcept {
 ///            the range 0 to 2pi.
 inline double gmst06(double uta, double utb, double tta, double ttb) noexcept {
   // TT Julian centuries since J2000.0.
-  const double t = ((tta - iers2010::DJ00) + ttb) / iers2010::DJC;
+  const double t = ((tta - dso::j2000_jd) + ttb) / dso::days_in_julian_cent;
 
   // Greenwich mean sidereal time, IAU 2006.
-  const double gmst = nang_02pi(
+  const double gmst = dso::anp(
       era00(uta, utb) +
       (0.014506e0 +
        (4612.156534e0 +
@@ -1120,7 +1122,7 @@ inline double ee06a(double tt1, double tt2) noexcept {
   const double gst06a_ = gst06a(0e0, 0e0, tt1, tt2);
   const double gmst06_ = gmst06(0e0, 0e0, tt1, tt2);
   // Equation of the equinoxes.
-  return nang_02pi(gst06a_ - gmst06_);
+  return dso::anp(gst06a_ - gmst06_);
 }
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean anomaly of

@@ -4,9 +4,17 @@
 #include <fstream>
 #include <cassert>
 
-using iers2010::BlqSiteInfo;
+using dso::BlqSiteInfo;
+constexpr const int NTIN = dso::BlqSiteInfo::NTIN;
 
-int BlqSiteInfo::parse_site_name(const char *line) noexcept {
+namespace {
+/// @brief Resolve and copy a site name from a corresponding BLQ line to
+/// the buf buffer. 
+/// Note that we are considering a max length of characters for a site name
+/// of 31 chars
+/// @param[in] buf A max of 32 characters (inluding \0) are copied to 
+///                the buffer, hence its size should be 32
+int parse_site_name(const char *line, char *buf) noexcept {
   // beacuse the site name can contain whitespace characters, start from the
   // end of the line and copy as many charactes are needed but < 32
   const int sz = std::strlen(line);
@@ -18,24 +26,33 @@ int BlqSiteInfo::parse_site_name(const char *line) noexcept {
   while (*start && *start==' ') ++start;
   const int cpchars = std::min(31, (int)(end - start)+1);
   assert(cpchars>=0);
-  std::memcpy(site, start, sizeof(char) * cpchars);
+  // std::memcpy(site, start, sizeof(char) * cpchars);
+  std::memcpy(buf, start, sizeof(char) * cpchars);
+  buf[cpchars] = '\0';
   return cpchars;
 }
 
-namespace {
 bool site_in_vector(const char *line,
                     const std::vector<const char *> *sites) noexcept {
   if (!sites)
     return true;
+  // copy name of site in buf
+  char buf[32];
+  parse_site_name(line, buf);
+  // compare
   auto it =
       std::find_if(sites->begin(), sites->end(), [=](const char *site_name) {
-        return !std::strcmp(line, site_name);
+        return !std::strcmp(buf, site_name);
       });
   return (it != sites->end());
 }
 } // unnamed namespace
 
-int iers2010::parse_blq(const char *blqfn,
+int BlqSiteInfo::parse_site_name(const char *line) noexcept {
+  return ::parse_site_name(line, site);
+}
+
+int dso::parse_blq(const char *blqfn,
                         std::vector<BlqSiteInfo> &blqInfoVec,
                         const std::vector<const char *> *sites) noexcept {
   // clear result vector
@@ -137,8 +154,24 @@ int iers2010::parse_blq(const char *blqfn,
 
   // is everything ok?
   if (!sites) {
-    return blq.eof()?0:1;
+#ifdef DEBUG
+    if (!blq.eof()) {
+      fprintf(stderr,
+              "[ERROR] Should have reached EOF but haven't! Failed parsing BLQ "
+              "file %s (traceback: %s)\n",
+              blqfn, __func__);
+    }
+#endif
+    return blq.eof() ? 0 : 1;
   } else {
-    return !all_sites_collected;
+#ifdef DEBUG
+    if (!all_sites_collected) {
+      fprintf(stderr,
+              "[WRNNG] Should have collected %d site, but collected %d from "
+              "BLQ file %s (traceback: %s)\n",
+              (int)sites->size(), (int)blqInfoVec.size(), blqfn, __func__);
+    }
+#endif
+    return /*!all_sites_collected*/0;
   }
 }

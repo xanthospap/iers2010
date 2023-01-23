@@ -4,7 +4,7 @@
 #include <algorithm>
 
 // extracted from test file NTUA.BLQ
-const iers2010::BlqSiteInfo bdyng{
+const dso::BlqSiteInfo bdyng{
     "DYNG",
     {.00403, .00159, .00094, .00042, .00065, .00043, .00021, .00011, .00023,
      .00010, .00008, .00136, .00032, .00029, .00009, .00039, .00020, .00013,
@@ -21,7 +21,7 @@ const iers2010::BlqSiteInfo bdyng{
      dso::deg2rad(-121.5), dso::deg2rad(-72.2),  dso::deg2rad(38.0),
      dso::deg2rad(44.6),   dso::deg2rad(38.0),   dso::deg2rad(55.4),
      dso::deg2rad(-141.0), dso::deg2rad(-162.5), dso::deg2rad(-174.5)}};
-const iers2010::BlqSiteInfo bzywi{
+const dso::BlqSiteInfo bzywi{
     "ZYWI",
     {.00405, .00143, .00088, .00036, .00168, .00096, .00056, .00011, .00049,
      .00027, .00022, .00149, .00033, .00035, .00009, .00039, .00030, .00013,
@@ -39,7 +39,7 @@ const iers2010::BlqSiteInfo bzywi{
      dso::deg2rad(4.9),    dso::deg2rad(39.5),   dso::deg2rad(63.9),
      dso::deg2rad(-171.0), dso::deg2rad(168.1),  dso::deg2rad(-174.9)}};
 
-bool site_blq_equal(const iers2010::BlqSiteInfo &b1, const iers2010::BlqSiteInfo &b2) {
+bool site_blq_equal(const dso::BlqSiteInfo &b1, const dso::BlqSiteInfo &b2) {
   if (std::strcmp(b1.site, b2.site)) return false;
   for (int i=0; i<11*3; i++) {
     if (b1.amplitudes[i] != b2.amplitudes[i])
@@ -60,10 +60,10 @@ int main(int argc, char *argv[]) {
 
   printf("Testing reading of BLQ file\n");
 
-  std::vector<iers2010::BlqSiteInfo> blqInfoVec;
+  std::vector<dso::BlqSiteInfo> blqInfoVec;
 
   // read all entries off from the BLQ file
-  if (iers2010::parse_blq(argv[1], blqInfoVec, nullptr)) {
+  if (dso::parse_blq(argv[1], blqInfoVec, nullptr)) {
     fprintf(stderr, "Failed parsing BLQ file\n");
     return 1;
   }
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 
   // we should have an entry for DYNG
   auto it = std::find_if(blqInfoVec.begin(), blqInfoVec.end(),
-                         [](const iers2010::BlqSiteInfo &b) {
+                         [](const dso::BlqSiteInfo &b) {
                            return !std::strcmp(b.site, "DYNG");
                          });
   assert( it != blqInfoVec.end());
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
   
   // we should have an entry for ZYWI
  it = std::find_if(blqInfoVec.begin(), blqInfoVec.end(),
-                         [](const iers2010::BlqSiteInfo &b) {
+                         [](const dso::BlqSiteInfo &b) {
                            return !std::strcmp(b.site, "ZYWI");
                          });
   assert( it != blqInfoVec.end());
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
   sites.emplace_back(dyng);
   sites.emplace_back(zywi);
   // read all entries off from the BLQ file
-  if (iers2010::parse_blq(argv[1], blqInfoVec, &sites)) {
+  if (dso::parse_blq(argv[1], blqInfoVec, &sites)) {
     fprintf(stderr, "Failed parsing BLQ file\n");
     return 1;
   }
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 
   // we should have an entry for DYNG
  it = std::find_if(blqInfoVec.begin(), blqInfoVec.end(),
-                         [](const iers2010::BlqSiteInfo &b) {
+                         [](const dso::BlqSiteInfo &b) {
                            return !std::strcmp(b.site, "DYNG");
                          });
   assert( it != blqInfoVec.end());
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
   
   // we should have an entry for ZYWI
  it = std::find_if(blqInfoVec.begin(), blqInfoVec.end(),
-                         [](const iers2010::BlqSiteInfo &b) {
+                         [](const dso::BlqSiteInfo &b) {
                            return !std::strcmp(b.site, "ZYWI");
                          });
   assert( it != blqInfoVec.end());
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
 
   // if we pass in an empty vector, we should get an empty vector back
   sites.clear();
-  if (iers2010::parse_blq(argv[1], blqInfoVec, &sites)) {
+  if (dso::parse_blq(argv[1], blqInfoVec, &sites)) {
     fprintf(stderr, "Failed parsing BLQ file\n");
     return 1;
   }
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
   const char *miss = "NONE";
   sites.emplace_back(dyng);
   sites.emplace_back(miss);
-  if (iers2010::parse_blq(argv[1], blqInfoVec, &sites)) {
+  if (dso::parse_blq(argv[1], blqInfoVec, &sites)) {
     fprintf(stderr, "Failed parsing BLQ file\n");
     return 1;
   }

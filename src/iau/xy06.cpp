@@ -2417,7 +2417,7 @@ void iers2010::sofa::xy06(double date1, double date2, double &x,
                           double &y) noexcept {
 
   // Interval between fundamental date J2000.0 and given date (JC).
-  const double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   // Powers of T.
   double pt[MAXPT + 1];

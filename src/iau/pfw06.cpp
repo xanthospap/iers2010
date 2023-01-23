@@ -3,7 +3,7 @@
 
 void iers2010::sofa::pfw06(double date1, double date2, double &gamb,
                            double &phib, double &psib, double &epsa) noexcept {
-  double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   // P03 bias+precession angles.
   gamb = (-0.052928 +

@@ -65,7 +65,7 @@ double iers2010::sofa::eect00(double date1, double date2) noexcept {
 
   // Interval between fundamental epoch J2000.0 and current date (JC).
   // Time since J2000.0, in Julian centuries
-  const double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   // Fundamental Arguments (from IERS Conventions 2003)
   double fa[] = {// Mean anomaly of the Moon.

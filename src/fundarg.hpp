@@ -39,8 +39,20 @@ namespace iers2010 {
 ///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
 void fundarg(double tjc, double *fargs) noexcept;
 
+/// @brief Compute the derivatives of lunisolar fundamental arguments (w.r.t. 
+/// time t in Julian centuries).
+/// All results are in units of [rad]/[(julian)century]
+void fundarg_derivs(double tjc, double *fargs) noexcept;
+
 inline void fundarg(dso::TwoPartDate &tt_mjd, double *fargs) noexcept {
   return fundarg(tt_mjd.jcenturies_sinceJ2000(), fargs);
+}
+
+/// @brief Compute the derivatives of lunisolar fundamental arguments (w.r.t. 
+/// time t in Julian centuries).
+/// All results are in units of [rad]/[(julian)century]
+inline void fundarg_derivs(dso::TwoPartDate &tt_mjd, double *fargs) noexcept {
+  return fundarg_derivs(tt_mjd.jcenturies_sinceJ2000(), fargs);
 }
 
 }// namespace iers2010

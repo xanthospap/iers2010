@@ -4,7 +4,7 @@
 void iers2010::sofa::nut06a(double date1, double date2, double &dpsi,
                             double &deps) noexcept {
   // Interval between fundamental date J2000.0 and given date (JC).
-  const double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   // Factor correcting for secular variation of J2.
   const double fj2 = -2.7774e-6 * t;

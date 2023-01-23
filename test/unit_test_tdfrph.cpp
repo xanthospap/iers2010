@@ -6,6 +6,7 @@
 // Unit test for TDFRPH
 //
 
+/*
 int main() {
   dso::datetime<dso::nanoseconds> d1(dso::year(2009), dso::month(6),
                                      dso::day_of_month(25),
@@ -16,16 +17,17 @@ int main() {
 
   double phase, freq;
 
-  iers2010::Hardisp h;
+  dso::Hardisp h;
   h(dso::TwoPartDate(d1), dso::TwoPartDate(d1));
   h.tdfrph(dso::DoodsonNumber({2, 0, 0, 0, 0, 0}), phase, freq);
 
-  printf("Frequency: %.15f Phase: %.15f\n", freq/*dso::days_in_julian_cent*/, dso::rad2deg(phase));
+  printf("Frequency: %.15f Phase: %.15f\n", freq, dso::rad2deg(phase));
   
   h(dso::TwoPartDate(d2), dso::TwoPartDate(d2));
   h.tdfrph(dso::DoodsonNumber({2, 0, 0, 0, 0, 0}), phase, freq);
 
-  printf("Frequency: %.15f Phase: %.15f\n", freq/*dso::days_in_julian_cent*/, dso::rad2deg(phase));
+  printf("Frequency: %.15f Phase: %.15f\n", freq, dso::rad2deg(phase));
 
   return 0;
 }
+*/

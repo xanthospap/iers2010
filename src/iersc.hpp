@@ -27,10 +27,10 @@ constexpr double DR2AS = 206'264.8062470963551564734e0;
 constexpr const double DMAS2R = DAS2R / 1e3;
 
 /// @brief Reference epoch (J2000.0), Julian Date
-constexpr const double DJ00 = 2'451'545e0;
+/// constexpr const double DJ00 = 2'451'545e0; dso::j2000_jd
 
 /// @brief Days per Julian century
-constexpr const double DJC = 36'525e0;
+/// constexpr const double DJC = 36'525e0; dso::days_in_julian_cent
 
 /// @brief Julian Date of Modified Julian Date zero
 constexpr const double DJM0 = 2'400'000.5e0;
@@ -49,7 +49,7 @@ constexpr const double GMe = 3.986004418e14;
 /// @brief Astronomical unit [m]
 constexpr const double AU = 1.49597870700e11;
 
-/// @brief Nominal mean Earth’s angular velocity [1/rads]
+/// @brief Nominal mean Earth’s angular velocity [rads/sec]
 /// @note Table 1.2: Parameters of the Geodetic Reference System GRS80
 constexpr const double OmegaEarth = 7.292115e-5;
 

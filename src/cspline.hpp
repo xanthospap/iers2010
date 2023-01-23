@@ -20,6 +20,10 @@ namespace dso {
 ///        array, set index to < 0. Else, the function will find the index by
 ///        searching through the x array
 ///
+///        Note that if n < 4, then we will perform linear interpolation.
+///        Also, if the interpoated x is out of range, we will return the
+///        boundary y values (either y[0] or y[n-1])
+///
 /// Reference: Numerical Recipes, 3rd edition
 ///
 /// @param[in] atx The x-value we want to interpolate at
@@ -34,7 +38,10 @@ namespace dso {
 /// @param[in] y2 Array of size n, containing derivatives of interpolating
 ///              function at given nodes
 /// @param[out] yintrp The interpolated y value at atx
-/// @return Anything other than 0 denotes an error
+/// @return Anything greater than 0 denotes an error. A value of -1 denotes
+///         that no interpolation is performed, but boundary values are 
+///         extrapolated. If -2 is returned, the function has performed linear
+///         interpolation. 0 denotes cubic spline interpolation
 int cspline_interp(double atx, int &index, const double *const x,
                    const double *const y, int n, const double *const y2,
                    double &yintrp) noexcept;

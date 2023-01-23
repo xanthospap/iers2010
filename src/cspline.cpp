@@ -3,21 +3,32 @@
 int dso::cspline_interp(double atx, int &index, const double *const x,
                    const double *const y, int n, const double *const y2,
                    double &yintrp) noexcept {
-  if (index < 0) {
-    // shit, we don;t know the right index for atx. Search for it!
-    index = std::upper_bound(x, x + n, atx) - x;
-    if (index >= n - 1) {
-      return 99;
-    }
+  if ((index < 0) || (index >= n - 1) || !(x[index]<=atx && x[index+1]>atx)) {
+    // shit, we don't know the right index for atx. Search for it!
+    index = std::lower_bound(x, x + n, atx) - x;
   }
-  assert(index < n - 1);
+
+  // Policy when x is out of range: Extrapolate boundary values
+  if (index == 0 && atx < x[0]) {
+    yintrp = y[0];
+    return -1;
+  } else if (index >= n - 1) {
+    yintrp = y[n - 1];
+    return -1;
+  }
+
+  // Minimum points for cubic spline; if less, perform linear interpolation
+  constexpr const int min_pts = 4;
+  const double fac = (n < min_pts) ? 0e0 : 1e0;
+
   const double h = x[index + 1] - x[index];
   const double a = (x[index + 1] - atx) / h;
   const double b = (atx - x[index]) / h;
   yintrp = a * y[index] + b * y[index + 1] +
-           ((a * a * a - a) * y2[index] + (b * b * b - b) * y[index + 1]) *
+           fac *
+               ((a * a * a - a) * y2[index] + (b * b * b - b) * y[index + 1]) *
                (h * h) / 6e0;
-  return 0;
+  return -2*(!((int)fac));
 }
 
 void dso::cspline_deriv(const double *const x, const double *const y, int n,

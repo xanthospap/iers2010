@@ -1,4 +1,6 @@
 #include <cstring>
+#include "datetime/dtcalendar.hpp"
+#include "geodesy/geoconst.hpp"
 #include "doodson.hpp"
 #include "iau.hpp"
 #include "fundarg.hpp"
@@ -6,11 +8,33 @@
 char *dso::DoodsonNumber::str(char *buf,
                               bool use_5s_convention) const noexcept {
   int offset = use_5s_convention ? 5 : 0;
-  sprintf(buf, "%d%d%d.%d%d%d", iar[0], iar[1] + offset, iar[2] + offset,
+  sprintf(buf, "%1d%2d%2d.%2d%2d%2d", iar[0], iar[1] + offset, iar[2] + offset,
           iar[3] + offset, iar[4] + offset, iar[5] + offset);
   return buf;
 }
 
+/// @brief Greenwich Mean Sideral Time in [rad], range [0-2π)
+/// @warning Note that this is not consistent with IAU2006[A] and IERS2010, 
+/// and does not take into account ERA angle and TT time
+/// TODO:
+/// @see https://github.com/groops-devs/groops/blob/main/source/base/planets.cpp
+/// This is not the angle iers2010::gmst??, it does not take into account
+/// TT time! However, it seems that this angle is used to compute Doodson
+/// arguments
+/// See also the 00README_simulation.txt in COST-G benchmark
+double dso::gmst_utc(const dso::TwoPartDate &utc) noexcept {
+  // julian centuries, at start of day
+  const double tu0 = (utc._big - dso::j2000_mjd) / dso::days_in_julian_cent;
+  const double gmst0 =
+      (6e0 / 24 + 41e0 / (24 * 60) + 50.54841e0 / (24 * 60 * 60)) +
+      (8640184.812866e0 / (24 * 60 * 60)) * tu0 +
+      (0.093104e0 / (24 * 60 * 60)) * tu0 * tu0 +
+      (-6.2e-6 / (24 * 60 * 60)) * tu0 * tu0 * tu0;
+  const double r = 1.002737909350795e0 + 5.9006e-11*tu0 - 5.9e-15*tu0*tu0;
+  return dso::anp(dso::D2PI*(gmst0 + r * utc._small));
+}
+
+/*
 double dso::DoodsonNumber::phase(
     const dso::TwoPartDate &tt_mjd,
     const dso::TwoPartDate &ut1_mjd) const noexcept {
@@ -25,32 +49,4 @@ double dso::DoodsonNumber::phase(
   // Doodson arguments (store in beta[0:6)
   dso::fundarg2doodson(fargs, gmst, beta);
   return phase(beta);
-}
-
-/// @brief Frequency of this constituent in [rad/day]
-double *dso::DoodsonNumber::doodson_freq_vars(const dso::TwoPartDate &tt_mjd,
-                                              double *args) noexcept {
-  const double t = tt_mjd.jcenturies_sinceJ2000()/10e0;
-  args[0] = dso::anp(dso::deg2rad(
-      127037328.88553056e0 +
-      (2 * 0.17696111e0 + (3 * -0.0018314e0 + 4 * 0.00008824e0 * t) * t) * t));
-  args[1] = dso::anp(dso::deg2rad(
-      4812678.8119575e0 +
-      (2 * -0.14663889e0 + (3 * 0.0018514e0 + 4 * -0.00015355e0 * t) * t) * t));
-  args[2] = dso::anp(dso::deg2rad(
-      360007.69748806e0 +
-      (2 * 0.03032222e0 + (3 * 0.00002e0 + 4 * -0.00006532e0 * t) * t) * t));
-  args[3] = dso::anp(dso::deg2rad(
-      40690.1363525e0 +
-      (2 * -1.03217222e0 + (3 * -0.01249168e0 + 4 * 0.00052655e0 * t) * t) *
-          t));
-  args[4] = dso::anp(dso::deg2rad(
-      19341.36261972e0 +
-      (2 * -0.20756111e0 + (3 * -0.00213942e0 + 4 * 0.00016501e0 * t) * t) *
-          t));
-  args[5] = dso::anp(dso::deg2rad(
-      17.19457667e0 +
-      (2 * 0.04568889e0 + (3 * -0.00001776e0 + 4 * -0.00003323e0 * t) * t) *
-          t));
-  return args;
-}
+}*/

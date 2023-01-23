@@ -125,7 +125,7 @@ double iers2010::sofa::s06(double date1, double date2, double x,
 
   // Time since J2000.0, in Julian centuries
   // Interval between fundamental epoch J2000.0 and current date (JC).
-  double t = ((date1 - iers2010::DJ00) + date2) / iers2010::DJC;
+  double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   // Fundamental Arguments (from IERS Conventions 2003)
   double fa[8] = {
