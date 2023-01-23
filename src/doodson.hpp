@@ -51,6 +51,13 @@ public:
 #endif
     return iar[i];
   }
+  /// @brief Get Doodson multipler at position i
+  int &operator()(int i) noexcept {
+#ifdef DEBUG
+    assert(i>=0 && i<6);
+#endif
+    return iar[i];
+  }
 
   /// @brief Equality comparisson
   bool operator==(const DoodsonNumber &other) const noexcept {
@@ -87,7 +94,7 @@ public:
 /// and does not take into account ERA angle and TT time
 /// TODO:
 /// @see https://github.com/groops-devs/groops/blob/main/source/base/planets.cpp
-/// This is not the angle iers2010::gmst??, it does not take into account
+/// This is not the angle iers2010::gmst06, it does not take into account
 /// TT time! However, it seems that this angle is used to compute Doodson
 /// arguments
 /// See also the 00README_simulation.txt in COST-G benchmark
