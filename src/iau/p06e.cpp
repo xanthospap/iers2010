@@ -1,15 +1,14 @@
 #include "iau.hpp"
-#include "iersc.hpp"
-#include <cmath>
 
-void iers2010::sofa::p06e(double date1, double date2, double &eps0,
+void iers2010::sofa::p06e(const dso::TwoPartDate &mjd_tt, double &eps0,
                           double &psia, double &oma, double &bpa, double &bqa,
                           double &pia, double &bpia, double &epsa, double &chia,
                           double &za, double &zetaa, double &thetaa, double &pa,
                           double &gam, double &phi, double &psi) noexcept {
 
   // Interval between fundamental date J2000.0 and given date (JC).
-  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  // const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  const double t = mjd_tt.jcenturies_sinceJ2000();
 
   // Obliquity at J2000.0.
   eps0 = 84381.406e0 * DAS2R;
@@ -60,7 +59,7 @@ void iers2010::sofa::p06e(double date1, double date2, double &eps0,
          DAS2R;
 
   // Mean obliquity of the ecliptic.
-  epsa = iers2010::sofa::obl06(date1, date2);
+  epsa = iers2010::sofa::obl06(mjd_tt);
 
   // Planetary precession.
   chia = (10.556403e0 +

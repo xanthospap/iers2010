@@ -1,9 +1,9 @@
 #include "iau.hpp"
-#include "iersc.hpp"
 
-void iers2010::sofa::pfw06(double date1, double date2, double &gamb,
-                           double &phib, double &psib, double &epsa) noexcept {
-  double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+void iers2010::sofa::pfw06(const dso::TwoPartDate mjd_tt, double &gamb, double &phib,
+                  double &psib, double &epsa) noexcept{
+  // double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  const double t = mjd_tt.jcenturies_sinceJ2000();
 
   // P03 bias+precession angles.
   gamb = (-0.052928 +
@@ -30,7 +30,7 @@ void iers2010::sofa::pfw06(double date1, double date2, double &gamb,
               t) *
          iers2010::DAS2R;
 
-  epsa = iers2010::sofa::obl06(date1, date2);
+  epsa = iers2010::sofa::obl06(mjd_tt);
 
   return;
 }

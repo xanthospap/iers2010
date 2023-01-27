@@ -1,7 +1,6 @@
 #include "iau.hpp"
 
-using dso::Mat3x3;
-using dso::Vector3;
+#ifdef OBSOLETE
 
 /// CGRS to ITRS via IAU 2000A, CIO based, using classical angles
 /// See, SOFA doc, section 5.3
@@ -242,3 +241,5 @@ Mat3x3 gcrs2itrs_06_xys(double tta, double ttb, double ut1a,
   // Form celestial-terrestrial matrix (including polar motion).
   return rpom * rc2i;
 }
+
+#endif

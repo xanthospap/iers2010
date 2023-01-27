@@ -1,6 +1,6 @@
 #include "iau.hpp"
-#include "iersc.hpp"
 
+namespace {
 typedef struct {
   int nfa[8];  // coefficients of l,l',F,D,Om,LVe,LE,pA
   double s, c; // sine and cosine coefficients
@@ -114,8 +114,9 @@ constexpr int NS1 = (int)(sizeof s1 / sizeof(TERM));
 constexpr int NS2 = (int)(sizeof s2 / sizeof(TERM));
 constexpr int NS3 = (int)(sizeof s3 / sizeof(TERM));
 constexpr int NS4 = (int)(sizeof s4 / sizeof(TERM));
+}//unnamed namespace
 
-double iers2010::sofa::s06(double date1, double date2, double x,
+double iers2010::sofa::s06(const dso::TwoPartDate &mjd_tt, double x,
                            double y) noexcept {
 
   // Polynomial coefficients
@@ -125,7 +126,8 @@ double iers2010::sofa::s06(double date1, double date2, double x,
 
   // Time since J2000.0, in Julian centuries
   // Interval between fundamental epoch J2000.0 and current date (JC).
-  double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  // double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  const double t = mjd_tt.jcenturies_sinceJ2000();
 
   // Fundamental Arguments (from IERS Conventions 2003)
   double fa[8] = {
