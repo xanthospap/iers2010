@@ -1093,7 +1093,7 @@ void pn00(const dso::TwoPartDate &mjd_tt, double dpsi, double deps,
 ///             nutation in that order. The X,Y,Z coordinates of the IAU 2000A
 ///             Celestial Intermediate Pole are elements(3, 1 - 3) of the
 ///             GCRS - to - true matrix, i.e.rbpn[2][0 - 2].
-inline void pn00a(const dso::TwoPartDate &mjd_tt, double dpsi, double deps,
+inline void pn00a(const dso::TwoPartDate &mjd_tt, double &dpsi, double &deps,
                   double &epsa, Eigen::Matrix<double, 3, 3> &rb,
                   Eigen::Matrix<double, 3, 3> &rp,
                   Eigen::Matrix<double, 3, 3> &rbp,
@@ -1210,7 +1210,7 @@ inline double gmst06(const dso::TwoPartDate &mjd_ut1, const dso::TwoPartDate &mj
 
 /// Equation of the equinoxes, compatible with IAU 2000 resolutions and
 /// IAU 2006/2000A precession-nutation.
-/// The result, which is in radians, operates in the following sense:
+/// The result, which is in radians, operatea in the following sense:
 ///
 /// Greenwich apparent ST = GMST + equation of the equinoxes
 ///

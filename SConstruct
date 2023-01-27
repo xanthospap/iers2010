@@ -113,11 +113,13 @@ if GetOption('check') is not None and GetOption('check'):
 ## Build tests against SOFA lib
 if GetOption('sofa_check') is not None and GetOption('sofa_check'):
   tests_sources = glob.glob(r"test/sofa_unit_tests/sofa*.cpp")
+  link_w = "test/sofa_unit_tests/unit_test_help.cpp"
   env.Append(RPATH=root_dir)
   for tsource in tests_sources:
     pth = os.path.dirname(tsource)
     bsn = os.path.basename(tsource)
-    ttarget = os.path.join(pth, bsn.replace(
-        '_', '-').replace('.cpp', '.out'))
-    env.Program(target=ttarget, source=tsource, CPPPATH='src/',
-                LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], LIBPATH='.')
+    if bsn != "unit_test_help.cpp":
+      ttarget = os.path.join(pth, bsn.replace(
+          '_', '-').replace('.cpp', '.out'))
+      env.Program(target=ttarget, source=[tsource,link_w], CPPPATH='src/',
+                  LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], LIBPATH='.')
