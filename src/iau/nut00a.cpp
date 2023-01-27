@@ -1,10 +1,10 @@
 #include "iau.hpp"
-#include "iersc.hpp"
+#include <datetime/dtcalendar.hpp>
 
+namespace {
 // Luni-Solar nutation model
 // The units for the sine and cosine coefficients are
 // 0.1 microarcsecond and the same per Julian century
-
 constexpr struct {
   int nl, nlp, nf, nd, nom; // coefficients of l,l',F,D,Om
   double sp, spt, cp;       // longitude sin, t*sin, cos coefficients
@@ -1672,14 +1672,17 @@ constexpr struct {
 // Number of terms in the planetary nutation model
 constexpr int NPL = (int)(sizeof xpl / sizeof xpl[0]);
 
-void iers2010::sofa::nut00a(double date1, double date2, double &dpsi,
+} // unnamed namespace
+
+void iers2010::sofa::nut00a(/*double date1, double date2*/const dso::TwoPartDate &mjd_tt, double &dpsi,
                             double &deps) noexcept {
 
   // Units of 0.1 microarcsecond to radians
   constexpr double U2R = iers2010::DAS2R / 1e7;
 
   // Interval between fundamental date J2000.0 and given date (JC).
-  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  // const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  const double t = mjd_tt.jcenturies_sinceJ2000();
 
   /* LUNI-SOLAR NUTATION */
 
@@ -1718,14 +1721,14 @@ void iers2010::sofa::nut00a(double date1, double date2, double &dpsi,
 
   // Summation of luni-solar nutation series (in reverse order).
   for (int i = NLS - 1; i >= 0; i--) {
-
     // Argument and functions.
-    double arg = std::fmod((double)xls[i].nl * el + (double)xls[i].nlp * elp +
-                               (double)xls[i].nf * f + (double)xls[i].nd * d +
-                               (double)xls[i].nom * om,
-                           iers2010::D2PI);
-    double sarg = std::sin(arg);
-    double carg = std::cos(arg);
+    const double arg =
+        std::fmod((double)xls[i].nl * el + (double)xls[i].nlp * elp +
+                      (double)xls[i].nf * f + (double)xls[i].nd * d +
+                      (double)xls[i].nom * om,
+                  iers2010::D2PI);
+    const double sarg = std::sin(arg);
+    const double carg = std::cos(arg);
 
     // Term.
     dp += (xls[i].sp + xls[i].spt * t) * sarg + xls[i].cp * carg;
@@ -1785,7 +1788,7 @@ void iers2010::sofa::nut00a(double date1, double date2, double &dpsi,
   for (int i = NPL - 1; i >= 0; i--) {
 
     // Argument and functions.
-    double arg =
+    const double arg =
         std::fmod((double)xpl[i].nl * al + (double)xpl[i].nf * af +
                       (double)xpl[i].nd * ad + (double)xpl[i].nom * aom +
                       (double)xpl[i].nme * alme + (double)xpl[i].nve * alve +
@@ -1794,8 +1797,8 @@ void iers2010::sofa::nut00a(double date1, double date2, double &dpsi,
                       (double)xpl[i].nur * alur + (double)xpl[i].nne * alne +
                       (double)xpl[i].npa * apa,
                   iers2010::D2PI);
-    double sarg = std::sin(arg);
-    double carg = std::cos(arg);
+    const double sarg = std::sin(arg);
+    const double carg = std::cos(arg);
 
     // Term.
     dp += (double)xpl[i].sp * sarg + (double)xpl[i].cp * carg;

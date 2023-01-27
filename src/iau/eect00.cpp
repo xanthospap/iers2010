@@ -1,5 +1,8 @@
 #include "iau.hpp"
 #include "iersc.hpp"
+#include <datetime/dtcalendar.hpp>
+
+namespace {
 
 // ----------------------------------------- //
 // The series for the EE complementary terms //
@@ -61,11 +64,14 @@ constexpr TERM e1[] = {{{0, 0, 0, 0, 1, 0, 0, 0}, -0.87e-6, 0.00e-6}};
 constexpr int NE0 = (int)(sizeof e0 / sizeof(TERM));
 constexpr int NE1 = (int)(sizeof e1 / sizeof(TERM));
 
-double iers2010::sofa::eect00(double date1, double date2) noexcept {
+}// unnamed namespace
+
+double iers2010::sofa::eect00(/*double date1, double date2*/const dso::TwoPartDate &mjd_tt) noexcept {
 
   // Interval between fundamental epoch J2000.0 and current date (JC).
   // Time since J2000.0, in Julian centuries
-  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  // const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  const double t = mjd_tt.jcenturies_sinceJ2000();
 
   // Fundamental Arguments (from IERS Conventions 2003)
   double fa[] = {// Mean anomaly of the Moon.

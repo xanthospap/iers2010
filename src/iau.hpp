@@ -2,15 +2,12 @@
 #define __IAU_IERS10_SOFA_CPP_HPP__
 
 #include "iersc.hpp"
-#include "matvec/matvec.hpp"
 #include <cmath>
 #include <cstring>
-#include "datetime/dtfund.hpp"
+#include "datetime/dtcalendar.hpp"
 #include "geodesy/units.hpp"
-#ifdef USE_EIGEN
 #include "eigen3/Eigen/Eigen"
 #include "eigen3/Eigen/Geometry"
-#endif
 
 /// @note Note on 2-part dates:
 /// The whatever date dj1+dj2 is a Julian Date, apportioned in any
@@ -60,8 +57,15 @@ namespace sofa {
 ///            west respectively.
 /// @param[in] yp coordinates of the pole (radians, see above)
 /// @return celestial to terrestrial matrix
-dso::Mat3x3 c2t06a(double tta, double ttb, double uta, double utb, double xp,
-                   double yp) noexcept;
+Eigen::Matrix<double, 3, 3> c2t06a(double tta, double ttb, double uta,
+                                   double utb, double xp, double yp) noexcept;
+inline Eigen::Matrix<double, 3, 3> c2t06a(const dso::TwoPartDate &mjd_tt,
+                                          const dso::TwoPartDate &mjd_ut1,
+                                          double xp, double yp) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  const auto jd_ut = mjd_ut1.jd_split<dso::TwoPartDate::JdSplitMethod::DT>();
+  return c2t06a(jd_tt._big, jd_tt._small, jd_ut._big, jd_ut._small, xp, yp);
+}
 
 /// @brief Formulate celestial to terrestrial matrix
 /// Assemble the celestial to terrestrial matrix from CIO-based components (the
@@ -79,8 +83,9 @@ dso::Mat3x3 c2t06a(double tta, double ttb, double uta, double utb, double xp,
 /// @param[in] era  Earth rotation angle (radians)
 /// @param[in] rpom polar-motion matrix
 /// @return rc2t celestial-to-terrestrial matrix
-dso::Mat3x3 c2tcio(const dso::Mat3x3 &rc2i, double era,
-                   const dso::Mat3x3 &rpom) noexcept;
+Eigen::Matrix<double, 3, 3>
+c2tcio(const Eigen::Matrix<double, 3, 3> &rc2i, double era,
+       const Eigen::Matrix<double, 3, 3> &rpom) noexcept;
 
 /// @brief Celestial-to-intermediate matrix
 /// Form the celestial-to-intermediate matrix for a given date using the IAU
@@ -100,7 +105,12 @@ dso::Mat3x3 c2tcio(const dso::Mat3x3 &rc2i, double era,
 ///            deliver the optimum resolution.
 /// @param[in] date2 (date1) TT as a 2-part Julian Date. See above
 /// @return Celestial-to-intermediate matrix
-dso::Mat3x3 c2i06a(double date1, double date2) noexcept;
+Eigen::Matrix<double, 3, 3> c2i06a(double date1, double date2) noexcept;
+inline Eigen::Matrix<double, 3, 3>
+c2i06a(const dso::TwoPartDate &mjd_tt) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return c2i06a(jd_tt._big, jd_tt._small);
+}
 
 /// @brief Form precession-nutation matrix
 /// Form the matrix of precession-nutation for a given date (including frame
@@ -117,7 +127,12 @@ dso::Mat3x3 c2i06a(double date1, double date2) noexcept;
 /// @param[in] date2 (date1) TT as a 2-part Julian Date. See above
 /// @param[out] rbpn bias-precession-nutation matrix
 /// @return rbpn bias-precession-nutation matrix
-dso::Mat3x3 pnm06a(double date1, double date2) noexcept;
+Eigen::Matrix<double, 3, 3> pnm06a(double date1, double date2) noexcept;
+inline Eigen::Matrix<double, 3, 3>
+pnm06a(const dso::TwoPartDate &mjd_tt) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return pnm06a(jd_tt._big, jd_tt._small);
+}
 
 /// @brief Form rotation matrix given the Fukushima-Williams angles.
 /// 1) Naming the following points:
@@ -158,12 +173,13 @@ dso::Mat3x3 pnm06a(double date1, double date2) noexcept;
 ///
 ///     The nutation-only and precession-only matrices can if necessary
 ///     be obtained by combining these three appropriately.
-/// @param[in]   gamb F-W angle gamma_bar [radians]
-/// @param[in]   phib F-W angle phi_bar   [radians]
-/// @param[in]   psi  F-W angle psi       [radians]
-/// @param[in]   eps  F-W angle epsilon   [radians]
+/// @param[in]  gamb F-W angle gamma_bar [rad]
+/// @param[in]  phib F-W angle phi_bar   [rad]
+/// @param[in]  psi  F-W angle psi       [rad]
+/// @param[in]  eps  F-W angle epsilon   [rad]
 /// @return the formulated rotation matrix
-dso::Mat3x3 fw2m(double gamb, double phib, double psi, double eps) noexcept;
+Eigen::Matrix<double, 3, 3> fw2m(double gamb, double phib, double psi,
+                                 double eps) noexcept;
 
 /// @brief IAU 2000A nutation with adjustments to match the IAU 2006 precession.
 /// The nutation components in longitude and obliquity are in radians and with
@@ -180,6 +196,11 @@ dso::Mat3x3 fw2m(double gamb, double phib, double psi, double eps) noexcept;
 /// @param[out] deps nutation (luni-solar+planetary) obliquity component in
 ///             [radians]
 void nut06a(double date1, double date2, double &dpsi, double &deps) noexcept;
+inline void nut06a(const dso::TwoPartDate &mjd_tt, double &dpsi,
+                   double &deps) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return nut06a(jd_tt._big, jd_tt._small, dpsi, deps);
+}
 
 /// @brief Nutation, IAU 2000A model
 /// Nutation, IAU 2000A model (MHB2000 luni-solar and planetary nutation with
@@ -267,7 +288,9 @@ void nut06a(double date1, double date2, double &dpsi, double &deps) noexcept;
 ///             radians
 /// @param[out] deps nutation (luni-solar+planetary) obliquity component in
 ///             radians
-void nut00a(double date1, double date2, double &dpsi, double &deps) noexcept;
+//void nut00a(double date1, double date2, double &dpsi, double &deps) noexcept;
+void nut00a(const dso::TwoPartDate &mjd_tt, double &dpsi,
+            double &deps) noexcept;
 
 /// @brief Precession angles, IAU 2006 (Fukushima-Williams 4-angle formulation).
 /// Naming the following points:
@@ -301,6 +324,11 @@ void nut00a(double date1, double date2, double &dpsi, double &deps) noexcept;
 /// @param[in] epsa F-W angle epsilon_A (radians)
 void pfw06(double date1, double date2, double &gamb, double &phib, double &psib,
            double &epsa) noexcept;
+inline void pfw06(const dso::TwoPartDate mjd_tt, double &gamb, double &phib,
+                  double &psib, double &epsa) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return pfw06(jd_tt._big, jd_tt._small, gamb, phib, psib, epsa);
+}
 
 /// @brief Form the matrix of polar motion for a given date, IAU 2000.
 /// The matrix operates in the sense V(TRS) = rpom * V(CIP), meaning that it is
@@ -323,10 +351,7 @@ void pfw06(double date1, double date2, double &gamb, double &phib, double &psib,
 ///            since J2000 .0. The function iauSp00 implements this 
 ///            approximation.
 /// @return rpom, polar-motion matrix
-dso::Mat3x3 pom00(double xp, double yp, double sp) noexcept;
-#ifdef USE_EIGEN
-Eigen::Matrix<double,3,3> pom00_e(double xp, double yp, double sp) noexcept;
-#endif
+Eigen::Matrix<double,3,3> pom00(double xp, double yp, double sp) noexcept;
 
 /// @brief Precession-rate part of the IAU 2000 precession-nutation models
 /// (part of MHB2000).
@@ -350,6 +375,11 @@ Eigen::Matrix<double,3,3> pom00_e(double xp, double yp, double sp) noexcept;
 ///             and obliquity with respect to the J2000.0 equinox and ecliptic.
 /// @param[out] depspr  precession corrections
 void pr00(double date1, double date2, double &dpsipr, double &depspr) noexcept;
+inline void pr00(const dso::TwoPartDate &mjd_tt, double &dpsipr,
+                 double &depspr) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return pr00(jd_tt._big, jd_tt._small, dpsipr, depspr);
+}
 
 /// @brief Compute TIO locator s'
 /// The TIO locator s', positioning the Terrestrial Intermediate Origin
@@ -367,6 +397,10 @@ void pr00(double date1, double date2, double &dpsipr, double &depspr) noexcept;
 /// @param[in] date2  TT as a 2-part Julian Date (see above)
 /// @return the TIO locator s' in [radians]
 double sp00(double date1, double date2) noexcept;
+inline double sp00(const dso::TwoPartDate &mjd_tt) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return sp00(jd_tt._big, jd_tt._small);
+}
 
 /// @brief Earth rotation angle (IAU 2000 model).
 /// @param[in] dj1 (dj2) UT1 as a 2-part Julian Date. The UT1 date dj1+dj2 is a
@@ -376,7 +410,7 @@ double sp00(double date1, double date2) noexcept;
 /// @param[in] dj2 (dj1) UT1 as a 2-part Julian Date
 /// @return Earth rotation angle [radians], range 0-2pi
 /// @note Equation 5.15 in IERS Conventions 2010
-double era00(double dj1, double dj2) noexcept;
+double era00(const dso::TwoPartDate &mjd_ut1) noexcept;
 
 /// Equation of the equinoxes complementary terms, consistent with
 /// IAU 2000 resolutions.
@@ -412,7 +446,8 @@ double era00(double dj1, double dj2) noexcept;
 ///     The present function computes CT in the above expression,
 ///     compatible with IAU 2000 resolutions (Capitaine et al., 2002, and
 ///     IERS Conventions 2003).
-double eect00(double date1, double date2) noexcept;
+//double eect00(double date1, double date2) noexcept;
+double eect00(const dso::TwoPartDate &mjd_tt) noexcept;
 
 /// @brief equation of the equinoxes
 /// The equation of the equinoxes, compatible with IAU 2000 resolutions,
@@ -434,6 +469,11 @@ inline double ee00(double date1, double date2, double epsa,
   // Equation of the equinoxes.
   return dpsi * std::cos(epsa) + eect00(date1, date2);
 }
+inline double ee00(const dso::TwoPartDate &mjd_tt, double epsa,
+                   double dpsi) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return ee00(jd_tt._big, jd_tt._small, epsa, dpsi);
+}
 
 /// @brief Compute the GCRS-to-CIRS matrix
 /// Form the celestial to intermediate-frame-of-date matrix given the CIP X,Y
@@ -454,10 +494,7 @@ inline double ee00(double date1, double date2, double epsa,
 /// @param[in] s the CIO locator s. The CIO locator s (in radians) positions
 ///              the Celestial Intermediate Origin on the equator of the CIP.
 /// @return rc2i, celestial-to-intermediate matrix
-dso::Mat3x3 c2ixys(double x, double y, double s) noexcept;
-#ifdef USE_EIGEN
-Eigen::Matrix<double,3,3> c2ixys_e(double x, double y, double s) noexcept;
-#endif
+Eigen::Matrix<double,3,3> c2ixys(double x, double y, double s) noexcept;
 
 /// @brief X,Y coordinates of celestial intermediate pole from series based
 /// on IAU 2006 precession and IAU 2000A nutation.
@@ -475,7 +512,9 @@ Eigen::Matrix<double,3,3> c2ixys_e(double x, double y, double s) noexcept;
 /// @param[out] x CIP X coordinate.
 /// @param[out] y CIP Y coordinate
 /// @note function is adopted from IAU SOFA, release 2021-05-12
-void xy06(double date1, double date2, double &x, double &y) noexcept;
+//void xy06(double date1, double date2, double &x, double &y) noexcept;
+void xy06(const dso::TwoPartDate &mjd_tt, double &x, double &y) noexcept;
+}
 
 /// @brief Coordinates of the CIP and the CIO locator s, IAU 2000A
 /// For a given TT date, compute the X,Y coordinates of the Celestial
@@ -497,6 +536,11 @@ void xy06(double date1, double date2, double &x, double &y) noexcept;
 ///             the Celestial Intermediate Origin on the equator of the CIP.
 void xys00a(double date1, double date2, double &x, double &y,
             double &s) noexcept;
+inline void xy00a(const dso::TwoPartDate &mjd_tt, double &x, double &y,
+                  double &s) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return xys00a(jd_tt._big, jd_tt._small, x, y, s);
+}
 
 /// @brief  X,Y coordinates of CIP and CIO locator, IAU 2006 precession/2000A
 /// nutation.
@@ -520,6 +564,11 @@ void xys00a(double date1, double date2, double &x, double &y,
 ///            the CIP.
 void xys06a(double date1, double date2, double &x, double &y,
             double &s) noexcept;
+inline void xys06a(const dso::TwoPartDate &mjd_tt, double &x, double &y,
+                  double &s) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return xys06a(jd_tt._big, jd_tt._small, x, y, s);
+}
 
 /// The CIO locator s, positioning the Celestial Intermediate Origin on the
 /// equator of the Celestial Intermediate Pole, given the CIP's X,Y
@@ -545,6 +594,10 @@ void xys06a(double date1, double date2, double &x, double &y,
 /// @param[in] x CIP Y coordinate (see xy06)
 /// @return the CIO locator s in [radians]
 double s06(double date1, double date2, double x, double y) noexcept;
+inline double s06(const dso::TwoPartDate &mjd_tt, double x, double y) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return s06(jd_tt._big, jd_tt._small, x, y);
+}
 
 /// The CIO locator s, positioning the Celestial Intermediate Origin on
 /// the equator of the Celestial Intermediate Pole, given the CIP's X,Y
@@ -568,6 +621,10 @@ double s06(double date1, double date2, double x, double y) noexcept;
 ///            the CIP equator. The quantity s remains below 0.1 arcsecond
 ///            throughout 1900-2100.
 double s00(double date1, double date2, double x, double y) noexcept;
+inline double s00(const dso::TwoPartDate &mjd_tt, double x, double y) noexcept {
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return s00(jd_tt._big, jd_tt._small, x, y);
+}
 
 /// @brief Frame bias components of IAU 2000 precession-nutation models
 /// Frame bias components of IAU 2000 precession-nutation models; part of the
@@ -598,9 +655,9 @@ void bi00(double &dpsibi, double &depsbi, double &dra) noexcept;
 /// @param[in] date2 (date1)  TT as a 2-part Julian Date.
 /// @return obliquity of the ecliptic (radians). The result is the angle between
 /// the ecliptic and mean equator of date date1+date2.
-inline double obl80(double date1, double date2) noexcept {
+inline double obl80(/*double date1, double date2*/double t) noexcept {
   // Interval between fundamental epoch J2000.0 and given date (JC).
-  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  // const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   // Mean obliquity of date.
   const double eps0 =
@@ -608,6 +665,9 @@ inline double obl80(double date1, double date2) noexcept {
       (84381.448e0 + (-46.8150e0 + (-0.00059e0 + (0.001813e0) * t) * t) * t);
 
   return eps0;
+}
+inline double obl80(const dso::TwoPartDate &mjd_tt) noexcept {
+  return obl80(mjd_tt.jcenturies_sinceJ2000());
 }
 
 /// @brief Mean obliquity of the ecliptic, IAU 2006 precession model.
@@ -641,11 +701,11 @@ inline double obl80(double date1, double date2) noexcept {
 ///            matched to the way the argument is handled internally and will
 ///            deliver the optimum resolution.
 /// @param[in] date2 (date1)  TT as a 2-part Julian Date.
-/// @return obliquity of the ecliptic (radians). The result is the angle between
+/// @return obliquity of the ecliptic [rad]. The result is the angle between
 ///         the ecliptic and mean equator of date date1+date2.
-inline double obl06(double date1, double date2) noexcept {
+inline double obl06(/*double date1, double date2*/double t) noexcept {
   // Interval between fundamental date J2000.0 and given date (JC).
-  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  // const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
 
   // Mean obliquity.
   const double eps0 =
@@ -658,6 +718,9 @@ inline double obl06(double date1, double date2) noexcept {
       iers2010::DAS2R;
 
   return eps0;
+}
+inline double obl06(const dso::TwoPartDate &mjd_tt) noexcept {
+  return obl06(mjd_tt.jcenturies_sinceJ2000());
 }
 
 /// @brief Frame bias components of IAU 2000 precession-nutation models
@@ -684,24 +747,31 @@ inline double obl06(double date1, double date2) noexcept {
 void bi00(double &dpsibi, double &depsbi, double &dra) noexcept;
 
 /// @brief Form the matrix of nutation.
-/// The matrix operates in the sense V(true) = rmatn * V(mean), where the
-/// p-vector V(true) is with respect to the true equatorial triad of date and
-/// the p-vector V(mean) is with respect to the mean equatorial triad of date.
+///
+/// The matrix operates in the sense 
+///               V(true) = rmatn * V(mean), 
+/// where the p-vector V(true) is with respect to the true equatorial triad of 
+/// date and the p-vector V(mean) is with respect to the mean equatorial triad 
+/// of date.
 ///
 /// @param[in] epsa  mean obliquity of date. The supplied mean obliquity epsa,
 ///            must be consistent with the precession-nutation models from which
 ///            dpsi and deps were obtained.
-/// @param[in] dpsi  nutation longitude (radians). The caller is responsible for
+/// @param[in] dpsi  nutation longitude [rad]. The caller is responsible for
 ///            providing the nutation components; they are in longitude and
 ///            obliquity, in radians and are with respect to the equinox and
 ///            ecliptic of date.
-/// @param[in] deps  nutation obliquity (radians)
-dso::Mat3x3 numat(double epsa, double dpsi, double deps) noexcept;
+/// @param[in] deps nutation obliquity [rad]
+Eigen::Matrix<double,3,3> numat(double epsa, double dpsi, double deps) noexcept;
 
 /// @brief Form the matrix of nutation for a given date, IAU 2006/2000A model.
-/// The matrix operates in the sense V(true) = rmatn * V(mean), where the
-/// p-vector V(true) is with respect to the true equatorial triad of date and
-/// the p-vector V(mean) is with respect to the mean equatorial triad of date.
+///
+/// The matrix operates in the sense: 
+///                 V(true) = rmatn * V(mean), 
+/// where the p-vector V(true) is with respect to the true equatorial triad of 
+/// date and the p-vector V(mean) is with respect to the mean equatorial triad 
+/// of date.
+///
 /// @param[in] date1 (date2)  TT as a 2-part Julian Date. The TT date
 ///            date1+date2 is a Julian Date, apportioned in any convenient way
 ///            between the two arguments. Optimally, The 'J2000 method' is best
@@ -709,9 +779,15 @@ dso::Mat3x3 numat(double epsa, double dpsi, double deps) noexcept;
 ///            deliver the optimum resolution.
 /// @param[in] date2 (date1)  TT as a 2-part Julian Date.
 /// @return nutation matrix
-dso::Mat3x3 num06a(double date1, double date2) noexcept;
+Eigen::Matrix<double,3,3> num06a(double date1, double date2) noexcept;
+inline Eigen::Matrix<double,3,3> num06a(const dso::TwoPartDate &mjd_tt) noexcept
+{
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return num06a(jd_tt._big, jd_tt._small);
+}
 
 /// @brief Greenwich apparent sidereal time, IAU 2006, given the NPB matrix.
+///
 /// Although the function uses the IAU 2006 series for s+XY/2, it is otherwise
 /// independent of the precession-nutation model and can in practice be used
 /// with any equinox-based NPB matrix.
@@ -723,42 +799,58 @@ dso::Mat3x3 num06a(double date1, double date2) noexcept;
 /// Although the function uses the IAU 2006 series for s+XY/2, it is otherwise
 /// independent of the precession-nutation model and can in practice be used
 /// with any equinox-based NPB matrix.
+///
 /// @param[in] uta  UT1 as a 2-part Julian Date
 /// @param[in] utb  UT1 as a 2-part Julian Date. For UT, the date & time
-///            method is best matched to the algorithm that is used by the Earth
-///            rotation angle function, called internally:  maximum precision is
-///            delivered when the uta argument is for 0hrs UT1 on the day in
-///            question and the utb argument lies in the range 0 to 1, or vice
-///            versa.
+///            method is best matched to the algorithm that is used by the 
+///            Earth rotation angle function, called internally: maximum 
+///            precision is delivered when the uta argument is for 0hrs UT1 on 
+///            the day in question and the utb argument lies in the range 0 
+///            to 1, or vice versa.
 /// @param[in] tta TT as a 2-part Julian Date
 /// @param[in] ttb TT as a 2-part Julian Date
 /// @param[in] rnpb nutation x precession x bias matrix
-/// @return Greenwich apparent sidereal time (radians in range [0,2pi))
+/// @return Greenwich apparent sidereal time in [rad] in range [0,2π)
 double gst06(double uta, double utb, double tta, double ttb,
-             const dso::Mat3x3 &rnpb) noexcept;
+             const Eigen::Matrix<double, 3, 3> &rnpb) noexcept;
+inline double gst06(const dso::TwoPartDate &mjd_ut1,
+                    const dso::TwoPartDate &mjd_tt,
+                    const Eigen::Matrix<double, 3, 3> &rnpb) noexcept {
+  const auto jd_ut = mjd_ut1.jd_split<dso::TwoPartDate::JdSplitMethod::DT>();
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return gst06(jd_ut._big, jd_ut._small, jd_tt._big, jd_tt._small, rnpb);
+}
 
 /// Greenwich apparent sidereal time (consistent with IAU 2000 and 2006 
 /// resolutions).
+///
 /// Both UT1 and TT are required, UT1 to predict the Earth rotation 
 /// and TT to predict the effects of precession-nutation.  If UT1 is 
 /// used for both purposes, errors of order 100 microarcseconds result.
 /// This GAST is compatible with the IAU 2000/2006 resolutions and must be used 
 /// only in conjunction with IAU 2006 precession and IAU 2000A nutation.
+///
 /// @param[in] uta  UT1 as a 2-part Julian Date
 /// @param[in] utb  UT1 as a 2-part Julian Date. For UT, the date & time
-///            method is best matched to the algorithm that is used by the Earth
-///            rotation angle function, called internally:  maximum precision is
-///            delivered when the uta argument is for 0hrs UT1 on the day in
-///            question and the utb argument lies in the range 0 to 1, or vice
-///            versa.
+///            method is best matched to the algorithm that is used by the 
+///            Earth rotation angle function, called internally: maximum 
+///            precision is delivered when the uta argument is for 0hrs UT1 
+///            on the day in question and the utb argument lies in the range 
+///            0 to 1, or vice versa.
 /// @param[in] tta TT as a 2-part Julian Date
 /// @param[in] ttb TT as a 2-part Julian Date
-/// @return Greenwich apparent sidereal time in range [0,2pi) [radians]
+/// @return Greenwich apparent sidereal time in range [0,2pi) [rad]
 inline double gst06a(double uta, double utb, double tta, double ttb) noexcept {
   // Classical nutation x precession x bias matrix, IAU 2000A.
   const auto rnpb = pnm06a(tta, ttb);
   // Greenwich apparent sidereal time.
   return gst06(uta, utb, tta, ttb, rnpb);
+}
+inline double gst06a(const dso::TwoPartDate &mjd_ut1,
+                     const dso::TwoPartDate &mjd_tt) noexcept {
+  const auto jd_ut = mjd_ut1.jd_split<dso::TwoPartDate::JdSplitMethod::DT>();
+  const auto jd_tt = mjd_tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return gst06a(jd_ut._big, jd_ut._small, jd_tt._big, jd_tt._small);
 }
 
 /// @brief Equation of the origins
@@ -771,7 +863,7 @@ inline double gst06a(double uta, double utb, double tta, double ttb) noexcept {
 /// @param[in] rnpb  classical nutation x precession x bias matrix
 /// @param[in] s     the quantity s (the CIO locator) in radians
 /// @return  the equation of the origins in radians
-double eors(const dso::Mat3x3 &rnpb, double s) noexcept;
+double eors(const Eigen::Matrix<double,3,3> &rnpb, double s) noexcept;
 
 /// @brief Frame bias and precession, IAU 2000.
 /// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
@@ -788,10 +880,19 @@ double eors(const dso::Mat3x3 &rnpb, double s) noexcept;
 /// @param[out] rbp bias-precession matrix; The matrix rbp transforms vectors
 ///             from GCRS to mean equator and equinox of date by applying frame
 ///             bias then precession.  It is the product rp x rb.
-void bp00(double date1, double date2, dso::Mat3x3 &rb, dso::Mat3x3 &rp,
-          dso::Mat3x3 &rbp) noexcept;
+void bp00(double date1, double date2, Eigen::Matrix<double, 3, 3> &rb,
+          Eigen::Matrix<double, 3, 3> &rp,
+          Eigen::Matrix<double, 3, 3> &rbp) noexcept;
+inline void bp00(const dso::TwoPartDate &mjd_tt,
+                 Eigen::Matrix<double, 3, 3> &rb,
+                 Eigen::Matrix<double, 3, 3> &rp,
+                 Eigen::Matrix<double, 3, 3> &rbp) noexcept {
+  const auto jd_tt = tt_mjd.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return bp00(jd_tt._big, jd_tt._small, rb, rp, rbp);
+}
 
 /// @brief Precession angles, IAU 2006, equinox based.
+///
 /// This function returns the set of equinox based angles for the Capitaine
 /// et al. "P03" precession theory, adopted by the IAU in 2006. The angles
 /// are set out in Table 1 of Hilton et al. (2006):
@@ -875,6 +976,15 @@ void p06e(double date1, double date2, double &eps0, double &psia, double &oma,
           double &bpa, double &bqa, double &pia, double &bpia, double &epsa,
           double &chia, double &za, double &zetaa, double &thetaa, double &pa,
           double &gam, double &phi, double &psi) noexcept;
+inline void p06e(const dso::TwoPartDate &tt_mjd, double &eps0, double &psia,
+                 double &oma, double &bpa, double &bqa, double &pia,
+                 double &bpia, double &epsa, double &chia, double &za,
+                 double &zetaa, double &thetaa, double &pa, double &gam,
+                 double &phi, double &psi) noexcept {
+  const auto jd_tt = tt_mjd.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return p06e(jd_tt._big, jd_tt._small, eps0, psia, oma, bpa, bqa, pia, bpia,
+              epsa, chia, za, zetaa, thetaa, pa, gam, phi, psi);
+}
 
 /// @brief Precession-nutation, IAU 2006 model
 /// Precession-nutation, IAU 2006 model:  a multi-purpose function,
@@ -917,10 +1027,20 @@ void p06e(double date1, double date2, double &eps0, double &psia, double &oma,
 ///             Celestial Intermediate Pole are elements (3,1-3) of the
 ///             GCRS-to-true matrix, i.e. rbpn[2][0-2].
 void pn06(double date1, double date2, double dpsi, double deps, double &epsa,
-          dso::Mat3x3 &rb, dso::Mat3x3 &rp, dso::Mat3x3 &rbp, dso::Mat3x3 &rn,
-          dso::Mat3x3 &rbpn) noexcept;
+          Eigen::Matrix<double, 3, 3> &rb, Eigen::Matrix<double, 3, 3> &rp,
+          Eigen::Matrix<double, 3, 3> &rbp, Eigen::Matrix<double, 3, 3> &rn,
+          Eigen::Matrix<double, 3, 3> &rbpn) noexcept;
+inline void pn06(const dso::TwoPartDate &mjd_tt, double dpsi, double deps,
+          double &epsa, Eigen::Matrix<double, 3, 3> &rb,
+          Eigen::Matrix<double, 3, 3> &rp, Eigen::Matrix<double, 3, 3> &rbp,
+          Eigen::Matrix<double, 3, 3> &rn,
+          Eigen::Matrix<double, 3, 3> &rbpn) noexcept {
+  const auto jd_tt = tt_mjd.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  pn06(jd_tt._big, jd_tt._small, i, deps, epsa, rb, rp, rbp, rn, rbpn);
+}
 
 /// @brief Precession-nutation, IAU 2000 model
+///
 /// Precession-nutation, IAU 2000 model:  a multi-purpose function,
 /// supporting classical(equinox - based) use directly and CIO-based use
 /// indirectly.
@@ -931,6 +1051,7 @@ void pn06(double date1, double date2, double dpsi, double deps, double &epsa,
 /// nutation should be included as well as any other relevant corrections to
 /// the position of the CIP. It is permissible to re-use the same array in
 /// the returned arguments. The arrays are filled in the stated order.
+///
 /// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
 ///             date1+date2 is a Julian Date, apportioned in any convenient
 ///             way between the two arguments. Optimally, The 'J2000 method'
@@ -959,13 +1080,26 @@ void pn06(double date1, double date2, double dpsi, double deps, double &epsa,
 ///             product rn x rbp, applying frame bias, precession and
 ///             nutation in that order.
 void pn00(double date1, double date2, double dpsi, double deps, double &epsa,
-          dso::Mat3x3 &rb, dso::Mat3x3 &rp, dso::Mat3x3 &rbp, dso::Mat3x3 &rn,
-          dso::Mat3x3 &rbpn) noexcept;
+          Eigen::Matrix<double, 3, 3> &rb, Eigen::Matrix<double, 3, 3> &rp,
+          Eigen::Matrix<double, 3, 3> &rbp, Eigen::Matrix<double, 3, 3> &rn,
+          Eigen::Matrix<double, 3, 3> &rbpn) noexcept;
+inline void pn00(const dso::TwoPartDate &mjd_tt, , double dpsi, double deps,
+                 double &epsa, Eigen::Matrix<double, 3, 3> &rb,
+                 Eigen::Matrix<double, 3, 3> &rp,
+                 Eigen::Matrix<double, 3, 3> &rbp,
+                 Eigen::Matrix<double, 3, 3> &rn,
+                 Eigen::Matrix<double, 3, 3> &rbpn) noexcept {
+  const auto jd_tt = tt_mjd.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return pn00(mjd_tt._big, mjd_tt._small, dpsi, deps, epsa, rb, rp, rbp, rn,
+              rbpn);
+}
 
 /// @brief Precession-nutation, IAU 2000A model
+///
 /// Precession-nutation, IAU 2000A model:  a multi-purpose function,
 /// supporting classical(equinox - based) use directly and CIO-based use
 /// indirectly.
+///
 /// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
 ///             date1+date2 is a Julian Date, apportioned in any convenient
 ///             way between the two arguments. Optimally, The 'J2000 method'
@@ -1002,9 +1136,11 @@ void pn00(double date1, double date2, double dpsi, double deps, double &epsa,
 ///             Celestial Intermediate Pole are elements(3, 1 - 3) of the
 ///             GCRS - to - true matrix, i.e.rbpn[2][0 - 2].
 inline void pn00a(double date1, double date2, double dpsi, double deps,
-                  double &epsa, dso::Mat3x3 &rb, dso::Mat3x3 &rp,
-                  dso::Mat3x3 &rbp, dso::Mat3x3 &rn,
-                  dso::Mat3x3 &rbpn) noexcept {
+                  double &epsa, Eigen::Matrix<double, 3, 3> &rb,
+                  Eigen::Matrix<double, 3, 3> &rp,
+                  Eigen::Matrix<double, 3, 3> &rbp,
+                  Eigen::Matrix<double, 3, 3> &rn,
+                  Eigen::Matrix<double, 3, 3> &rbpn) noexcept {
   // Nutation.
   nut00a(date1, date2, dpsi, deps);
 
@@ -1013,29 +1149,46 @@ inline void pn00a(double date1, double date2, double dpsi, double deps,
 
   return;
 }
+inline void pn00a(const dso::TwoPartDate &tt_mjd, double dpsi, double deps,
+                  double &epsa, Eigen::Matrix<double, 3, 3> &rb,
+                  Eigen::Matrix<double, 3, 3> &rp,
+                  Eigen::Matrix<double, 3, 3> &rbp,
+                  Eigen::Matrix<double, 3, 3> &rn,
+                  Eigen::Matrix<double, 3, 3> &rbpn) noexcept {
+  const auto jd_tt = tt_mjd.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return pn00a(jd_tt._big, jd_tt._small, dpsi, deps, epsa, rb, rp, rbp, rn,
+               rbpn);
+}
 
 /// @brief precession-nutation matrix, IAU 2000A model
+///
 /// Form the matrix of precession-nutation for a given date (including
 /// frame bias), equinox based, IAU 2000A model. A faster, but slightly less
 /// accurate, result (about 1 mas) can be obtained by using instead the
 /// iauPnm00b function.
+///
 /// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
-///             date1+date2 is a Julian Date, apportioned in any convenient
+///             date1+date2 is a Julian Date, partioned in any convenient
 ///             way between the two arguments. Optimally, The 'J2000 method'
 ///             is best matched to the way the argument is handled
 ///             internally and will deliver the optimum resolution.
 /// @param[in]  date2 (date1)  TT as a 2-part Julian Date.
 /// @return bias-precession-nutation matrix. The matrix operates in the sense
-///         V(date) = rbpn * V(GCRS), where the p-vector V(date) is with
-///         respect to the true equatorial triad of date date1+date2 and the
-///         p-vector V(GCRS) is with respect to  the Geocentric Celestial
-///         Reference System (IAU, 2000).
-inline dso::Mat3x3 pnm00a(double date1, double date2) noexcept {
+///                        V(date) = rbpn * V(GCRS), 
+///         where the p-vector V(date) is with respect to the true equatorial 
+///         triad of date date1+date2 and the p-vector V(GCRS) is with respect
+///         to the Geocentric Celestial Reference System (IAU, 2000).
+inline Eigen::Matrix<double,3,3> pnm00a(double date1, double date2) noexcept {
   double dpsi = 0e0, deps = 0e0, epsa = 0e0;
-  dso::Mat3x3 rb, rp, rbp, rn, rbpn;
+  Eigen::Matrix<double,3,3> rb, rp, rbp, rn, rbpn;
   // Obtain the required matrix (discarding other results).
   pn00a(date1, date2, dpsi, deps, epsa, rb, rp, rbp, rn, rbpn);
   return rbpn;
+}
+inline Eigen::Matrix<double, 3, 3>
+pnm00a(const dso::TwoPartDate &tt_mjd) noexcept {
+  const auto jd_tt = tt_mjd.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return pnm00a(jd_tt._big, jd_tt._small);
 }
 
 /// Greenwich mean sidereal time (model consistent with IAU 2000 resolutions).
@@ -1055,8 +1208,7 @@ inline dso::Mat3x3 pnm00a(double date1, double date2) noexcept {
 /// @param[in] utb  UT1 as a 2-part Julian Date. See above
 /// @param[in] tta TT as a 2-part Julian Date
 /// @param[in] ttb TT as a 2-part Julian Date
-/// @return Greenwich mean sidereal time (radians). The result is returned in
-///            the range 0 to 2pi.
+/// @return Greenwich mean sidereal time (GMST) [rad] in the range [0,2π)
 inline double gmst00(double uta, double utb, double tta, double ttb) noexcept {
   // TT Julian centuries since J2000.0.
   const double t = ((tta - dso::j2000_jd) + ttb) / dso::days_in_julian_cent;
@@ -1072,8 +1224,15 @@ inline double gmst00(double uta, double utb, double tta, double ttb) noexcept {
 
   return gmst;
 }
+inline double gmst00(const dso::TwoPartDate &ut1_mjd,
+                     const dso::TwoPartDate &tt_mjd) noexcept {
+  const auto jd_ut1 = ut1_mjd.jd_split<dso::TwoPartDate::JdSplitMethod::DT>();
+  const auto jd_tt = tt_mjd.jd_split<dso::TwoPartDate::JdSplitMethod::DT>();
+  return gmst00(jd_ut1._big, jd_ut1._small, jd_tt._big, jd_tt._small);
+}
 
 /// @brief Greenwich mean sidereal time (consistent with IAU 2006 precession).
+///
 /// Both UT1 and TT are required, UT1 to predict the Earth rotation 
 /// and TT to predict the effects of precession.  If UT1 is used for
 /// both purposes, errors of order 100 microarcseconds result.
@@ -1088,8 +1247,7 @@ inline double gmst00(double uta, double utb, double tta, double ttb) noexcept {
 /// @param[in] utb  UT1 as a 2-part Julian Date. See above
 /// @param[in] tta TT as a 2-part Julian Date
 /// @param[in] ttb TT as a 2-part Julian Date
-/// @return Greenwich mean sidereal time (radians). The result is returned in
-///            the range 0 to 2pi.
+/// @return Greenwich mean sidereal time (GMST) in [rad], in range [0,2π)
 inline double gmst06(double uta, double utb, double tta, double ttb) noexcept {
   // TT Julian centuries since J2000.0.
   const double t = ((tta - dso::j2000_jd) + ttb) / dso::days_in_julian_cent;
@@ -1106,17 +1264,26 @@ inline double gmst06(double uta, double utb, double tta, double ttb) noexcept {
           iers2010::DAS2R);
   return gmst;
 }
+inline double gmst06(const dso::TwoPartDate &ut1_mjd,
+                     const dso::TwoPartDate &tt_mjd) noexcept {
+  const auto jd_ut1 = ut1_mjd.jd_split<dso::TwoPartDate::JdSplitMethod::DT>();
+  const auto jd_tt = tt_mjd.jd_split<dso::TwoPartDate::JdSplitMethod::DT>();
+  return gmst06(jd_ut1._big, jd_ut1._small, jd_tt._big, jd_tt._small);
+}
 
 /// Equation of the equinoxes, compatible with IAU 2000 resolutions and 
 /// IAU 2006/2000A precession-nutation.
 /// The result, which is in radians, operates in the following sense:
+///
 /// Greenwich apparent ST = GMST + equation of the equinoxes
+///
 /// @param[in] tta TT as a 2-part Julian Date. The J2000 method is best matched 
-/// to the way the argument is handled internally and will deliver the optimum 
-/// resolution. The MJD method and the date & time methods are both good 
-/// compromises between resolution and convenience.
+///                to the way the argument is handled internally and will 
+///                deliver the optimum resolution. The MJD method and the 
+///                date & time methods are both good compromises between 
+///                resolution and convenience.
 /// @param[in] ttb TT as a 2-part Julian Date (see above)
-/// @return equation of the equinoxes in range [0,2pi) [radians]
+/// @return equation of the equinoxes in range [0,2π) [rad]
 inline double ee06a(double tt1, double tt2) noexcept {
   // Apparent and mean sidereal times
   const double gst06a_ = gst06a(0e0, 0e0, tt1, tt2);
@@ -1124,21 +1291,22 @@ inline double ee06a(double tt1, double tt2) noexcept {
   // Equation of the equinoxes.
   return dso::anp(gst06a_ - gmst06_);
 }
+inline double ee06a(const dso::TwoPartDate &tt) noexcept {
+  const auto jd = tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
+  return ee06a(jd._big, jd._small);
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean anomaly of
-/// the
-///        Moon.
-/// @note  - Though t is strictly TDB, it is usually more convenient to use
-/// TT,
-///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003)
-///        and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///        the Moon.
+/// @note - Though t is strictly TDB, it is usually more convenient to use
+///         TT, which makes no significant difference.
+///       - The expression used is as adopted in IERS Conventions (2003)
+///         and is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return mean anomaly of the Moon in radians
+/// @return mean anomaly of the Moon, [rad] in range [0,2π)
 inline double fal03(double t) noexcept {
-  double a =
+  const double a =
       std::fmod(485868.249036 +
                     t * (1717915923.2178 +
                          t * (31.8792 + t * (0.051635 + t * (-0.00024470)))),
@@ -1146,18 +1314,21 @@ inline double fal03(double t) noexcept {
       iers2010::DAS2R;
   return a;
 }
+inline double fal03(const dso::TwoPartDate &tt) noexcept {
+  return fal03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean anomaly of the
 ///        Sun.
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return mean anomaly of the Sun in radians
+/// @return mean anomaly of the Sun, [rad] in range [0,2π)
 inline double falp03(double t) noexcept {
-  double a =
+  const double a =
       std::fmod(1287104.793048 +
                     t * (129596581.0481 +
                          t * (-0.5532 + t * (0.000136 + t * (-0.00001149)))),
@@ -1165,18 +1336,21 @@ inline double falp03(double t) noexcept {
       iers2010::DAS2R;
   return a;
 }
+inline double falp03(const dso::TwoPartDate &tt) noexcept {
+  return falp03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of the
 ///        Moon minus mean longitude of the ascending node
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return F in radians
+/// @return F, [rad] in range [0,2π)
 inline double faf03(double t) noexcept {
-  double a =
+  const double a =
       std::fmod(335779.526232 +
                     t * (1739527262.8478 +
                          t * (-12.7512 + t * (-0.001037 + t * (0.00000417)))),
@@ -1184,18 +1358,21 @@ inline double faf03(double t) noexcept {
       iers2010::DAS2R;
   return a;
 }
+inline double faf03(const dso::TwoPartDate &tt) noexcept {
+  return faf03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean elongation of
 ///        the Moon from the Sun.
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return  D in radians
+/// @return  D, [rad] in range [0,2π)
 inline double fad03(double t) noexcept {
-  double a =
+  const double a =
       std::fmod(1072260.703692 +
                     t * (1602961601.2090 +
                          t * (-6.3706 + t * (0.006593 + t * (-0.00003169)))),
@@ -1203,18 +1380,21 @@ inline double fad03(double t) noexcept {
       iers2010::DAS2R;
   return a;
 }
+inline double fad03(const dso::TwoPartDate &tt) noexcept {
+  return fad03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of the
 ///        Moon's ascending node.
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return Omega, radians
+/// @return Ω, [rad] in range [0,2π)
 inline double faom03(double t) noexcept {
-  double a =
+  const double a =
       std::fmod(450160.398036 +
                     t * (-6962890.5431 +
                          t * (7.4722 + t * (0.007702 + t * (-0.00005939)))),
@@ -1222,125 +1402,155 @@ inline double faom03(double t) noexcept {
       iers2010::DAS2R;
   return a;
 }
+inline double faom03(const dso::TwoPartDate &tt) noexcept {
+  return faom03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
 ///        Mercury.
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return mean longitude of Mercury, radians
+/// @return mean longitude of Mercury, [rad] in range [0,2π)
 inline double fame03(double t) noexcept {
   return std::fmod(4.402608842 + 2608.7903141574 * t, iers2010::D2PI);
+}
+inline double fame03(const dso::TwoPartDate &tt) noexcept {
+  return fame03(tt.jcenturies_sinceJ2000());
 }
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
 ///        Venus.
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return mean longitude of Venus, radians
+/// @return mean longitude of Venus, [rad] in range [0,2π)
 inline double fave03(double t) noexcept {
   return std::fmod(3.176146697e0 + 1021.3285546211e0 * t, iers2010::D2PI);
 }
+inline double fave03(const dso::TwoPartDate &tt) noexcept {
+  return fave03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
-/// Earth.
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+///        Earth.
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return mean longitude of Earth, radians
+/// @return mean longitude of Earth, [rad] in range [0,2π)
 inline double fae03(double t) noexcept {
   return std::fmod(1.753470314e0 + 628.3075849991e0 * t, iers2010::D2PI);
 }
+inline double fae03(const dso::TwoPartDate &tt) noexcept {
+  return fae03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
-/// Mars.
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+///        Mars.
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return mean longitude of Mars, radians
+/// @return mean longitude of Mars, [rad] in range [0,2π)
 inline double fama03(double t) noexcept {
   return std::fmod(6.203480913e0 + 334.0612426700e0 * t, iers2010::D2PI);
 }
+inline double fama03(const dso::TwoPartDate &tt) noexcept {
+  return fama03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
-/// Jupiter
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+///        Jupiter
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return mean longitude of Jupiter, radians
+/// @return mean longitude of Jupiter, [rad] in range [0,2π)
 inline double faju03(double t) noexcept {
   return std::fmod(0.599546497e0 + 52.9690962641e0 * t, iers2010::D2PI);
 }
+inline double faju03(const dso::TwoPartDate &tt) noexcept {
+  return faju03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
-/// Saturn
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+///        Saturn
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return mean longitude of Saturn, radians
+/// @return mean longitude of Saturn, [rad] in range [0,2π)
 inline double fasa03(double t) noexcept {
   return std::fmod(0.874016757e0 + 21.3299104960e0 * t, iers2010::D2PI);
 }
+inline double fasa03(const dso::TwoPartDate &tt) noexcept {
+  return fasa03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
-/// Uranus
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+///        Uranus
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return mean longitude of Uranus, radians
+/// @return mean longitude of Uranus, [rad] in range [0,2π)
 inline double faur03(double t) noexcept {
   return std::fmod(5.481293872e0 + 7.4781598567e0 * t, iers2010::D2PI);
 }
+inline double faur03(const dso::TwoPartDate &tt) noexcept {
+  return faur03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
-/// Neptune
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+///        Neptune
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          from Simon et al. (1994).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is from Simon et al. (1994).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return mean longitude of Neptune, radians
+/// @return mean longitude of Neptune, [rad] in range [0,2π)
 inline double fane03(double t) noexcept {
   return std::fmod(5.311886287e0 + 3.8133035638e0 * t, iers2010::D2PI);
 }
+inline double fane03(const dso::TwoPartDate &tt) noexcept {
+  return fane03(tt.jcenturies_sinceJ2000());
+}
 
 /// @brief Fundamental argument, IERS Conventions (2003): general accumulated
-/// precession in longitude.
-/// @note  - Though t is strictly TDB, it is usually more convenient to use TT,
+///        precession in longitude.
+/// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
-///        - The expression used is as adopted in IERS Conventions (2003) and is
-///          taken from Kinoshita & Souchay (1990) and comes originally from
-///          Lieske et al. (1977).
-///        - function is adopted from IAU SOFA, release 2021-05-12
+///       - The expression used is as adopted in IERS Conventions (2003) and
+///         is taken from Kinoshita & Souchay (1990) and comes originally from
+///         Lieske et al. (1977).
+///       - function is adopted from IAU SOFA, release 2021-05-12
 /// @param[in] t TDB, Julian centuries since J2000.0
-/// @return general precession in longitude, radians
+/// @return general precession in longitude, [rad] in range [0,2π)
 inline double fapa03(double t) noexcept {
   return (0.024381750e0 + 0.00000538691e0 * t) * t;
 }
+inline double fapa03(const dso::TwoPartDate &tt) noexcept {
+  return fapa03(tt.jcenturies_sinceJ2000());
+}
 
-}// namespace sofa
-}// namespace iers2010
+} // namespace sofa
+} // namespace iers2010
 #endif

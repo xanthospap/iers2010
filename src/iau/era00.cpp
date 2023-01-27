@@ -1,20 +1,13 @@
 #include "iau.hpp"
-#include "iersc.hpp"
-#include <algorithm>
-#include <cmath>
-#include "datetime/dtfund.hpp"
 
-double iers2010::sofa::era00(double dj1, double dj2) noexcept {
-  double d1 = dj1;
-  double d2 = dj2;
-  if (dj1 >= dj2)
-    std::swap(d1, d2);
+double iers2010::sofa::era00(const dso::TwoPartDate &mjd_ut1/*double dj1, double dj2*/) noexcept {
 
   // days since fundamental epoch
-  const double t = d1 + (d2 - dso::j2000_jd);
+  const double t = mjd_ut1._small + (mjd_ut1._big - dso::j2000_jd);
 
   // fractional part of T in days
-  const double f = std::fmod(d1, 1e0) + std::fmod(d2, 1e0);
+  const double f =
+      std::fmod(mjd_ut1._big, 1e0) + std::fmod(mjd_ut1._small, 1e0);
 
   // earth rotation angle at given UT1
   const double theta = dso::anp(

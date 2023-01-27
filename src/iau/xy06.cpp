@@ -1,5 +1,8 @@
 #include "iau.hpp"
 #include "iersc.hpp"
+#include <datetime/dtcalendar.hpp>
+
+namespace {
 
 // Maximum power of T in the polynomials for X and Y
 enum { MAXPT = 5 };
@@ -2412,12 +2415,14 @@ constexpr const int jasc[] = {0, 1, 1, 0, 1, 0, 0, 1, 0, 1,
                               1, 0, 1, 0, 0, 1, 0, 1, 1, 0};
 constexpr const int japt[] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2,
                               2, 2, 3, 3, 3, 3, 4, 4, 4, 4};
+} // unnamed namespace
 
-void iers2010::sofa::xy06(double date1, double date2, double &x,
+void iers2010::sofa::xy06(const dso::TwoPartDate &mjd_tt/*double date1, double date2*/, double &x,
                           double &y) noexcept {
 
   // Interval between fundamental date J2000.0 and given date (JC).
-  const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  // const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  const double t = mjd_tt.jcenturies_sinceJ2000();
 
   // Powers of T.
   double pt[MAXPT + 1];
@@ -2475,8 +2480,8 @@ void iers2010::sofa::xy06(double date1, double date2, double &x,
     double arg = 0e0;
     for (int i = 0; i < 14; i++) {
       int m = mfapl[ifreq][i];
-      if (m != 0)
-        arg += (double)m * fa[i];
+      //if (m != 0)
+      arg += (double)m * fa[i];
     }
     sc[0] = std::sin(arg);
     sc[1] = std::cos(arg);
