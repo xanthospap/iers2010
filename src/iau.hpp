@@ -836,6 +836,8 @@ double gst06a(const dso::TwoPartDate &mjd_ut1,
 double eors(const Eigen::Matrix<double, 3, 3> &rnpb, double s) noexcept;
 
 /// @brief Frame bias and precession, IAU 2000.
+///
+/// @test  sofa_rotation_matrices.cpp
 /// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
 ///             date1+date2 is a Julian Date, apportioned in any convenient
 ///             way between the two arguments. Optimally, The 'J2000 method'
@@ -916,6 +918,8 @@ void bp00(const dso::TwoPartDate &mjd_tt, Eigen::Matrix<double, 3, 3> &rb,
 ///
 /// It is permissible to re-use the same variable in the returned arguments.
 /// The quantities are stored in the stated order.
+///
+/// @test  sofa_rotation_matrices.cpp
 /// @param[out] eps0    epsilon_0
 /// @param[out] psia    psi_A
 /// @param[out] oma     omega_A
@@ -954,6 +958,8 @@ void p06e(const dso::TwoPartDate &tt_mjd, double &eps0, double &psia, double &om
 /// nutation should be included as well as any other relevant corrections to
 /// the position of the CIP. It is permissible to re-use the same array in
 /// the returned arguments. The arrays are filled in the stated order.
+///
+/// @test  sofa_rotation_matrices.cpp
 /// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
 ///             date1+date2 is a Julian Date, apportioned in any convenient
 ///             way between the two arguments. Optimally, The 'J2000 method'
@@ -1007,6 +1013,7 @@ void pn06(const dso::TwoPartDate &mjd_tt, double dpsi, double deps,
 /// the position of the CIP. It is permissible to re-use the same array in
 /// the returned arguments. The arrays are filled in the stated order.
 ///
+/// @test  sofa_rotation_matrices.cpp
 /// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
 ///             date1+date2 is a Julian Date, apportioned in any convenient
 ///             way between the two arguments. Optimally, The 'J2000 method'
@@ -1050,6 +1057,7 @@ void pn00(const dso::TwoPartDate &mjd_tt, double dpsi, double deps,
 /// supporting classical(equinox - based) use directly and CIO-based use
 /// indirectly.
 ///
+/// @test  sofa_rotation_matrices.cpp
 /// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
 ///             date1+date2 is a Julian Date, apportioned in any convenient
 ///             way between the two arguments. Optimally, The 'J2000 method'
@@ -1107,6 +1115,7 @@ inline void pn00a(const dso::TwoPartDate &mjd_tt, double dpsi, double deps,
 /// accurate, result (about 1 mas) can be obtained by using instead the
 /// iauPnm00b function.
 ///
+/// @test  sofa_rotation_matrices.cpp
 /// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
 ///             date1+date2 is a Julian Date, partioned in any convenient
 ///             way between the two arguments. Optimally, The 'J2000 method'
@@ -1134,6 +1143,8 @@ inline Eigen::Matrix<double, 3, 3> pnm00a(const dso::TwoPartDate &mjd_tt) noexce
 /// This GMST is compatible with the IAU 2000 resolutions and must be used only
 /// in conjunction with other IAU 2000 compatible components such as
 /// precession-nutation and equation of the equinoxes.
+///
+/// @test  sofa_fundamental_angles.cpp
 /// @param[in] uta  UT1 as a 2-part Julian Date. For UT, the date & time
 ///            method is best matched to the algorithm that is used by the
 ///            Earth Rotation Angle function, called internally: maximum
@@ -1168,6 +1179,7 @@ inline double gmst00(const dso::TwoPartDate &mjd_ut1, const dso::TwoPartDate &mj
 /// both purposes, errors of order 100 microarcseconds result.
 /// The GMST is compatible with the IAU 2006 precession and must not be used
 /// with other precession models.
+/// @test  sofa_fundamental_angles.cpp
 /// @param[in] uta  UT1 as a 2-part Julian Date. For UT, the date & time
 ///            method is best matched to the algorithm that is used by the
 ///            Earth Rotation Angle function, called internally: maximum
@@ -1202,6 +1214,7 @@ inline double gmst06(const dso::TwoPartDate &mjd_ut1, const dso::TwoPartDate &mj
 ///
 /// Greenwich apparent ST = GMST + equation of the equinoxes
 ///
+/// @test  sofa_fundamental_angles.cpp
 /// @param[in] tta TT as a 2-part Julian Date. The J2000 method is best matched
 ///                to the way the argument is handled internally and will
 ///                deliver the optimum resolution. The MJD method and the
@@ -1219,6 +1232,7 @@ inline double ee06a(const dso::TwoPartDate &mjd_tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean anomaly of
 ///        the Moon.
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use
 ///         TT, which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003)
@@ -1241,6 +1255,7 @@ inline double fal03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean anomaly of the
 ///        Sun.
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1263,6 +1278,7 @@ inline double falp03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of the
 ///        Moon minus mean longitude of the ascending node
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1285,6 +1301,7 @@ inline double faf03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean elongation of
 ///        the Moon from the Sun.
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1307,6 +1324,7 @@ inline double fad03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of the
 ///        Moon's ascending node.
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1329,6 +1347,7 @@ inline double faom03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
 ///        Mercury.
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1345,6 +1364,7 @@ inline double fame03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
 ///        Venus.
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1361,6 +1381,7 @@ inline double fave03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
 ///        Earth.
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1377,6 +1398,7 @@ inline double fae03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
 ///        Mars.
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1393,6 +1415,7 @@ inline double fama03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
 ///        Jupiter
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1409,6 +1432,7 @@ inline double faju03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
 ///        Saturn
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1425,6 +1449,7 @@ inline double fasa03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
 ///        Uranus
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1441,6 +1466,7 @@ inline double faur03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): mean longitude of
 ///        Neptune
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
@@ -1457,6 +1483,7 @@ inline double fane03(const dso::TwoPartDate &tt) noexcept {
 
 /// @brief Fundamental argument, IERS Conventions (2003): general accumulated
 ///        precession in longitude.
+/// @test  sofa_fundamental_angles.cpp
 /// @note - Though t is strictly TDB, it is usually more convenient to use TT,
 ///         which makes no significant difference.
 ///       - The expression used is as adopted in IERS Conventions (2003) and
