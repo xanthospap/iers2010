@@ -12,9 +12,13 @@ inline bool approx_equal(double a, double b) {
                                          std::numeric_limits<double>::epsilon();
 }
 
+bool approx_equal(double a, double b, const char *errormsg);
+
 inline bool approx_equal(double a, double b, double epsilon) {
   return (a == b) || (std::abs(a - b) < epsilon);
 }
+
+bool approx_equal(double a, double b, double epsilon, const char *errormsg);
 
 bool approx_equal(const dso::TwoPartDate &d1, const dso::TwoPartDate &d2);
 

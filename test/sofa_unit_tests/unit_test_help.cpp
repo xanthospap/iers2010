@@ -6,6 +6,31 @@ std::random_device r;
 // random engine
 std::default_random_engine e(r());
 
+bool approx_equal(double a, double b, const char *error_msg) {
+  bool equal = (a == b) ||
+               (std::abs(a - b) < std::abs(std::min(a, b)) *
+                                      std::numeric_limits<double>::epsilon());
+  if (!equal) {
+    fprintf(stderr, "ERROR. values: %.12e != %.12e, diff=%.6e\n", a, b, a-b);
+    fprintf(stderr, error_msg);
+    fprintf(stderr, "\n");
+  }
+
+  return  equal;
+}
+
+bool approx_equal(double a, double b, double epsilon, const char *error_msg) {
+  bool equal = (a == b) || (std::abs(a - b) < epsilon);
+  
+  if (!equal) {
+    fprintf(stderr, "ERROR. values: %.12e != %.12e, diff=%.6e, Epsilon=%.12e\n", a, b, a-b, epsilon);
+    fprintf(stderr, error_msg);
+    fprintf(stderr, "\n");
+  }
+
+  return  equal;
+}
+
 bool approx_equal(const dso::TwoPartDate &d1, const dso::TwoPartDate &d2) {
   const double a = d1._big + d1._small;
   const double b = d2._big + d2._small;
