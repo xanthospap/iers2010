@@ -22,6 +22,19 @@ constexpr const int NUM_TESTS = 100000;
 const char *funcs[] = {"-"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
+double jc1(const dso::TwoPartDate &mjd) noexcept {
+  return ((mjd._big - 51544e0) + (mjd._small - .5e0)) /
+         dso::days_in_julian_cent;
+}
+double jc2(const dso::TwoPartDate &mjd) noexcept {
+  return (mjd._big - dso::j2000_mjd) / dso::days_in_julian_cent +
+         mjd._small / dso::days_in_julian_cent;
+}
+void mjd2j2jd(const dso::TwoPartDate &mjd, double &d1, double &d2) noexcept {
+  d1 = dso::j2000_jd;
+  d2 = (mjd._big - 51544e0) + (mjd._small - .5e0);
+}
+
 int main(int argc, char *argv[]) {
   if (argc > 1) {
     fprintf(stderr, "Ignoring command line arguments!\n");
@@ -39,13 +52,15 @@ int main(int argc, char *argv[]) {
     // random date (MJD, TT)
     const auto tt = random_mjd();
     am = tt.jcenturies_sinceJ2000();
+    assert(am==jc1(tt));
+    // assert(approx_equal(am,jc2(tt))); <-- this fails!
     
     auto jdtt = tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
     assert(jdtt._big == dso::j2000_jd);
     as = ((jdtt._big - DJ00) + jdtt._small) / DJC;
     if (!approx_equal(am, as))
       ++fails;
-    printf("%.15e %.15e\n", jdtt.mjd(), am-as);
+    // printf("%.15e %.15e\n", jdtt.mjd(), am-as);
   }
   printf("%8s %6d %6d %s\n", funcs[func_it++], NUM_TESTS, fails,
          (fails == 0) ? "OK" : "FAILED");
