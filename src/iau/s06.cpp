@@ -1,15 +1,16 @@
 #include "iau.hpp"
 
 namespace {
+
 typedef struct {
   int nfa[8];  // coefficients of l,l',F,D,Om,LVe,LE,pA
   double s, c; // sine and cosine coefficients
-} TERM;
+} Term;
 
 // The series for s+XY/2 t^N, for N=0, ..., 4
 
 // Terms of order t^0
-constexpr TERM s0[] = {
+constexpr const Term s0[] = {
 
     // 1-10
     {{0, 0, 0, 0, 1, 0, 0, 0}, -2640.73e-6, 0.39e-6},
@@ -53,14 +54,14 @@ constexpr TERM s0[] = {
     {{1, 0, -2, 0, -1, 0, 0, 0}, -0.11e-6, 0.00e-6}};
 
 // Terms of order t^1
-constexpr TERM s1[] = {
+constexpr const Term s1[] = {
     // 1 - 3
     {{0, 0, 0, 0, 2, 0, 0, 0}, -0.07e-6, 3.57e-6},
     {{0, 0, 0, 0, 1, 0, 0, 0}, 1.73e-6, -0.03e-6},
     {{0, 0, 2, -2, 3, 0, 0, 0}, 0.00e-6, 0.48e-6}};
 
 // Terms of order t^2
-constexpr TERM s2[] = {
+constexpr const Term s2[] = {
 
     // 1-10
     {{0, 0, 0, 0, 1, 0, 0, 0}, 743.52e-6, -0.17e-6},
@@ -94,7 +95,7 @@ constexpr TERM s2[] = {
     {{0, 0, 2, 0, 0, 0, 0, 0}, -0.11e-6, 0.00e-6}};
 
 // Terms of order t^3
-constexpr TERM s3[] = {
+constexpr const Term s3[] = {
 
     // 1-4
     {{0, 0, 0, 0, 1, 0, 0, 0}, 0.30e-6, -23.42e-6},
@@ -103,34 +104,32 @@ constexpr TERM s3[] = {
     {{0, 0, 0, 0, 2, 0, 0, 0}, 0.00e-6, 0.23e-6}};
 
 // Terms of order t^4
-constexpr TERM s4[] = {
+constexpr const Term s4[] = {
 
     // 1-1
     {{0, 0, 0, 0, 1, 0, 0, 0}, -0.26e-6, -0.01e-6}};
 
 // Number of terms in the series
-constexpr int NS0 = (int)(sizeof s0 / sizeof(TERM));
-constexpr int NS1 = (int)(sizeof s1 / sizeof(TERM));
-constexpr int NS2 = (int)(sizeof s2 / sizeof(TERM));
-constexpr int NS3 = (int)(sizeof s3 / sizeof(TERM));
-constexpr int NS4 = (int)(sizeof s4 / sizeof(TERM));
+constexpr const int NS0 = (int)(sizeof s0 / sizeof(Term));
+constexpr const int NS1 = (int)(sizeof s1 / sizeof(Term));
+constexpr const int NS2 = (int)(sizeof s2 / sizeof(Term));
+constexpr const int NS3 = (int)(sizeof s3 / sizeof(Term));
+constexpr const int NS4 = (int)(sizeof s4 / sizeof(Term));
 }//unnamed namespace
 
 double iers2010::sofa::s06(const dso::TwoPartDate &mjd_tt, double x,
                            double y) noexcept {
 
   // Polynomial coefficients
-  constexpr double sp[] = {// 1-6
+  constexpr const double sp[] = {// 1-6
                            94.00e-6,     3808.65e-6, -122.68e-6,
                            -72574.11e-6, 27.98e-6,   15.62e-6};
 
   // Time since J2000.0, in Julian centuries
-  // Interval between fundamental epoch J2000.0 and current date (JC).
-  // double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
   const double t = mjd_tt.jcenturies_sinceJ2000();
 
   // Fundamental Arguments (from IERS Conventions 2003)
-  double fa[8] = {
+  const double fa[8] = {
       // Mean anomaly of the Moon.
       fal03(t),
       // Mean anomaly of the Sun.

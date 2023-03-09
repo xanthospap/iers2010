@@ -5,7 +5,7 @@
 namespace {
 
 // Maximum power of T in the polynomials for X and Y
-enum { MAXPT = 5 };
+constexpr const int MAXPT = 5;
 
 // Polynomial coefficients (arcsec, X then Y).
 // Extracted from Tables 5.2[ab] of IERS Conventions 2010 (mind the units)
@@ -23,7 +23,6 @@ constexpr const double xyp[2][MAXPT + 1] = {
 // Terms 4 to 8 (luni-solar part) extracted from Table 5.2[] of IERS 
 // Conventions 2010
 constexpr const int mfals[][5] = {
-
     /* 1-10 */
     {0, 0, 0, 0, 1},
     {0, 0, 2, -2, 2},
@@ -35,7 +34,7 @@ constexpr const int mfals[][5] = {
     {0, 0, 2, 0, 1},
     {1, 0, 2, 0, 2},
     {0, 1, -2, 2, -2},
-
+    
     /* 11-20 */
     {0, 0, 2, -2, 1},
     {1, 0, -2, 0, -2},
@@ -47,7 +46,7 @@ constexpr const int mfals[][5] = {
     {2, 0, -2, 0, -1},
     {0, 0, 0, 2, 0},
     {0, 0, 2, 2, 2},
-
+    
     /* 21-30 */
     {2, 0, 0, -2, 0},
     {0, 2, -2, 2, -2},
@@ -59,7 +58,7 @@ constexpr const int mfals[][5] = {
     {0, 1, 0, 0, 1},
     {1, 0, 0, -2, -1},
     {0, 2, 2, -2, 2},
-
+    
     /* 31-40 */
     {0, 0, 2, -2, 0},
     {1, 0, 0, -2, 1},
@@ -71,7 +70,7 @@ constexpr const int mfals[][5] = {
     {2, 0, -2, 0, 0},
     {0, 0, 2, 2, 1},
     {0, 1, -2, 0, -2},
-
+    
     /* 41-50 */
     {0, 0, 0, 2, 1},
     {1, 0, 2, -2, 1},
@@ -83,7 +82,7 @@ constexpr const int mfals[][5] = {
     {1, 1, 0, -2, 0},
     {2, 0, 0, -2, 1},
     {1, 0, 0, 2, 0},
-
+    
     /* 51-60 */
     {0, 1, 2, -2, 1},
     {1, -1, 0, 0, 0},
@@ -95,7 +94,7 @@ constexpr const int mfals[][5] = {
     {0, 0, 0, 1, 0},
     {1, -1, 2, 0, 2},
     {1, 1, -2, -2, -2},
-
+    
     /* 61-70 */
     {1, 0, -2, 0, 0},
     {2, 0, 0, 0, -1},
@@ -107,7 +106,7 @@ constexpr const int mfals[][5] = {
     {1, 0, 2, 0, 0},
     {1, -1, 0, -1, 0},
     {1, 0, 0, 0, 2},
-
+    
     /* 71-80 */
     {1, 0, -1, 0, -1},
     {0, 0, 2, 1, 2},
@@ -119,7 +118,7 @@ constexpr const int mfals[][5] = {
     {2, 0, -2, -2, -2},
     {1, 1, 2, -2, 2},
     {2, 0, -2, -4, -2},
-
+    
     /* 81-90 */
     {1, 0, -4, 0, -2},
     {2, 0, 2, -2, 1},
@@ -131,7 +130,7 @@ constexpr const int mfals[][5] = {
     {3, 0, 2, -2, 2},
     {0, 0, 4, -2, 2},
     {1, 0, 0, -4, 0},
-
+    
     /* 91-100 */
     {0, 1, 2, 0, 1},
     {2, 0, 0, -4, 0},
@@ -143,7 +142,7 @@ constexpr const int mfals[][5] = {
     {0, 0, 2, -1, 2},
     {0, 0, 2, 4, 2},
     {2, 1, 0, -2, 0},
-
+    
     /* 101-110 */
     {1, 1, 0, -2, 1},
     {1, -1, 0, -2, 0},
@@ -155,7 +154,7 @@ constexpr const int mfals[][5] = {
     {1, 0, 0, 2, -1},
     {1, -1, -2, -2, -2},
     {3, 0, 2, 0, 1},
-
+    
     /* 111-120 */
     {0, 1, 2, 2, 2},
     {1, 0, 2, -2, 0},
@@ -167,7 +166,7 @@ constexpr const int mfals[][5] = {
     {1, -1, 2, 0, 1},
     {1, -1, -2, 0, -2},
     {0, 1, 0, 2, 0},
-
+    
     /* 121-130 */
     {0, 1, 2, -2, 0},
     {0, 0, 0, 1, 1},
@@ -179,7 +178,7 @@ constexpr const int mfals[][5] = {
     {1, 1, 2, 0, 1},
     {1, 0, 0, -2, -2},
     {1, 0, -2, 2, 0},
-
+    
     /* 131-140 */
     {1, 0, -1, 0, -2},
     {0, 1, 0, -2, 1},
@@ -191,7 +190,7 @@ constexpr const int mfals[][5] = {
     {1, -1, 0, 2, 0},
     {1, 0, 2, 1, 2},
     {1, 0, 2, -1, 2},
-
+    
     /* 141-150 */
     {0, 0, 2, 1, 1},
     {1, 0, 0, -2, 2},
@@ -203,7 +202,7 @@ constexpr const int mfals[][5] = {
     {0, 0, 1, 0, 1},
     {2, 0, -2, -2, -1},
     {4, 0, 2, 0, 2},
-
+    
     /* 151-160 */
     {2, -1, 0, 0, 0},
     {2, 1, 2, -2, 2},
@@ -215,7 +214,7 @@ constexpr const int mfals[][5] = {
     {1, 0, -1, 0, 0},
     {1, 0, 0, 1, 0},
     {0, 1, 0, 2, 1},
-
+    
     /* 161-170 */
     {1, 0, -4, 0, -1},
     {1, 0, 0, -4, -1},
@@ -227,7 +226,7 @@ constexpr const int mfals[][5] = {
     {0, 0, 4, 0, 2},
     {0, 0, 2, -4, 1},
     {2, 0, 0, -2, -2},
-
+    
     /* 171-180 */
     {1, 1, -2, -4, -2},
     {0, 1, 0, -2, -1},
@@ -2417,26 +2416,32 @@ constexpr const int japt[] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2,
                               2, 2, 3, 3, 3, 3, 4, 4, 4, 4};
 } // unnamed namespace
 
-void iers2010::sofa::xy06(const dso::TwoPartDate &mjd_tt/*double date1, double date2*/, double &x,
+void iers2010::sofa::xy06(const dso::TwoPartDate &mjd_tt, double &x,
                           double &y) noexcept {
 
   // Interval between fundamental date J2000.0 and given date (JC).
-  // const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
   const double t = mjd_tt.jcenturies_sinceJ2000();
 
   // Powers of T.
   double pt[MAXPT + 1];
-  double w = 1e0;
-  for (int jpt = 0; jpt <= MAXPT; jpt++) {
-    pt[jpt] = w;
-    w *= t;
+  {
+    double w = 1e0;
+    for (int jpt = 0; jpt <= MAXPT; jpt++) {
+      pt[jpt] = w;
+      w *= t;
+    }
+  }
+  
+  // Polynomial part of precession-nutation
+  double xpol = 0e0, ypol = 0e0;
+  {
+    for (int j = MAXPT; j >= 0; j--)
+      xpol += xyp[0][j] * pt[j];
+    for (int j = MAXPT; j >= 0; j--)
+      ypol += xyp[1][j] * pt[j];
   }
 
-  // Initialize totals in X and Y:  polynomial, luni-solar, planetary.
-  double xypr[2] = {0e0, 0e0}, xypl[2] = {0e0, 0e0}, xyls[2] = {0e0, 0e0};
-
   // Fundamental arguments (IERS 2003)
-  // ---------------------------------
   const double fa[14] = {
       // Mean anomaly of the Moon.
       fal03(t),
@@ -2461,17 +2466,11 @@ void iers2010::sofa::xy06(const dso::TwoPartDate &mjd_tt/*double date1, double d
       fapa03(t),
   };
 
-  // Polynomial part of precession-nutation
-  // --------------------------------------
-  for (int j = MAXPT; j >= 0; j--)
-    xypr[0] += xyp[0][j] * pt[j];
-  for (int j = MAXPT; j >= 0; j--)
-    xypr[1] += xyp[1][j] * pt[j];
+  // Initialize totals in X and Y:  polynomial, luni-solar, planetary.
+  // double xypr[2] = {0e0, 0e0}, xypl[2] = {0e0, 0e0}, xyls[2] = {0e0, 0e0};
 
   // Nutation periodic terms, planetary
-  // ----------------------------------
-  double sc[2];
-
+  double xnpl=0e0, ynpl=0e0;
   // Work backwards through the coefficients per frequency list.
   int ialast = NA;
   for (int ifreq = NFPL - 1; ifreq >= 0; ifreq--) {
@@ -2480,32 +2479,32 @@ void iers2010::sofa::xy06(const dso::TwoPartDate &mjd_tt/*double date1, double d
     double arg = 0e0;
     for (int i = 0; i < 14; i++) {
       int m = mfapl[ifreq][i];
-      //if (m != 0)
       arg += (double)m * fa[i];
     }
-    sc[0] = std::sin(arg);
-    sc[1] = std::cos(arg);
+    const double sa = std::sin(arg);
+    const double ca = std::cos(arg);
 
     // Work backwards through the amplitudes at this frequency.
-    int ia = nc[ifreq + NFLS];
+    const int ia = nc[ifreq + NFLS];
     for (int i = ialast; i >= ia; i--) {
       // Coefficient number (0 = 1st).
       int j = i - ia;
       // X or Y.
-      int jxy = jaxy[j];
+      const int facx = (jaxy[j]==0);
+      const int facy = (jaxy[j]==1);
       // Sin or cos.
-      int jsc = jasc[j];
+      const double scarg = sa*(jasc[j]==0) + ca*(jasc[j]==1);
       // Power of T.
       int jpt = japt[j];
-      // Accumulate the component.
-      xypl[jxy] += a[i - 1] * sc[jsc] * pt[jpt];
+      // Accumulate the component(s).
+      xnpl += facx*(a[i - 1] * scarg * pt[jpt]);
+      ynpl += facy*(a[i - 1] * scarg * pt[jpt]);
     }
     ialast = ia - 1;
   }
 
   // Nutation periodic terms, luni-solar
-  // -----------------------------------
-
+  double xnls=0e0, ynls=0e0;
   // Continue working backwards through the number of coefficients list.
   for (int ifreq = NFLS - 1; ifreq >= 0; ifreq--) {
 
@@ -2513,38 +2512,33 @@ void iers2010::sofa::xy06(const dso::TwoPartDate &mjd_tt/*double date1, double d
     double arg = 0e0;
     for (int i = 0; i < 5; i++) {
       int m = mfals[ifreq][i];
-      // if (m != 0)
       arg += static_cast<double>(m) * fa[i];
     }
-    sc[0] = std::sin(arg);
-    sc[1] = std::cos(arg);
+    const double sa = std::sin(arg);
+    const double ca = std::cos(arg);
 
     // Work backwards through the amplitudes at this frequency.
-    int ia = nc[ifreq];
+    const int ia = nc[ifreq];
     for (int i = ialast; i >= ia; i--) {
-
       // Coefficient number (0 = 1st).
       int j = i - ia;
-
       // X or Y.
-      int jxy = jaxy[j];
-
+      const int facx = (jaxy[j]==0);
+      const int facy = (jaxy[j]==1);
       // Sin or cos.
-      int jsc = jasc[j];
-
+      const double scarg = sa*(jasc[j]==0) + ca*(jasc[j]==1);
       // Power of T.
       int jpt = japt[j];
-
       // Accumulate the component.
-      xyls[jxy] += a[i - 1] * sc[jsc] * pt[jpt];
+      xnls += facx*(a[i - 1] * scarg * pt[jpt]);
+      ynls += facy*(a[i - 1] * scarg * pt[jpt]);
     }
     ialast = ia - 1;
   }
 
   // Results:  CIP unit vector components
-  // ------------------------------------
-  x = iers2010::DAS2R * (xypr[0] + (xyls[0] + xypl[0]) / 1e6);
-  y = iers2010::DAS2R * (xypr[1] + (xyls[1] + xypl[1]) / 1e6);
+  x = dso::sec2rad(xpol + (xnls + xnpl) / 1e6);
+  y = dso::sec2rad(ypol + (ynls + ynpl) / 1e6);
 
   // Finished.
   return;
