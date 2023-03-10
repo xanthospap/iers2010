@@ -391,13 +391,11 @@ void pr00(const dso::TwoPartDate &mjd_tt, double &dpsipr,
 ///            optimum resolution.
 /// @param[in] date2  TT as a 2-part Julian Date (see above)
 /// @return the TIO locator s' in [radians]
-// double sp00(double date1, double date2) noexcept;
 inline double sp00(const dso::TwoPartDate &mjd_tt) noexcept {
   // Interval between fundamental epoch J2000.0 and current date (JC).
-  // double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
   const double t = mjd_tt.jcenturies_sinceJ2000();
   // Approximate s'.
-  return -47e-6 * t * iers2010::DAS2R;
+  return dso::sec2rad(-47e-6 * t);
 }
 
 /// @brief Earth rotation angle (IAU 2000 model).
