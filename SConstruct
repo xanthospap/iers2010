@@ -63,6 +63,7 @@ lib_src_files += glob.glob(r"src/hardisp/*.cpp")
 lib_src_files += glob.glob(r"src/dehanttideinel/*.cpp")
 lib_src_files += glob.glob(r"src/extra/atmosphere/*.cpp")
 lib_src_files += glob.glob(r"src/interpf/*.cpp")
+lib_src_files += glob.glob(r"src/eop/*.cpp")
 
 ## Headers (for lib)
 hdr_src_files = glob.glob(r"src/*.hpp")

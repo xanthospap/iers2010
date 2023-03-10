@@ -50,8 +50,12 @@ constexpr const double GMe = 3.986004418e14;
 constexpr const double AU = 1.49597870700e11;
 
 /// @brief Nominal mean Earth’s angular velocity [rads/sec]
-/// @note Table 1.2: Parameters of the Geodetic Reference System GRS80
-constexpr const double OmegaEarth = 7.292115e-5;
+/// @note Table 1.2: Parameters of the Geodetic Reference System GRS80, 
+///       IERS2010
+/// constexpr const double OmegaEarth = 7.292115e-5;
+/// see https://www.iers.org/IERS/EN/Science/EarthRotation/UT1LOD.html
+constexpr const double OmegaEarth = 7.2921151467064e-5;
+
 
 /// @brief Solar radius [m]
 /// @see IAU, Resolution B3 on recommended nominal conversion constants for 

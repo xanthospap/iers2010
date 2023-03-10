@@ -382,7 +382,7 @@ int dso::Hardisp::operator()(const dso::TwoPartDate &tt_mjd) noexcept {
   // compute angles:
   // A1. Fundamental Arguments (temporary)
   double fundarg[5];
-  iers2010::fundarg(tt_mjd.jcenturies_sinceJ2000(), fundarg);
+  iers2010::fundarg(tt_mjd, fundarg);
   // A2. GMST [rad]
   const double gmst = /*iers2010::sofa::gmst06(ut1_jd._big, ut1_jd._small,
                                              tt_jd._big, tt_jd._small);*/

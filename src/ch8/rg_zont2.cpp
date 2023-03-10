@@ -1,13 +1,11 @@
 #include "iers2010.hpp"
-#ifdef USE_EXTERNAL_CONSTS
-#include "iersc.hpp"
-#endif
+#include "geodesy/units.hpp"
 
 namespace {
 
 // Zonal Earth tide model
 // Number of terms in the zonal Earth tide model
-constexpr int nzont = 62;
+constexpr const int nzont = 62;
 
 //  --------------------------------------------------
 //  Tables of multiples of arguments and coefficients
@@ -15,7 +13,7 @@ constexpr int nzont = 62;
 //
 //  Luni-Solar argument multipliers
 //      l   l'  F   D OMEGA
-constexpr int nfund[nzont][5] = {
+constexpr const int nfund[nzont][5] = {
     //  DATA ( ( NFUND(I,J), I=1,5 ), J= 1, 20 ) /
     {1, 0, 2, 2, 2},
     {2, 0, 2, 0, 1},
@@ -85,7 +83,7 @@ constexpr int nfund[nzont][5] = {
 
 // Multiple of DUT, DLOD, DOMEGA
 //   sin         cos      cos       sin        cos       sin
-constexpr double tide[nzont][6] = {
+constexpr const double tide[nzont][6] = {
     // DATA ( ( TIDE(I,J), I=1,6 ), J = 1,20 ) /
     {-0.0235e0, 0.0000e0, 0.2617e0, 0.0000e0, -0.2209e0, 0.0000e0},
     {-0.0404e0, 0.0000e0, 0.3706e0, 0.0000e0, -0.3128e0, 0.0000e0},
@@ -200,13 +198,10 @@ constexpr double tide[nzont][6] = {
 ///
 ///     Petit, G. and Luzum, B. (eds.), IERS Conventions (2010),
 ///     IERS Technical Note No. 36, BKG (2010)
-int iers2010::rg_zont2(double tjc, double &dut, double &dlod,
+int iers2010::rg_zont2(const double * const fargs, double &dut, double &dlod,
                        double &domega) noexcept {
 
-  // Computation of fundamental arguments
-  double fargs[5]; // (l, lp, f, d, om)
-  iers2010::fundarg(tjc, fargs);
-  
+  // fundamental arguments
   const double l = fargs[0];
   const double lp = fargs[1];
   const double f = fargs[2];
@@ -221,13 +216,8 @@ int iers2010::rg_zont2(double tjc, double &dut, double &dlod,
   //  Sum zonal tide terms.
   for (int i = 0; i < nzont; i++) {
     // Formation of multiples of arguments.
-    double arg =
-        std::fmod((double)nfund[i][0] * l + (double)nfund[i][1] * lp +
-                      (double)nfund[i][2] * f + (double)nfund[i][3] * d +
-                      (double)nfund[i][4] * om,
-                  iers2010::D2PI);
-    
-    arg += (arg<0e0) ? iers2010::D2PI : 0e0;
+    double arg = dso::anp(nfund[i][0] * l + nfund[i][1] * lp + nfund[i][2] * f +
+                          nfund[i][3] * d + nfund[i][4] * om);
 
     // Evaluate zonal tidal terms.
     const double sa = std::sin(arg);
@@ -244,4 +234,11 @@ int iers2010::rg_zont2(double tjc, double &dut, double &dlod,
 
   //  Finsihed
   return 0;
+}
+
+int iers2010::rg_zont2(const dso::TwoPartDate &tt_mjd, double &dut,
+                       double &dlod, double &domega) noexcept {
+  double fargs[5];
+  iers2010::fundarg(tt_mjd, fargs);
+  return iers2010::rg_zont2(fargs, dut, dlod, domega);
 }

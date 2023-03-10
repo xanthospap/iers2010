@@ -450,16 +450,10 @@ int ortho_eop(double fmjd, double &dx, double &dy, double &dut1) noexcept;
 
 /// @brief Evaluate the effects of zonal Earth tides on the rotation of the
 ///        Earth.
-int rg_zont2(double t, double &dut, double &dlod, double &domega) noexcept;
-#if __cplusplus >= 202002L
-template <gconcepts::is_sec_dt S>
-#else
-template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
-#endif
-int rg_zont2(const dso::datetime<S> &t, double &dut, double &dlod,
-             double &domega) noexcept {
-  return rg_zont2(t.jcenturies_sinceJ2000(), dut, dlod, domega);
-}
+int rg_zont2(const double *const fundarg, double &dut, double &dlod,
+             double &domega) noexcept;
+int rg_zont2(const dso::TwoPartDate &tt_mjd, double &dut, double &dlod,
+             double &domega) noexcept;
 
 /// Compute the global total FCULa mapping function.
 double fcul_a(double, double, double, double) noexcept;

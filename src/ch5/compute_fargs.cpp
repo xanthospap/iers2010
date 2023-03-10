@@ -20,7 +20,7 @@ int iers2010::utils::eop_fundarg(const dso::TwoPartDate &t_tt,
   // 2. Fundamental arguments -> GMST+pi, l, lp, f, d, om
   fargs[0] = std::fmod(gmst * iers2010::D2PI / 86400e0 + iers2010::DPI,
                        iers2010::D2PI);
-  iers2010::fundarg(t, fargs + 1);
+  iers2010::fundarg(t_tt, fargs + 1);
 
   return 0;
 }

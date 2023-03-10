@@ -5,7 +5,7 @@ constexpr const double fTURNAS = 1296000e0;
 constexpr const double fDAS2R = 4.848136811095359935899141e-6;
 }
 
-void iers2010::fundarg(double t, double *fargs) noexcept {
+void iers2010::details::fundarg(double t, double *fargs) noexcept {
 
   //  Compute the fundamental argument L.
   fargs[0] = std::fmod(485868.249036e0 +
@@ -51,7 +51,7 @@ void iers2010::fundarg(double t, double *fargs) noexcept {
   return;
 }
 
-void iers2010::fundarg_derivs(double t, double *fargs) noexcept {
+void iers2010::details::fundarg_derivs(double t, double *fargs) noexcept {
   // Note that obviously we are not normalizing angles here! (aka no fmod, 
   // anp, etc ...)
 
