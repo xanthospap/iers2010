@@ -1,6 +1,11 @@
 #include "cel2ter.hpp"
 #include "sofa.h"
-#include <datetime/dtcalendar.hpp>
+#include <cassert>
+
+/*
+ * TODO transform this to a test
+ * Currently, it basically prints a lot of stuf, for examining shit
+ */
 
 struct Sp3Orb {
   dso::datetime<dso::nanoseconds> t_;
@@ -44,6 +49,19 @@ int main(int argc, char *argv[]) {
   // one by one, transform sp3 input orbit from ITRF to GCRF and back
   // check results
   dso::Itrs2Gcrs Rot(t0, &eop_lut);
+
+  // the following should work
+  {
+    const auto RR = Rot.gcrf2tirs()*Rot.rpom() ;
+    printf("--------------------------------------------------------------\n");
+    printf("Rot.rpom() * Rot.gcrf2tirs() - Rot.gcrf2itrf()\n");
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        printf("%+.12f ", RR(i, j) - Rot.gcrf2itrf()(i, j));
+      }
+      printf("\n");
+    }
+  }
   
   // construct the ITRF-to-GCRF matrix using SOFA
   double rc2i[3][3];
@@ -68,14 +86,14 @@ int main(int argc, char *argv[]) {
     printf("Here is the Rpom matrix according to SOFA\n");
     for (int i=0; i<3; i++) {
       for (int j=0; j<3; j++) {
-        printf("%+14.9f ", rpom[i][j]);
+        printf("%+14.12f ", rpom[i][j]);
       }
       printf("\n");
     }
     printf("Here is the Rpom matrix according to mine\n");
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
-        printf("%+14.9f ", Rot.rpom()(i, j));
+        printf("%+14.12f ", Rot.rpom()(i, j));
       }
       printf("\n");
     }
@@ -84,17 +102,18 @@ int main(int argc, char *argv[]) {
     printf("Here is the Rc2i matrix according to SOFA\n");
     for (int i=0; i<3; i++) {
       for (int j=0; j<3; j++) {
-        printf("%+14.9f ", rc2i[i][j]);
+        printf("%+14.12f ", rc2i[i][j]);
       }
       printf("\n");
     }
     printf("Here is the Rc2i matrix according to mine\n");
-    const auto MMR = Eigen::AngleAxisd(Rot.earth_rotation_angle(),
-                                       -Eigen::Vector3d::UnitZ()) *
-                     Rot.rc2i();
+    const Eigen::Matrix<double, 3, 3> MMR =
+        Eigen::AngleAxisd(Rot.earth_rotation_angle(),
+                          -Eigen::Vector3d::UnitZ()) *
+        Rot.rc2i();
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
-        printf("%+14.9f ", MMR(i, j));
+        printf("%+14.12f ", MMR(i, j));
       }
       printf("\n");
     }
@@ -103,15 +122,15 @@ int main(int argc, char *argv[]) {
     printf("Here is the matrix according to SOFA\n");
     for (int i=0; i<3; i++) {
       for (int j=0; j<3; j++) {
-        printf("%+14.9f ", rt2c[i][j]);
+        printf("%+14.12f ", rt2c[i][j]);
       }
       printf("\n");
     }
-    const auto Rmine = Rot.R_gcrs2itrs();
+    const auto Rmine = Rot.gcrf2itrf();
     printf("Here is the matrix according to mine\n");
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
-        printf("%+14.9f ", Rmine(i, j));
+        printf("%+14.12f ", Rmine(i, j));
       }
       printf("\n");
     }
@@ -121,33 +140,54 @@ int main(int argc, char *argv[]) {
     iauTr(rt2c, rc2i);
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
-        printf("%+14.9f ", rc2i[i][j]);
+        printf("%+14.12f ", rc2i[i][j]);
       }
       printf("\n");
     }
-    const auto RmineInv = Rot.R_gcrs2itrs().transpose();
+    const auto RmineInv = Rot.gcrf2itrf().transpose();
     printf("Here is the inverse matrix according to mine\n");
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
-        printf("%+14.9f ", RmineInv(i, j));
+        printf("%+14.12f ", RmineInv(i, j));
       }
       printf("\n");
     }
   }
-
-  const Eigen::Matrix<double, 3, 1> r_gcrf = Rot.itrf2gcrf(Data[0].pos());
-  const Eigen::Matrix<double, 3, 1> r_itrf = Rot.gcrf2itrf(r_gcrf);
-  printf("ITRF Diffs: %+.9f %+.9f %+.9f\n", Data[0].pos()(0) - r_itrf(0),
-         Data[0].pos()(1) - r_itrf(1), Data[0].pos()(2) - r_itrf(2));
-
   double rp[3],rc[3],rp2[3];
   rp[0] = Data[0].pos()(0);
   rp[1] = Data[0].pos()(1);
   rp[2] = Data[0].pos()(2);
   iauRxp(rc2i, rp, rc);
+
+  const Eigen::Matrix<double, 3, 1> r_gcrf = Rot.itrf2gcrf(Data[0].pos());
+  printf("--------------------------------------------------------------\n");
+  printf("GCRF [MINE]: %+.12f %+.12f %+.12f\n", r_gcrf(0), r_gcrf(1), r_gcrf(2));
+  printf("GCRF [SOFA]: %+.12f %+.12f %+.12f\n", rc[0], rc[1], rc[2]);
+
   iauRxp(rt2c, rc, rp2);
+  const Eigen::Matrix<double, 3, 1> r_itrf = Rot.gcrf2itrf(r_gcrf);
+  printf("--------------------------------------------------------------\n");
+  printf("ITRF [MINE]: %+.12f %+.12f %+.12f\n", r_itrf(0), r_itrf(1), r_itrf(2));
+  printf("ITRF [SOFA]: %+.12f %+.12f %+.12f\n", rp2[0], rp2[1], rp2[2]);
+
+  printf("--------------------------------------------------------------\n");
+  printf("ITRF Diffs: %+.9f %+.9f %+.9f\n", Data[0].pos()(0) - r_itrf(0),
+         Data[0].pos()(1) - r_itrf(1), Data[0].pos()(2) - r_itrf(2));
   printf("ITRF Diffs: %+.9f %+.9f %+.9f\n", rp[0] - rp2[0], rp[1] - rp2[1],
          rp[2] - rp2[2]);
+
+
+  // lets also transform the velocity vectors
+  Eigen::Matrix<double, 6, 1> y_in;
+  y_in.block<3,1>(0,0) = Data[0].pos();
+  y_in.block<3,1>(3,0) = Data[0].vel();
+  const Eigen::Matrix<double, 6, 1> y_gcrf = Rot.itrf2gcrf(y_in);
+  const Eigen::Matrix<double, 6, 1> y_itrf = Rot.gcrf2itrf(y_gcrf);
+  printf("--------------------------------------------------------------\n");
+  printf("ITRF [SP3 ]: %+.12f %+.12f %+.12f %+.12f %+.12f %+.12f\n", y_in(0),
+         y_in(1), y_in(2), y_in(3), y_in(4), y_in(5));
+  printf("ITRF [MINE]: %+.12f %+.12f %+.12f %+.12f %+.12f %+.12f\n", y_itrf(0),
+         y_itrf(1), y_itrf(2), y_itrf(3), y_itrf(4), y_itrf(5));
 
   return 0;
 }

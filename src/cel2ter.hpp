@@ -158,31 +158,27 @@ public:
   dso::TwoPartDate ut1() const noexcept;
   int prepare(const dso::TwoPartDate &tt_mjd) noexcept;
   dso::EopRecord eop() const noexcept {return eops;}
-  Eigen::Matrix<double,3,3> R_gcrs2itrs() const noexcept;
+  Eigen::Matrix<double,3,3> gcrf2itrf() const noexcept;
+  Eigen::Matrix<double,3,3> gcrf2tirs() const noexcept;
+  Eigen::Matrix<double,3,3> itrf2gcrf() const noexcept {
+    return gcrf2itrf().transpose();
+  }
   const Eigen::Matrix<double,3,3> &rpom() const noexcept {return Rpom;}
   const Eigen::Matrix<double,3,3> &rc2i() const noexcept {return Rc2i;}
   double earth_rotation_angle() const noexcept {return era;}
+  /// @return Angular velocity of Earth (Ω) in [rad/sec]
+  double omega_earth() const noexcept {return eops.omega();}
 
-  Eigen::Matrix<double, 3, 3>
-  itrf2gcrf_rotation_matrix() const noexcept {
-    return dso::detail::T(Rc2i,era,Rpom);
-  }
+  Eigen::Matrix<double,3,3> ddt_gcrf2itrf() const noexcept;
+
   Eigen::Matrix<double, 3, 1>
-  itrf2gcrf(const Eigen::Matrix<double, 3, 1> &ritrf) const noexcept {
-    return dso::itrf2gcrf(Rc2i, era, Rpom, ritrf);
-  }
+  itrf2gcrf(const Eigen::Matrix<double, 3, 1> &ritrf) const noexcept;
   Eigen::Matrix<double, 6, 1>
-  itrf2gcrf(const Eigen::Matrix<double, 6, 1> &yitrf) const noexcept {
-    return dso::itrf2gcrf(Rc2i, era, Rpom, eops.omega(), yitrf);
-  }
+  itrf2gcrf(const Eigen::Matrix<double, 6, 1> &yitrf) const noexcept;
   Eigen::Matrix<double, 3, 1>
-  gcrf2itrf(const Eigen::Matrix<double, 3, 1> &rgcrf) const noexcept {
-    return dso::itrf2gcrf(Rc2i, era, Rpom, rgcrf);
-  }
+  gcrf2itrf(const Eigen::Matrix<double, 3, 1> &rgcrf) const noexcept;
   Eigen::Matrix<double, 6, 1>
-  gcrf2itrf(const Eigen::Matrix<double, 6, 1> &ygcrf) const noexcept {
-    return dso::itrf2gcrf(Rc2i, era, Rpom, eops.omega(), ygcrf);
-  }
+  gcrf2itrf(const Eigen::Matrix<double, 6, 1> &ygcrf) const noexcept;
 }; // class Itrs2Gcrs
 
 } // namespace dso
