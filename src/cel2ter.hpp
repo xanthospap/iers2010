@@ -160,9 +160,7 @@ public:
   dso::EopRecord eop() const noexcept {return eops;}
   Eigen::Matrix<double,3,3> gcrf2itrf() const noexcept;
   Eigen::Matrix<double,3,3> gcrf2tirs() const noexcept;
-  Eigen::Matrix<double,3,3> itrf2gcrf() const noexcept {
-    return gcrf2itrf().transpose();
-  }
+  Eigen::Matrix<double,3,3> itrf2gcrf() const noexcept;
   const Eigen::Matrix<double,3,3> &rpom() const noexcept {return Rpom;}
   const Eigen::Matrix<double,3,3> &rc2i() const noexcept {return Rc2i;}
   double earth_rotation_angle() const noexcept {return era;}

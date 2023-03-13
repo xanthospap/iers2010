@@ -16,65 +16,43 @@ dso::Itrs2Gcrs::Itrs2Gcrs(const dso::TwoPartDate &t,
   }
 }
 
-Eigen::Matrix<double, 3, 3>
-dso::detail::T(const Eigen::Matrix<double, 3, 3> &Rc2i, double era,
-               const Eigen::Matrix<double, 3, 3> &Rpom) noexcept {
-  // GCRS-to-ITRS matrix i.e. [Q^T] * [R_z(era)] * [W^T]
-  return 
-      Rpom * ((Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ()) * Rc2i));
-}
-
 /// @brief Return the 3x3 Rotation matrix that transforms from GCRF to TIRS
 /// This matrix (let's call it R), acts in the sense:
 ///             [TIRS] = R [GCRF]
 /// so that:
 ///             [ITRF] = RPOM [TIRS]
-/// The following should hold:
+/// The following should hold: (is this correct?? TODO)
 ///             gcrf2itrf() == gcrf2tirs() * rpom()
 Eigen::Matrix<double, 3, 3> dso::Itrs2Gcrs::gcrf2tirs() const noexcept {
-  // return Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ()) * rc2i();
-  return (Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ()) * Rc2i);
-}
-
-/// @brief Transform a (position) vector given in ITRF to GCRF
-/// @param[in] Rc2i Precession/Nutation matrix
-/// @param[in] era Earth Rotation Angle (ERA) [rad]
-/// @param[in] Rpom Polar motion matrix
-/// @return r_gcrf = T * r_itrf
-Eigen::Matrix<double, 3, 1> dso::Itrs2Gcrs::itrf2gcrf(
-    const Eigen::Matrix<double, 3, 1> &r_itrf) const noexcept {
-  // return detail::T(Rc2i, era, Rpom).transpose() * r_itrf;
-  const auto rc2ti = Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ()) * Rc2i;
-  return (Rpom * rc2ti).transpose() * r_itrf;
+  return Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ()) * Rc2i;
 }
 
 Eigen::Matrix<double, 3, 3> dso::Itrs2Gcrs::gcrf2itrf() const noexcept {
-  // return detail::T(Rc2i, era, Rpom);
-  const auto rc2ti = Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ()) * Rc2i;
-  return (Rpom * rc2ti);
+  return Rpom * gcrf2tirs();
 }
 
-Eigen::Matrix<double, 3, 3>
-dso::Itrs2Gcrs::ddt_gcrf2itrf() const noexcept {
-  const double om = omega_earth();
-  const auto OM = Eigen::Matrix<double, 3, 3>{
-      {0e0, om, 0e0}, {-om, 0e0, 0e0}, {0e0, 0e0, 0e0}};
-  //return (((Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ()) * OM) * Rc2i) *
-  //        Rpom);
-  return ((OM*(Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ())) * Rc2i) *
-          Rpom);
+Eigen::Matrix<double, 3, 3> dso::Itrs2Gcrs::itrf2gcrf() const noexcept {
+  return gcrf2itrf().transpose();
+}
+
+/// @brief Transform a (position) vector given in ITRF to GCRF
+Eigen::Matrix<double, 3, 1> dso::Itrs2Gcrs::itrf2gcrf(
+    const Eigen::Matrix<double, 3, 1> &r_itrf) const noexcept {
+  return itrf2gcrf() * r_itrf;
+}
+
+Eigen::Matrix<double, 3, 3> dso::Itrs2Gcrs::ddt_gcrf2itrf() const noexcept {
+  const double data[] = {0e0, -1e0, 0e0, 1e0, 0e0, 0e0, 0e0, 0e0, 0e0};
+  const auto Rc2ti = (omega_earth() * Eigen::Matrix<double, 3, 3>(data) *
+                      Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ())) *
+                     Rc2i;
+  return Rpom * Rc2ti;
 }
 
 /// @brief Transform a (position) vector given in GCRF to ITRF
-/// @param[in] Rc2i Precession/Nutation matrix
-/// @param[in] era Earth Rotation Angle (ERA) [rad]
-/// @param[in] Rpom Polar motion matrix
-/// @return r_itrf = T^T * r_gcrf
 Eigen::Matrix<double, 3, 1> dso::Itrs2Gcrs::gcrf2itrf(
     const Eigen::Matrix<double, 3, 1> &r_gcrf) const noexcept {
-  //return detail::T(Rc2i, era, Rpom) * r_gcrf;
-  const auto rc2ti = Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ()) * Rc2i;
-  return (Rpom * rc2ti) * r_gcrf;
+  return gcrf2itrf() * r_gcrf;
 }
 
 Eigen::Matrix<double, 6, 1> dso::Itrs2Gcrs::gcrf2itrf(
@@ -88,12 +66,10 @@ Eigen::Matrix<double, 6, 1> dso::Itrs2Gcrs::gcrf2itrf(
   y_itrf.block<3, 1>(0, 0) = gcrf2itrf(r);
 
   // transform velocity
-  //y_itrf.block<3, 1>(3, 0) = gcrf2itrf(v) + ddt_gcrf2itrf() * r;
-  const double data[] = {0e0, -1e0, 0e0, 1e0, 0e0, 0e0, 0e0, 0e0, 0e0};
-  const auto rc2ti = (omega_earth() * Eigen::Matrix<double, 3, 3>(data) *
-                      Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ())) *
-                     Rc2i;
-  y_itrf.block<3, 1>(3, 0) = gcrf2itrf(v) + (Rpom * rc2ti) * r;
+  y_itrf.block<3, 1>(3, 0) = gcrf2itrf(v) /*+ ddt_gcrf2itrf() * r*/;
+
+  const Eigen::Matrix<double, 3, 1> OmegaVec{{0e0, 0e0, omega_earth()}};
+  y_itrf.block<3, 1>(3, 0) -= Rpom * OmegaVec.cross(gcrf2tirs() * r);
 
   return y_itrf;
 }
@@ -109,12 +85,12 @@ Eigen::Matrix<double, 6, 1> dso::Itrs2Gcrs::itrf2gcrf(
   y_gcrf.block<3, 1>(0, 0) = itrf2gcrf(r);
 
   // transform velocity
-  //y_gcrf.block<3, 1>(3, 0) = itrf2gcrf(v) + ddt_gcrf2itrf().transpose()*r;
-  const double data[] = {0e0, -1e0, 0e0, 1e0, 0e0, 0e0, 0e0, 0e0, 0e0};
-  const auto rc2ti = (omega_earth() * Eigen::Matrix<double, 3, 3>(data) *
-                      Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ())) *
-                     Rc2i;
-  y_gcrf.block<3, 1>(3, 0) = itrf2gcrf(v) + (Rpom * rc2ti).transpose() * r;
+  y_gcrf.block<3, 1>(3, 0) = itrf2gcrf(v) /*+ ddt_gcrf2itrf().transpose()*r*/;
+
+  // according to Vallado ...
+  const Eigen::Matrix<double, 3, 1> OmegaVec{{0e0, 0e0, omega_earth()}};
+  y_gcrf.block<3, 1>(3, 0) +=
+      gcrf2tirs().transpose() * OmegaVec.cross(Rpom.transpose() * r);
 
   return y_gcrf;
 }
