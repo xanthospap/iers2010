@@ -34,6 +34,12 @@ class EopLookUpTable {
 public:
   // @brief Clear all instance's arrays
   void clear() noexcept;
+
+  void printxp() const noexcept { 
+    printf("Xp Series:\n");
+    for (const auto x : xp) printf("%+9.6f, ", x);
+    printf("\n");
+  }
   
   // @brief Reserve size/capacity for all instance's arrays
   void reserve(int size) noexcept;
@@ -41,6 +47,7 @@ public:
   void push_back(const EopRecord& rec) noexcept;
 
   EopLookUpTable(int size_hint=10) noexcept { reserve(size_hint); }
+  ~EopLookUpTable() noexcept;
   int size() const noexcept {return t.size();}
 
   /// @brief Transform the instance's t vector from UTC to TT

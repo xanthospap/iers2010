@@ -34,10 +34,10 @@ int dso::EopLookUpTable::interpolate(const dso::TwoPartDate &mjd,
   iers2010::utils::utlibr(mjd, fargs, dut1lib, dlodlib);
 
   // add corrections
-  eopr.xp += (dxoc + dxlib) * 1e6;
-  eopr.yp += (dyoc + dylib) * 1e6;
-  eopr.dut += (dut1oc + dut1lib) * 1e6;
-  eopr.lod += (dlodlib)*1e6;
+  eopr.xp += (dxoc + dxlib) * 1e-6;
+  eopr.yp += (dyoc + dylib) * 1e-6;
+  eopr.dut += (dut1oc + dut1lib) * 1e-6;
+  eopr.lod += (dlodlib)*1e-6;
 
   return 0;
 }

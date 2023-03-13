@@ -1,4 +1,6 @@
 #include "eop.hpp"
+  
+dso::EopLookUpTable::~EopLookUpTable() noexcept = default;
 
 void dso::EopLookUpTable::clear() noexcept {
   t.clear();

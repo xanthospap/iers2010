@@ -328,10 +328,13 @@ void pfw06(const dso::TwoPartDate mjd_tt, double &gamb, double &phib,
                   double &psib, double &epsa) noexcept;
 
 /// @brief Form the matrix of polar motion for a given date, IAU 2000.
+///
 /// The matrix operates in the sense V(TRS) = rpom * V(CIP), meaning that it is
 /// the final rotation when computing the pointing direction to a celestial
 /// source.
+///
 /// See iers2010, 5.4.1
+///
 /// @param[in] xp X-coordinate of the pole [radians]. The arguments xp and yp
 ///            are the coordinates (in radians) of the Celestial Intermediate
 ///            Pole with respect to the International Terrestrial Reference
@@ -467,6 +470,7 @@ inline double ee00(const dso::TwoPartDate &mjd_tt, double epsa,
 }
 
 /// @brief Compute the GCRS-to-CIRS matrix
+///
 /// Form the celestial to intermediate-frame-of-date matrix given the CIP X,Y
 /// and the CIO locator s.
 /// The matrix rc2i is the first stage in the transformation from celestial to
@@ -477,7 +481,9 @@ inline double ee00(const dso::TwoPartDate &mjd_tt, double epsa,
 /// [TRS] is a vector in the International Terrestrial Reference System (see
 /// IERS Conventions 2003), ERA is the Earth Rotation Angle and RPOM is the
 /// polar motion matrix.
+///
 /// See iers2010, 5.4.4
+///
 /// @param[in] x Celestial Intermediate Pole, X coordinate. The Celestial
 ///              Intermediate Pole coordinates are the x,y components of the
 ///              unit vector in the Geocentric Celestial Reference System.
