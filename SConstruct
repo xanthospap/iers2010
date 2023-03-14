@@ -103,6 +103,7 @@ env.Alias(target='install', source=env.InstallVersionedLib(
 if GetOption('check') is not None and GetOption('check'):
   #tests_sources  = glob.glob(r"test/*.cpp")
   tests_sources = glob.glob(r"test/cel2ter/*.cpp")
+  tests_sources = glob.glob(r"test/parsers/*.cpp")
   env.Append(RPATH=root_dir)
   for tsource in tests_sources:
     pth = os.path.dirname(tsource)

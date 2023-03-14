@@ -1,9 +1,11 @@
 #ifndef __DSO_IERS_PRODUCTS_EOP_HPP__
 #define __DSO_IERS_PRODUCTS_EOP_HPP__
 
-#include "datetime/dtcalendar.hpp"
 #include "iers2010.hpp"
 #include <vector>
+#ifdef DEBUG
+#include <cassert>
+#endif
 
 namespace dso {
 
@@ -49,6 +51,18 @@ public:
   EopLookUpTable(int size_hint=10) noexcept { reserve(size_hint); }
   ~EopLookUpTable() noexcept;
   int size() const noexcept {return t.size();}
+
+  EopRecord at(int i) const noexcept {
+#ifdef DEBUG
+    assert(i >= 0 && i < size());
+#endif
+    return EopRecord({t[i], xp[i], yp[i], dut1[i], lod[i], dX[i], dY[i], xrt[i],
+                     yrt[i]});
+  }
+
+  const std::vector<dso::TwoPartDate> &epoch_vector() const noexcept {
+    return t;
+  }
 
   /// @brief Transform the instance's t vector from UTC to TT
   void utc2tt() noexcept;
