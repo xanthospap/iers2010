@@ -105,6 +105,17 @@ dso::TwoPartDate dso::Itrs2Gcrs::ut1() const noexcept {
   return ut1.normalized();
 }
 
+int dso::Itrs2Gcrs::prepare_costg(const dso::EopRecord &eop, double s,
+                                  double sp) noexcept {
+  t_tt = eop.mjd;
+  eops = eop;
+  era = iers2010::sofa::era00(this->ut1());
+  Rc2i = iers2010::sofa::c2ixys(eop.dx, eop.dy, s);
+  Rpom =
+      iers2010::sofa::pom00(eop.xp, eop.yp, sp);
+  return 0;
+}
+
 int dso::Itrs2Gcrs::prepare(const dso::TwoPartDate &tt_mjd) noexcept {
   if (tt_mjd != t_tt) {
     // interpolate EOPs, using a Lagrange polynomial of 5th degree and
@@ -116,8 +127,6 @@ int dso::Itrs2Gcrs::prepare(const dso::TwoPartDate &tt_mjd) noexcept {
           __func__);
       return 1;
     }
-    // printf("Interpolated eop: %.4f %.4f %.6f %.6f %.4f %.4f %.5e\n", eops.xp,
-    // eops.yp, eops.dut, eops.lod, eops.dx, eops.dy, eops.omega());
 
     // set ERA(t) angle
     {
@@ -142,11 +151,11 @@ int dso::Itrs2Gcrs::prepare(const dso::TwoPartDate &tt_mjd) noexcept {
       X += dso::sec2rad(eops.dx);
       Y += dso::sec2rad(eops.dy);
 
-      // call routine C2IXYS, giving the GCRS-to-CIRS matrix Q
+      // call routine C2IXYS, giving the GCRS-to-CIRS matrix
       Rc2i = iers2010::sofa::c2ixys(X, Y, s);
     }
 
-    // construct polar motion matrix W(t)
+    // construct polar motion matrix
     {
       const double sp = iers2010::sofa::sp00(tt_mjd);
       Rpom = iers2010::sofa::pom00(dso::sec2rad(eops.xp), dso::sec2rad(eops.yp),

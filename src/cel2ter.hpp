@@ -177,6 +177,10 @@ public:
   gcrf2itrf(const Eigen::Matrix<double, 3, 1> &rgcrf) const noexcept;
   Eigen::Matrix<double, 6, 1>
   gcrf2itrf(const Eigen::Matrix<double, 6, 1> &ygcrf) const noexcept;
+  
+
+  /* Only used for COST-G benchmark tests */
+  int prepare_costg(const dso::EopRecord &eop, double s, double sp) noexcept;
 }; // class Itrs2Gcrs
 
 } // namespace dso
