@@ -157,7 +157,18 @@ int dso::SiteVMF3Feed::interpolate(
   // already in interval
   if (t.as_mjd() >= ct1 && t.as_mjd() <= ct2) {
     int idx = find_site(site);
-    assert(idx >= 0 && idx < (int)recs.size());
+    if (idx < 0 || idx >= (int)recs.size()) {
+      //fprintf(stderr,
+      //        "[ERROR] Requested interpolation for site %s but not in feed! "
+      //        "(traceback: %s)\n",
+      //        site, __func__);
+      ////fprintf(stderr, "[ERROR] Sites in feed: ");
+      //for (auto it = recs.begin(); it != recs.end(); ++it)
+      //  fprintf(stderr, "[%s]", it->site);
+      //fprintf(stderr, "\n");
+      return 1;
+    }
+    // assert(idx >= 0 && idx < (int)recs.size());
     if (recs[idx].interpolate(t, imrec)) {
       fprintf(stderr,
               "[ERROR] Failed to interpolate for site: %s (traceback: %s)\n",
