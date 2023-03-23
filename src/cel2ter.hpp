@@ -155,6 +155,8 @@ public:
   Itrs2Gcrs(const dso::TwoPartDate &t = dso::TwoPartDate{},
             const dso::EopLookUpTable *eoplut = nullptr);
 
+  dso::TwoPartDate tt() const noexcept  {return t_tt;}
+  dso::TwoPartDate tai() const noexcept {return t_tt.tt2tai();}
   dso::TwoPartDate ut1() const noexcept;
   int prepare(const dso::TwoPartDate &tt_mjd) noexcept;
   dso::EopRecord eop() const noexcept {return eops;}
