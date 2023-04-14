@@ -617,6 +617,13 @@ int interp_pole(const double *mjd, const double *x, const double *y,
                 const double *ut1, int n, double rjd, double &xint,
                 double &yint, double &ut1int, double &corlod) noexcept;
 
+Eigen::Matrix<double, 3, 1>
+relativistic_correction(const Eigen::Matrix<double, 3, 1> &rgcrs,
+                        const Eigen::Matrix<double, 3, 1> &vgcrs,
+                        /*const Eigen::Matrix<double, 3, 1> &res,*/
+                        double c = iers2010::C, double J = 9.8e8,
+                        double gme = iers2010::GMe
+                        /*double gms = iers2010::GMSun*/) noexcept;
 } // namespace iers2010
 
 #endif
