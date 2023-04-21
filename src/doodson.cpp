@@ -24,14 +24,14 @@ char *dso::DoodsonNumber::str(char *buf,
 /// See also the 00README_simulation.txt in COST-G benchmark
 double dso::gmst_utc(const dso::TwoPartDate &utc) noexcept {
   // julian centuries, at start of day
-  const double tu0 = (utc._big - dso::j2000_mjd) / dso::days_in_julian_cent;
+  const double tu0 = (utc.big() - dso::j2000_mjd) / dso::days_in_julian_cent;
   const double gmst0 =
       (6e0 / 24 + 41e0 / (24 * 60) + 50.54841e0 / (24 * 60 * 60)) +
       (8640184.812866e0 / (24 * 60 * 60)) * tu0 +
       (0.093104e0 / (24 * 60 * 60)) * tu0 * tu0 +
       (-6.2e-6 / (24 * 60 * 60)) * tu0 * tu0 * tu0;
   const double r = 1.002737909350795e0 + 5.9006e-11*tu0 - 5.9e-15*tu0*tu0;
-  return dso::anp(dso::D2PI*(gmst0 + r * utc._small));
+  return dso::anp(dso::D2PI*(gmst0 + r * utc.small()));
 }
 
 /*

@@ -150,8 +150,8 @@ int dso::parse_iers_C0420(const char* c04fn, dso::modified_julian_day start_mjd,
       fprintf(stderr,
           "[WRNNG] Requested [%ld to %ld) collected [%.3f to %.3f]\n",
           start_mjd.as_underlying_type(), end_mjd.as_underlying_type(),
-          eoptable.epoch_vector()[0].mjd(),
-          eoptable.epoch_vector().back().mjd());
+          eoptable.epoch_vector()[0].as_mjd(),
+          eoptable.epoch_vector().back().as_mjd());
     }
   }
   return !(days == eoptable.size());

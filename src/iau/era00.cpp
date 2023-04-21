@@ -9,10 +9,10 @@ double iers2010::sofa::era00(const dso::TwoPartDate &mjd_ut1) noexcept {
   const dso::TwoPartDate ut1 = mjd_ut1.normalized();
 
   // days since fundamental epoch
-  const double t = ut1._small + (ut1._big - dso::j2000_mjd);
+  const double t = ut1.small() + (ut1.big() - dso::j2000_mjd);
 
   // !Julian! day fraction
-  const double f = std::fmod(ut1._small + .5e0, 1e0);
+  const double f = std::fmod(ut1.small() + .5e0, 1e0);
 
   // earth rotation angle at given UT1
   const double theta = dso::anp(
