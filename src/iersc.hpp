@@ -46,6 +46,11 @@ constexpr const double Re = 6'378'136.6e0;
 /// @see Table 1.1: IERS numerical standards, IERS 2010
 constexpr const double GMe = 3.986004418e14;
 
+/* @brief Constant of gravitation in [m^3/kg/sec-2]
+ * @see Table 1.1: IERS numerical standards, IERS 2010
+ */
+constexpr const double G = 6.67428e-11;
+
 /// @brief Astronomical unit [m]
 constexpr const double AU = 1.49597870700e11;
 
@@ -75,6 +80,11 @@ constexpr const double C = 299792458e0;
 /// @brief Heliocentric gravitational constant in [m^2/s^2]
 /// @see Table 1.1: IERS numerical standards, IERS 2010
 constexpr const double GMSun = 1.32712442099e20;
+
+/* @brief Mean equatorial gravity in [m/sec^2], see
+ * Table 1.1: IERS numerical standards, IERS 2010
+ */
+constexpr const double ge = 9.7803278e0;
 
 /// @brief Normalize angle into the range 0 <= a < 2pi.
 /// @param[in] angle Angle in radians
