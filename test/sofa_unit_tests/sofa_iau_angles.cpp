@@ -6,14 +6,11 @@
 #include <cstdio>
 #include <limits>
 
-using namespace iers2010;
+using namespace iers2010::sofa;
 
 constexpr const int NUM_TESTS = 100000;
 
-const char *funcs[] = {"fapa03", "fane03", "faur03", "fasa03", "faju03",
-                       "fama03", "fae03",  "fave03", "fame03", "faom03",
-                       "fad03",  "faf03",  "falp03", "fal03"
-                       };
+const char *funcs[] = {"ee06a", "gmst06", "gmst00", "gst06a", "obl06", "obl80", "ee00", "eect00", "sp00"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
 int main(int argc, char *argv[]) {
@@ -33,9 +30,25 @@ int main(int argc, char *argv[]) {
   max_error = std::numeric_limits<double>::min();
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = fapa03(tt);
-    as = iauFapa03(jc);
+    am = ee06a(tt);
+    as = iauEe06a(tt.big()+dso::mjd0_jd, tt.small());
+    if (!approx_equal(am, as)) {
+      ++fails;
+      if (std::abs(am-as) > max_error) max_error = am-as;
+    }
+  }
+  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
+         (fails == 0) ? "OK" : "FAILED");
+  if (fails) ++error;
+
+  fails = 0;
+  max_error = std::numeric_limits<double>::min();
+  for (int i = 0; i < NUM_TESTS; i++) {
+    const auto tt = random_mjd();
+    const auto ut1 = add_random_seconds(tt);
+    am = gmst06(ut1, tt);
+    as = iauGmst06(ut1.big() + dso::mjd0_jd, ut1.small(),
+                  tt.big() + dso::mjd0_jd, tt.small());
     if (!approx_equal(am, as)) {
       ++fails;
       if (std::abs(am-as) > max_error) max_error = am-as;
@@ -49,9 +62,10 @@ int main(int argc, char *argv[]) {
   max_error = std::numeric_limits<double>::min();
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = fane03(tt);
-    as = iauFane03(jc);
+    const auto ut1 = add_random_seconds(tt);
+    am = gmst00(ut1, tt);
+    as = iauGmst00(ut1.big() + dso::mjd0_jd, ut1.small(),
+                  tt.big() + dso::mjd0_jd, tt.small());
     if (!approx_equal(am, as)) {
       ++fails;
       if (std::abs(am-as) > max_error) max_error = am-as;
@@ -60,193 +74,95 @@ int main(int argc, char *argv[]) {
   printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
          (fails == 0) ? "OK" : "FAILED");
   if (fails) ++error;
-
+  
   fails = 0;
   max_error = std::numeric_limits<double>::min();
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = faur03(tt);
-    as = iauFaur03(jc);
+    const auto ut1 = add_random_seconds(tt);
+    am = gst06a(ut1, tt);
+    as = iauGst06a(ut1.big() + dso::mjd0_jd, ut1.small(),
+                  tt.big() + dso::mjd0_jd, tt.small());
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error) max_error = am-as;
       ++fails;
+      if (std::abs(am-as) > max_error) max_error = am-as;
     }
   }
   printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
          (fails == 0) ? "OK" : "FAILED");
   if (fails) ++error;
-
+  
   fails = 0;
   max_error = std::numeric_limits<double>::min();
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = fasa03(tt);
-    as = iauFasa03(jc);
+    am = obl06(tt);
+    as = iauObl06(tt.big()+dso::mjd0_jd, tt.small());
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error) max_error = am-as;
       ++fails;
+      if (std::abs(am-as) > max_error) max_error = am-as;
     }
   }
   printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
          (fails == 0) ? "OK" : "FAILED");
   if (fails) ++error;
-
+  
   fails = 0;
   max_error = std::numeric_limits<double>::min();
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = faju03(tt);
-    as = iauFaju03(jc);
+    am = obl80(tt);
+    as = iauObl80(tt.big()+dso::mjd0_jd, tt.small());
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error) max_error = am-as;
       ++fails;
+      if (std::abs(am-as) > max_error) max_error = am-as;
     }
   }
   printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
          (fails == 0) ? "OK" : "FAILED");
   if (fails) ++error;
-
+  
   fails = 0;
   max_error = std::numeric_limits<double>::min();
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = fama03(tt);
-    as = iauFama03(jc);
+    const double epsa = random_angle(-iers2010::DPI/3, iers2010::DPI/3);
+    const double dpsi = random_angle(-iers2010::DPI/3, iers2010::DPI/3);
+    am = ee00(tt, epsa, dpsi);
+    as = iauEe00(tt.big()+dso::mjd0_jd, tt.small(), epsa, dpsi);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error) max_error = am-as;
       ++fails;
+      if (std::abs(am-as) > max_error) max_error = am-as;
     }
   }
   printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
          (fails == 0) ? "OK" : "FAILED");
   if (fails) ++error;
-
+  
   fails = 0;
   max_error = std::numeric_limits<double>::min();
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = fae03(tt);
-    as = iauFae03(jc);
+    am = eect00(tt);
+    as = iauEect00(tt.big()+dso::mjd0_jd, tt.small());
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error) max_error = am-as;
       ++fails;
+      if (std::abs(am-as) > max_error) max_error = am-as;
     }
   }
   printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
          (fails == 0) ? "OK" : "FAILED");
   if (fails) ++error;
-
+  
   fails = 0;
   max_error = std::numeric_limits<double>::min();
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = fave03(tt);
-    as = iauFave03(jc);
+    am = sp00(tt);
+    as = iauSp00(tt.big()+dso::mjd0_jd, tt.small());
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error) max_error = am-as;
       ++fails;
-    }
-  }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
-         (fails == 0) ? "OK" : "FAILED");
-  if (fails) ++error;
-
-  fails = 0;
-  max_error = std::numeric_limits<double>::min();
-  for (int i = 0; i < NUM_TESTS; i++) {
-    const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = fame03(tt);
-    as = iauFame03(jc);
-    if (!approx_equal(am, as)) {
       if (std::abs(am-as) > max_error) max_error = am-as;
-      ++fails;
-    }
-  }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
-         (fails == 0) ? "OK" : "FAILED");
-  if (fails) ++error;
-
-  fails = 0;
-  max_error = std::numeric_limits<double>::min();
-  for (int i = 0; i < NUM_TESTS; i++) {
-    const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = faom03(tt);
-    as = iauFaom03(jc);
-    if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error) max_error = am-as;
-      ++fails;
-    }
-  }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
-         (fails == 0) ? "OK" : "FAILED");
-  if (fails) ++error;
-
-  fails = 0;
-  max_error = std::numeric_limits<double>::min();
-  for (int i = 0; i < NUM_TESTS; i++) {
-    const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = fad03(tt);
-    as = iauFad03(jc);
-    if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error) max_error = am-as;
-      ++fails;
-    }
-  }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
-         (fails == 0) ? "OK" : "FAILED");
-  if (fails) ++error;
-
-  fails = 0;
-  max_error = std::numeric_limits<double>::min();
-  for (int i = 0; i < NUM_TESTS; i++) {
-    const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = faf03(tt);
-    as = iauFaf03(jc);
-    if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error) max_error = am-as;
-      ++fails;
-    }
-  }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
-         (fails == 0) ? "OK" : "FAILED");
-  if (fails) ++error;
-
-  fails = 0;
-  max_error = std::numeric_limits<double>::min();
-  for (int i = 0; i < NUM_TESTS; i++) {
-    const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = falp03(tt);
-    as = iauFalp03(jc);
-    if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error) max_error = am-as;
-      ++fails;
-    }
-  }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
-         (fails == 0) ? "OK" : "FAILED");
-  if (fails) ++error;
-
-  fails = 0;
-  max_error = std::numeric_limits<double>::min();
-  for (int i = 0; i < NUM_TESTS; i++) {
-    const auto tt = random_mjd();
-    const auto jc = tt.jcenturies_sinceJ2000();
-    am = fal03(tt);
-    as = iauFal03(jc);
-    if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error) max_error = am-as;
-      ++fails;
     }
   }
   printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),

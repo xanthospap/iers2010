@@ -132,21 +132,21 @@ double iers2010::sofa::s00(const dso::TwoPartDate &mjd_tt, double x,
   // Fundamental Arguments (from IERS Conventions 2003)
   const double fa[8] = {
       // Mean anomaly of the Moon.
-      iers2010::sofa::fal03(t),
+      iers2010::fal03(t),
       // Mean anomaly of the Sun.
-      iers2010::sofa::falp03(t),
+      iers2010::falp03(t),
       // Mean longitude of the Moon minus that of the ascending node.
-      iers2010::sofa::faf03(t),
+      iers2010::faf03(t),
       // Mean elongation of the Moon from the Sun.
-      iers2010::sofa::fad03(t),
+      iers2010::fad03(t),
       // Mean longitude of the ascending node of the Moon.
-      iers2010::sofa::faom03(t),
+      iers2010::faom03(t),
       // Mean longitude of Venus.
-      iers2010::sofa::fave03(t),
+      iers2010::fave03(t),
       // Mean longitude of Earth.
-      iers2010::sofa::fae03(t),
+      iers2010::fae03(t),
       // General precession in longitude.
-      iers2010::sofa::fapa03(t)};
+      iers2010::fapa03(t)};
 
   // Evaluate s.
   double w0 = sp[0];

@@ -95,14 +95,6 @@ Eigen::Matrix<double, 6, 1> dso::Itrs2Gcrs::itrf2gcrf(
   return y_gcrf;
 }
 
-dso::TwoPartDate dso::Itrs2Gcrs::ut1() const noexcept {
-  // ∆T  = TT − UT1 = 32s.184 + ∆AT − ∆UT1 , or
-  // UT1 = TAI + ΔAT - ΔUT1 , or
-  // UT1 = UTC - ΔUT1
-  const auto utc = t_tt.tt2tai().tai2utc();
-  return dso::TwoPartDate(utc.big(), utc.small() + eops.dut / dso::sec_per_day);
-}
-
 int dso::Itrs2Gcrs::prepare_costg(const dso::EopRecord &eop, double s,
                                   double sp) noexcept {
   t_tt = eop.mjd;

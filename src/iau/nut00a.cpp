@@ -1687,7 +1687,7 @@ void iers2010::sofa::nut00a(/*double date1, double date2*/const dso::TwoPartDate
 
   // Fundamental (Delaunay) arguments ...
   // Mean anomaly of the Moon (IERS 2003).
-  const double el = iers2010::sofa::fal03(t);
+  const double el = iers2010::fal03(t);
 
   // Mean anomaly of the Sun (MHB2000).
   const double elp =
@@ -1700,7 +1700,7 @@ void iers2010::sofa::nut00a(/*double date1, double date2*/const dso::TwoPartDate
 
   // Mean longitude of the Moon minus that of the ascending node
   // (IERS 2003).
-  const double f = iers2010::sofa::faf03(t);
+  const double f = iers2010::faf03(t);
 
   // Mean elongation of the Moon from the Sun (MHB2000).
   const double d =
@@ -1712,7 +1712,7 @@ void iers2010::sofa::nut00a(/*double date1, double date2*/const dso::TwoPartDate
       iers2010::DAS2R;
 
   // Mean longitude of the ascending node of the Moon (IERS 2003).
-  const double om = iers2010::sofa::faom03(t);
+  const double om = iers2010::faom03(t);
 
   // Initialize the nutation values.
   double dp = 0e0;
@@ -1764,16 +1764,16 @@ void iers2010::sofa::nut00a(/*double date1, double date2*/const dso::TwoPartDate
   const double aom = std::fmod(2.18243920e0 - 33.757045e0 * t, iers2010::D2PI);
 
   // General accumulated precession in longitude (IERS 2003).
-  const double apa = iers2010::sofa::fapa03(t);
+  const double apa = iers2010::fapa03(t);
 
   // Planetary longitudes, Mercury through Uranus (IERS 2003).
-  const double alme = iers2010::sofa::fame03(t);
-  const double alve = iers2010::sofa::fave03(t);
-  const double alea = iers2010::sofa::fae03(t);
-  const double alma = iers2010::sofa::fama03(t);
-  const double alju = iers2010::sofa::faju03(t);
-  const double alsa = iers2010::sofa::fasa03(t);
-  const double alur = iers2010::sofa::faur03(t);
+  const double alme = iers2010::fame03(t);
+  const double alve = iers2010::fave03(t);
+  const double alea = iers2010::fae03(t);
+  const double alma = iers2010::fama03(t);
+  const double alju = iers2010::faju03(t);
+  const double alsa = iers2010::fasa03(t);
+  const double alur = iers2010::faur03(t);
 
   // Neptune longitude (MHB2000).
   const double alne =

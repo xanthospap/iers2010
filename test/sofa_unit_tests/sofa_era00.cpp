@@ -1,14 +1,16 @@
 #include "iau.hpp"
-#include "sofa.h"
 #include "unit_test_help.hpp"
+#include "geodesy/units.hpp"
+#include "sofa.h"
 #include <cassert>
 #include <cstdio>
+#include <limits>
 
 using namespace iers2010::sofa;
 
 constexpr const int NUM_TESTS = 100000;
 
-const char *funcs[] = {"gmst06"};
+const char *funcs[] = {"era00"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
 int main(int argc, char *argv[]) {
@@ -18,26 +20,24 @@ int main(int argc, char *argv[]) {
   int func_it = 0;
   int fails;
   int error = 0;
+  double max_error = std::numeric_limits<double>::min();
 
-  printf("Function #Tests #Fails Status\n");
+  printf("Function #Tests #Fails #Maxerror[sec]    Status\n");
   printf("---------------------------------------------------------------\n");
 
   double am, as;
   fails = 0;
+  max_error = std::numeric_limits<double>::min();
   for (int i = 0; i < NUM_TESTS; i++) {
-    // random date (MJD, TT)
-    const auto tt = random_mjd();
-    // add a few seconds to TT to get a random UT1 date
-    const auto ut = add_random_seconds(tt, -60e0, 60e0);
-    auto jdtt = tt.jd_split<dso::TwoPartDate::JdSplitMethod::J2000>();
-    auto jdut = ut.jd_split<dso::TwoPartDate::JdSplitMethod::DT>();
-
-    am = gmst06(ut, tt);
-    as = iauGmst06(jdut._big, jdut._small, jdtt._big, jdtt._small);
-    if (!approx_equal(am, as))
+    const auto ut = random_mjd();
+    am = era00(ut);
+    as = iauEra00(ut.big()+dso::mjd0_jd, ut.small());
+    if (!approx_equal(am, as)) {
       ++fails;
+      if (std::abs(am-as) > max_error) max_error = am-as;
+    }
   }
-  printf("%8s %6d %6d %s\n", funcs[func_it++], NUM_TESTS, fails,
+  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
          (fails == 0) ? "OK" : "FAILED");
   if (fails) ++error;
   

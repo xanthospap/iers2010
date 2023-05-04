@@ -1,44 +1,23 @@
 #include "iau.hpp"
 #include <cstdlib>
-#include <datetime/dtfund.hpp>
 
-double iers2010::sofa::era00(const dso::TwoPartDate &mjd_ut1) noexcept {
+double iers2010::sofa::era00(const dso::TwoPartDate &ut1) noexcept {
+  /* days since fundamental epoch */
+  const dso::TwoPartDate td(ut1.big() - dso::j2000_mjd, ut1.small());
+  const double t = td.small() + td.big();
 
-  // normalize sot that we are sure the big part is the day, and the small is
-  // the fraction
-  const dso::TwoPartDate ut1 = mjd_ut1.normalized();
+  /* fractional part of day, minus half a day (we need Julian days in the
+   * formula but this fractional part is based on MJD)
+   */
+  const double f = ut1.small();
 
-  // days since fundamental epoch
-  const double t = ut1.small() + (ut1.big() - dso::j2000_mjd);
+  /* earth rotation angle at given UT1
+   * we are adding here half a day because the fractional part of Julian day
+   * is f + .5
+   */
+  const double theta = dso::anp(iers2010::D2PI * (f + .5 + 0.7790572732640e0 +
+                                                  0.00273781191135448e0 * t));
 
-  // !Julian! day fraction
-  const double f = std::fmod(ut1.small() + .5e0, 1e0);
-
-  // earth rotation angle at given UT1
-  const double theta = dso::anp(
-      iers2010::D2PI * (f + 0.7790572732640e0 + 0.00273781191135448e0 * t));
-
+  // printf("%+.20f %+.20f %.22f (xan)\n", t,f,(f+.5)+t);
   return theta;
 }
-
-/*
-double iers2010::sofa::era00(const dso::TwoPartDate &mjd_ut1) noexcept {
-
-  // normalize sot that we are sure the big part is the day, and the small is
-  // the fraction
-  const dso::TwoPartDate jd_ut1(mjd_ut1._big + dso::mjd0_jd, mjd_ut1._small);
-  const dso::TwoPartDate ut1 = jd_ut1.normalized();
-
-  // days since fundamental epoch
-  const double t = ut1._small + (ut1._big - dso::j2000_jd);
-
-  // !Julian! day fraction
-  const double f = std::fmod(ut1._big, 1.0) + std::fmod(ut1._small, 1.0);
-
-  // earth rotation angle at given UT1
-  const double theta = dso::anp(
-      iers2010::D2PI * (f + 0.7790572732640e0 + 0.00273781191135448e0 * t));
-
-  return theta;
-}
-*/
