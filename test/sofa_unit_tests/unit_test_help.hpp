@@ -31,4 +31,6 @@ dso::TwoPartDate add_random_seconds(const dso::TwoPartDate &d,
 
 double random_angle(double min = -dso::D2PI, double max = dso::D2PI) noexcept;
 
+double rotation_matrix_diff(const Eigen::Matrix<double, 3, 3> &m1, const double m2[3][3]);
+
 #endif

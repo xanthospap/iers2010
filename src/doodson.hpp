@@ -116,22 +116,8 @@ public:
 
 }; /* DoodsonNumber */
 
-/// @brief Greenwich Mean Sideral Time in [rad], range [0-2π)
-/// @warning Note that this is not consistent with IAU2006[A] and IERS2010,
-/// and does not take into account ERA angle and TT time
-/// TODO:
-/// @see https://github.com/groops-devs/groops/blob/main/source/base/planets.cpp
-/// This is not the angle iers2010::gmst06, it does not take into account
-/// TT time! However, it seems that this angle is used to compute Doodson
-/// arguments
-/// See also the 00README_simulation.txt in COST-G benchmark
-double gmst_utc(const dso::TwoPartDate &utc) noexcept;
-
 /* @brief Fundamental (Delaunay) arguments to Doodson variables.
  * All angles are in [rad] in the range [0,2π)
- *
- * @warning I THINK(!!??!!) that GMST angle here should be computed using the
- *          gmst_utc function and NOT the gmst06!!
  *
  * @param[in] fundarg Fundamental (Delaunay) arguments, in the order
  *             [l, lp, f, d, Ω], see notes.
@@ -168,8 +154,8 @@ inline int fundarg2doodson(const double *const fundarg, double gmst,
 // iers2010 namespace
 // Return values are in [rad/century]
 // Input values are in [rad/century]
-[[deprecated]] inline int
-fundarg_derivs2doodson_derivs(const double *const fundarg_derivs, double dgmst,
+inline int
+fundarg_derivs2doodson_derivs(const double *const fundarg_derivs,
                               double *doodson) noexcept {
   const double *const f = fundarg_derivs;
   doodson[1] = f[2] + f[4];
@@ -177,10 +163,11 @@ fundarg_derivs2doodson_derivs(const double *const fundarg_derivs, double dgmst,
   doodson[3] = f[2] + f[4] - f[0];
   doodson[4] = -f[4];
   doodson[5] = f[2] + f[4] - f[3] - f[1];
-  doodson[0] = dgmst - (f[2] + f[4]);
+  doodson[0] = iers2010::D2PI - (f[2] + f[4]);
   return 0;
 }
 
+/* TODO remove this shit! */
 inline int doodson_frequency_args(const dso::TwoPartDate &tt,
                                   double *f) noexcept {
   const double t = tt.jcenturies_sinceJ2000();
@@ -205,6 +192,6 @@ inline int doodson_frequency_args(const dso::TwoPartDate &tt,
   return 0;
 }
 
-} // namespace dso
+} /* namespace dso */
 
 #endif

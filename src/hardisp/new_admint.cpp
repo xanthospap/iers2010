@@ -384,9 +384,8 @@ int dso::Hardisp::operator()(const dso::TwoPartDate &tt_mjd) noexcept {
   double fundarg[5];
   iers2010::fundarg(tt_mjd, fundarg);
   // A2. GMST [rad]
-  const double gmst = /*iers2010::sofa::gmst06(ut1_jd._big, ut1_jd._small,
-                                             tt_jd._big, tt_jd._small);*/
-      gmst_utc(tt_mjd.tt2utc());
+  // TODO this is wrong
+  const double gmst = iers2010::sofa::gmst06(tt_mjd,tt_mjd);
   // A3. Doodson variables (stored in beta)
   dso::fundarg2doodson(fundarg, gmst, beta);
   // TODO correct first Doodson variable to match TDFRPH

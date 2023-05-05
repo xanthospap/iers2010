@@ -121,3 +121,24 @@ double random_angle(double min, double max) noexcept {
   std::uniform_real_distribution<double> uni_rad(min, max);
   return uni_rad(e);
 }
+
+double rotation_matrix_diff(const Eigen::Matrix<double, 3, 3> &m1,
+                            const double m2[3][3]) {
+  Eigen::Matrix<double, 3, 3> m22;
+  m22 << m2[0][0], m2[0][1], m2[0][2], m2[1][0], m2[1][1], m2[1][2], m2[2][0],
+      m2[2][1], m2[2][2];
+
+  /* see
+   * https://math.stackexchange.com/questions/2113634/comparing-two-rotation-matrices
+   * and https://www.cs.cmu.edu/~cga/dynopt/readings/Rmetric.pdf
+   * Ra <- m1
+   * Rb <- m2
+   */
+  const auto Rab = m1.transpose() * m22;
+
+  /* Tr(Rab) = 1 + 2 cos(θ)
+   * θ = arccos( (Tr(Rab) - 1) / 2 )
+   */
+  const double theta = std::acos((Rab.trace() - 1e0) / 2.);
+  return theta;
+}
