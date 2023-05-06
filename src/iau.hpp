@@ -599,92 +599,83 @@ inline double obl06(const dso::TwoPartDate &mjd_tt) noexcept {
   return obl06(mjd_tt.jcenturies_sinceJ2000());
 }
 
-/// @brief Frame bias components of IAU 2000 precession-nutation models
-/// Frame bias components of IAU 2000 precession-nutation models;  part of the
-/// Mathews-Herring-Buffett (MHB2000) nutation series, with additions.
-///
-/// The frame bias corrections in longitude and obliquity (radians) are required
-/// in order to correct for the offset between the GCRS pole and the mean
-/// J2000.0 pole.  They define, with respect to the GCRS frame, a J2000.0 mean
-/// pole that is consistent with the rest of the IAU 2000A precession-nutation
-/// model.
-///
-/// In addition to the displacement of the pole, the complete description of the
-/// frame bias requires also an offset in right ascension. This is not part of
-/// the IAU 2000A model, and is from Chapront et al. (2002). It is returned in
-/// radians.
-///
-/// This is a supplemented implementation of one aspect of the IAU 2000A
-/// nutation model, formally adopted by the IAU General Assembly in 2000, namely
-/// MHB2000 (Mathews et al. 2002).
-/// @param[out] dpsibi  longitude corrections
-/// @param[out] depsbi  obliquity corrections
-/// @param[out] dra     the ICRS RA of the J2000.0 mean equinox
+/* @brief Frame bias components of IAU 2000 precession-nutation models
+ * Frame bias components of IAU 2000 precession-nutation models;  part of the
+ * Mathews-Herring-Buffett (MHB2000) nutation series, with additions.
+ *
+ * The frame bias corrections in longitude and obliquity (radians) are required
+ * in order to correct for the offset between the GCRS pole and the mean
+ * J2000.0 pole.  They define, with respect to the GCRS frame, a J2000.0 mean
+ * pole that is consistent with the rest of the IAU 2000A precession-nutation
+ * model.
+ *
+ * In addition to the displacement of the pole, the complete description of the
+ * frame bias requires also an offset in right ascension. This is not part of
+ * the IAU 2000A model, and is from Chapront et al. (2002). It is returned in
+ * radians.
+ *
+ * This is a supplemented implementation of one aspect of the IAU 2000A
+ * nutation model, formally adopted by the IAU General Assembly in 2000, namely
+ * MHB2000 (Mathews et al. 2002).
+ * @param[out] dpsibi  longitude corrections [rad]
+ * @param[out] depsbi  obliquity corrections [rad]
+ * @param[out] dra     the ICRS RA of the J2000.0 mean equinox [rad]
+ */
 void bi00(double &dpsibi, double &depsbi, double &dra) noexcept;
 
-/// @brief Form the matrix of nutation.
-///
-/// The matrix operates in the sense
-///               V(true) = rmatn * V(mean),
-/// where the p-vector V(true) is with respect to the true equatorial triad of
-/// date and the p-vector V(mean) is with respect to the mean equatorial triad
-/// of date.
-///
-/// @param[in] epsa  mean obliquity of date. The supplied mean obliquity epsa,
-///            must be consistent with the precession-nutation models from which
-///            dpsi and deps were obtained.
-/// @param[in] dpsi  nutation longitude [rad]. The caller is responsible for
-///            providing the nutation components; they are in longitude and
-///            obliquity, in radians and are with respect to the equinox and
-///            ecliptic of date.
-/// @param[in] deps nutation obliquity [rad]
+/* @brief Form the matrix of nutation.
+ *
+ * The matrix operates in the sense
+ *               V(true) = rmatn * V(mean),
+ * where the p-vector V(true) is with respect to the true equatorial triad of
+ * date and the p-vector V(mean) is with respect to the mean equatorial triad
+ * of date.
+ *
+ * @param[in] epsa  mean obliquity of date. The supplied mean obliquity epsa,
+ *            must be consistent with the precession-nutation models from which
+ *            dpsi and deps were obtained.
+ * @param[in] dpsi  nutation longitude [rad]. The caller is responsible for
+ *            providing the nutation components; they are in longitude and
+ *            obliquity, in radians and are with respect to the equinox and
+ *            ecliptic of date.
+ * @param[in] deps nutation obliquity [rad]
+ */
 Eigen::Matrix<double, 3, 3> numat(double epsa, double dpsi,
                                   double deps) noexcept;
 
-/// @brief Form the matrix of nutation for a given date, IAU 2006/2000A model.
-///
-/// The matrix operates in the sense:
-///                 V(true) = rmatn * V(mean),
-/// where the p-vector V(true) is with respect to the true equatorial triad of
-/// date and the p-vector V(mean) is with respect to the mean equatorial triad
-/// of date.
-///
-/// @param[in] date1 (date2)  TT as a 2-part Julian Date. The TT date
-///            date1+date2 is a Julian Date, apportioned in any convenient way
-///            between the two arguments. Optimally, The 'J2000 method' is best
-///            matched to the way the argument is handled internally and will
-///            deliver the optimum resolution.
-/// @param[in] date2 (date1)  TT as a 2-part Julian Date.
-/// @return nutation matrix
-// Eigen::Matrix<double,3,3> num06a(double date1, double date2) noexcept;
+/* @brief Form the matrix of nutation for a given date, IAU 2006/2000A model.
+ *
+ * The matrix operates in the sense:
+ *                 V(true) = rmatn * V(mean),
+ * where the p-vector V(true) is with respect to the true equatorial triad of
+ * date and the p-vector V(mean) is with respect to the mean equatorial triad
+ * of date.
+ *
+ * @param[in] mjd_tt dso::TwoPartDate in [TT]
+ * @return nutation matrix
+ */
 Eigen::Matrix<double, 3, 3>
 num06a(const dso::TwoPartDate &mjd_tt) noexcept;
 
-/// @brief Greenwich apparent sidereal time, IAU 2006, given the NPB matrix.
-///
-/// Although the function uses the IAU 2006 series for s+XY/2, it is otherwise
-/// independent of the precession-nutation model and can in practice be used
-/// with any equinox-based NPB matrix.
-/// The UT1 and TT dates uta+utb and tta+ttb respectively, are both Julian
-/// Dates, apportioned in any convenient way between the argument pairs.
-/// Both UT1 and TT are required, UT1 to predict the Earth rotation and TT to
-/// predict the effects of precession-nutation.  If UT1 is used for both
-/// purposes, errors of order 100 microarcseconds result.
-/// Although the function uses the IAU 2006 series for s+XY/2, it is otherwise
-/// independent of the precession-nutation model and can in practice be used
-/// with any equinox-based NPB matrix.
-///
-/// @param[in] uta  UT1 as a 2-part Julian Date
-/// @param[in] utb  UT1 as a 2-part Julian Date. For UT, the date & time
-///            method is best matched to the algorithm that is used by the
-///            Earth rotation angle function, called internally: maximum
-///            precision is delivered when the uta argument is for 0hrs UT1 on
-///            the day in question and the utb argument lies in the range 0
-///            to 1, or vice versa.
-/// @param[in] tta TT as a 2-part Julian Date
-/// @param[in] ttb TT as a 2-part Julian Date
-/// @param[in] rnpb nutation x precession x bias matrix
-/// @return Greenwich apparent sidereal time in [rad] in range [0,2π)
+/* @brief Greenwich apparent sidereal time, IAU 2006, given the NPB matrix.
+ *
+ * Although the function uses the IAU 2006 series for s+XY/2, it is otherwise
+ * independent of the precession-nutation model and can in practice be used
+ * with any equinox-based NPB matrix.
+ * The UT1 and TT dates uta+utb and tta+ttb respectively, are both Julian
+ * Dates, apportioned in any convenient way between the argument pairs.
+ * Both UT1 and TT are required, UT1 to predict the Earth rotation and TT to
+ * predict the effects of precession-nutation.  If UT1 is used for both
+ * purposes, errors of order 100 microarcseconds result.
+ * Although the function uses the IAU 2006 series for s+XY/2, it is otherwise
+ * independent of the precession-nutation model and can in practice be used
+ * with any equinox-based NPB matrix.
+ *
+ * @param[in] mjd_ut1  dso::TwoPartDate in [UT1]
+ * @param[in] mjd_tt  dso::TwoPartDate in [TT]
+ * @param[in] rnpb nutation x precession x bias matrix
+ * @return Greenwich apparent sidereal time in [rad] in range [0,2π)
+ */
 double gst06(const dso::TwoPartDate &mjd_ut1, const dso::TwoPartDate &mjd_tt,
              const Eigen::Matrix<double, 3, 3> &rnpb) noexcept;
 
@@ -716,273 +707,237 @@ double gst06a(const dso::TwoPartDate &mjd_ut1,
 /// @return  the equation of the origins in radians
 double eors(const Eigen::Matrix<double, 3, 3> &rnpb, double s) noexcept;
 
-/// @brief Frame bias and precession, IAU 2000.
-///
-/// @test  sofa_rotation_matrices.cpp
-/// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
-///             date1+date2 is a Julian Date, apportioned in any convenient
-///             way between the two arguments. Optimally, The 'J2000 method'
-///             is best matched to the way the argument is handled
-///             internally and will deliver the optimum resolution.
-/// @param[in]  date2 (date1)  TT as a 2-part Julian Date.
-/// @param[out] rb  frame bias matrix; The matrix rb transforms vectors from
-///             GCRS to mean J2000.0 by applying frame bias.
-/// @param[out] rp  precession matrix; The matrix rp transforms vectors from
-///             J2000.0 mean equator and equinox to mean equator and equinox
-///             of date by applying precession.
-/// @param[out] rbp bias-precession matrix; The matrix rbp transforms vectors
-///             from GCRS to mean equator and equinox of date by applying frame
-///             bias then precession.  It is the product rp x rb.
-// void bp00(double date1, double date2, Eigen::Matrix<double, 3, 3> &rb,
-//           Eigen::Matrix<double, 3, 3> &rp,
-//           Eigen::Matrix<double, 3, 3> &rbp) noexcept;
+/* @brief Frame bias and precession, IAU 2000.
+ *
+ * @param[in] mjd_tt dso::TwoPartDate in [TT]
+ * @param[out] rb  frame bias matrix; The matrix rb transforms vectors from
+ *             GCRS to mean J2000.0 by applying frame bias.
+ * @param[out] rp  precession matrix; The matrix rp transforms vectors from
+ *             J2000.0 mean equator and equinox to mean equator and equinox
+ *             of date by applying precession.
+ * @param[out] rbp bias-precession matrix; The matrix rbp transforms vectors
+ *             from GCRS to mean equator and equinox of date by applying frame
+ *             bias then precession.  It is the product rp x rb.
+ */
 void bp00(const dso::TwoPartDate &mjd_tt, Eigen::Matrix<double, 3, 3> &rb,
           Eigen::Matrix<double, 3, 3> &rp,
           Eigen::Matrix<double, 3, 3> &rbp) noexcept;
 
-/// @brief Precession angles, IAU 2006, equinox based.
-///
-/// This function returns the set of equinox based angles for the Capitaine
-/// et al. "P03" precession theory, adopted by the IAU in 2006. The angles
-/// are set out in Table 1 of Hilton et al. (2006):
-///
-///    eps0   epsilon_0   obliquity at J2000.0
-///    psia   psi_A       luni-solar precession
-///    oma    omega_A     inclination of equator wrt J2000.0 ecliptic
-///    bpa    P_A         ecliptic pole x, J2000.0 ecliptic triad
-///    bqa    Q_A         ecliptic pole -y, J2000.0 ecliptic triad
-///    pia    pi_A        angle between moving and J2000.0 ecliptics
-///    bpia   Pi_A        longitude of ascending node of the ecliptic
-///    epsa   epsilon_A   obliquity of the ecliptic
-///    chia   chi_A       planetary precession
-///    za     z_A         equatorial precession: -3rd 323 Euler angle
-///    zetaa  zeta_A      equatorial precession: -1st 323 Euler angle
-///    thetaa theta_A     equatorial precession: 2nd 323 Euler angle
-///    pa     p_A         general precession (n.b. see below)
-///    gam    gamma_J2000 J2000.0 RA difference of ecliptic poles
-///    phi    phi_J2000   J2000.0 codeclination of ecliptic pole
-///    psi    psi_J2000   longitude difference of equator poles, J2000.0
-///
-/// The returned values are all radians.
-///
-/// Note that the t^5 coefficient in the series for p_A from Capitaine et
-/// al. (2003) is incorrectly signed in Hilton et al. (2006).
-///
-/// Hilton et al. (2006) Table 1 also contains angles that depend on models
-/// distinct from the P03 precession theory itself, namely the IAU 2000A
-/// frame bias and nutation.  The quoted polynomials are used in other SOFA
-/// functions:
-///
-///    - iauXy06  contains the polynomial parts of the X and Y series.
-///    - iauS06  contains the polynomial part of the s+XY/2 series.
-///    - iauPfw06  implements the series for the Fukushima-Williams
-///      angles that are with respect to the GCRS pole (i.e. the variants
-///      that include frame bias).
-///
-/// The IAU resolution stipulated that the choice of parameterization was
-/// left to the user, and so an IAU compliant precession implementation can
-/// be constructed using various combinations of the angles returned by the
-/// present function.
-///
-/// The parameterization used by SOFA is the version of the
-/// Fukushima-Williams angles that refers directly to the GCRS pole.  These
-/// angles may be calculated by calling the function iauPfw06. SOFA also
-/// supports the direct computation of the CIP GCRS X,Y by series, available
-/// by calling iauXy06.
-///
-/// The agreement between the different parameterizations is at the 1
-/// microarcsecond level in the present era.
-///
-/// When constructing a precession formulation that refers to the GCRS pole
-/// rather than the dynamical pole, it may (depending on the choice of
-/// angles) be necessary to introduce the frame bias explicitly.
-///
-/// It is permissible to re-use the same variable in the returned arguments.
-/// The quantities are stored in the stated order.
-///
-/// @test  sofa_rotation_matrices.cpp
-/// @param[out] eps0    epsilon_0
-/// @param[out] psia    psi_A
-/// @param[out] oma     omega_A
-/// @param[out] bpa     P_A
-/// @param[out] bqa     Q_A
-/// @param[out] pia     pi_A
-/// @param[out] bpia    Pi_A
-/// @param[out] epsa    obliquity epsilon_A
-/// @param[out] chia    chi_A
-/// @param[out] za      z_A
-/// @param[out] zetaa   zeta_A
-/// @param[out] thetaa  theta_A
-/// @param[out] pa      p_A
-/// @param[out] gam     F-W angle gamma_J2000
-/// @param[out] phi     F-W angle phi_J2000
-/// @param[out] psi     F-W angle psi_J2000
-/// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
-///             date1+date2 is a Julian Date, apportioned in any convenient
-///             way between the two arguments. Optimally, The 'J2000 method'
-///             is best matched to the way the argument is handled
-///             internally and will deliver the optimum resolution.
-/// @param[in]  date2 (date1)  TT as a 2-part Julian Date.
+/* @brief Precession angles, IAU 2006, equinox based.
+ *
+ * This function returns the set of equinox based angles for the Capitaine
+ * et al. "P03" precession theory, adopted by the IAU in 2006. The angles
+ * are set out in Table 1 of Hilton et al. (2006):
+ *
+ *    eps0   epsilon_0   obliquity at J2000.0
+ *    psia   psi_A       luni-solar precession
+ *    oma    omega_A     inclination of equator wrt J2000.0 ecliptic
+ *    bpa    P_A         ecliptic pole x, J2000.0 ecliptic triad
+ *    bqa    Q_A         ecliptic pole -y, J2000.0 ecliptic triad
+ *    pia    pi_A        angle between moving and J2000.0 ecliptics
+ *    bpia   Pi_A        longitude of ascending node of the ecliptic
+ *    epsa   epsilon_A   obliquity of the ecliptic
+ *    chia   chi_A       planetary precession
+ *    za     z_A         equatorial precession: -3rd 323 Euler angle
+ *    zetaa  zeta_A      equatorial precession: -1st 323 Euler angle
+ *    thetaa theta_A     equatorial precession: 2nd 323 Euler angle
+ *    pa     p_A         general precession (n.b. see below)
+ *    gam    gamma_J2000 J2000.0 RA difference of ecliptic poles
+ *    phi    phi_J2000   J2000.0 codeclination of ecliptic pole
+ *    psi    psi_J2000   longitude difference of equator poles, J2000.0
+ *
+ * The returned values are all radians.
+ *
+ * Note that the t^5 coefficient in the series for p_A from Capitaine et
+ * al. (2003) is incorrectly signed in Hilton et al. (2006).
+ *
+ * Hilton et al. (2006) Table 1 also contains angles that depend on models
+ * distinct from the P03 precession theory itself, namely the IAU 2000A
+ * frame bias and nutation.  The quoted polynomials are used in other SOFA
+ * functions:
+ *
+ *    - iauXy06  contains the polynomial parts of the X and Y series.
+ *    - iauS06  contains the polynomial part of the s+XY/2 series.
+ *    - iauPfw06  implements the series for the Fukushima-Williams
+ *      angles that are with respect to the GCRS pole (i.e. the variants
+ *      that include frame bias).
+ *
+ * The IAU resolution stipulated that the choice of parameterization was
+ * left to the user, and so an IAU compliant precession implementation can
+ * be constructed using various combinations of the angles returned by the
+ * present function.
+ *
+ * The parameterization used by SOFA is the version of the
+ * Fukushima-Williams angles that refers directly to the GCRS pole.  These
+ * angles may be calculated by calling the function iauPfw06. SOFA also
+ * supports the direct computation of the CIP GCRS X,Y by series, available
+ * by calling iauXy06.
+ *
+ * The agreement between the different parameterizations is at the 1
+ * microarcsecond level in the present era.
+ *
+ * When constructing a precession formulation that refers to the GCRS pole
+ * rather than the dynamical pole, it may (depending on the choice of
+ * angles) be necessary to introduce the frame bias explicitly.
+ *
+ * It is permissible to re-use the same variable in the returned arguments.
+ * The quantities are stored in the stated order.
+ *
+ * @param[in] mjd_tt   dso::TwoPartDate in [TT]
+ * @param[out] eps0    epsilon_0
+ * @param[out] psia    psi_A
+ * @param[out] oma     omega_A
+ * @param[out] bpa     P_A
+ * @param[out] bqa     Q_A
+ * @param[out] pia     pi_A
+ * @param[out] bpia    Pi_A
+ * @param[out] epsa    obliquity epsilon_A
+ * @param[out] chia    chi_A
+ * @param[out] za      z_A
+ * @param[out] zetaa   zeta_A
+ * @param[out] thetaa  theta_A
+ * @param[out] pa      p_A
+ * @param[out] gam     F-W angle gamma_J2000
+ * @param[out] phi     F-W angle phi_J2000
+ * @param[out] psi     F-W angle psi_J2000
+ */
 void p06e(const dso::TwoPartDate &tt_mjd, double &eps0, double &psia,
           double &oma, double &bpa, double &bqa, double &pia, double &bpia,
           double &epsa, double &chia, double &za, double &zetaa, double &thetaa,
           double &pa, double &gam, double &phi, double &psi) noexcept;
 
-/// @brief Precession-nutation, IAU 2006 model
-/// Precession-nutation, IAU 2006 model:  a multi-purpose function,
-/// supporting classical(equinox - based) use directly and CIO-based use
-/// indirectly.
-///
-/// The caller is responsible for providing the nutation components; they
-/// are in longitude and obliquity, in radians and are with respect to the
-/// equinox and ecliptic of date.For high-accuracy applications, free core
-/// nutation should be included as well as any other relevant corrections to
-/// the position of the CIP. It is permissible to re-use the same array in
-/// the returned arguments. The arrays are filled in the stated order.
-///
-/// @test  sofa_rotation_matrices.cpp
-/// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
-///             date1+date2 is a Julian Date, apportioned in any convenient
-///             way between the two arguments. Optimally, The 'J2000 method'
-///             is best matched to the way the argument is handled
-///             internally and will deliver the optimum resolution.
-/// @param[in]  date2 (date1)  TT as a 2-part Julian Date.
-/// @param[in]  dpsi nutation component in longtitude [radians], see
-///             iers2010, 5.5.4
-/// @param[in]  deps nutation component in obliguity [radians]
-/// @param[out] epsa mean obliquity; the returned mean obliquity is
-///             consistent with the IAU 2006 precession.
-/// @param[out] rb  frame bias matrix; the matrix rb transforms vectors
-///             from GCRS to J2000.0 mean equator and equinox by applying frame
-///             bias.
-/// @param[out] rp   precession matrix; the matrix rp transforms vectors
-///             from J2000.0 mean equator and equinox to mean equator and
-///             equinox of date by applying precession.
-/// @param[out] rbp  bias-precession matrix; the matrix rbp transforms
-///             vectors from GCRS to mean equator and equinox of date by
-///             applying frame bias then precession. It is the product rp x rb.
-/// @param[out] rn   nutation matrix; the matrix rn transforms vectors from
-///             mean equator and equinox of date to true equator and equinox of
-///             date by applying the nutation (luni-solar + planetary).
-/// @param[out] rbpn GCRS-to-true matrix; the matrix rbpn transforms vectors
-///             from GCRS to true equator and equinox of date. It is the
-///             product rn x rbp, applying frame bias, precession and
-///             nutation in that order. The X,Y,Z coordinates of the
-///             Celestial Intermediate Pole are elements (3,1-3) of the
-///             GCRS-to-true matrix, i.e. rbpn[2][0-2].
-// void pn06(double date1, double date2, double dpsi, double deps, double &epsa,
-//           Eigen::Matrix<double, 3, 3> &rb, Eigen::Matrix<double, 3, 3> &rp,
-//           Eigen::Matrix<double, 3, 3> &rbp, Eigen::Matrix<double, 3, 3> &rn,
-//           Eigen::Matrix<double, 3, 3> &rbpn) noexcept;
+/* @brief Precession-nutation, IAU 2006 model
+ * Precession-nutation, IAU 2006 model:  a multi-purpose function,
+ * supporting classical(equinox - based) use directly and CIO-based use
+ * indirectly.
+ *
+ * The caller is responsible for providing the nutation components; they
+ * are in longitude and obliquity, in radians and are with respect to the
+ * equinox and ecliptic of date.For high-accuracy applications, free core
+ * nutation should be included as well as any other relevant corrections to
+ * the position of the CIP. It is permissible to re-use the same array in
+ * the returned arguments. The arrays are filled in the stated order.
+ *
+ * @param[in]  mjd_tt  dso::TwoPartDate in [TT]
+ * @param[in]  dpsi nutation component in longtitude [rads], see
+ *             iers2010, 5.5.4
+ * @param[in]  deps nutation component in obliguity [rad]
+ * @param[out] epsa mean obliquity; the returned mean obliquity is
+ *             consistent with the IAU 2006 precession.
+ * @param[out] rb  frame bias matrix; the matrix rb transforms vectors
+ *             from GCRS to J2000.0 mean equator and equinox by applying frame
+ *             bias.
+ * @param[out] rp   precession matrix; the matrix rp transforms vectors
+ *             from J2000.0 mean equator and equinox to mean equator and
+ *             equinox of date by applying precession.
+ * @param[out] rbp  bias-precession matrix; the matrix rbp transforms
+ *             vectors from GCRS to mean equator and equinox of date by
+ *             applying frame bias then precession. It is the product rp x rb.
+ * @param[out] rn   nutation matrix; the matrix rn transforms vectors from
+ *             mean equator and equinox of date to true equator and equinox of
+ *             date by applying the nutation (luni-solar + planetary).
+ * @param[out] rbpn GCRS-to-true matrix; the matrix rbpn transforms vectors
+ *             from GCRS to true equator and equinox of date. It is the
+ *             product rn x rbp, applying frame bias, precession and
+ *             nutation in that order. The X,Y,Z coordinates of the
+ *             Celestial Intermediate Pole are elements (3,1-3) of the
+ *             GCRS-to-true matrix, i.e. rbpn[2][0-2].
+ */
 void pn06(const dso::TwoPartDate &mjd_tt, double dpsi, double deps,
           double &epsa, Eigen::Matrix<double, 3, 3> &rb,
           Eigen::Matrix<double, 3, 3> &rp, Eigen::Matrix<double, 3, 3> &rbp,
           Eigen::Matrix<double, 3, 3> &rn,
           Eigen::Matrix<double, 3, 3> &rbpn) noexcept;
 
-/// @brief Precession-nutation, IAU 2000 model
-///
-/// Precession-nutation, IAU 2000 model:  a multi-purpose function,
-/// supporting classical(equinox - based) use directly and CIO-based use
-/// indirectly.
-///
-/// The caller is responsible for providing the nutation components; they
-/// are in longitude and obliquity, in radians and are with respect to the
-/// equinox and ecliptic of date.For high-accuracy applications, free core
-/// nutation should be included as well as any other relevant corrections to
-/// the position of the CIP. It is permissible to re-use the same array in
-/// the returned arguments. The arrays are filled in the stated order.
-///
-/// @test  sofa_rotation_matrices.cpp
-/// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
-///             date1+date2 is a Julian Date, apportioned in any convenient
-///             way between the two arguments. Optimally, The 'J2000 method'
-///             is best matched to the way the argument is handled
-///             internally and will deliver the optimum resolution.
-/// @param[in]  date2 (date1)  TT as a 2-part Julian Date.
-/// @param[in]  dpsi nutation component in longtitude (radians), see
-///             iers2010, 5.5.4
-/// @param[in]  deps nutation component in obliguity (radians)
-/// @param[out] epsa mean obliquity; the returned mean obliquity is
-///             consistent with the IAU 2000 precession--nutation models.
-/// @param[out] rb frame bias matrix; the matrix rb transforms vectors
-///             from GCRS to J2000.0 mean equator and equinox by applying frame
-///             bias.
-/// @param[out] rp precession matrix; the matrix rp transforms vectors from
-///             J2000.0 mean equator and equinox to mean equator and equinox
-///             of date by applying precession.
-/// @param[out] rbp  bias-precession matrix; the matrix rbp transforms vectors
-///             from GCRS to mean equator and equinox of date by applying
-///             frame bias then precession. It is the product rp x rb.
-/// @param[out] rn   nutation matrix; the matrix rn transforms vectors from mean
-///             equator and equinox of date to true equator and equinox of
-///             date by applying the nutation (luni-solar + planetary).
-/// @param[out] rbpn GCRS-to-true matrix; the matrix rbpn transforms vectors
-///             from GCRS to true equator and equinox of date. It is the
-///             product rn x rbp, applying frame bias, precession and
-///             nutation in that order.
-// void pn00(double date1, double date2, double dpsi, double deps, double &epsa,
-//           Eigen::Matrix<double, 3, 3> &rb, Eigen::Matrix<double, 3, 3> &rp,
-//           Eigen::Matrix<double, 3, 3> &rbp, Eigen::Matrix<double, 3, 3> &rn,
-//           Eigen::Matrix<double, 3, 3> &rbpn) noexcept;
+/* @brief Precession-nutation, IAU 2000 model
+ *
+ * Precession-nutation, IAU 2000 model:  a multi-purpose function,
+ * supporting classical(equinox - based) use directly and CIO-based use
+ * indirectly.
+ *
+ * The caller is responsible for providing the nutation components; they
+ * are in longitude and obliquity, in radians and are with respect to the
+ * equinox and ecliptic of date.For high-accuracy applications, free core
+ * nutation should be included as well as any other relevant corrections to
+ * the position of the CIP. It is permissible to re-use the same array in
+ * the returned arguments. The arrays are filled in the stated order.
+ *
+ * @param[in]  mjd_tt dso::TwoPartDate in [TT]
+ * @param[in]  dpsi nutation component in longtitude (radians), see
+ *             iers2010, 5.5.4
+ * @param[in]  deps nutation component in obliguity (radians)
+ * @param[out] epsa mean obliquity; the returned mean obliquity is
+ *             consistent with the IAU 2000 precession--nutation models.
+ * @param[out] rb frame bias matrix; the matrix rb transforms vectors
+ *             from GCRS to J2000.0 mean equator and equinox by applying frame
+ *             bias.
+ * @param[out] rp precession matrix; the matrix rp transforms vectors from
+ *             J2000.0 mean equator and equinox to mean equator and equinox
+ *             of date by applying precession.
+ * @param[out] rbp  bias-precession matrix; the matrix rbp transforms vectors
+ *             from GCRS to mean equator and equinox of date by applying
+ *             frame bias then precession. It is the product rp x rb.
+ * @param[out] rn   nutation matrix; the matrix rn transforms vectors from mean
+ *             equator and equinox of date to true equator and equinox of
+ *             date by applying the nutation (luni-solar + planetary).
+ * @param[out] rbpn GCRS-to-true matrix; the matrix rbpn transforms vectors
+ *             from GCRS to true equator and equinox of date. It is the
+ *             product rn x rbp, applying frame bias, precession and
+ *             nutation in that order.
+ */
 void pn00(const dso::TwoPartDate &mjd_tt, double dpsi, double deps,
           double &epsa, Eigen::Matrix<double, 3, 3> &rb,
           Eigen::Matrix<double, 3, 3> &rp, Eigen::Matrix<double, 3, 3> &rbp,
           Eigen::Matrix<double, 3, 3> &rn,
           Eigen::Matrix<double, 3, 3> &rbpn) noexcept;
 
-/// @brief Precession-nutation, IAU 2000A model
-///
-/// Precession-nutation, IAU 2000A model:  a multi-purpose function,
-/// supporting classical(equinox - based) use directly and CIO-based use
-/// indirectly.
-///
-/// @test  sofa_rotation_matrices.cpp
-/// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
-///             date1+date2 is a Julian Date, apportioned in any convenient
-///             way between the two arguments. Optimally, The 'J2000 method'
-///             is best matched to the way the argument is handled
-///             internally and will deliver the optimum resolution.
-/// @param[in]  date2 (date1)  TT as a 2-part Julian Date.
-/// @param[in]  dpsi nutation component in longtitude (radians), see
-///             iers2010, 5.5.4. The nutation components (luni-solar +
-///             planetary, IAU 2000A) in longitude and obliquity are in radians
-///             and with respect to the equinox and ecliptic of date. Free core
-///             nutation is omitted; for the utmost accuracy, use the iauPn00
-///             function, where the nutation components are caller-specified.
-///             For faster but slightly less accurate results, use the iauPn00b
-///             function.
-/// @param[in]  deps nutation component in obliguity (radians), see above
-/// @param[out] epsa mean obliquity; the returned mean obliquity is
-///             consistent with the IAU 2000 precession--nutation models.
-/// @param[out] rb frame bias matrix; the matrix rb transforms vectors
-///             from GCRS to J2000.0 mean equator and equinox by applying frame
-///             bias.
-/// @param[out] rp precession matrix; the matrix rp transforms vectors from
-///             J2000.0 mean equator and equinox to mean equator and equinox
-///             of date by applying precession.
-/// @param[out] rbp  bias-precession matrix; the matrix rbp transforms vectors
-///             from GCRS to mean equator and equinox of date by applying
-///             frame bias then precession. It is the product rp x rb.
-/// @param[out] rn   nutation matrix; the matrix rn transforms vectors from mean
-///             equator and equinox of date to true equator and equinox of
-///             date by applying the nutation (luni-solar + planetary).
-/// @param[out] rbpn GCRS-to-true matrix; the matrix rbpn transforms vectors
-///             from GCRS to true equator and equinox of date. It is the
-///             product rn x rbp, applying frame bias, precession and
-///             nutation in that order. The X,Y,Z coordinates of the IAU 2000A
-///             Celestial Intermediate Pole are elements(3, 1 - 3) of the
-///             GCRS - to - true matrix, i.e.rbpn[2][0 - 2].
+/* @brief Precession-nutation, IAU 2000A model
+ *
+ * Precession-nutation, IAU 2000A model:  a multi-purpose function,
+ * supporting classical(equinox - based) use directly and CIO-based use
+ * indirectly.
+ *
+ * @param[in] mjd_tt  dso::TwoPartDate in [TT]
+ * @param[in]  dpsi nutation component in longtitude (radians), see
+ *             iers2010, 5.5.4. The nutation components (luni-solar +
+ *             planetary, IAU 2000A) in longitude and obliquity are in radians
+ *             and with respect to the equinox and ecliptic of date. Free core
+ *             nutation is omitted; for the utmost accuracy, use the iauPn00
+ *             function, where the nutation components are caller-specified.
+ *             For faster but slightly less accurate results, use the iauPn00b
+ *             function.
+ * @param[in]  deps nutation component in obliguity (radians), see above
+ * @param[out] epsa mean obliquity; the returned mean obliquity is
+ *             consistent with the IAU 2000 precession--nutation models.
+ * @param[out] rb frame bias matrix; the matrix rb transforms vectors
+ *             from GCRS to J2000.0 mean equator and equinox by applying frame
+ *             bias.
+ * @param[out] rp precession matrix; the matrix rp transforms vectors from
+ *             J2000.0 mean equator and equinox to mean equator and equinox
+ *             of date by applying precession.
+ * @param[out] rbp  bias-precession matrix; the matrix rbp transforms vectors
+ *             from GCRS to mean equator and equinox of date by applying
+ *             frame bias then precession. It is the product rp x rb.
+ * @param[out] rn   nutation matrix; the matrix rn transforms vectors from mean
+ *             equator and equinox of date to true equator and equinox of
+ *             date by applying the nutation (luni-solar + planetary).
+ * @param[out] rbpn GCRS-to-true matrix; the matrix rbpn transforms vectors
+ *             from GCRS to true equator and equinox of date. It is the
+ *             product rn x rbp, applying frame bias, precession and
+ *             nutation in that order. The X,Y,Z coordinates of the IAU 2000A
+ *             Celestial Intermediate Pole are elements(3, 1 - 3) of the
+ *             GCRS - to - true matrix, i.e.rbpn[2][0 - 2].
+ */
 inline void pn00a(const dso::TwoPartDate &mjd_tt, double &dpsi, double &deps,
                   double &epsa, Eigen::Matrix<double, 3, 3> &rb,
                   Eigen::Matrix<double, 3, 3> &rp,
                   Eigen::Matrix<double, 3, 3> &rbp,
                   Eigen::Matrix<double, 3, 3> &rn,
                   Eigen::Matrix<double, 3, 3> &rbpn) noexcept {
-  // Nutation.
+  /* Nutation */
   nut00a(mjd_tt, dpsi, deps);
 
-  // Remaining results.
+  /* Remaining results */
   pn00(mjd_tt, dpsi, deps, epsa, rb, rp, rbp, rn, rbpn);
 
   return;

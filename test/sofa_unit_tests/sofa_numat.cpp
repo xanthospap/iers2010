@@ -28,7 +28,7 @@ int main(int argc, [[maybe_unused]]char *argv[]) {
   printf("---------------------------------------------------------------\n");
 
   fails = 0;
-  max_error = std::numeric_limits<double>::min();
+  max_error = 0e0;
   for (int i = 0; i < NUM_TESTS; i++) {
     const double epsa = random_angle(-iers2010::DPI/3, iers2010::DPI/3);
     const double dpsi = random_angle(-iers2010::DPI/3, iers2010::DPI/3);
@@ -40,7 +40,7 @@ int main(int argc, [[maybe_unused]]char *argv[]) {
       /* angle between rotation matrices [rad] */
       const double theta = rotation_matrix_diff(am, as);
       if (std::abs(theta) > max_error) {
-        max_error = theta;
+        max_error = std::abs(theta);
       }
     }
   }

@@ -20,23 +20,21 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
   if (argc > 1) {
     fprintf(stderr, "Ignoring command line arguments!\n");
   }
-  int func_it = 0;
-  int fails;
+  int fails[2]={0,0};
   int error = 0;
-  double max_error[2] = {std::numeric_limits<double>::min()};
+  double max_error[2] = {0e0,0e0};
   double am[2], as[2];
 
   printf("Function         #Tests #Fails #Maxerror[sec]    Status\n");
   printf("---------------------------------------------------------------\n");
 
-  fails = 0;
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
     nut00a(tt, am[0], am[1]);
     iauNut00a(tt.big() + dso::mjd0_jd, tt.small(), &as[0], &as[1]);
     for (int j = 0; j < 2; j++) {
       if (!approx_equal(am[j], as[j])) {
-        ++fails;
+        ++fails[j];
         if (std::abs(am[j] - as[j]) > max_error[j]) {
           max_error[j] = std::abs(am[j] - as[j]);
         }
@@ -45,11 +43,12 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
   }
 
   for (int j = 0; j < 2; j++) {
-    printf("%8s/%7s %6d %6d %+.9e %s\n", funcs[func_it], args[j], NUM_TESTS,
-           fails, dso::rad2sec(max_error[j]), (fails == 0) ? "OK" : "FAILED");
+    printf("%8s %7s %6d %6d %+.9e %s\n", funcs[0], args[j], NUM_TESTS,
+           fails[j], dso::rad2sec(max_error[j]), (fails[j] == 0) ? "OK" : "FAILED");
   }
-  if (fails)
-    ++error;
+
+  error=0;
+  for (int j=0;j<2;j++) error+=fails[j];
 
   return error;
 }

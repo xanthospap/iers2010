@@ -28,7 +28,7 @@ int main(int argc, [[maybe_unused]]char *argv[]) {
   printf("---------------------------------------------------------------\n");
 
   fails = 0;
-  max_error = std::numeric_limits<double>::min();
+  max_error = 0e0;
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
     const auto am = c2i06a(tt);
@@ -38,7 +38,7 @@ int main(int argc, [[maybe_unused]]char *argv[]) {
       /* angle between rotation matrices [rad] */
       const double theta = rotation_matrix_diff(am, as);
       if (std::abs(theta) > max_error) {
-        max_error = theta;
+        max_error = std::abs(theta);
       }
     }
   }

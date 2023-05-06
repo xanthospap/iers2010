@@ -14,21 +14,17 @@ constexpr const int NUM_TESTS = 10000;
 const char *funcs[] = {"fw2m"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
-int main(int argc, [[maybe_unused]]char *argv[]) {
-  if (argc > 1) {
-    fprintf(stderr, "Ignoring command line arguments!\n");
-  }
+int main() {
   int func_it = 0;
   int fails;
   int error = 0;
-  double max_error = std::numeric_limits<double>::min();
+  double max_error = 0e0;
   double as[3][3];
 
   printf("Function #Tests #Fails #Maxerror[sec]    Status\n");
   printf("---------------------------------------------------------------\n");
 
   fails = 0;
-  max_error = std::numeric_limits<double>::min();
   for (int i = 0; i < NUM_TESTS; i++) {
     const double gamb = random_angle();
     const double phib = random_angle();
@@ -41,7 +37,7 @@ int main(int argc, [[maybe_unused]]char *argv[]) {
       /* angle between rotation matrices [rad] */
       const double theta = rotation_matrix_diff(am, as);
       if (std::abs(theta) > max_error) {
-        max_error = theta;
+        max_error = std::abs(theta);
       }
     }
   }

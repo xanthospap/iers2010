@@ -16,27 +16,22 @@ const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 const char *args[] = {"gamb", "phib", "psib", "epsa"};
 const int num_args = sizeof(args) / sizeof(args[0]);
 
-int main(int argc, [[maybe_unused]] char *argv[]) {
-  if (argc > 1) {
-    fprintf(stderr, "Ignoring command line arguments!\n");
-  }
-  int func_it = 0;
-  int fails;
+int main() {
+  int fails[4]={0,0,0,0};
   int error = 0;
-  double max_error[4] = {std::numeric_limits<double>::min()};
+  double max_error[4] = {0,0,0,0};
   double am[4], as[4];
 
   printf("Function         #Tests #Fails #Maxerror[sec]    Status\n");
   printf("---------------------------------------------------------------\n");
 
-  fails = 0;
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
     pfw06(tt, am[0], am[1], am[2], am[3]);
     iauPfw06(tt.big() + dso::mjd0_jd, tt.small(), &as[0], &as[1], &as[2], &as[3]);
     for (int j = 0; j < 4; j++) {
       if (!approx_equal(am[j], as[j])) {
-        ++fails;
+        ++fails[j];
         if (std::abs(am[j] - as[j]) > max_error[j]) {
           max_error[j] = std::abs(am[j] - as[j]);
         }
@@ -45,11 +40,12 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
   }
 
   for (int j = 0; j < 4; j++) {
-    printf("%8s/%7s %6d %6d %+.9e %s\n", funcs[func_it], args[j], NUM_TESTS,
-           fails, dso::rad2sec(max_error[j]), (fails == 0) ? "OK" : "FAILED");
+    printf("%8s %7s %6d %6d %+.9e %s\n", funcs[0], args[j], NUM_TESTS,
+           fails[j], dso::rad2sec(max_error[j]), (fails[j] == 0) ? "OK" : "FAILED");
   }
-  if (fails)
-    ++error;
+
+  error=0;
+  for (int j = 0; j < 4; j++) error+=fails[j];
 
   return error;
 }

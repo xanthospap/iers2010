@@ -4,22 +4,17 @@ void iers2010::sofa::bp00(const dso::TwoPartDate &mjd_tt,
                           Eigen::Matrix<double, 3, 3> &rb,
                           Eigen::Matrix<double, 3, 3> &rp,
                           Eigen::Matrix<double, 3, 3> &rbp) noexcept {
-  // J2000.0 obliquity (Lieske et al. 1977)
+  /* J2000.0 obliquity (Lieske et al. 1977) */
   constexpr double EPS0 = 84'381.448e0 * iers2010::DAS2R;
 
-  // double t, dpsibi, depsbi, dra0, psia77, oma77, chia, dpsipr, depspr, psia,
-  //     oma, rbw[3][3];
-
-  // Interval between fundamental epoch J2000.0 and current date (JC).
-  // const double t = ((date1 - dso::j2000_jd) + date2) /
-  // dso::days_in_julian_cent;
+  /* Interval between fundamental epoch J2000.0 and current date (JC) */
   const double t = mjd_tt.jcenturies_sinceJ2000();
 
-  // Frame bias.
+  /* Frame bias */
   double dpsibi, depsbi, dra0;
   iers2010::sofa::bi00(dpsibi, depsbi, dra0);
 
-  // Precession angles (Lieske et al. 1977)
+  /* Precession angles (Lieske et al. 1977) */
   const double psia77 = (5'038.7784e0 + (-1.07259e0 + (-0.001147e0) * t) * t) *
                         t * iers2010::DAS2R;
   const double oma77 =
@@ -27,32 +22,23 @@ void iers2010::sofa::bp00(const dso::TwoPartDate &mjd_tt,
   const double chia =
       (10.5526e0 + (-2.38064e0 + (-0.001125e0) * t) * t) * t * iers2010::DAS2R;
 
-  // Apply IAU 2000 precession corrections.
+  /* Apply IAU 2000 precession corrections */
   double dpsipr, depspr;
   iers2010::sofa::pr00(mjd_tt, dpsipr, depspr);
   const double psia = psia77 + dpsipr;
   const double oma = oma77 + depspr;
 
-  // Frame bias matrix: GCRS to J2000.0.
-  // rb.set_identity();
-  // rb.rotz(dra0);
-  // rb.roty(dpsibi * std::sin(EPS0));
-  // rb.rotx(-depsbi);
+  /* Frame bias matrix: GCRS to J2000.0 */
   rb = Eigen::AngleAxisd(depsbi, Eigen::Vector3d::UnitX()) *
        Eigen::AngleAxisd(-(dpsibi * std::sin(EPS0)), Eigen::Vector3d::UnitY()) *
        Eigen::AngleAxisd(-dra0, Eigen::Vector3d::UnitZ());
 
-  // Precession matrix: J2000.0 to mean of date.
-  // rp.set_identity();
-  // rp.rotx(EPS0);
-  // rp.rotz(-psia);
-  // rp.rotx(-oma);
-  // rp.rotz(chia);
+  /* Precession matrix: J2000.0 to mean of date. */
   rp = Eigen::AngleAxisd(-chia, Eigen::Vector3d::UnitZ()) *
        Eigen::AngleAxisd(oma, Eigen::Vector3d::UnitX()) *
        Eigen::AngleAxisd(psia, Eigen::Vector3d::UnitZ()) *
        Eigen::AngleAxisd(-EPS0, Eigen::Vector3d::UnitX());
 
-  // Bias-precession matrix: GCRS to mean of date.
+  /* Bias-precession matrix: GCRS to mean of date. */
   rbp = rp * rb;
 }

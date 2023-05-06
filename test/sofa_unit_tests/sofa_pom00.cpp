@@ -14,11 +14,7 @@ constexpr const int NUM_TESTS = 10000;
 const char *funcs[] = {"pom00"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
-int main(int argc, [[maybe_unused]]char *argv[]) {
-  if (argc > 1) {
-    fprintf(stderr, "Ignoring command line arguments!\n");
-  }
-  int func_it = 0;
+int main() {
   int fails;
   int error = 0;
   double max_error = std::numeric_limits<double>::min();
@@ -40,11 +36,11 @@ int main(int argc, [[maybe_unused]]char *argv[]) {
       /* angle between rotation matrices [rad] */
       const double theta = rotation_matrix_diff(am, as);
       if (std::abs(theta) > max_error) {
-        max_error = theta;
+        max_error = std::abs(theta);
       }
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
+  printf("%8s %6d %6d %+.9e %s\n", funcs[0], NUM_TESTS, fails, dso::rad2sec(max_error),
          (fails == 0) ? "OK" : "FAILED");
   if (fails) ++error;
 

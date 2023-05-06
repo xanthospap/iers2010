@@ -14,14 +14,10 @@ constexpr const int NUM_TESTS = 10000;
 const char *funcs[] = {"s06"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
-int main(int argc, [[maybe_unused]] char *argv[]) {
-  if (argc > 1) {
-    fprintf(stderr, "Ignoring command line arguments!\n");
-  }
-  int func_it = 0;
+int main() {
   int fails;
   int error = 0;
-  double max_error = std::numeric_limits<double>::min();
+  double max_error = 0e0;
   double am, as;
 
   printf("Function         #Tests #Fails #Maxerror[sec]    Status\n");
@@ -42,7 +38,7 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
       }
     }
 
-    printf("%8s %6d %6d %+.9e %s\n", funcs[func_it], NUM_TESTS,
+    printf("%8s %6d %6d %+.9e %s\n", funcs[0], NUM_TESTS,
            fails, dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED");
   if (fails)
     ++error;
