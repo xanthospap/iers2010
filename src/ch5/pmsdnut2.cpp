@@ -1,16 +1,14 @@
-#include "datetime/dtfund.hpp"
-#include "geodesy/units.hpp"
 #include "iers2010.hpp"
-#include <datetime/dtcalendar.hpp>
 
 namespace {
-// Coefficients of the long and quasi diurnal periodic terms in polar motion
+/* Coefficients of the long and quasi diurnal periodic terms in polar motion */
 constexpr const struct {
   int iarg[6];
   double per, xs, xc, ys, yc;
 } x[] = {
-    //  Coefficients of the long periodic terms in polar motion
-    //+ Source: IERS Conventions (2010), Table 5.1a
+    /* Coefficients of the long periodic terms in polar motion
+     * Source: IERS Conventions (2010), Table 5.1a
+     */
     {{0, 0, 0, 0, 0, -1}, 6798.3837e0, 0.0e0, 0.6e0, -0.1e0, -0.1e0},
     {{0, -1, 0, 1, 0, 2}, 6159.1355e0, 1.5e0, 0.0e0, -0.2e0, 0.1e0},
     {{0, -1, 0, 1, 0, 1}, 3231.4956e0, -28.5e0, -0.2e0, 3.4e0, -3.9e0},
@@ -26,8 +24,6 @@ constexpr const struct {
     {{0, 1, 0, 1, 0, 1}, 13.718786e0, -0.1e0, 0.3e0, 0.0e0, 2.7e0},
     {{0, 0, 0, 3, 0, 3}, 9.1071941e0, -0.1e0, 0.1e0, 0.0e0, 0.9e0},
     {{0, 0, 0, 3, 0, 2}, 9.0950103e0, -0.1e0, 0.1e0, 0.0e0, 0.6e0},
-    //  Coefficients of the quasi diurnal terms in polar motion
-    //+ Source: IERS Conventions (2010), Table 5.1a
     {{1, -1, 0, -2, 0, -1}, 1.1196992e0, -0.4e0, 0.3e0, -0.3e0, -0.4e0},
     {{1, -1, 0, -2, 0, -2}, 1.1195149e0, -2.3e0, 1.3e0, -1.3e0, -2.3e0},
     {{1, 1, 0, -2, -2, -2}, 1.1134606e0, -0.4e0, 0.3e0, -0.3e0, -0.4e0},
@@ -41,17 +37,13 @@ constexpr const struct {
 
 constexpr const int M{sizeof(x) / sizeof(x[0])};
 static_assert(M == 25, "Invalid quasi diurnal terms in pmsdnut2.");
-}// unnamed namespace
+}/* unnamed namespace */
 
-// fargs should have been computed using the compute_fargs function (size=6)
+/* fargs should have been computed using the compute_fargs function (size=6) */
 int iers2010::utils::pmsdnut2(const dso::TwoPartDate &mjd,
                               const double *const fargs, double &dx,
                               double &dy) noexcept {
   /*
-   *         ----------------------------
-   *           D E F I N I T I O N S
-   *         ----------------------------
-   *
    *  iband  - parameter defining the range of periods for the terms which
    *           are included in computations; if equal to 1 only the quasi
    *           diurnal terms are computed, otherwise the full model
@@ -75,45 +67,47 @@ int iers2010::utils::pmsdnut2(const dso::TwoPartDate &mjd,
    */
   constexpr const int iband = 1;
 
-  // Rate of secular polar motion, in microarcseconds per year
-  // Source: IERS Conventions (2010), Table 5.1a
+  /* Rate of secular polar motion, in microarcseconds per year. Source: 
+   * IERS Conventions (2010), Table 5.1a
+   */
   constexpr double xrate = -3.8e0, yrate = -4.3e0;
 
-  // Compute the periodical part of the model
-  // Coordinates of the pole are set to zero first
+  /* Compute the periodical part of the model. Coordinates of the pole are 
+   * set to zero first
+   */
   dx = dy = 0e0;
 
   const int jstart = (iband == 1) ? 15 : 0;
   for (int j = jstart; j < M; j++) {
-    // For the j-th term of the trigonometric expansion, compute the angular
-    // argument angle of sine and cosine functions as a linear integer
-    // combination of the 6 fundamental arguments
+    /* For the j-th term of the trigonometric expansion, compute the angular
+     * argument angle of sine and cosine functions as a linear integer
+     * combination of the 6 fundamental arguments
+     */
     double angle = 0e0;
     for (int i = 0; i < 6; i++)
       angle += x[j].iarg[i] * fargs[i];
-    // WRONG ! we must keep negative signs!
-    // angle = dso::norm_angle<double, dso::AngleUnit::Radians>(angle);
     angle = std::fmod(angle, iers2010::D2PI);
-    // Compute contribution from the j-th term to the polar motion coordinates
+    /* contribution from the j-th term to the polar motion coordinates */
     const double sa = std::sin(angle);
     const double ca = std::cos(angle);
-    dx += x[j].xs * sa + x[j].xc * ca;
-    dy += x[j].ys * sa + x[j].yc * ca;
+    dx += (x[j].xs * sa + x[j].xc * ca);
+    dy += (x[j].ys * sa + x[j].yc * ca);
   }
 
   if (iband != 1) {
     const double fyears = mjd.as_fractional_years();
-    // Add the secular term of the model
+    /* Add the secular term of the model */
     dx += xrate * fyears;
     dy += yrate * fyears;
   }
 
-  //  Finished
+  /* Finished */
   return 0;
 }
 
-int iers2010::pmsdnut2(const dso::TwoPartDate &mjd, double &dx, double &dy) noexcept {
+int iers2010::pmsdnut2(const dso::TwoPartDate &mjd, double &dx,
+                       double &dy) noexcept {
   double fargs[6];
-  iers2010::utils::eop_fundarg(mjd,fargs);
-  return utils::pmsdnut2(mjd,fargs,dx,dy);
+  iers2010::utils::eop_fundarg(mjd, fargs);
+  return utils::pmsdnut2(mjd, fargs, dx, dy);
 }
