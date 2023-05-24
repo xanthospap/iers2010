@@ -108,9 +108,13 @@ int dso::Itrs2Gcrs::prepare_costg(const dso::EopRecord &eop, double s,
 
 int dso::Itrs2Gcrs::prepare(const dso::TwoPartDate &tt_mjd) noexcept {
   if (tt_mjd != t_tt) {
-    // interpolate EOPs, using a Lagrange polynomial of 5th degree and
-    // ASSUMING that the EOP table instance is tabulated in TT
-    if (eopLut->interpolate(tt_mjd, eops, 5, true)) {
+    /* set current date */
+    t_tt = tt_mjd;
+
+    /* interpolate EOPs, using a Lagrange polynomial of 5th degree and
+     * ASSUMING that the EOP table instance is tabulated in TT
+     */
+    if (eopLut->interpolate(t_tt, eops, 5, true)) {
       fprintf(
           stderr,
           "[ERROR] Failed interpolating EOPs for given date (traceback: %s)\n",
@@ -119,23 +123,17 @@ int dso::Itrs2Gcrs::prepare(const dso::TwoPartDate &tt_mjd) noexcept {
     }
 
     // set ERA(t) angle
-    {
-      // temporarily set instance's date to compute ERA, them swap back
-      const auto t_temp = t_tt;
-      t_tt = tt_mjd;
-      era = iers2010::sofa::era00(this->ut1());
-      t_tt = t_temp;
-    }
+    era = iers2010::sofa::era00(this->ut1());
 
     // Construct Q(t) matrix (precession/nutation)
     {
       // call the routine XY06 to obtain the IAU 2006/2000A X, Y from series,
       // i.e. CIP coordinates
       double X, Y;
-      iers2010::sofa::xy06(tt_mjd, X, Y);
+      iers2010::sofa::xy06(t_tt, X, Y);
 
       // call the routine S06 to obtain s
-      const double s = iers2010::sofa::s06(tt_mjd, X, Y);
+      const double s = iers2010::sofa::s06(t_tt, X, Y);
 
       // apply CIP corrections, ΔX and ΔY (if any)
       X += dso::sec2rad(eops.dx);
@@ -143,6 +141,7 @@ int dso::Itrs2Gcrs::prepare(const dso::TwoPartDate &tt_mjd) noexcept {
 
       // call routine C2IXYS, giving the GCRS-to-CIRS matrix
       Rc2i = iers2010::sofa::c2ixys(X, Y, s);
+      //printf("[MINE] tt=%.12e x=%+.12e y=%+.12e s=%+.12e era=%+.12e\n", t_tt.as_mjd(), X,Y,s,era);
     }
 
     // construct polar motion matrix

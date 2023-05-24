@@ -103,8 +103,9 @@ env.Alias(target='install', source=env.InstallVersionedLib(
 ## Tests ...
 if GetOption('check') is not None and GetOption('check'):
   #tests_sources  = glob.glob(r"test/*.cpp")
-  tests_sources = glob.glob(r"test/cel2ter/*.cpp")
-  tests_sources = glob.glob(r"test/parsers/*.cpp")
+  #tests_sources = glob.glob(r"test/cel2ter/*.cpp")
+  #tests_sources = glob.glob(r"test/parsers/*.cpp")
+  tests_sources = glob.glob(r"test/internal/*.cpp")
   env.Append(RPATH=root_dir)
   for tsource in tests_sources:
     pth = os.path.dirname(tsource)
@@ -112,7 +113,7 @@ if GetOption('check') is not None and GetOption('check'):
     ttarget = os.path.join(pth, bsn.replace(
         '_', '-').replace('.cpp', '.out'))
     env.Program(target=ttarget, source=tsource, CPPPATH='src/',
-                LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], LIBPATH='.')
+                LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.')
 
 ## Build tests against SOFA lib
 if GetOption('sofa_check') is not None and GetOption('sofa_check'):

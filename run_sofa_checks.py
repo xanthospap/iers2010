@@ -51,7 +51,7 @@ parser.add_argument(
     dest='progs_dir',
     default=os.path.abspath(os.getcwd()),
     required=False,
-    help='Directory with COSTG test executables')
+    help='Directory with SOFA test executables')
 
 parser.add_argument(
     '--plots-dir',

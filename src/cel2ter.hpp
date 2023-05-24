@@ -1,3 +1,6 @@
+#ifndef __CELESTIAL_TERRESTRIAL_TRANS_HPP__
+#define __CELESTIAL_TERRESTRIAL_TRANS_HPP__
+
 #include "datetime/dtcalendar.hpp"
 #include "eop.hpp"
 #include "iau.hpp"
@@ -196,3 +199,5 @@ public:
 }; /* class Itrs2Gcrs */
 
 } /* namespace dso */
+
+#endif
