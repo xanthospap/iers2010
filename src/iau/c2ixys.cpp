@@ -1,4 +1,5 @@
 #include "iau.hpp"
+#include "rotations.hpp"
 
 Eigen::Matrix<double, 3, 3> iers2010::sofa::c2ixys(double x, double y,
                                                      double s) noexcept {
@@ -13,8 +14,9 @@ Eigen::Matrix<double, 3, 3> iers2010::sofa::c2ixys(double x, double y,
    * Y = sin d sin E,
    * Z = cos d,
    */
-  return Eigen::Matrix<double, 3, 3>(
-      Eigen::AngleAxisd(e + s, Eigen::Vector3d::UnitZ()) *
-      Eigen::AngleAxisd(-d, Eigen::Vector3d::UnitY()) *
-      Eigen::AngleAxisd(-e, Eigen::Vector3d::UnitZ()));
+  Eigen::Matrix<double, 3, 3> R = Eigen::Matrix<double, 3, 3>::Identity();
+  dso::rotate<dso::RotationAxis::Z>(e,R);
+  dso::rotate<dso::RotationAxis::Y>(d,R);
+  dso::rotate<dso::RotationAxis::Z>(-(e+s),R);
+  return R;
 }

@@ -4,27 +4,24 @@
 #include "sofa.h"
 #include <cassert>
 #include <cstdio>
-#include <datetime/dtcalendar.hpp>
 #include <limits>
 
 using namespace iers2010::sofa;
 
-constexpr const int NUM_TESTS = 10000;
+constexpr const int NUM_TESTS = 100000;
 
 const char *funcs[] = {"pom00"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
 int main() {
-  int fails;
   int error = 0;
-  double max_error = std::numeric_limits<double>::min();
   double as[3][3];
 
   printf("Function #Tests #Fails #Maxerror[sec]    Status\n");
   printf("---------------------------------------------------------------\n");
 
-  fails = 0;
-  max_error = std::numeric_limits<double>::min();
+  int fails = 0;
+  double max_error = 0e0;
   for (int i = 0; i < NUM_TESTS; i++) {
     const double xp = random_angle(-iers2010::DPI/2, iers2010::DPI/2);
     const double yp = random_angle(-iers2010::DPI/2, iers2010::DPI/2);

@@ -4,7 +4,7 @@
 
 namespace {
 
-// Maximum power of T in the polynomials for X and Y
+/* Maximum power of T in the polynomials for X and Y */
 constexpr const int MAXPT = 5;
 
 // Polynomial coefficients (arcsec, X then Y).

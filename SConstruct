@@ -94,7 +94,7 @@ vlib = env.SharedLibrary(source=lib_src_files, target=lib_name, CPPPATH=[
 
 ## Build ....
 env.Program(source='src/hardisp.cpp', target='bin/hardisp',
-            LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.', CPPPATH=['src/'])
+            LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], LIBPATH='.', CPPPATH=['src/'])
 env.Alias(target='install', source=env.Install(dir=os.path.join(
     GetOption('prefix'), 'include', inc_dir), source=hdr_src_files))
 env.Alias(target='install', source=env.InstallVersionedLib(
@@ -113,7 +113,7 @@ if GetOption('check') is not None and GetOption('check'):
     ttarget = os.path.join(pth, bsn.replace(
         '_', '-').replace('.cpp', '.out'))
     env.Program(target=ttarget, source=tsource, CPPPATH='src/',
-                LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.')
+                LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], LIBPATH=root_dir, RPATH=["."])
 
 ## Build tests against SOFA lib
 if GetOption('sofa_check') is not None and GetOption('sofa_check'):
@@ -127,4 +127,4 @@ if GetOption('sofa_check') is not None and GetOption('sofa_check'):
       ttarget = os.path.join(pth, bsn.replace(
           '_', '-').replace('.cpp', '.out'))
       env.Program(target=ttarget, source=[tsource,link_w], CPPPATH='src/',
-                  LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], LIBPATH='.')
+                  LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], LIBPATH=root_dir, RPATH=["."])
