@@ -943,30 +943,30 @@ inline void pn00a(const dso::TwoPartDate &mjd_tt, double &dpsi, double &deps,
   return;
 }
 
-/// @brief precession-nutation matrix, IAU 2000A model
-///
-/// Form the matrix of precession-nutation for a given date (including
-/// frame bias), equinox based, IAU 2000A model. A faster, but slightly less
-/// accurate, result (about 1 mas) can be obtained by using instead the
-/// iauPnm00b function.
-///
-/// @test  sofa_rotation_matrices.cpp
-/// @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
-///             date1+date2 is a Julian Date, partioned in any convenient
-///             way between the two arguments. Optimally, The 'J2000 method'
-///             is best matched to the way the argument is handled
-///             internally and will deliver the optimum resolution.
-/// @param[in]  date2 (date1)  TT as a 2-part Julian Date.
-/// @return bias-precession-nutation matrix. The matrix operates in the sense
-///                        V(date) = rbpn * V(GCRS),
-///         where the p-vector V(date) is with respect to the true equatorial
-///         triad of date date1+date2 and the p-vector V(GCRS) is with respect
-///         to the Geocentric Celestial Reference System (IAU, 2000).
+/* @brief precession-nutation matrix, IAU 2000A model
+ *
+ * Form the matrix of precession-nutation for a given date (including
+ * frame bias), equinox based, IAU 2000A model. A faster, but slightly less
+ * accurate, result (about 1 mas) can be obtained by using instead the
+ * iauPnm00b function.
+ *
+ * @param[in]  date1 (date2)  TT as a 2-part Julian Date. The TT date
+ *             date1+date2 is a Julian Date, partioned in any convenient
+ *             way between the two arguments. Optimally, The 'J2000 method'
+ *             is best matched to the way the argument is handled
+ *             internally and will deliver the optimum resolution.
+ * @param[in]  date2 (date1)  TT as a 2-part Julian Date.
+ * @return bias-precession-nutation matrix. The matrix operates in the sense
+ *                        V(date) = rbpn * V(GCRS),
+ *         where the p-vector V(date) is with respect to the true equatorial
+ *         triad of date date1+date2 and the p-vector V(GCRS) is with respect
+ *         to the Geocentric Celestial Reference System (IAU, 2000).
+ */
 inline Eigen::Matrix<double, 3, 3>
 pnm00a(const dso::TwoPartDate &mjd_tt) noexcept {
   double dpsi = 0e0, deps = 0e0, epsa = 0e0;
   Eigen::Matrix<double, 3, 3> rb, rp, rbp, rn, rbpn;
-  // Obtain the required matrix (discarding other results).
+  /* Obtain the required matrix (discarding other results). */
   pn00a(mjd_tt, dpsi, deps, epsa, rb, rp, rbp, rn, rbpn);
   return rbpn;
 }

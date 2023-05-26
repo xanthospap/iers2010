@@ -98,14 +98,14 @@ if __name__ == '__main__':
     results = {}
     for prog in progs_no_path:
         exe = os.path.join(args.progs_dir, prog)
-        for vp in ["xy06", "s06", "c2ixys", "era00", "sp00", "pom00"]:
-            if vp in prog:
-                verboseprint('Running command: [{:}]'.format(exe))
-                ftmp = open(temp_fn, "w")
-                result = subprocess.run(exe, stdout=ftmp, check=False)
-                ftmp.close()
-                fun,fargs = filter_results(temp_fn)
-                results[fun] = fargs
+        #for vp in ["xy06", "s06", "c2ixys", "era00", "sp00", "pom00"]:
+        #    if vp in prog:
+        verboseprint('Running command: [{:}]'.format(exe))
+        ftmp = open(temp_fn, "w")
+        result = subprocess.run(exe, stdout=ftmp, check=False)
+        ftmp.close()
+        fun,fargs = filter_results(temp_fn)
+        results[fun] = fargs
 
     if args.markdown:
         print('{:10s}|{:10s}|{:10s}|{:10s}|{:10s}|{:10s}'.format("function", "argument", "num tests", "num fails", "max error", "status"))

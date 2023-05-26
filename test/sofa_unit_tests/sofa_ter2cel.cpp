@@ -57,18 +57,42 @@ int main(int argc, char *argv[]) {
   /* an ITRF-to-GCRF Rotation for general use */
   dso::Itrs2Gcrs R(orb[0].t, &eop_lut);
 
+  /* keep results here */
+  double max_dx = 0e0;
+  double max_dy = 0e0;
+  double max_dz = 0e0;
+  double max_dr = 0e0;
+
   /* one by one, transform sp3 input orbit from ITRF to GCRF and back
    * check results
    */
   for (const auto &i : orb) {
     R.prepare(i.t);
+    /* my result */
     Eigen::Matrix<double, 3, 1> r1 = R.gcrf2itrf(i.pos);
+    /* sofa result */
     Eigen::Matrix<double, 3, 1> r2 = sofa_gcrf2itrf(i.pos, R);
     if (verbose) {
       printf("%.12e %+.9e %+.9e %+.9e %.9e\n", R.tt().as_mjd(), r1(0) - r2(0),
              r1(1) - r2(1), r1(2) - r2(2), (r1 - r2).norm());
     }
+    const auto dr = r1-r2;
+    if (std::abs(dr(0)) > max_dx) max_dx = std::abs(dr(0));
+    if (std::abs(dr(1)) > max_dy) max_dy = std::abs(dr(1));
+    if (std::abs(dr(2)) > max_dz) max_dz = std::abs(dr(2));
+    if (dr.norm()>max_dr) max_dr = dr.norm();
   }
+  
+  printf("Function         #Tests #Fails #Maxerror[sec]    Status\n");
+  printf("---------------------------------------------------------------\n");
+  printf("%8s %7s %6d %6d %+.9e %s\n", "ter2cel", "dX", (int)orb.size(), 0,
+         max_dx, "-");
+  printf("%8s %7s %6d %6d %+.9e %s\n", "ter2cel", "dY", (int)orb.size(), 0,
+         max_dy, "-");
+  printf("%8s %7s %6d %6d %+.9e %s\n", "ter2cel", "dZ", (int)orb.size(), 0,
+         max_dz, "-");
+  printf("%8s %7s %6d %6d %+.9e %s\n", "ter2cel", "ds", (int)orb.size(), 0,
+         max_dr, "-");
 
   return 0;
 }
@@ -162,9 +186,6 @@ Eigen::Matrix<double, 3, 1> sofa_gcrf2itrf(const Eigen::Matrix<double, 3, 1> &r,
 
   Eigen::Matrix<double, 3, 1> _r;
   _r << ritrf[0], ritrf[1], ritrf[2];
-
-  // printf("[SOFA] tt=%.12e x=%+.12e y=%+.12e s=%+.12e era=%+.12e\n",
-  // (tt1-dso::mjd0_jd)+tt2, x,y,s,era);
 
   return _r;
 }

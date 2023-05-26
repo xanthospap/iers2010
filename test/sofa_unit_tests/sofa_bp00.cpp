@@ -20,10 +20,9 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
   if (argc > 1) {
     fprintf(stderr, "Ignoring command line arguments!\n");
   }
-  int func_it = 0;
-  int fails[3] = {0,0,0};
+  int fails[] = {0, 0, 0};
   int error = 0;
-  double max_error[3] = {0e0,0e0,0e0};
+  double max_error[] = {0e0, 0e0, 0e0};
   double rb[3][3], rp[3][3], rbp[3][3];
   Eigen::Matrix<double, 3, 3> rbm, rpm, rbpm;
 
@@ -44,9 +43,17 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
     }
     /* rp */
     if (!approx_equal(rpm, rp)) {
+  printf("INSIDE-----------------------------------------------------------------------\n");
+  for (int k=0;k<3;k++) {
+    for (int j=0;j<3;j++) {
+      printf("%+.12e ", rp[k][j]-rpm(k,j));
+    }
+    printf("\n");
+  }
       const double theta = rotation_matrix_diff(rpm, rp);
       ++fails[1];
       if (std::abs(theta) > max_error[1]) {
+        printf("New theta angle=%.12e\n", theta);
         max_error[1] = std::abs(theta);
       }
     }
@@ -61,12 +68,14 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
   }
 
   for (int j = 0; j < 3; j++) {
-    printf("%8s %7s %6d %6d %+.9e %s\n", funcs[func_it], args[j], NUM_TESTS,
-           fails[j], dso::rad2sec(max_error[j]), (fails[j] == 0) ? "OK" : "FAILED");
+    printf("%8s %7s %6d %6d %+.9e %s\n", funcs[0], args[j], NUM_TESTS,
+           fails[j], dso::rad2sec(max_error[j]),
+           (fails[j] == 0) ? "OK" : "FAILED");
   }
 
   error = 0;
-  for (int j = 0; j < 3; j++) error += fails[j];
+  for (int j = 0; j < 3; j++)
+    error += fails[j];
 
   return error;
 }

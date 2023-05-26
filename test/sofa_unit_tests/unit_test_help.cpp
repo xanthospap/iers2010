@@ -1,4 +1,5 @@
 #include "unit_test_help.hpp"
+#include <limits>
 
 // Seed with a real random value, if available
 std::random_device r;
@@ -122,6 +123,7 @@ double random_angle(double min, double max) noexcept {
   return uni_rad(e);
 }
 
+/* returns angle in [rad] */
 double rotation_matrix_diff(const Eigen::Matrix<double, 3, 3> &m1,
                             const double m2[3][3]) {
   Eigen::Matrix<double, 3, 3> m22;
@@ -139,6 +141,17 @@ double rotation_matrix_diff(const Eigen::Matrix<double, 3, 3> &m1,
   /* Tr(Rab) = 1 + 2 cos(θ)
    * θ = arccos( (Tr(Rab) - 1) / 2 )
    */
+  if (std::abs((Rab.trace() - 1e0) / 2.) > 1e0) {
+    if (std::abs(Rab.trace()-3e0) > 1e-16) {
+    fprintf(stderr,
+            "#ERROR@%s Invalid arccos argument: %.6e outside [-1,1] range "
+            "(trace=%.3e)\n",
+            __func__, (Rab.trace() - 1e0) / 2., Rab.trace());
+    return std::numeric_limits<double>::max();
+    } else {
+      ;
+    }
+  }
   const double theta = std::acos((Rab.trace() - 1e0) / 2.);
   return theta;
 }

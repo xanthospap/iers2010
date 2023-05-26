@@ -4,7 +4,6 @@
 #include "unit_test_help.hpp"
 #include <cassert>
 #include <cstdio>
-#include <datetime/dtcalendar.hpp>
 #include <limits>
 
 using namespace iers2010::sofa;
@@ -18,7 +17,6 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
   if (argc > 1) {
     fprintf(stderr, "Ignoring command line arguments!\n");
   }
-  int func_it = 0;
   double as[3][3];
 
   printf("Function #Tests #Fails #Maxerror[sec]    Status\n");
@@ -26,22 +24,44 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
 
   int fails = 0;
   double max_error = 0e0;
-  for (int i = 0; i < NUM_TESTS; i++) {
-    const double xp = random_angle(-iers2010::DPI / 2, iers2010::DPI / 2);
-    const double yp = random_angle(-iers2010::DPI / 2, iers2010::DPI / 2);
-    const double s = random_angle(-iers2010::DPI / 2, iers2010::DPI / 2);
-    const auto am = c2ixys(xp, yp, s);
-    iauC2ixys(xp, yp, s, as);
-    if (!approx_equal(am, as)) {
-      ++fails;
-      /* angle between rotation matrices [rad] */
-      const double theta = rotation_matrix_diff(am, as);
-      if (std::abs(theta) > max_error) {
-        max_error = theta;
+  int i = 0;
+  while (i < NUM_TESTS) {
+    const double xp = random_angle(-iers2010::DPI / 5, iers2010::DPI / 5);
+    const double yp = random_angle(-iers2010::DPI / 5, iers2010::DPI / 5);
+    const double s = random_angle(-iers2010::DPI / 5, iers2010::DPI / 5);
+    /* check for erronuous input */
+    int error_in = 0;
+    {
+      const double r2 = xp * xp + yp * yp;
+      const double e = (r2 > 0e0) ? std::atan2(yp, xp) : 0e0;
+      const double d = std::atan(std::sqrt(r2 / (1e0 - r2)));
+      if (e != e || d != d)
+        ++error_in;
+    }
+    /* if input is ok */
+    if (!error_in) {
+      const auto am = c2ixys(xp, yp, s);
+      iauC2ixys(xp, yp, s, as);
+      if (!approx_equal(am, as)) {
+        ++fails;
+        /* angle between rotation matrices [rad] */
+        const double theta = rotation_matrix_diff(am, as);
+        if (theta == std::numeric_limits<double>::max()) {
+          --i;
+        } else {
+          if (std::abs(theta) > max_error) {
+            max_error = std::abs(theta);
+          }
+        }
       }
+      ++i;
+    } else {
+      /* erronuous input */
+      fprintf(stderr, "# Erronuous input @ %s: (%.12e %.12e %.12e) seti=%d \n",
+              funcs[0], xp, yp, s, i);
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails,
+  printf("%8s %6d %6d %+.9e %s\n", funcs[0], NUM_TESTS, fails,
          dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED");
 
   return fails;

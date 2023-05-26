@@ -33,4 +33,19 @@ double random_angle(double min = -dso::D2PI, double max = dso::D2PI) noexcept;
 
 double rotation_matrix_diff(const Eigen::Matrix<double, 3, 3> &m1, const double m2[3][3]);
 
+inline Eigen::Matrix<double,3,3>
+rxr2mat(const double a[3][3]) {
+  Eigen::Matrix<double,3,3> m;
+  m(0,0) = a[0][0];
+  m(0,1) = a[0][1];
+  m(0,2) = a[0][2];
+  m(1,0) = a[1][0];
+  m(1,1) = a[1][1];
+  m(1,2) = a[1][2];
+  m(2,0) = a[2][0];
+  m(2,1) = a[2][1];
+  m(2,2) = a[2][2];
+  return m;
+}
+
 #endif

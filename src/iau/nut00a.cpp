@@ -1,15 +1,15 @@
 #include "iau.hpp"
 
 namespace {
-// Luni-Solar nutation model
-// The units for the sine and cosine coefficients are
-// 0.1 microarcsecond and the same per Julian century
-constexpr struct {
-  int nl, nlp, nf, nd, nom; // coefficients of l,l',F,D,Om
-  double sp, spt, cp;       // longitude sin, t*sin, cos coefficients
-  double ce, cet, se;       // obliquity cos, t*cos, sin coefficients
+/* Luni-Solar nutation model
+ * The units for the sine and cosine coefficients are
+ * 0.1 microarcsecond and the same per Julian century
+ */
+constexpr const struct {
+  int nl, nlp, nf, nd, nom; /* coefficients of l,l',F,D,Om */
+  double sp, spt, cp;       /* longitude sin, t*sin, cos coefficients */
+  double ce, cet, se;       /* obliquity cos, t*cos, sin coefficients */
 } xls[] = {
-
     /* 1- 10 */
     {0, 0, 0, 0, 1, -172064161.0, -174666.0, 33386.0, 92052331.0, 9086.0,
      15377.0},
@@ -826,23 +826,25 @@ constexpr struct {
     {2, -1, 2, 4, 2, -3.0, 0.0, 0.0, 1.0, 0.0, 0.0},
     {2, 0, 2, 4, 1, -3.0, 0.0, 0.0, 2.0, 0.0, 0.0}};
 
-// Number of terms in the luni-solar nutation model
-constexpr int NLS = (int)(sizeof xls / sizeof xls[0]);
+/* Number of terms in the luni-solar nutation model */
+constexpr const int NLS = (int)(sizeof xls / sizeof xls[0]);
 
-// Planetary nutation model
-// The units for the sine and cosine coefficients are
-// 0.1 microarcsecond
-
-constexpr struct {
-  int nl, // coefficients of l, F, D and Omega
-      nf, nd, nom,
-      nme, // coefficients of planetary longitudes
-      nve, nea, nma, nju, nsa, nur, nne,
-      npa;    // coefficient of general precession
-  int sp, cp; // longitude sin, cos coefficients
-  int se, ce; // obliquity sin, cos coefficients
+/* Planetary nutation model
+ * The units for the sine and cosine coefficients are
+ * 0.1 microarcsecond
+ */
+constexpr const struct {
+  /* coefficients of l, F, D and Omega */
+  int nl, nf, nd, nom;
+  /* coefficients of planetary longitudes */
+  int nme, nve, nea, nma, nju, nsa, nur, nne;
+  /* coefficient of general precession */
+  int npa;
+  /* longitude sin, cos coefficients */
+  int sp, cp;
+  /* obliquity sin, cos coefficients */
+  int se, ce;
 } xpl[] = {
-
     /* 1-10 */
     {0, 0, 0, 0, 0, 0, 8, -16, 4, 5, 0, 0, 0, 1440, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, -8, 16, -4, -5, 0, 0, 2, 56, -117, -42, -40},
@@ -1668,105 +1670,91 @@ constexpr struct {
     {1, 2, 0, 2, 0, 1, -1, 0, 0, 0, 0, 0, 0, 3, 0, 0, -1},
     {0, 2, 2, 2, 0, 0, 2, 0, -2, 0, 0, 0, 0, 3, 0, 0, -1}};
 
-// Number of terms in the planetary nutation model
-constexpr int NPL = (int)(sizeof xpl / sizeof xpl[0]);
+/* Number of terms in the planetary nutation model */
+constexpr const int NPL = (int)(sizeof xpl / sizeof xpl[0]);
 
-} // unnamed namespace
+} /* unnamed namespace */
 
-void iers2010::sofa::nut00a(/*double date1, double date2*/const dso::TwoPartDate &mjd_tt, double &dpsi,
+void iers2010::sofa::nut00a(const dso::TwoPartDate &mjd_tt, double &dpsi,
                             double &deps) noexcept {
 
-  // Units of 0.1 microarcsecond to radians
+  /* Units of 0.1 microarcsecond to radians */
   constexpr double U2R = iers2010::DAS2R / 1e7;
 
-  // Interval between fundamental date J2000.0 and given date (JC).
-  // const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  /* Interval between fundamental date J2000.0 and given date (JC). */
   const double t = mjd_tt.jcenturies_sinceJ2000();
 
-  /* LUNI-SOLAR NUTATION */
+  /*
+   * LUNI-SOLAR NUTATION
+   */
 
-  // Fundamental (Delaunay) arguments ...
-  // Mean anomaly of the Moon (IERS 2003).
+  /* Fundamental (Delaunay) arguments ...
+   * Mean anomaly of the Moon (IERS 2003).
+   */
   const double el = iers2010::fal03(t);
-
-  // Mean anomaly of the Sun (MHB2000).
-  const double elp =
-      std::fmod(
-          1287104.79305e0 +
-              t * (129596581.0481e0 +
-                   t * (-0.5532e0 + t * (0.000136e0 + t * (-0.00001149e0)))),
-          iers2010::TURNAS) *
-      iers2010::DAS2R;
-
-  // Mean longitude of the Moon minus that of the ascending node
-  // (IERS 2003).
+  /* Mean anomaly of the Sun (MHB2000). */
+  const double elp = dso::sec2rad(std::fmod(
+      1287104.79305e0 +
+          t * (129596581.0481e0 +
+               t * (-0.5532e0 + t * (0.000136e0 + t * (-0.00001149e0)))),
+      iers2010::TURNAS));
+  /* Mean longitude of the Moon minus that of the ascending node (IERS 2003). */
   const double f = iers2010::faf03(t);
-
-  // Mean elongation of the Moon from the Sun (MHB2000).
-  const double d =
-      std::fmod(
-          1072260.70369e0 +
-              t * (1602961601.2090e0 +
-                   t * (-6.3706e0 + t * (0.006593e0 + t * (-0.00003169e0)))),
-          iers2010::TURNAS) *
-      iers2010::DAS2R;
-
-  // Mean longitude of the ascending node of the Moon (IERS 2003).
+  /* Mean elongation of the Moon from the Sun (MHB2000). */
+  const double d = dso::sec2rad(std::fmod(
+      1072260.70369e0 +
+          t * (1602961601.2090e0 +
+               t * (-6.3706e0 + t * (0.006593e0 + t * (-0.00003169e0)))),
+      iers2010::TURNAS));
+  /* Mean longitude of the ascending node of the Moon (IERS 2003). */
   const double om = iers2010::faom03(t);
 
-  // Initialize the nutation values.
+  /* Initialize the nutation values. */
   double dp = 0e0;
   double de = 0e0;
 
-  // Summation of luni-solar nutation series (in reverse order).
+  /* Summation of luni-solar nutation series (in reverse order). */
   for (int i = NLS - 1; i >= 0; i--) {
-    // Argument and functions.
+    /* Argument and functions. */
     const double arg =
-        std::fmod((double)xls[i].nl * el + (double)xls[i].nlp * elp +
-                      (double)xls[i].nf * f + (double)xls[i].nd * d +
-                      (double)xls[i].nom * om,
-                  iers2010::D2PI);
+        dso::anp(xls[i].nl * el + xls[i].nlp * elp + xls[i].nf * f +
+                 xls[i].nd * d + xls[i].nom * om);
     const double sarg = std::sin(arg);
     const double carg = std::cos(arg);
-
-    // Term.
+    /* Term. */
     dp += (xls[i].sp + xls[i].spt * t) * sarg + xls[i].cp * carg;
     de += (xls[i].ce + xls[i].cet * t) * carg + xls[i].se * sarg;
   }
 
-  // Convert from 0.1 microarcsec units to radians.
+  /* Convert from 0.1 microarcsec units to radians. */
   const double dpsils = dp * U2R;
   const double depsls = de * U2R;
 
-  /* PLANETARY NUTATION */
+  /*
+   * PLANETARY NUTATION
+   */
 
-  // n.b.  The MHB2000 code computes the luni-solar and planetary nutation
-  // in different functions, using slightly different Delaunay
-  // arguments in the two cases.  This behaviour is faithfully
-  // reproduced here.  Use of the IERS 2003 expressions for both
-  // cases leads to negligible changes, well below
-  // 0.1 microarcsecond.
+  /* n.b. The MHB2000 code computes the luni-solar and planetary nutation
+   * in different functions, using slightly different Delaunay
+   * arguments in the two cases.  This behaviour is faithfully
+   * reproduced here.  Use of the IERS 2003 expressions for both
+   * cases leads to negligible changes, well below
+   * 0.1 microarcsecond.
+   */
 
-  // Mean anomaly of the Moon (MHB2000).
-  const double al =
-      std::fmod(2.35555598e0 + 8328.6914269554e0 * t, iers2010::D2PI);
-
-  // Mean longitude of the Moon minus that of the ascending node
-  // (MHB2000).
-  const double af =
-      std::fmod(1.627905234e0 + 8433.466158131e0 * t, iers2010::D2PI);
-
-  // Mean elongation of the Moon from the Sun (MHB2000).
-  const double ad =
-      std::fmod(5.198466741e0 + 7771.3771468121e0 * t, iers2010::D2PI);
-
-  // Mean longitude of the ascending node of the Moon (MHB2000).
-  const double aom = std::fmod(2.18243920e0 - 33.757045e0 * t, iers2010::D2PI);
-
-  // General accumulated precession in longitude (IERS 2003).
+  /* Mean anomaly of the Moon (MHB2000). */
+  const double al = dso::anp(2.35555598e0 + 8328.6914269554e0 * t);
+  /* Mean longitude of the Moon minus that of the ascending node
+   * (MHB2000).
+   */
+  const double af = dso::anp(1.627905234e0 + 8433.466158131e0 * t);
+  /* Mean elongation of the Moon from the Sun (MHB2000). */
+  const double ad = dso::anp(5.198466741e0 + 7771.3771468121e0 * t);
+  /* Mean longitude of the ascending node of the Moon (MHB2000). */
+  const double aom = dso::anp(2.18243920e0 - 33.757045e0 * t);
+  /* General accumulated precession in longitude (IERS 2003). */
   const double apa = iers2010::fapa03(t);
-
-  // Planetary longitudes, Mercury through Uranus (IERS 2003).
+  /* Planetary longitudes, Mercury through Uranus (IERS 2003). */
   const double alme = iers2010::fame03(t);
   const double alve = iers2010::fave03(t);
   const double alea = iers2010::fae03(t);
@@ -1774,42 +1762,33 @@ void iers2010::sofa::nut00a(/*double date1, double date2*/const dso::TwoPartDate
   const double alju = iers2010::faju03(t);
   const double alsa = iers2010::fasa03(t);
   const double alur = iers2010::faur03(t);
+  /* Neptune longitude (MHB2000). */
+  const double alne = dso::anp(5.321159000e0 + 3.8127774000e0 * t);
 
-  // Neptune longitude (MHB2000).
-  const double alne =
-      std::fmod(5.321159000e0 + 3.8127774000e0 * t, iers2010::D2PI);
-
-  // Initialize the nutation values.
+  /* Initialize the nutation values. */
   dp = 0e0;
   de = 0e0;
 
   // Summation of planetary nutation series (in reverse order).
   for (int i = NPL - 1; i >= 0; i--) {
-
-    // Argument and functions.
-    const double arg =
-        std::fmod((double)xpl[i].nl * al + (double)xpl[i].nf * af +
-                      (double)xpl[i].nd * ad + (double)xpl[i].nom * aom +
-                      (double)xpl[i].nme * alme + (double)xpl[i].nve * alve +
-                      (double)xpl[i].nea * alea + (double)xpl[i].nma * alma +
-                      (double)xpl[i].nju * alju + (double)xpl[i].nsa * alsa +
-                      (double)xpl[i].nur * alur + (double)xpl[i].nne * alne +
-                      (double)xpl[i].npa * apa,
-                  iers2010::D2PI);
+    /* Argument and functions. */
+    const double arg = dso::anp(
+        xpl[i].nl * al + xpl[i].nf * af + xpl[i].nd * ad + xpl[i].nom * aom +
+        xpl[i].nme * alme + xpl[i].nve * alve + xpl[i].nea * alea +
+        xpl[i].nma * alma + xpl[i].nju * alju + xpl[i].nsa * alsa +
+        xpl[i].nur * alur + xpl[i].nne * alne + xpl[i].npa * apa);
     const double sarg = std::sin(arg);
     const double carg = std::cos(arg);
-
-    // Term.
-    dp += (double)xpl[i].sp * sarg + (double)xpl[i].cp * carg;
-    de += (double)xpl[i].se * sarg + (double)xpl[i].ce * carg;
+    /* Term. */
+    dp += xpl[i].sp * sarg + xpl[i].cp * carg;
+    de += xpl[i].se * sarg + xpl[i].ce * carg;
   }
 
-  // Convert from 0.1 microarcsec units to radians.
+  /* Convert from 0.1 microarcsec units to radians. */
   const double dpsipl = dp * U2R;
   const double depspl = de * U2R;
 
-  /* RESULTS */
-  // Add luni-solar and planetary components.
+  /* Results: Add luni-solar and planetary components. */
   dpsi = dpsils + dpsipl;
   deps = depsls + depspl;
 

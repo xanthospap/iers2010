@@ -1,30 +1,26 @@
-#include "iau.hpp"
-#include "unit_test_help.hpp"
 #include "geodesy/units.hpp"
+#include "iau.hpp"
 #include "sofa.h"
+#include "unit_test_help.hpp"
 #include <cassert>
 #include <cstdio>
-#include <datetime/dtcalendar.hpp>
 #include <limits>
 
 using namespace iers2010::sofa;
 
-constexpr const int NUM_TESTS = 10000;
+constexpr const int NUM_TESTS = 100000;
 
 const char *funcs[] = {"fw2m"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
 int main() {
-  int func_it = 0;
-  int fails;
-  int error = 0;
-  double max_error = 0e0;
   double as[3][3];
 
   printf("Function #Tests #Fails #Maxerror[sec]    Status\n");
   printf("---------------------------------------------------------------\n");
 
-  fails = 0;
+  int fails = 0;
+  double max_error = 0e0;
   for (int i = 0; i < NUM_TESTS; i++) {
     const double gamb = random_angle();
     const double phib = random_angle();
@@ -41,9 +37,8 @@ int main() {
       }
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
-         (fails == 0) ? "OK" : "FAILED");
-  if (fails) ++error;
+  printf("%8s %6d %6d %+.9e %s\n", funcs[0], NUM_TESTS, fails,
+         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED");
 
-  return error;
+  return fails;
 }

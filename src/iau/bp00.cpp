@@ -1,4 +1,7 @@
 #include "iau.hpp"
+#include "rotations.hpp"
+
+#include "sofa.h"
 
 void iers2010::sofa::bp00(const dso::TwoPartDate &mjd_tt,
                           Eigen::Matrix<double, 3, 3> &rb,
@@ -29,15 +32,34 @@ void iers2010::sofa::bp00(const dso::TwoPartDate &mjd_tt,
   const double oma = oma77 + depspr;
 
   /* Frame bias matrix: GCRS to J2000.0 */
-  rb = Eigen::AngleAxisd(depsbi, Eigen::Vector3d::UnitX()) *
-       Eigen::AngleAxisd(-(dpsibi * std::sin(EPS0)), Eigen::Vector3d::UnitY()) *
-       Eigen::AngleAxisd(-dra0, Eigen::Vector3d::UnitZ());
+  rb = Eigen::Matrix<double, 3, 3>::Identity();
+  dso::rotate<dso::RotationAxis::Z>(dra0, rb);
+  dso::rotate<dso::RotationAxis::Y>(dpsibi*sin(EPS0), rb);
+  dso::rotate<dso::RotationAxis::X>(-depsbi, rb);
+  //rb = Eigen::AngleAxisd(depsbi, Eigen::Vector3d::UnitX()) *
+  //     Eigen::AngleAxisd(-(dpsibi * std::sin(EPS0)), Eigen::Vector3d::UnitY()) *
+  //     Eigen::AngleAxisd(-dra0, Eigen::Vector3d::UnitZ());
 
   /* Precession matrix: J2000.0 to mean of date. */
-  rp = Eigen::AngleAxisd(-chia, Eigen::Vector3d::UnitZ()) *
-       Eigen::AngleAxisd(oma, Eigen::Vector3d::UnitX()) *
-       Eigen::AngleAxisd(psia, Eigen::Vector3d::UnitZ()) *
-       Eigen::AngleAxisd(-EPS0, Eigen::Vector3d::UnitX());
+  rp = Eigen::Matrix<double, 3, 3>::Identity();
+  dso::rotate<dso::RotationAxis::X>(EPS0, rp);
+  dso::rotate<dso::RotationAxis::Z>(-psia, rp);
+  dso::rotate<dso::RotationAxis::X>(-oma, rp);
+  dso::rotate<dso::RotationAxis::Z>(chia, rp);
+  //rp = Eigen::AngleAxisd(-chia, Eigen::Vector3d::UnitZ()) *
+  //     Eigen::AngleAxisd(oma, Eigen::Vector3d::UnitX()) *
+  //     Eigen::AngleAxisd(psia, Eigen::Vector3d::UnitZ()) *
+  //     Eigen::AngleAxisd(-EPS0, Eigen::Vector3d::UnitX());
+
+  double srb[3][3]; double srp[3][3]; double srbp[3][3];
+  iauBp00(mjd_tt.big() + dso::mjd0_jd, mjd_tt.small(), srb, srp, srbp);
+  printf("-----------------------------------------------------------------------------\n");
+  for (int i=0;i<3;i++) {
+    for (int j=0;j<3;j++) {
+      printf("%+.12e ", srp[i][j]-rp(i,j));
+    }
+    printf("\n");
+  }
 
   /* Bias-precession matrix: GCRS to mean of date. */
   rbp = rp * rb;

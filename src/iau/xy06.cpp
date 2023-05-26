@@ -7,21 +7,23 @@ namespace {
 /* Maximum power of T in the polynomials for X and Y */
 constexpr const int MAXPT = 5;
 
-// Polynomial coefficients (arcsec, X then Y).
-// Extracted from Tables 5.2[ab] of IERS Conventions 2010 (mind the units)
-// for the expressions for the X and Y coordinates of the CIP in the GCRS 
-// based on the IAU 2006 precession and IAU 2000A_R06 nutation
+/* Polynomial coefficients (arcsec, X then Y).
+ * Extracted from Tables 5.2[ab] of IERS Conventions 2010 (mind the units)
+ * for the expressions for the X and Y coordinates of the CIP in the GCRS 
+ * based on the IAU 2006 precession and IAU 2000A_R06 nutation
+ */
 constexpr const double xyp[2][MAXPT + 1] = {
-    // X component
+    /* X component */
     {-0.016617e0, 2004.191898e0, -0.4297829e0, -0.19861834e0, 0.000007578e0,
      0.0000059285e0},
-     // Y component
+     /* Y component */
     {-0.006951e0, -0.025896e0, -22.4072747e0, 0.00190059e0, 0.001112526e0,
      0.0000001358e0}};
 
-// Fundamental-argument multipliers: luni-solar terms
-// Terms 4 to 8 (luni-solar part) extracted from Table 5.2[] of IERS 
-// Conventions 2010
+/* Fundamental-argument multipliers: luni-solar terms
+ * Terms 4 to 8 (luni-solar part) extracted from Table 5.2 of IERS 
+ * Conventions 2010
+ */
 constexpr const int mfals[][5] = {
     /* 1-10 */
     {0, 0, 0, 0, 1},
@@ -808,12 +810,11 @@ constexpr const int mfals[][5] = {
     {1, 0, -2, 0, -3},
     {0, 0, 4, -4, 4}};
 
-// Number of frequencies: luni-solar
+/* Number of frequencies: luni-solar */
 constexpr const int NFLS = (int)(sizeof mfals / sizeof(int) / 5);
 
-// Fundamental-argument multipliers:  planetary terms
+/* Fundamental-argument multipliers:  planetary terms */
 constexpr const int mfapl[][14] = {
-
     /* 1-10 */
     {0, 0, 1, -1, 1, 0, 0, -1, 0, -2, 5, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 2, -5, 0, 0, -1},
@@ -1602,12 +1603,11 @@ constexpr const int mfapl[][14] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
     {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0}};
 
-// Number of frequencies:  planetary
+/* Number of frequencies:  planetary */
 constexpr const int NFPL = (int)(sizeof mfapl / sizeof(int) / 14);
 
-// Pointers into amplitudes array, one pointer per frequency
+/* Pointers into amplitudes array, one pointer per frequency */
 constexpr const int nc[] = {
-
     /* 1-100 */
     1, 21, 37, 51, 65, 79, 91, 103, 115, 127, 139, 151, 163, 172, 184, 196, 207,
     219, 231, 240, 252, 261, 273, 285, 297, 309, 318, 327, 339, 351, 363, 372,
@@ -1752,9 +1752,8 @@ constexpr const int nc[] = {
     /* 1301-(NFLS+NFPL) */
     4737, 4740, 4741, 4742, 4745, 4746, 4749, 4752, 4753};
 
-// Amplitude coefficients (microarcsec);  indexed using the nc array.
+/* Amplitude coefficients (microarcsec); indexed using the nc array. */
 constexpr const double a[] = {
-
     /* 1-105 */
     -6844318.44e0, 9205236.26e0, 1328.67e0, 1538.18e0, 205833.11e0, 153041.79e0,
     -3309.73e0, 853.32e0, 2037.98e0, -2301.27e0, 81.46e0, 120.56e0, -20.39e0,
@@ -2404,35 +2403,36 @@ constexpr const double a[] = {
     0.12e0, 0.00e0, 0.00e0, 0.12e0, 0.00e0, 0.00e0, 0.12e0, 0.12e0, 0.08e0,
     0.00e0, 0.04};
 
-// Number of amplitude coefficients
+/* Number of amplitude coefficients */
 constexpr const int NA = (int)(sizeof a / sizeof(double));
 
-// Amplitude usage: X or Y, sin or cos, power of T.
+/* Amplitude usage: X or Y, sin or cos, power of T */
 constexpr const int jaxy[] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
                               0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
 constexpr const int jasc[] = {0, 1, 1, 0, 1, 0, 0, 1, 0, 1,
                               1, 0, 1, 0, 0, 1, 0, 1, 1, 0};
 constexpr const int japt[] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2,
                               2, 2, 3, 3, 3, 3, 4, 4, 4, 4};
-} // unnamed namespace
+} /* unnamed namespace */
 
 void iers2010::sofa::xy06(const dso::TwoPartDate &mjd_tt, double &x,
                           double &y) noexcept {
 
-  // Interval between fundamental date J2000.0 and given date (JC).
+  /* Interval between fundamental date J2000.0 and given date (JC). */
   const double t = mjd_tt.jcenturies_sinceJ2000();
 
-  // Powers of T.
-  double pt[MAXPT + 1];
+  /* Powers of T. */
+  double _pt[MAXPT + 1];
   {
     double w = 1e0;
-    for (int jpt = 0; jpt <= MAXPT; jpt++) {
-      pt[jpt] = w;
+    for (int j = 0; j <= MAXPT; j++) {
+      _pt[j] = w;
       w *= t;
     }
   }
+  double* __restrict__ pt = _pt;
   
-  // Polynomial part of precession-nutation
+  /* Polynomial part of precession-nutation */
   double xpol = 0e0, ypol = 0e0;
   {
     for (int j = MAXPT; j >= 0; j--)
@@ -2441,19 +2441,13 @@ void iers2010::sofa::xy06(const dso::TwoPartDate &mjd_tt, double &x,
       ypol += xyp[1][j] * pt[j];
   }
 
-  // Fundamental arguments (IERS 2003)
+  /* Fundamental arguments (IERS 2003) */
   const double fa[14] = {
-      // Mean anomaly of the Moon.
       fal03(t),
-      // Mean anomaly of the Sun.
       falp03(t),
-      // Mean argument of the latitude of the Moon.
       faf03(t),
-      // Mean elongation of the Moon from the Sun.
       fad03(t),
-      // Mean longitude of the ascending node of the Moon.
       faom03(t),
-      // Planetary longitudes, Mercury through Neptune.
       fame03(t),
       fave03(t),
       fae03(t),
@@ -2462,84 +2456,76 @@ void iers2010::sofa::xy06(const dso::TwoPartDate &mjd_tt, double &x,
       fasa03(t),
       faur03(t),
       fane03(t),
-      // General accumulated precession in longitude.
       fapa03(t),
   };
 
   // Initialize totals in X and Y:  polynomial, luni-solar, planetary.
   // double xypr[2] = {0e0, 0e0}, xypl[2] = {0e0, 0e0}, xyls[2] = {0e0, 0e0};
 
-  // Nutation periodic terms, planetary
+  /* Nutation periodic terms, planetary */
   double xnpl=0e0, ynpl=0e0;
-  // Work backwards through the coefficients per frequency list.
+  /* Work backwards through the coefficients per frequency list. */
   int ialast = NA;
   for (int ifreq = NFPL - 1; ifreq >= 0; ifreq--) {
-
-    // Obtain the argument functions.
+    /* Obtain the argument functions. */
     double arg = 0e0;
-    for (int i = 0; i < 14; i++) {
-      int m = mfapl[ifreq][i];
-      arg += (double)m * fa[i];
-    }
+    for (int i = 0; i < 14; i++)
+      arg += mfapl[ifreq][i] * fa[i];
     const double sa = std::sin(arg);
     const double ca = std::cos(arg);
 
-    // Work backwards through the amplitudes at this frequency.
+    /* Work backwards through the amplitudes at this frequency. */
     const int ia = nc[ifreq + NFLS];
     for (int i = ialast; i >= ia; i--) {
-      // Coefficient number (0 = 1st).
+      /* Coefficient number (0 = 1st). */
       int j = i - ia;
-      // X or Y.
+      /* X or Y. */
       const int facx = (jaxy[j]==0);
       const int facy = (jaxy[j]==1);
-      // Sin or cos.
+      /* Sin or cos. */
       const double scarg = sa*(jasc[j]==0) + ca*(jasc[j]==1);
-      // Power of T.
+      /* Power of T. */
       int jpt = japt[j];
-      // Accumulate the component(s).
+      /* Accumulate the component(s). */
       xnpl += facx*(a[i - 1] * scarg * pt[jpt]);
       ynpl += facy*(a[i - 1] * scarg * pt[jpt]);
     }
     ialast = ia - 1;
   }
 
-  // Nutation periodic terms, luni-solar
+  /* Nutation periodic terms, luni-solar */
   double xnls=0e0, ynls=0e0;
-  // Continue working backwards through the number of coefficients list.
+  /* Continue working backwards through the number of coefficients list. */
   for (int ifreq = NFLS - 1; ifreq >= 0; ifreq--) {
-
-    // Obtain the argument functions.
+    /* Obtain the argument functions. */
     double arg = 0e0;
-    for (int i = 0; i < 5; i++) {
-      int m = mfals[ifreq][i];
-      arg += static_cast<double>(m) * fa[i];
-    }
+    for (int i = 0; i < 5; i++)
+      arg += mfals[ifreq][i] * fa[i];
     const double sa = std::sin(arg);
     const double ca = std::cos(arg);
 
-    // Work backwards through the amplitudes at this frequency.
+    /* Work backwards through the amplitudes at this frequency. */
     const int ia = nc[ifreq];
     for (int i = ialast; i >= ia; i--) {
-      // Coefficient number (0 = 1st).
+      /* Coefficient number (0 = 1st). */
       int j = i - ia;
-      // X or Y.
+      /* X or Y. */
       const int facx = (jaxy[j]==0);
       const int facy = (jaxy[j]==1);
-      // Sin or cos.
+      /* Sin or cos. */
       const double scarg = sa*(jasc[j]==0) + ca*(jasc[j]==1);
-      // Power of T.
+      /* Power of T. */
       int jpt = japt[j];
-      // Accumulate the component.
+      /* Accumulate the component. */
       xnls += facx*(a[i - 1] * scarg * pt[jpt]);
       ynls += facy*(a[i - 1] * scarg * pt[jpt]);
     }
     ialast = ia - 1;
   }
 
-  // Results:  CIP unit vector components
+  /* Results:  CIP unit vector components */
   x = dso::sec2rad(xpol + (xnls + xnpl) / 1e6);
   y = dso::sec2rad(ypol + (ynls + ynpl) / 1e6);
 
-  // Finished.
   return;
 }
