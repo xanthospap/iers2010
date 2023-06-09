@@ -22,7 +22,7 @@ Table of Contents
 12. [Bugs & Maintanance](#bugs)
 
 # Introduction <a name="introduction"></a>
-his project contains a number of functions implementing models defined in
+This project contains a number of functions implementing models defined in
 [IERS Conventions (2010)](https://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html/) 
 as described in [^2].
 The International Earth Rotation and Reference Systems Service ([IERS](https://www.iers.org/IERS/EN/Home/home_node.html))
@@ -34,7 +34,6 @@ This repository is an effort to translate the algorithms in the C++ programming
 language with (as much as possible) minor modifications. Note that the software 
 found at this website is routinely updated.
 
-
 [^2]: Gérard Petit and Brian J. Luzum, editors. IERS Conventions (2010), volume 36 of
 IERS Technical Note, 2010. International Earth Rotation and Reference Systems
 Service (IERS), International Earth Rotation and Reference Systems Service
@@ -43,9 +42,16 @@ Service (IERS), International Earth Rotation and Reference Systems Service
 # Prerequisites <a name="introduction"></a>
 
 The C++ library [ggdatetime](https://github.com/xanthospap/ggdatetime) 
-is used in the library functions to handle datetime instances when needed. 
+is used in the library to handle datetime instances when needed. 
 Hence, you should have [ggdatetime](https://github.com/xanthospap/ggdatetime) 
 on your system.
+
+The C++ library [ggeodesy](https://github.com/xanthospap/ggeodesy) is used 
+to handle basic geodesy when needed. Again, you should have the library 
+installed (on your system) to successefuly compile this library.
+
+Vector/Matrix operations are implemented using the [eigen3](https://eigen.tuxfamily.org/index.php?title=Main_Page) 
+library. Availability of this library is also mandatory.
 
 # Compilation / Installation <a name="installation"></a>
 
@@ -61,6 +67,10 @@ $> scons
 $> sudo scons install
 ```
 
+## Test Programs <a name="installation-test"></a>
+To compile the test utilities, use the `make-check` switch (i.e. `scons make-check=1`). 
+
+<!--
 # Data Files <a name="data-files"></a>
 
 A couple of (data) files are needed to use some functions wihtin the library, 
@@ -446,3 +456,5 @@ Three test programs fail:
 # Bugs & Maintanance <a name="bugs"></a>
 Xanthos, xanthos@mail.ntua.gr
 Mitsos, danast@mail.ntua.gr
+
+-->

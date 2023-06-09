@@ -43,17 +43,10 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
     }
     /* rp */
     if (!approx_equal(rpm, rp)) {
-  printf("INSIDE-----------------------------------------------------------------------\n");
-  for (int k=0;k<3;k++) {
-    for (int j=0;j<3;j++) {
-      printf("%+.12e ", rp[k][j]-rpm(k,j));
-    }
-    printf("\n");
-  }
       const double theta = rotation_matrix_diff(rpm, rp);
       ++fails[1];
       if (std::abs(theta) > max_error[1]) {
-        printf("New theta angle=%.12e\n", theta);
+        //printf("New theta angle=%.12e\n", theta);
         max_error[1] = std::abs(theta);
       }
     }

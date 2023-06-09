@@ -41,16 +41,6 @@ AddOption('--std',
           metavar='STD',
           help='C++ Standard [11/14/17/20]',
           default='17')
-AddOption('--make-check',
-          dest='check',
-          action='store_true',
-          help='Trigger building of test programs',
-          default=False)
-AddOption('--make-sofa-check',
-          dest='sofa_check',
-          action='store_true',
-          help='Trigger building of test programs against the SOFA IAU library. The library must be available in the system (header/library)',
-          default=False)
 
 ## Source files (for lib)
 lib_src_files = glob.glob(r"src/*.cpp")
@@ -77,6 +67,7 @@ penv = Environment(PREFIX=GetOption(
 
 ## Command line arguments ...
 debug = ARGUMENTS.get('debug', 0)
+make_test = ARGUMENTS.get('make-test', 0)
 
 ## Construct the build enviroment
 env = denv.Clone() if int(debug) else penv.Clone()
@@ -93,38 +84,32 @@ vlib = env.SharedLibrary(source=lib_src_files, target=lib_name, CPPPATH=[
                          'src/'], SHLIBVERSION=lib_version)
 
 ## Build ....
-env.Program(source='src/hardisp.cpp', target='bin/hardisp',
-            LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], LIBPATH='.', CPPPATH=['src/'])
+env.Program(source='src/hardisp.cpp',
+    target='bin/hardisp',
+    LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], 
+    LIBPATH='.', 
+    CPPPATH=['src/'])
 env.Alias(target='install', source=env.Install(dir=os.path.join(
     GetOption('prefix'), 'include', inc_dir), source=hdr_src_files))
 env.Alias(target='install', source=env.InstallVersionedLib(
     dir=os.path.join(GetOption('prefix'), 'lib'), source=vlib))
 
 ## Tests ...
-if GetOption('check') is not None and GetOption('check'):
+if make_test:
   #tests_sources  = glob.glob(r"test/*.cpp")
   #tests_sources = glob.glob(r"test/cel2ter/*.cpp")
   #tests_sources = glob.glob(r"test/parsers/*.cpp")
   tests_sources = glob.glob(r"test/internal/*.cpp")
+  tests_sources += glob.glob(r"test/sofa_unit_tests/sofa_*.cpp")
+  link_w = "test/sofa_unit_tests/unit_test_help.cpp"
   env.Append(RPATH=root_dir)
   for tsource in tests_sources:
     pth = os.path.dirname(tsource)
     bsn = os.path.basename(tsource)
     ttarget = os.path.join(pth, bsn.replace(
         '_', '-').replace('.cpp', '.out'))
-    env.Program(target=ttarget, source=tsource, CPPPATH='src/',
-                LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], LIBPATH=root_dir, RPATH=["."])
-
-## Build tests against SOFA lib
-if GetOption('sofa_check') is not None and GetOption('sofa_check'):
-  tests_sources = glob.glob(r"test/sofa_unit_tests/sofa*.cpp")
-  link_w = "test/sofa_unit_tests/unit_test_help.cpp"
-  env.Append(RPATH=root_dir)
-  for tsource in tests_sources:
-    pth = os.path.dirname(tsource)
-    bsn = os.path.basename(tsource)
-    if bsn != "unit_test_help.cpp":
-      ttarget = os.path.join(pth, bsn.replace(
-          '_', '-').replace('.cpp', '.out'))
-      env.Program(target=ttarget, source=[tsource,link_w], CPPPATH='src/',
-                  LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], LIBPATH=root_dir, RPATH=["."])
+    env.Program(target=ttarget, 
+        source=[tsource, link_w], 
+        CPPPATH='src/',
+        LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], 
+        LIBPATH=root_dir, RPATH=["."])

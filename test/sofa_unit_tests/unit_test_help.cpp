@@ -139,19 +139,20 @@ double rotation_matrix_diff(const Eigen::Matrix<double, 3, 3> &m1,
   const auto Rab = m1.transpose() * m22;
 
   /* Tr(Rab) = 1 + 2 cos(θ)
-   * θ = arccos( (Tr(Rab) - 1) / 2 )
+   * θ = arccos((Tr(Rab) - 1) / 2)
    */
-  if (std::abs((Rab.trace() - 1e0) / 2.) > 1e0) {
-    if (std::abs(Rab.trace()-3e0) > 1e-16) {
-    fprintf(stderr,
-            "#ERROR@%s Invalid arccos argument: %.6e outside [-1,1] range "
-            "(trace=%.3e)\n",
-            __func__, (Rab.trace() - 1e0) / 2., Rab.trace());
-    return std::numeric_limits<double>::max();
+  double arg = (Rab.trace() - 1e0) / 2.;
+  if (std::abs(arg) > 1e0) {
+    if (std::abs(arg)-1e0 < 1e-15) {
+      arg = std::copysign(1e0, arg);
     } else {
-      ;
+      fprintf(stderr,
+              "#ERROR@%s Invalid arccos argument: %.16e outside [-1,1] range "
+              "(trace=%.3e)\n",
+              __func__, arg, Rab.trace());
+      return std::numeric_limits<double>::max();
     }
   }
-  const double theta = std::acos((Rab.trace() - 1e0) / 2.);
+  const double theta = std::acos(arg);
   return theta;
 }

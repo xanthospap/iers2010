@@ -4,7 +4,6 @@
 #include "unit_test_help.hpp"
 #include <cassert>
 #include <cstdio>
-#include <datetime/dtcalendar.hpp>
 #include <limits>
 
 using namespace iers2010::sofa;
@@ -17,12 +16,12 @@ const char *args[] = {"dpsi", "deps", "epsa", "rb", "rp", "rbp", "rn", "rbpn"};
 const int num_args = sizeof(args) / sizeof(args[0]);
 
 int main() {
-  int fails[8] = {0,0,0,0,0,0,0,0};
+  int fails[8] = {0, 0, 0, 0, 0, 0, 0, 0};
   int error = 0;
-  double max_error[8] = {0e0,0e0,0e0,0e0,0e0,0e0,0e0,0e0};
+  double max_error[8] = {0e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0, 0e0};
   double rb[3][3], rp[3][3], rbp[3][3], rn[3][3], rbpn[3][3];
   Eigen::Matrix<double, 3, 3> rbm, rpm, rbpm, rnm, rbpnm;
-  double dpsis,dpsim,depsm,depss,epsas,epsam;
+  double dpsis, dpsim, depsm, depss, epsas, epsam;
 
   printf("Function         #Tests #Fails #Maxerror[sec]    Status\n");
   printf("---------------------------------------------------------------\n");
@@ -30,26 +29,27 @@ int main() {
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
     pn00a(tt, dpsim, depsm, epsam, rbm, rpm, rbpm, rnm, rbpnm);
-    iauPn00a(tt.big() + dso::mjd0_jd, tt.small(), &dpsis, &depss, &epsas, rb, rp, rbp, rn, rbpn);
+    iauPn00a(tt.big() + dso::mjd0_jd, tt.small(), &dpsis, &depss, &epsas, rb,
+             rp, rbp, rn, rbpn);
     /* dpsi */
     if (!approx_equal(dpsim, dpsis)) {
       ++fails[0];
-      if (std::abs(dpsim-dpsis)>max_error[0]) {
-        max_error[0] = std::abs(dpsim-dpsis);
+      if (std::abs(dpsim - dpsis) > max_error[0]) {
+        max_error[0] = std::abs(dpsim - dpsis);
       }
     }
     /* deps */
     if (!approx_equal(depsm, depss)) {
       ++fails[1];
-      if (std::abs(depsm-depss)>max_error[1]) {
-        max_error[1] = std::abs(depsm-depss);
+      if (std::abs(depsm - depss) > max_error[1]) {
+        max_error[1] = std::abs(depsm - depss);
       }
     }
     /* epsa */
     if (!approx_equal(epsam, epsas)) {
       ++fails[2];
-      if (std::abs(epsam-epsas)>max_error[2]) {
-        max_error[2] = std::abs(epsam-epsas);
+      if (std::abs(epsam - epsas) > max_error[2]) {
+        max_error[2] = std::abs(epsam - epsas);
       }
     }
     /* rb */
@@ -96,8 +96,8 @@ int main() {
 
   error = 0;
   for (int j = 0; j < 8; j++) {
-    printf("%8s %7s %6d %6d %+.9e %s\n", funcs[0], args[j], NUM_TESTS,
-           fails[j], dso::rad2sec(max_error[j]), (fails[j] == 0) ? "OK" : "FAILED");
+    printf("%8s %7s %6d %6d %+.9e %s\n", funcs[0], args[j], NUM_TESTS, fails[j],
+           dso::rad2sec(max_error[j]), (fails[j] == 0) ? "OK" : "FAILED");
     error += fails[j];
   }
 

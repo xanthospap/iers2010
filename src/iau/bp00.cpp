@@ -1,8 +1,6 @@
 #include "iau.hpp"
 #include "rotations.hpp"
 
-#include "sofa.h"
-
 void iers2010::sofa::bp00(const dso::TwoPartDate &mjd_tt,
                           Eigen::Matrix<double, 3, 3> &rb,
                           Eigen::Matrix<double, 3, 3> &rp,
@@ -53,13 +51,6 @@ void iers2010::sofa::bp00(const dso::TwoPartDate &mjd_tt,
 
   double srb[3][3]; double srp[3][3]; double srbp[3][3];
   iauBp00(mjd_tt.big() + dso::mjd0_jd, mjd_tt.small(), srb, srp, srbp);
-  printf("-----------------------------------------------------------------------------\n");
-  for (int i=0;i<3;i++) {
-    for (int j=0;j<3;j++) {
-      printf("%+.12e ", srp[i][j]-rp(i,j));
-    }
-    printf("\n");
-  }
 
   /* Bias-precession matrix: GCRS to mean of date. */
   rbp = rp * rb;
