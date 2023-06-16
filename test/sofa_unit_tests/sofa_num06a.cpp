@@ -1,20 +1,18 @@
 #include "iau.hpp"
-#include "unit_test_help.hpp"
-#include "geodesy/units.hpp"
 #include "sofa.h"
+#include "unit_test_help.hpp"
 #include <cassert>
 #include <cstdio>
-#include <datetime/dtcalendar.hpp>
 #include <limits>
 
 using namespace iers2010::sofa;
 
-constexpr const int NUM_TESTS = 10000;
+constexpr const int NUM_TESTS = 100000;
 
 const char *funcs[] = {"num06a"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
-int main(int argc, [[maybe_unused]]char *argv[]) {
+int main(int argc, [[maybe_unused]] char *argv[]) {
   if (argc > 1) {
     fprintf(stderr, "Ignoring command line arguments!\n");
   }
@@ -24,7 +22,7 @@ int main(int argc, [[maybe_unused]]char *argv[]) {
   double max_error = std::numeric_limits<double>::min();
   double as[3][3];
 
-  printf("Function #Tests #Fails #Maxerror[sec]    Status\n");
+  printf("Function #Tests #Fails #Maxerror[sec]    Status  Type\n");
   printf("---------------------------------------------------------------\n");
 
   fails = 0;
@@ -32,19 +30,20 @@ int main(int argc, [[maybe_unused]]char *argv[]) {
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
     const auto am = c2i06a(tt);
-    iauC2i06a(tt.big()+dso::mjd0_jd, tt.small(), as);
+    iauC2i06a(tt.big() + dso::mjd0_jd, tt.small(), as);
     if (!approx_equal(am, as)) {
       ++fails;
-      /* angle between rotation matrices [rad] */
+      /* Angle between rotation matrices [rad] */
       const double theta = rotation_matrix_diff(am, as);
-      if (std::abs(theta) > max_error) {
-        max_error = std::abs(theta);
+      if (std::abs(theta) > std::abs(max_error)) {
+        max_error = theta;
       }
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[func_it++], NUM_TESTS, fails, dso::rad2sec(max_error),
-         (fails == 0) ? "OK" : "FAILED");
-  if (fails) ++error;
+  printf("%8s %6d %6d %+.9e %.7s %s\n", funcs[func_it++], NUM_TESTS, fails,
+         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED", "RotMatrix");
+  if (fails)
+    ++error;
 
   return error;
 }

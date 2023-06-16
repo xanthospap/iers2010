@@ -1,4 +1,3 @@
-#include "geodesy/units.hpp"
 #include "iau.hpp"
 #include "sofa.h"
 #include "unit_test_help.hpp"
@@ -16,7 +15,7 @@ const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 int main() {
   double as[3][3];
 
-  printf("Function #Tests #Fails #Maxerror[sec]    Status\n");
+  printf("Function #Tests #Fails #Maxerror[sec]    Status  Type\n");
   printf("---------------------------------------------------------------\n");
 
   int fails = 0;
@@ -30,15 +29,15 @@ int main() {
     iauFw2m(gamb, phib, psi, eps, as);
     if (!approx_equal(am, as)) {
       ++fails;
-      /* angle between rotation matrices [rad] */
+      /* Angle between rotation matrices [rad] */
       const double theta = rotation_matrix_diff(am, as);
-      if (std::abs(theta) > max_error) {
-        max_error = std::abs(theta);
+      if (std::abs(theta) > std::abs(max_error)) {
+        max_error = theta;
       }
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[0], NUM_TESTS, fails,
-         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED");
+  printf("%8s %6d %6d %+.9e %.7s %s\n", funcs[0], NUM_TESTS, fails,
+         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED", "Angle");
 
   return fails;
 }

@@ -15,9 +15,9 @@ double iers2010::sofa::era00(const dso::TwoPartDate &ut1) noexcept {
    * we are adding here half a day because the fractional part of Julian day
    * is f + .5
    */
-  const double theta = dso::anp(iers2010::D2PI * (f + .5 + 0.7790572732640e0 +
-                                                  0.00273781191135448e0 * t));
+  const double theta =
+      dso::anp(iers2010::D2PI *
+               (f + (0.7790572732640e0 + .5e0) + 0.00273781191135448e0 * t));
 
-  // printf("%+.20f %+.20f %.22f (xan)\n", t,f,(f+.5)+t);
   return theta;
 }

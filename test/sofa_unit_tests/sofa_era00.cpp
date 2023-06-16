@@ -1,10 +1,8 @@
-#include "geodesy/units.hpp"
 #include "iau.hpp"
 #include "sofa.h"
 #include "unit_test_help.hpp"
 #include <cassert>
 #include <cstdio>
-#include <datetime/dtcalendar.hpp>
 #include <limits>
 
 using namespace iers2010::sofa;
@@ -16,7 +14,7 @@ const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
 int main() {
 
-  printf("Function #Tests #Fails #Maxerror[sec]    Status\n");
+  printf("Function #Tests #Fails #Maxerror[sec]    Status  Type\n");
   printf("---------------------------------------------------------------\n");
 
   double am, as;
@@ -28,13 +26,14 @@ int main() {
     as = iauEra00(ut.big() + dso::mjd0_jd, ut.small());
     if (!approx_equal(am, as)) {
       ++fails;
-      if (std::abs(am - as) > max_error) {
-        max_error = am - as;
+      // printf("diff = %.20f - %.20f = %.20f tt=%.3f + %.20f\n", as, am, as-am, ut.big(), ut.small());
+      if (std::abs(am - as) > std::abs(max_error)) {
+        max_error = as - am;
       }
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[0], NUM_TESTS, fails,
-         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED");
+  printf("%8s %6d %6d %+.9e %.7s %s\n", funcs[0], NUM_TESTS, fails,
+         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED", "Angle");
 
   return fails;
 }

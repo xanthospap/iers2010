@@ -1,4 +1,3 @@
-#include "geodesy/units.hpp"
 #include "iau.hpp"
 #include "sofa.h"
 #include "unit_test_help.hpp"
@@ -8,7 +7,7 @@
 
 using namespace iers2010::sofa;
 
-constexpr const int NUM_TESTS = 100000;
+constexpr const int NUM_TESTS = 1000000;
 
 const char *funcs[] = {"c2ixys"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
@@ -44,13 +43,13 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
       iauC2ixys(xp, yp, s, as);
       if (!approx_equal(am, as)) {
         ++fails;
-        /* angle between rotation matrices [rad] */
+        /* Angle between rotation matrices [rad] */
         const double theta = rotation_matrix_diff(am, as);
         if (theta == std::numeric_limits<double>::max()) {
           --i;
         } else {
-          if (std::abs(theta) > max_error) {
-            max_error = std::abs(theta);
+          if (std::abs(theta) > std::abs(max_error)) {
+            max_error = theta;
           }
         }
       }
@@ -61,8 +60,9 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
               funcs[0], xp, yp, s, i);
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[0], NUM_TESTS, fails,
-         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED");
+  printf("%8s %6d %6d %+.9e %.7s %s\n", funcs[0], NUM_TESTS, fails,
+         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED",
+         "RotMatrix");
 
   return fails;
 }

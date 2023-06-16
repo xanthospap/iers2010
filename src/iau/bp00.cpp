@@ -1,12 +1,13 @@
 #include "iau.hpp"
 #include "rotations.hpp"
+#include "geodesy/units.hpp"
 
 void iers2010::sofa::bp00(const dso::TwoPartDate &mjd_tt,
                           Eigen::Matrix<double, 3, 3> &rb,
                           Eigen::Matrix<double, 3, 3> &rp,
                           Eigen::Matrix<double, 3, 3> &rbp) noexcept {
   /* J2000.0 obliquity (Lieske et al. 1977) */
-  constexpr double EPS0 = 84'381.448e0 * iers2010::DAS2R;
+  constexpr double EPS0 = dso::sec2rad(84'381.448e0);
 
   /* Interval between fundamental epoch J2000.0 and current date (JC) */
   const double t = mjd_tt.jcenturies_sinceJ2000();
@@ -16,12 +17,12 @@ void iers2010::sofa::bp00(const dso::TwoPartDate &mjd_tt,
   iers2010::sofa::bi00(dpsibi, depsbi, dra0);
 
   /* Precession angles (Lieske et al. 1977) */
-  const double psia77 = (5'038.7784e0 + (-1.07259e0 + (-0.001147e0) * t) * t) *
-                        t * iers2010::DAS2R;
+  const double psia77 =
+      dso::sec2rad((5'038.7784e0 + (-1.07259e0 + (-0.001147e0) * t) * t) * t);
   const double oma77 =
-      EPS0 + ((0.05127e0 + (-0.007726e0) * t) * t) * t * iers2010::DAS2R;
+      EPS0 + dso::sec2rad(((0.05127e0 + (-0.007726e0) * t) * t) * t);
   const double chia =
-      (10.5526e0 + (-2.38064e0 + (-0.001125e0) * t) * t) * t * iers2010::DAS2R;
+      dso::sec2rad((10.5526e0 + (-2.38064e0 + (-0.001125e0) * t) * t) * t);
 
   /* Apply IAU 2000 precession corrections */
   double dpsipr, depspr;
@@ -44,13 +45,20 @@ void iers2010::sofa::bp00(const dso::TwoPartDate &mjd_tt,
   dso::rotate<dso::RotationAxis::Z>(-psia, rp);
   dso::rotate<dso::RotationAxis::X>(-oma, rp);
   dso::rotate<dso::RotationAxis::Z>(chia, rp);
+  //for (int i = 0; i < 3; i++) {
+  //  for (int j = 0; j < 3; j++) {
+  //    printf("%+.20e ", rp(i,j));
+  //  }
+  //  printf("\n");
+  //}
+  // printf("[MINE] Angles: %+.20e %+.20e %+.20e %+.20e\n", EPS0, -psia, -oma, chia);
   //rp = Eigen::AngleAxisd(-chia, Eigen::Vector3d::UnitZ()) *
   //     Eigen::AngleAxisd(oma, Eigen::Vector3d::UnitX()) *
   //     Eigen::AngleAxisd(psia, Eigen::Vector3d::UnitZ()) *
   //     Eigen::AngleAxisd(-EPS0, Eigen::Vector3d::UnitX());
 
-  double srb[3][3]; double srp[3][3]; double srbp[3][3];
-  iauBp00(mjd_tt.big() + dso::mjd0_jd, mjd_tt.small(), srb, srp, srbp);
+  //double srb[3][3]; double srp[3][3]; double srbp[3][3];
+  //iauBp00(mjd_tt.big() + dso::mjd0_jd, mjd_tt.small(), srb, srp, srbp);
 
   /* Bias-precession matrix: GCRS to mean of date. */
   rbp = rp * rb;

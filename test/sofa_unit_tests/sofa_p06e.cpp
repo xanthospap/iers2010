@@ -1,10 +1,8 @@
-#include "geodesy/units.hpp"
 #include "iau.hpp"
 #include "sofa.h"
 #include "unit_test_help.hpp"
 #include <cassert>
 #include <cstdio>
-#include <datetime/dtcalendar.hpp>
 #include <limits>
 
 using namespace iers2010::sofa;
@@ -19,12 +17,12 @@ const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 const int num_args = sizeof(args) / sizeof(args[0]);
 
 int main() {
-  int fails[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  int fails[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   int error = 0;
-  double max_error[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  double max_error[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   double as[16], am[16];
 
-  printf("Function       #Tests #Fails #Maxerror[sec]    Status\n");
+  printf("Function       #Tests #Fails #Maxerror[sec]    Status  Type\n");
   printf("---------------------------------------------------------------\n");
 
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -37,22 +35,24 @@ int main() {
     for (int j = 0; j < 16; j++) {
       if (!approx_equal(am[j], as[j])) {
         ++fails[j];
-        /* angle between rotation matrices [rad] */
-        const double diff = am[j] - as[j];
-        if (std::abs(diff) > max_error[j]) {
-          max_error[j] = std::abs(diff);
+        /* Angle between rotation matrices [rad] */
+        const double diff = as[j] - am[j];
+        if (std::abs(diff) > std::abs(max_error[j])) {
+          max_error[j] = diff;
         }
       }
     }
   }
 
   for (int i = 0; i < 16; i++) {
-    printf("%8s %8s %6d %6d %+.9e %s\n", funcs[0], args[i], NUM_TESTS,
-           fails[i], dso::rad2sec(max_error[i]), (fails[i] == 0) ? "OK" : "FAILED");
+    printf("%8s %8s %6d %6d %+.9e %.7s %s\n", funcs[0], args[i], NUM_TESTS,
+           fails[i], dso::rad2sec(max_error[i]),
+           (fails[i] == 0) ? "OK" : "FAILED", "Angle");
   }
 
-  error=0;
-  for (int i = 0; i < 16; i++) error+=fails[i];
+  error = 0;
+  for (int i = 0; i < 16; i++)
+    error += fails[i];
 
   return error;
 }

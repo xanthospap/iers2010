@@ -34,12 +34,7 @@ This repository is an effort to translate the algorithms in the C++ programming
 language with (as much as possible) minor modifications. Note that the software 
 found at this website is routinely updated.
 
-[^2]: Gérard Petit and Brian J. Luzum, editors. IERS Conventions (2010), volume 36 of
-IERS Technical Note, 2010. International Earth Rotation and Reference Systems
-Service (IERS), International Earth Rotation and Reference Systems Service
-(IERS).
-
-# Prerequisites <a name="introduction"></a>
+# Prerequisites <a name="prerequisites"></a>
 
 The C++ library [ggdatetime](https://github.com/xanthospap/ggdatetime) 
 is used in the library to handle datetime instances when needed. 
@@ -53,7 +48,7 @@ installed (on your system) to successefuly compile this library.
 Vector/Matrix operations are implemented using the [eigen3](https://eigen.tuxfamily.org/index.php?title=Main_Page) 
 library. Availability of this library is also mandatory.
 
-# Compilation / Installation <a name="installation"></a>
+# Compilation / Installation <a name="compilation-installation"></a>
 
 > January 2022:
 > From now on, only the [scons](https://scons.org/) build will be supported; 
@@ -67,8 +62,152 @@ $> scons
 $> sudo scons install
 ```
 
-## Test Programs <a name="installation-test"></a>
+## Test Programs <a name="test-programs"></a>
 To compile the test utilities, use the `make-check` switch (i.e. `scons make-check=1`). 
+Note that the SOFA [^1] library is needed to compile and run the tests.
+
+# Library Components <a name="library-components"></a>
+
+## Notes on Dates and Datetimes <a name="notes-on-dates"></a>
+This library makes use of [ggdatetime](https://github.com/xanthospap/ggdatetime) 
+for handling dates and datetime instances. By default, this means that we are 
+(mostly) handling datetimes in the so-called **Modified Julian Date** format, 
+instead of the **Julian Date** format used throughout most of the SOFA [^1] functions. 
+
+## Astronomy Functionality and Celestial Frames <a name="astronomy"></a>
+The library contains a list of functions for basic astronomical computations, 
+especially related to computations involved in transforming from/to the 
+Geocentric Celestial Reference Frame (GCRF). Declerations can be found in the 
+header files [iau.hpp](src/iau.hpp) and [fundarg.hpp](src/fundarg.hpp).
+
+There are a number of ways to transform between (geocentric) inertial and earth-fixed 
+frames; in this library, we target the so called **"CIO-based"** transformation, based 
+on the **IAU 200/2006** model (see [^1] and [^2]), as this is the recommended approach 
+as described in the IERS2010 standards.
+
+## Tests and Compliance with IAU/SOFA <a name="tests-and-compliance"></a>
+
+Once you have [compiled the test-suite](#test-programs), you can use the script 
+`run_sofa_checks.py` to check the compliance with respect to the IAU SOFA 
+library (e.g. `run_sofa_checks.py --progs-dir test/sofa_unit_tests/`). This 
+will run a number of checks and provide discrepancies (w.r.t. SOFA) for all 
+functions/parameters common to both libraries. Explicit results can be found in
+[this table](#sofa-check-table).
+
+# References <a name="references"></a>
+
+[^1]: International Astronomical Union, Standards of Fundamental Astronomy (SOFA) 
+software tools collection, available at [https://www.iausofa.org/]
+
+[^2]: Gérard Petit and Brian J. Luzum, editors. IERS Conventions (2010), volume 36 of
+IERS Technical Note, 2010. International Earth Rotation and Reference Systems
+Service (IERS), International Earth Rotation and Reference Systems Service
+(IERS).
+
+# Acknowledgement
+
+Software Routines from the IAU SOFA Collection were used. Copyright © International Astronomical Union Standards of Fundamental Astronomy (http://www.iausofa.org)
+
+# Results <a name="results"></a>
+
+## Discrepancies w.r.t IAU/SOFA <a name="sofa-check-table"></a>
+
+function  |argument  |num tests |num fails |max error |param. type |status    
+----------|----------|----------|----------|----------|------------|----------
+nut00a    |dpsi      |    100000|     49617|1.136e-12|Angle       |FAILED    
+nut00a    |deps      |    100000|     48738|4.990e-13|Angle       |FAILED    
+pom00     |          |    100000|         0|0.000e+00|RotMatrix   |OK        
+s00       |          |    100000|         0|0.000e+00|Angle       |OK        
+pn00a     |dpsi      |    100000|     49332|1.149e-12|Angle       |FAILED    
+pn00a     |deps      |    100000|     48232|4.962e-13|Angle       |FAILED    
+pn00a     |epsa      |    100000|         0|0.000e+00|Angle       |OK        
+pn00a     |rb        |    100000|         0|0.000e+00|RotMatrix   |OK        
+pn00a     |rp        |    100000|     17738|7.529e-03|RotMatrix   |FAILED    
+pn00a     |rbp       |    100000|     20239|7.529e-03|RotMatrix   |FAILED    
+pn00a     |rn        |    100000|     53823|6.147e-03|RotMatrix   |FAILED    
+pn00a     |rbpn      |    100000|     36280|8.693e-03|RotMatrix   |FAILED    
+num06a    |          |    100000|     42865|6.147e-03|RotMatrix   |FAILED    
+bi00      |dpsibi    |    100000|         0|0.000e+00|Angle       |OK        
+bi00      |depsbi    |    100000|         0|0.000e+00|Angle       |OK        
+bi00      |dra       |    100000|         0|0.000e+00|Angle       |OK        
+c2ixys    |          |   1000000|         0|0.000e+00|RotMatrix   |OK        
+pnm06a    |          |    100000|     44493|7.529e-03|RotMatrix   |FAILED    
+bp00      |rb        |    100000|         0|0.000e+00|RotMatrix   |OK        
+bp00      |rp        |    100000|     17670|7.529e-03|RotMatrix   |FAILED    
+bp00      |rbp       |    100000|     20190|7.529e-03|RotMatrix   |FAILED    
+fal03     |fapa03    |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |fane03    |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |faur03    |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |fasa03    |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |faju03    |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |fama03    |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |fae03     |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |fave03    |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |fame03    |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |faom03    |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |fad03     |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |faf03     |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |falp03    |    100000|         0|0.000e+00|Angle       |OK        
+fal03     |fal03     |    100000|         0|0.000e+00|Angle       |OK        
+fw2m      |          |    100000|         0|0.000e+00|Angle       |OK        
+sp00      |ee06a     |    100000|     62540|1.832e-10|Angle       |FAILED    
+sp00      |gmst06    |    100000|      4670|5.868e-09|Angle       |FAILED    
+sp00      |gmst00    |    100000|      4602|5.862e-09|Angle       |FAILED    
+sp00      |gst06a    |    100000|      4631|1.172e-08|Angle       |FAILED    
+sp00      |obl06     |    100000|         1|2.290e-11|Angle       |FAILED    
+sp00      |obl80     |    100000|         0|0.000e+00|Angle       |OK        
+sp00      |ee00      |    100000|         0|0.000e+00|Angle       |OK        
+sp00      |eect00    |    100000|     25438|2.214e-17|Angle       |FAILED    
+sp00      |sp00      |    100000|      7906|5.332e-21|Angle       |FAILED    
+era00     |          |    100000|      2344|5.862e-09|Angle       |FAILED    
+xy06      |xp        |     10000|      1607|6.262e-13|Angle       |FAILED    
+xy06      |yp        |     10000|      3375|-4.515e-13|Angle       |FAILED    
+nut06a    |dpsi      |     10000|      4949|1.163e-12|Angle       |FAILED    
+nut06a    |deps      |     10000|      4865|4.696e-13|Angle       |FAILED    
+c2i06a    |          |     10000|      5398|6.147e-03|RotMatrix   |FAILED    
+pn00      |rb        |     10000|         0|0.000e+00|RotMatrix   |OK        
+pn00      |rp        |     10000|      1755|6.147e-03|RotMatrix   |FAILED    
+pn00      |rbp       |     10000|      2003|7.529e-03|RotMatrix   |FAILED    
+pn00      |rn        |     10000|         0|0.000e+00|RotMatrix   |OK        
+pn00      |rbpn      |     10000|       474|7.529e-03|RotMatrix   |FAILED    
+pn00      |epsa      |     10000|         0|0.000e+00|Angle       |OK        
+numat     |          |     10000|         0|0.000e+00|RotMatrix   |OK        
+pr00      |dpsipr    |     10000|       611|2.184e-17|Angle       |FAILED    
+pr00      |depspr    |     10000|        91|-2.730e-18|Angle       |FAILED    
+pfw06     |gamb      |     10000|       988|1.398e-15|Angle       |FAILED    
+pfw06     |phib      |     10000|         0|0.000e+00|Angle       |OK        
+pfw06     |psib      |     10000|       897|-7.156e-13|Angle       |FAILED    
+pfw06     |epsa      |     10000|         0|0.000e+00|Angle       |OK        
+pn06      |rb        |     10000|     10000|6.147e-03|RotMatrix   |FAILED    
+pn06      |rp        |     10000|     10000|9.720e-03|RotMatrix   |FAILED    
+pn06      |rbp       |     10000|      3836|7.529e-03|RotMatrix   |FAILED    
+pn06      |rn        |     10000|      1250|8.693e-03|RotMatrix   |FAILED    
+pn06      |rbpn      |     10000|      1367|6.147e-03|RotMatrix   |FAILED    
+pn06      |epsa      |     10000|         0|0.000e+00|Angle       |OK        
+p06e      |eps0      |    100000|         0|0.000e+00|Angle       |OK        
+p06e      |psia      |    100000|      7919|-5.367e-13|Angle       |FAILED    
+p06e      |oma       |    100000|         0|0.000e+00|Angle       |OK        
+p06e      |bpa       |    100000|      6358|-6.989e-16|Angle       |FAILED    
+p06e      |bqa       |    100000|      7657|-5.591e-15|Angle       |FAILED    
+p06e      |pia       |    100000|      7540|5.591e-15|Angle       |FAILED    
+p06e      |bpia      |    100000|         2|1.832e-10|Angle       |FAILED    
+p06e      |epsa      |    100000|         2|-2.290e-11|Angle       |FAILED    
+p06e      |chia      |    100000|      7979|1.398e-15|Angle       |FAILED    
+p06e      |za        |    100000|      7264|2.684e-13|Angle       |FAILED    
+p06e      |zetaa     |    100000|      7266|-2.684e-13|Angle       |FAILED    
+p06e      |thetaa    |    100000|      5481|-1.789e-13|Angle       |FAILED    
+p06e      |pa        |    100000|      7798|-5.367e-13|Angle       |FAILED    
+p06e      |gam       |    100000|      8083|-1.398e-15|Angle       |FAILED    
+p06e      |phi       |    100000|         0|0.000e+00|Angle       |OK        
+p06e      |psi       |    100000|      7926|5.367e-13|Angle       |FAILED    
+c2t06a    |          |     10000|     10000|6.480e+05|RotMatrix   |FAILED    
+xys06a    |xp        |     10000|      2068|-7.156e-13|Angle       |FAILED    
+xys06a    |yp        |     10000|      2396|2.290e-11|Angle       |FAILED    
+xys06a    |s         |     10000|      4141|-3.354e-14|Angle       |FAILED    
+xys00a    |xp        |     10000|      2448|7.156e-13|Angle       |FAILED    
+xys00a    |yp        |     10000|       474|-2.290e-11|Angle       |FAILED    
+xys00a    |s         |     10000|      3197|2.603e-14|Angle       |FAILED    
+s06       |          |    100000|         0|0.000e+00|Angle       |OK
 
 <!--
 # Data Files <a name="data-files"></a>

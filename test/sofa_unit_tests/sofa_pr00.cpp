@@ -7,35 +7,41 @@
 
 using namespace iers2010::sofa;
 
-constexpr const int NUM_TESTS = 100000;
+constexpr const int NUM_TESTS = 10000;
 
-const char *funcs[] = {"nut00a"};
+const char *funcs[] = {"pr00"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
-const char *args[] = {"dpsi", "deps"};
+const char *args[] = {"dpsipr", "depspr"};
 const int num_args = sizeof(args) / sizeof(args[0]);
 
 int main(int argc, [[maybe_unused]] char *argv[]) {
   if (argc > 1) {
     fprintf(stderr, "Ignoring command line arguments!\n");
   }
-  int fails[2] = {0, 0};
+  int fails[] = {0, 0};
   int error = 0;
-  double max_error[2] = {0e0, 0e0};
-  double am[2], as[2];
+  double max_error[] = {0e0, 0e0};
+  double sdpsi, sdeps, mdpsi, mdeps;
 
   printf("Function         #Tests #Fails #Maxerror[sec]    Status  Type\n");
   printf("---------------------------------------------------------------\n");
 
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
-    nut00a(tt, am[0], am[1]);
-    iauNut00a(tt.big() + dso::mjd0_jd, tt.small(), &as[0], &as[1]);
-    for (int j = 0; j < 2; j++) {
-      if (!approx_equal(am[j], as[j])) {
-        ++fails[j];
-        if (std::abs(am[j] - as[j]) > std::abs(max_error[j])) {
-          max_error[j] = as[j] - am[j];
-        }
+    pr00(tt, mdpsi, mdeps);
+    iauPr00(tt.big() + dso::mjd0_jd, tt.small(), &sdpsi, &sdeps);
+    /* dpsipr */
+    if (!approx_equal(sdpsi, mdpsi)) {
+      ++fails[0];
+      if (std::abs(sdpsi - mdpsi) > std::abs(max_error[0])) {
+        max_error[0] = sdpsi - mdpsi;
+      }
+    }
+    /* deps */
+    if (!approx_equal(sdeps, mdeps)) {
+      ++fails[1];
+      if (std::abs(sdeps - mdeps) > std::abs(max_error[1])) {
+        max_error[1] = sdeps - mdeps;
       }
     }
   }

@@ -1,7 +1,6 @@
 #include "iau.hpp"
-#include "unit_test_help.hpp"
-#include "geodesy/units.hpp"
 #include "sofa.h"
+#include "unit_test_help.hpp"
 #include <cassert>
 #include <cstdio>
 #include <limits>
@@ -12,16 +11,15 @@ constexpr const int NUM_TESTS = 100000;
 
 const char *funcs[] = {"fapa03", "fane03", "faur03", "fasa03", "faju03",
                        "fama03", "fae03",  "fave03", "fame03", "faom03",
-                       "fad03",  "faf03",  "falp03", "fal03"
-                       };
+                       "fad03",  "faf03",  "falp03", "fal03"};
 const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
 int main() {
-  int fails[14]={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-  double max_error[14]={0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-  int error=0;
+  int fails[14] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  double max_error[14] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  int error = 0;
 
-  printf("Function #Tests #Fails #Maxerror[sec]    Status\n");
+  printf("Function         #Tests #Fails #Maxerror[sec]    Status  Type\n");
   printf("---------------------------------------------------------------\n");
 
   double am, as;
@@ -33,13 +31,16 @@ int main() {
     as = iauFapa03(jc);
     if (!approx_equal(am, as)) {
       ++fails[j];
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
-  
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
+
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
     const auto tt = random_mjd();
@@ -48,12 +49,15 @@ int main() {
     as = iauFane03(jc);
     if (!approx_equal(am, as)) {
       ++fails[j];
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -62,13 +66,16 @@ int main() {
     am = faur03(tt);
     as = iauFaur03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -77,13 +84,16 @@ int main() {
     am = fasa03(tt);
     as = iauFasa03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -92,13 +102,16 @@ int main() {
     am = faju03(tt);
     as = iauFaju03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -107,13 +120,16 @@ int main() {
     am = fama03(tt);
     as = iauFama03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -122,13 +138,16 @@ int main() {
     am = fae03(tt);
     as = iauFae03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -137,13 +156,16 @@ int main() {
     am = fave03(tt);
     as = iauFave03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -152,13 +174,16 @@ int main() {
     am = fame03(tt);
     as = iauFame03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -167,13 +192,16 @@ int main() {
     am = faom03(tt);
     as = iauFaom03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -182,13 +210,16 @@ int main() {
     am = fad03(tt);
     as = iauFad03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -197,13 +228,16 @@ int main() {
     am = faf03(tt);
     as = iauFaf03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -212,13 +246,16 @@ int main() {
     am = falp03(tt);
     as = iauFalp03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
 
   ++j;
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -227,13 +264,16 @@ int main() {
     am = fal03(tt);
     as = iauFal03(jc);
     if (!approx_equal(am, as)) {
-      if (std::abs(am-as) > max_error[j]) max_error[j] = std::abs(am-as);
+      if (std::abs(am - as) > max_error[j])
+        max_error[j] = std::abs(am - as);
       ++fails[j];
     }
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[j], NUM_TESTS, fails[j], dso::rad2sec(max_error[j]),
-         (fails[j] == 0) ? "OK" : "FAILED");
-  if (fails[j]) ++error;
-  
+  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j]),
+         (fails[j] == 0) ? "OK" : "FAILED", "Angle");
+  if (fails[j])
+    ++error;
+
   return error;
 }

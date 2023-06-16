@@ -1,4 +1,3 @@
-#include "geodesy/units.hpp"
 #include "iau.hpp"
 #include "sofa.h"
 #include "unit_test_help.hpp"
@@ -18,7 +17,6 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
     fprintf(stderr, "Ignoring command line arguments!\n");
   }
   double as[3][3];
-  Eigen::Matrix<double,3,3> max_mine, max_sofa;
 
   printf("Function #Tests #Fails #Maxerror[sec]    Status\n");
   printf("---------------------------------------------------------------\n");
@@ -32,39 +30,17 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
     iauNum06a(tt.big() + dso::mjd0_jd, tt.small(), as);
     if (!approx_equal(am, as)) {
       ++fails;
-      /* angle between rotation matrices [rad] */
+      /* Angle between rotation matrices [rad] */
       const double theta = rotation_matrix_diff(am, as);
-      if (theta == std::numeric_limits<double>::max()) {
-        fprintf(stderr, "# Erronuous input @ %s: seti=%d \n", funcs[0], i);
-        --i;
-      } else {
-        if (std::abs(theta) > max_error) {
-          max_error = std::abs(theta);
-          max_mine = am;
-          max_sofa = rxr2mat(as);
-        }
+      if (std::abs(theta) > std::abs(max_error)) {
+        max_error = theta;
       }
     }
     ++i;
   }
-  printf("%8s %6d %6d %+.9e %s\n", funcs[0], NUM_TESTS, fails,
-         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED");
-
-  /*if (fails) {
-    // const auto d = max_mine - max_sofa;
-    for (int k = 0; k < 3; k++) {
-      for (int j = 0; j < 3; j++) {
-        printf("%+.12e ", max_mine(k, j));
-      }
-      printf("\n");
-    }
-    for (int k = 0; k < 3; k++) {
-      for (int j = 0; j < 3; j++) {
-        printf("%+.12e ", max_sofa(k, j));
-      }
-      printf("\n");
-    }
-  }*/
+  printf("%8s %6d %6d %+.9e %.7s %s\n", funcs[0], NUM_TESTS, fails,
+         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED",
+         "RotMatrix");
 
   return fails;
 }

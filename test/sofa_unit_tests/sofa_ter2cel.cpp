@@ -1,8 +1,7 @@
 #include "cel2ter.hpp"
-#include "datetime/dtcalendar.hpp"
+#include "unit_test_help.hpp"
 #include "sofa.h"
 #include <charconv>
-#include <datetime/dtfund.hpp>
 #include <fstream>
 #include <vector>
 
@@ -18,7 +17,7 @@ const char *skip_ws(const char *c) {
     ++c;
   return c;
 }
-} // namespace
+} /* namespace */
 
 int estate_line(const char *line, GraceOrbit &orb);
 int parse_orbit(const char *fn, std::vector<GraceOrbit> &orb);
@@ -76,10 +75,10 @@ int main(int argc, char *argv[]) {
       printf("%.12e %+.9e %+.9e %+.9e %.9e\n", R.tt().as_mjd(), r1(0) - r2(0),
              r1(1) - r2(1), r1(2) - r2(2), (r1 - r2).norm());
     }
-    const auto dr = r1-r2;
-    if (std::abs(dr(0)) > max_dx) max_dx = std::abs(dr(0));
-    if (std::abs(dr(1)) > max_dy) max_dy = std::abs(dr(1));
-    if (std::abs(dr(2)) > max_dz) max_dz = std::abs(dr(2));
+    const auto dr = r2-r1;
+    if (std::abs(dr(0)) > std::abs(max_dx)) max_dx = dr(0);
+    if (std::abs(dr(1)) > std::abs(max_dy)) max_dy = dr(1);
+    if (std::abs(dr(2)) > std::abs(max_dz)) max_dz = dr(2);
     if (dr.norm()>max_dr) max_dr = dr.norm();
   }
   
@@ -159,7 +158,7 @@ Eigen::Matrix<double, 3, 1> sofa_gcrf2itrf(const Eigen::Matrix<double, 3, 1> &r,
   double rc2i[3][3];
   iauC2ixys(x, y, s, rc2i);
 
-  /* Earth rotation angle. */
+  /* Earth rotation Angle. */
   const double ut1 = R.ut1().big() + dso::mjd0_jd;
   const double ut2 = R.ut1().small();
   double era = iauEra00(ut1, ut2);

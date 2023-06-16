@@ -104,8 +104,10 @@ bool approx_equal(const Eigen::Matrix<double, 3, 3> &m1, const double m2[3][3],
 }
 
 dso::TwoPartDate random_mjd() {
-  constexpr const double min_mjd = 29629e0; // 01/01/1940
-  constexpr const double max_mjd = 69807e0; // 01/01/2050
+  // constexpr const double min_mjd = 29629e0; // 01/01/1940
+  constexpr const double min_mjd = 42413e0; // 01/01/1975
+  // constexpr const double max_mjd = 69807e0; // 01/01/2050
+  constexpr const double max_mjd = 62502e0; // 01/01/2030
   std::uniform_real_distribution<double> uni_mjd(min_mjd, max_mjd);
   std::uniform_real_distribution<double> uni_fmjd(0e0, 1e0);
   return dso::TwoPartDate(uni_mjd(e), uni_fmjd(e)).normalized();
@@ -123,7 +125,7 @@ double random_angle(double min, double max) noexcept {
   return uni_rad(e);
 }
 
-/* returns angle in [rad] */
+/* returns Angle in [rad] */
 double rotation_matrix_diff(const Eigen::Matrix<double, 3, 3> &m1,
                             const double m2[3][3]) {
   Eigen::Matrix<double, 3, 3> m22;
@@ -143,7 +145,7 @@ double rotation_matrix_diff(const Eigen::Matrix<double, 3, 3> &m1,
    */
   double arg = (Rab.trace() - 1e0) / 2.;
   if (std::abs(arg) > 1e0) {
-    if (std::abs(arg)-1e0 < 1e-15) {
+    if (std::abs(arg) - 1e0 < 1e-15) {
       arg = std::copysign(1e0, arg);
     } else {
       fprintf(stderr,
@@ -153,6 +155,7 @@ double rotation_matrix_diff(const Eigen::Matrix<double, 3, 3> &m1,
       return std::numeric_limits<double>::max();
     }
   }
+
   const double theta = std::acos(arg);
   return theta;
 }

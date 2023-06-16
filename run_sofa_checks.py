@@ -10,16 +10,16 @@ def find_progs(prog_dir):
     return [f for f in os.listdir(prog_dir) if re.match(r'sofa-.*\.out', f)]
 
 def filter_results(fn):
-    argl=[];numtestsl=[];numfailsl=[];maxerrorl=[];statusl=[];
+    argl=[];numtestsl=[];numfailsl=[];maxerrorl=[];statusl=[];typesl=[];
     with open(fn, 'r') as fin:
         for line in fin.readlines():
             if line.startswith("Function") or line.startswith("Program") or line.startswith("---"):
                 pass
             else:
-# pn06/   dpsi  10000   3347 +2.078386880e-12 FAILED
+# pn06/   dpsi  10000   3347 +2.078386880e-12 FAILED angle
                 l = line.split()
                 function = l[0]
-                if len(l) == 6:
+                if len(l) == 7:
                     argl.append(l[1])
                     offset = 2
                 else:
@@ -29,7 +29,8 @@ def filter_results(fn):
                 numfailsl.append(int(l[offset+1]))
                 maxerrorl.append(float(l[offset+2]))
                 statusl.append(l[offset+3])
-    return function, [{'arg':e[0], 'num_tests': e[1], 'num_fails':e[2], 'max_error':e[3], 'status':e[4]} for e in zip(argl,numtestsl,numfailsl,maxerrorl,statusl)]
+                typesl.append(l[offset+4])
+    return function, [{'arg':e[0], 'num_tests': e[1], 'num_fails':e[2], 'max_error':e[3], 'status':e[4], 'type':e[5]} for e in zip(argl,numtestsl,numfailsl,maxerrorl,statusl,typesl)]
 
 class myFormatter(argparse.ArgumentDefaultsHelpFormatter,
                   argparse.RawTextHelpFormatter):
@@ -108,11 +109,11 @@ if __name__ == '__main__':
         results[fun] = fargs
 
     if args.markdown:
-        print('{:10s}|{:10s}|{:10s}|{:10s}|{:10s}|{:10s}'.format("function", "argument", "num tests", "num fails", "max error", "status"))
-        print('{:10s}|{:10s}|{:10s}|{:10s}|{:10s}|{:10s}'.format("-"*10,"-"*10,"-"*10,"-"*10,"-"*10,"-"*10))
+        print('{:10s}|{:10s}|{:10s}|{:10s}|{:10s}|{:12s}|{:10s}'.format("function", "argument", "num tests", "num fails", "max error", "param. type", "status"))
+        print('{:10s}|{:10s}|{:10s}|{:10s}|{:10s}|{:12s}|{:10s}'.format("-"*10,"-"*10,"-"*10,"-"*10,"-"*10,"-"*12,"-"*10))
     for f,fargs in results.items():
         for farg in fargs:
             if args.markdown:
-                print('{:10s}|{:10s}|{:10d}|{:10d}|{:.3e}|{:10s}'.format(f, farg['arg'], farg['num_tests'], farg['num_fails'], farg['max_error'], farg['status']))
+                print('{:10s}|{:10s}|{:10d}|{:10d}|{:.3e}|{:12s}|{:10s}'.format(f, farg['arg'], farg['num_tests'], farg['num_fails'], farg['max_error'], farg['type'], farg['status']))
             else:
-                print('{:6s} {:6s} {:8d} {:8d} {:.3e} {:10s}'.format(f, farg['arg'], farg['num_tests'], farg['num_fails'], farg['max_error'], farg['status']))
+                print('{:6s} {:6s} {:8d} {:8d} {:.3e} {:12s} {:10s}'.format(f, farg['arg'], farg['num_tests'], farg['num_fails'], farg['max_error'], farg['type'], farg['status']))
