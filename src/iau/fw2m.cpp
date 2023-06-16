@@ -1,5 +1,4 @@
 #include "iau.hpp"
-#include "rotations.hpp"
 
 Eigen::Matrix<double, 3, 3> iers2010::sofa::fw2m(double gamb, double phib,
                                                  double psi,

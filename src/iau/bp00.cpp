@@ -1,6 +1,4 @@
 #include "iau.hpp"
-#include "rotations.hpp"
-#include "geodesy/units.hpp"
 
 void iers2010::sofa::bp00(const dso::TwoPartDate &mjd_tt,
                           Eigen::Matrix<double, 3, 3> &rb,
@@ -45,20 +43,10 @@ void iers2010::sofa::bp00(const dso::TwoPartDate &mjd_tt,
   dso::rotate<dso::RotationAxis::Z>(-psia, rp);
   dso::rotate<dso::RotationAxis::X>(-oma, rp);
   dso::rotate<dso::RotationAxis::Z>(chia, rp);
-  //for (int i = 0; i < 3; i++) {
-  //  for (int j = 0; j < 3; j++) {
-  //    printf("%+.20e ", rp(i,j));
-  //  }
-  //  printf("\n");
-  //}
-  // printf("[MINE] Angles: %+.20e %+.20e %+.20e %+.20e\n", EPS0, -psia, -oma, chia);
   //rp = Eigen::AngleAxisd(-chia, Eigen::Vector3d::UnitZ()) *
   //     Eigen::AngleAxisd(oma, Eigen::Vector3d::UnitX()) *
   //     Eigen::AngleAxisd(psia, Eigen::Vector3d::UnitZ()) *
   //     Eigen::AngleAxisd(-EPS0, Eigen::Vector3d::UnitX());
-
-  //double srb[3][3]; double srp[3][3]; double srbp[3][3];
-  //iauBp00(mjd_tt.big() + dso::mjd0_jd, mjd_tt.small(), srb, srp, srbp);
 
   /* Bias-precession matrix: GCRS to mean of date. */
   rbp = rp * rb;

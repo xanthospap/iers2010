@@ -1,6 +1,4 @@
 #include "iau.hpp"
-// #include "eigen3/Eigen/src/Geometry/RotationBase.h"
-#include "rotations.hpp"
 
 Eigen::Matrix<double,3,3> iers2010::sofa::numat(double epsa, double dpsi,
                                   double deps) noexcept {

@@ -180,7 +180,7 @@ public:
   const Eigen::Matrix<double, 3, 3> &rpom() const noexcept { return Rpom; }
   const Eigen::Matrix<double, 3, 3> &rc2i() const noexcept { return Rc2i; }
   double earth_rotation_angle() const noexcept { return era; }
-  /// @return Angular velocity of Earth (Ω) in [rad/sec]
+  /* @return Angular velocity of Earth (Ω) in [rad/sec] */
   double omega_earth() const noexcept { return eops.omega(); }
 
   Eigen::Matrix<double, 3, 3> ddt_gcrf2itrf() const noexcept;

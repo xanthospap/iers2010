@@ -2,6 +2,10 @@
 
 namespace {
 
+/* Polynomial coefficients */
+constexpr const double sp[] = { // 1-6
+    94.00e-6, 3808.65e-6, -122.68e-6, -72574.11e-6, 27.98e-6, 15.62e-6};
+
 typedef struct {
   /* coefficients of l,l',F,D,Om,LVe,LE,pA */
   int nfa[8];
@@ -123,24 +127,12 @@ constexpr const int NS4 = (int)(sizeof s4 / sizeof(Term));
 double iers2010::sofa::s06(const dso::TwoPartDate &mjd_tt, double x,
                            double y) noexcept {
 
-  /* Polynomial coefficients */
-  constexpr const double sp[] = {// 1-6
-                                 94.00e-6,     3808.65e-6, -122.68e-6,
-                                 -72574.11e-6, 27.98e-6,   15.62e-6};
-
   /* Time since J2000.0, in Julian centuries */
   const double t = mjd_tt.jcenturies_sinceJ2000();
 
   /* Fundamental Arguments (from IERS Conventions 2003) */
-  const double fa[8] = {
-      fal03(t),
-      falp03(t),
-      faf03(t),
-      fad03(t),
-      faom03(t),
-      fave03(t),
-      fae03(t),
-      fapa03(t)};
+  const double fa[8] = {fal03(t),  falp03(t), faf03(t), fad03(t),
+                        faom03(t), fave03(t), fae03(t), fapa03(t)};
 
   /* Evaluate s. */
   double w0 = sp[0];
@@ -153,7 +145,7 @@ double iers2010::sofa::s06(const dso::TwoPartDate &mjd_tt, double x,
   for (int i = NS0 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)s0[i].nfa[j] * fa[j];
+      a += s0[i].nfa[j] * fa[j];
     }
     w0 += s0[i].s * std::sin(a) + s0[i].c * std::cos(a);
   }
@@ -161,7 +153,7 @@ double iers2010::sofa::s06(const dso::TwoPartDate &mjd_tt, double x,
   for (int i = NS1 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)s1[i].nfa[j] * fa[j];
+      a += s1[i].nfa[j] * fa[j];
     }
     w1 += s1[i].s * std::sin(a) + s1[i].c * std::cos(a);
   }
@@ -169,7 +161,7 @@ double iers2010::sofa::s06(const dso::TwoPartDate &mjd_tt, double x,
   for (int i = NS2 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)s2[i].nfa[j] * fa[j];
+      a += s2[i].nfa[j] * fa[j];
     }
     w2 += s2[i].s * std::sin(a) + s2[i].c * std::cos(a);
   }
@@ -177,7 +169,7 @@ double iers2010::sofa::s06(const dso::TwoPartDate &mjd_tt, double x,
   for (int i = NS3 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)s3[i].nfa[j] * fa[j];
+      a += s3[i].nfa[j] * fa[j];
     }
     w3 += s3[i].s * std::sin(a) + s3[i].c * std::cos(a);
   }
@@ -185,14 +177,14 @@ double iers2010::sofa::s06(const dso::TwoPartDate &mjd_tt, double x,
   for (int i = NS4 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)s4[i].nfa[j] * fa[j];
+      a += s4[i].nfa[j] * fa[j];
     }
     w4 += s4[i].s * std::sin(a) + s4[i].c * std::cos(a);
   }
 
-  double s = (w0 + (w1 + (w2 + (w3 + (w4 + w5 * t) * t) * t) * t) * t) *
-                 iers2010::DAS2R -
-             x * y / 2e0;
+  double s =
+      dso::sec2rad(w0 + (w1 + (w2 + (w3 + (w4 + w5 * t) * t) * t) * t) * t) -
+      x * y / 2e0;
 
   /* Finished. */
   return s;

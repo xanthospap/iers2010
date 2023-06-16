@@ -1,21 +1,20 @@
 #include "iau.hpp"
-#include <datetime/dtcalendar.hpp>
 
 namespace {
 
-// The series for s+XY/2
+/* The series for s+XY/2 */
 typedef struct {
-  int nfa[8];  // coefficients of l,l',F,D,Om,LVe,LE,pA
-  double s, c; // sine and cosine coefficients
+  int nfa[8];  /* coefficients of l,l',F,D,Om,LVe,LE,pA */
+  double s, c; /* sin and cos coefficients */
 } TERM;
 
-// Polynomial coefficients
-constexpr double sp[] = {
+/* Polynomial coefficients */
+constexpr const double sp[] = {
     /* 1-6 */
     94.00e-6, 3808.35e-6, -119.94e-6, -72574.09e-6, 27.70e-6, 15.61e-6};
 
 /* Terms of order t^0 */
-constexpr TERM s0[] = {
+constexpr const TERM s0[] = {
 
     /* 1-10 */
     {{0, 0, 0, 0, 1, 0, 0, 0}, -2640.73e-6, 0.39e-6},
@@ -59,7 +58,7 @@ constexpr TERM s0[] = {
     {{1, 0, -2, 0, -1, 0, 0, 0}, -0.11e-6, 0.00e-6}};
 
 /* Terms of order t^1 */
-constexpr TERM s1[] = {
+constexpr const TERM s1[] = {
 
     /* 1-3 */
     {{0, 0, 0, 0, 2, 0, 0, 0}, -0.07e-6, 3.57e-6},
@@ -67,7 +66,7 @@ constexpr TERM s1[] = {
     {{0, 0, 2, -2, 3, 0, 0, 0}, 0.00e-6, 0.48e-6}};
 
 /* Terms of order t^2 */
-constexpr TERM s2[] = {
+constexpr const TERM s2[] = {
 
     /* 1-10 */
     {{0, 0, 0, 0, 1, 0, 0, 0}, 743.53e-6, -0.17e-6},
@@ -101,7 +100,7 @@ constexpr TERM s2[] = {
     {{0, 0, 2, 0, 0, 0, 0, 0}, -0.11e-6, 0.00e-6}};
 
 /* Terms of order t^3 */
-constexpr TERM s3[] = {
+constexpr const TERM s3[] = {
 
     /* 1-4 */
     {{0, 0, 0, 0, 1, 0, 0, 0}, 0.30e-6, -23.51e-6},
@@ -110,7 +109,7 @@ constexpr TERM s3[] = {
     {{0, 0, 0, 0, 2, 0, 0, 0}, 0.00e-6, 0.22e-6}};
 
 /* Terms of order t^4 */
-constexpr TERM s4[] = {
+constexpr const TERM s4[] = {
 
     /* 1-1 */
     {{0, 0, 0, 0, 1, 0, 0, 0}, -0.26e-6, -0.01e-6}};
@@ -121,34 +120,33 @@ constexpr int NS1 = (int)(sizeof s1 / sizeof(TERM));
 constexpr int NS2 = (int)(sizeof s2 / sizeof(TERM));
 constexpr int NS3 = (int)(sizeof s3 / sizeof(TERM));
 constexpr int NS4 = (int)(sizeof s4 / sizeof(TERM));
-} //unnamed namespace
+} /* unnamed namespace */
 
 double iers2010::sofa::s00(const dso::TwoPartDate &mjd_tt, double x,
                            double y) noexcept {
-  // Interval between fundamental epoch J2000.0 and current date (JC).
-  // const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  /* Interval between fundamental epoch J2000.0 and current date (JC). */
   const double t = mjd_tt.jcenturies_sinceJ2000();
 
-  // Fundamental Arguments (from IERS Conventions 2003)
+  /* Fundamental Arguments (from IERS Conventions 2003) */
   const double fa[8] = {
-      // Mean anomaly of the Moon.
+      /* Mean anomaly of the Moon. */
       iers2010::fal03(t),
-      // Mean anomaly of the Sun.
+      /* Mean anomaly of the Sun. */
       iers2010::falp03(t),
-      // Mean longitude of the Moon minus that of the ascending node.
+      /* Mean longitude of the Moon minus that of the ascending node. */
       iers2010::faf03(t),
-      // Mean elongation of the Moon from the Sun.
+      /* Mean elongation of the Moon from the Sun. */
       iers2010::fad03(t),
-      // Mean longitude of the ascending node of the Moon.
+      /* Mean longitude of the ascending node of the Moon. */
       iers2010::faom03(t),
-      // Mean longitude of Venus.
+      /* Mean longitude of Venus. */
       iers2010::fave03(t),
-      // Mean longitude of Earth.
+      /* Mean longitude of Earth. */
       iers2010::fae03(t),
-      // General precession in longitude.
+      /* General precession in longitude. */
       iers2010::fapa03(t)};
 
-  // Evaluate s.
+  /* Evaluate s. */
   double w0 = sp[0];
   double w1 = sp[1];
   double w2 = sp[2];
@@ -159,46 +157,56 @@ double iers2010::sofa::s00(const dso::TwoPartDate &mjd_tt, double x,
   for (int i = NS0 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)s0[i].nfa[j] * fa[j];
+      a += s0[i].nfa[j] * fa[j];
     }
-    w0 += s0[i].s * std::sin(a) + s0[i].c * std::cos(a);
+    const double sa = std::sin(a);
+    const double ca = std::cos(a);
+    w0 += s0[i].s * sa + s0[i].c * ca;
   }
 
   for (int i = NS1 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)s1[i].nfa[j] * fa[j];
+      a += s1[i].nfa[j] * fa[j];
     }
-    w1 += s1[i].s * std::sin(a) + s1[i].c * std::cos(a);
+    const double sa = std::sin(a);
+    const double ca = std::cos(a);
+    w1 += s1[i].s * sa + s1[i].c * ca;
   }
 
   for (int i = NS2 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)s2[i].nfa[j] * fa[j];
+      a += s2[i].nfa[j] * fa[j];
     }
-    w2 += s2[i].s * std::sin(a) + s2[i].c * std::cos(a);
+    const double sa = std::sin(a);
+    const double ca = std::cos(a);
+    w2 += s2[i].s * sa + s2[i].c * ca;
   }
 
   for (int i = NS3 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)s3[i].nfa[j] * fa[j];
+      a += s3[i].nfa[j] * fa[j];
     }
-    w3 += s3[i].s * std::sin(a) + s3[i].c * std::cos(a);
+    const double sa = std::sin(a);
+    const double ca = std::cos(a);
+    w3 += s3[i].s * sa + s3[i].c * ca;
   }
 
   for (int i = NS4 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)s4[i].nfa[j] * fa[j];
+      a += s4[i].nfa[j] * fa[j];
     }
-    w4 += s4[i].s * std::sin(a) + s4[i].c * std::cos(a);
+    const double sa = std::sin(a);
+    const double ca = std::cos(a);
+    w4 += s4[i].s * sa + s4[i].c * ca;
   }
 
-  const double s = (w0 + (w1 + (w2 + (w3 + (w4 + w5 * t) * t) * t) * t) * t) *
-                       iers2010::DAS2R -
-                   x * y / 2e0;
+  const double s =
+      dso::sec2rad(w0 + (w1 + (w2 + (w3 + (w4 + w5 * t) * t) * t) * t) * t) -
+      x * y / 2e0;
 
   return s;
 }

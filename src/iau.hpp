@@ -3,10 +3,11 @@
 
 #include "datetime/dtcalendar.hpp"
 #include "eigen3/Eigen/Eigen"
-#include "eigen3/Eigen/Geometry"
+// #include "eigen3/Eigen/Geometry"
 #include "fundarg.hpp"
 #include "geodesy/units.hpp"
 #include "iersc.hpp"
+#include "rotations.hpp"
 #include <cmath>
 #include <cstring>
 
@@ -42,26 +43,30 @@ Eigen::Matrix<double, 3, 3> c2t06a(const dso::TwoPartDate &mjd_tt,
                                    const dso::TwoPartDate &mjd_ut1, double xp,
                                    double yp) noexcept;
 
-/// @brief Formulate celestial to terrestrial matrix
-/// Assemble the celestial to terrestrial matrix from CIO-based components (the
-/// celestial-to-intermediate matrix, the Earth Rotation Angle and the polar
-/// motion matrix).
-/// The relationship between the arguments is as follows:
-///
-///       [TRS] = RPOM * R_3(ERA) * rc2i * [CRS]
-///             = rc2t * [CRS]
-///
-/// where [CRS] is a vector in the Geocentric Celestial Reference System and
-/// [TRS] is a vector in the International Terrestrial Reference System (see
-/// IERS Conventions 2003).
-/// @param[in] rc2i celestial-to-intermediate matrix
-/// @param[in] era  Earth rotation angle (radians)
-/// @param[in] rpom polar-motion matrix
-/// @return rc2t celestial-to-terrestrial matrix
+/* @brief Formulate celestial to terrestrial matrix
+ * Assemble the celestial to terrestrial matrix from CIO-based components (the
+ * celestial-to-intermediate matrix, the Earth Rotation Angle and the polar
+ * motion matrix).
+ * The relationship between the arguments is as follows:
+ *
+ *       [TRS] = RPOM * R_3(ERA) * rc2i * [CRS]
+ *             = rc2t * [CRS]
+ *
+ * where [CRS] is a vector in the Geocentric Celestial Reference System and
+ * [TRS] is a vector in the International Terrestrial Reference System (see
+ * IERS Conventions 2003).
+ * @param[in] rc2i celestial-to-intermediate matrix
+ * @param[in] era  Earth rotation angle (radians)
+ * @param[in] rpom polar-motion matrix
+ * @return rc2t celestial-to-terrestrial matrix
+ */
 inline Eigen::Matrix<double, 3, 3>
 c2tcio(const Eigen::Matrix<double, 3, 3> &rc2i, double era,
        const Eigen::Matrix<double, 3, 3> &rpom) noexcept {
-  return rpom * (Eigen::AngleAxisd(-era, -Eigen::Vector3d::UnitZ()) * rc2i);
+  // return rpom * (Eigen::AngleAxisd(-era, -Eigen::Vector3d::UnitZ()) * rc2i);
+  Eigen::Matrix<double, 3, 3> r(rc2i);
+  dso::rotate<dso::RotationAxis::Z>(era, r);
+  return rpom * r;
 }
 
 /* @brief Celestial-to-intermediate matrix

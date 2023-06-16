@@ -1,4 +1,3 @@
-#include "rotations.hpp"
 #include "iau.hpp"
 
 Eigen::Matrix<double, 3, 3> iers2010::sofa::pom00(double xp, double yp,

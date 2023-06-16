@@ -79,17 +79,17 @@ void rotate(double angle, Eigen::Matrix<double, 3, 3> &R) noexcept {
 };
 
 template <RotationAxis T>
-Eigen::Matrix<double, 3, 1> rotate(double angle,
-                                   Eigen::Matrix<double, 3, 1> &r) noexcept {
-   Eigen::Matrix<double, 3, 3> R;
+[[nodiscard]] Eigen::Matrix<double, 3, 3>
+rotate(double angle, const Eigen::Matrix<double, 3, 3> &Rin) noexcept {
+   Eigen::Matrix<double, 3, 3> Rout(Rin);
    if constexpr (T == RotationAxis::X)
-     rotateX(angle, R);
+     rotateX(angle, Rout);
    else if (T == RotationAxis::Y)
-     rotateY(angle, R);
+     rotateY(angle, Rout);
    else
-     rotateZ(angle, R);
+     rotateZ(angle, Rout);
 
-   return R * r;
+   return Rout;
 };
 
 }/* namespace dso */

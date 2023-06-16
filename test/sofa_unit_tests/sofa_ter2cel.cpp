@@ -1,6 +1,6 @@
 #include "cel2ter.hpp"
-#include "unit_test_help.hpp"
 #include "sofa.h"
+#include "unit_test_help.hpp"
 #include <charconv>
 #include <fstream>
 #include <vector>
@@ -22,12 +22,14 @@ const char *skip_ws(const char *c) {
 int estate_line(const char *line, GraceOrbit &orb);
 int parse_orbit(const char *fn, std::vector<GraceOrbit> &orb);
 Eigen::Matrix<double, 3, 1> sofa_gcrf2itrf(const Eigen::Matrix<double, 3, 1> &r,
-                                           const dso::Itrs2Gcrs &R);
+                                           const dso::Itrs2Gcrs &R,
+                                           double RotMat[3][3]);
 
 int verbose = 1;
 int main(int argc, char *argv[]) {
   if (argc != 3) {
-    fprintf(stderr, "Usage: %s [C04/14 EOP file] [ORBIT FILE]\n", argv[0]);
+    fprintf(stderr, "Usage: %s [C04/14 EOP file] [ORBIT FILE (ECI)]\n",
+            argv[0]);
     return 1;
   }
 
@@ -45,7 +47,7 @@ int main(int argc, char *argv[]) {
   {
     const int start = (int)orb[0].t.big() - 5;
     const int end = (int)orb[0].t.big() + 5;
-    if (dso::parse_iers_C0420(argv[1], start, end, eop_lut)) {
+    if (dso::parse_iers_C0414(argv[1], start, end, eop_lut)) {
       fprintf(stderr, "ERROR. Failed collecting EOP data\n");
       return 1;
     }
@@ -61,6 +63,8 @@ int main(int argc, char *argv[]) {
   double max_dy = 0e0;
   double max_dz = 0e0;
   double max_dr = 0e0;
+  double max_theta = 0e0;
+  double Rc2i[3][3];
 
   /* one by one, transform sp3 input orbit from ITRF to GCRF and back
    * check results
@@ -70,18 +74,29 @@ int main(int argc, char *argv[]) {
     /* my result */
     Eigen::Matrix<double, 3, 1> r1 = R.gcrf2itrf(i.pos);
     /* sofa result */
-    Eigen::Matrix<double, 3, 1> r2 = sofa_gcrf2itrf(i.pos, R);
+    Eigen::Matrix<double, 3, 1> r2 = sofa_gcrf2itrf(i.pos, R, Rc2i);
+    /* compare rotation matrices */
+    const double theta = rotation_matrix_diff(R.gcrf2itrf(), Rc2i);
+    
     if (verbose) {
-      printf("%.12e %+.9e %+.9e %+.9e %.9e\n", R.tt().as_mjd(), r1(0) - r2(0),
-             r1(1) - r2(1), r1(2) - r2(2), (r1 - r2).norm());
+      printf("%.12e %+.9e %+.9e %+.9e %.9e %.9e\n", R.tt().as_mjd(),
+             r1(0) - r2(0), r1(1) - r2(1), r1(2) - r2(2), (r1 - r2).norm(),
+             dso::rad2sec(theta));
     }
-    const auto dr = r2-r1;
-    if (std::abs(dr(0)) > std::abs(max_dx)) max_dx = dr(0);
-    if (std::abs(dr(1)) > std::abs(max_dy)) max_dy = dr(1);
-    if (std::abs(dr(2)) > std::abs(max_dz)) max_dz = dr(2);
-    if (dr.norm()>max_dr) max_dr = dr.norm();
+    
+    if (std::abs(theta) > std::abs(max_theta))
+      max_theta = theta;
+    const auto dr = r2 - r1;
+    if (std::abs(dr(0)) > std::abs(max_dx))
+      max_dx = dr(0);
+    if (std::abs(dr(1)) > std::abs(max_dy))
+      max_dy = dr(1);
+    if (std::abs(dr(2)) > std::abs(max_dz))
+      max_dz = dr(2);
+    if (dr.norm() > max_dr)
+      max_dr = dr.norm();
   }
-  
+
   printf("Function         #Tests #Fails #Maxerror[sec]    Status\n");
   printf("---------------------------------------------------------------\n");
   printf("%8s %7s %6d %6d %+.9e %s\n", "ter2cel", "dX", (int)orb.size(), 0,
@@ -92,6 +107,8 @@ int main(int argc, char *argv[]) {
          max_dz, "-");
   printf("%8s %7s %6d %6d %+.9e %s\n", "ter2cel", "ds", (int)orb.size(), 0,
          max_dr, "-");
+  printf("%8s %7s %6d %6d %+.9e %s\n", "ter2cel", "dR", (int)orb.size(), 0,
+         dso::rad2sec(max_theta), "-");
 
   return 0;
 }
@@ -141,7 +158,8 @@ int parse_orbit(const char *fn, std::vector<GraceOrbit> &orb) {
 
 /* SOFA GCRS to ITRS */
 Eigen::Matrix<double, 3, 1> sofa_gcrf2itrf(const Eigen::Matrix<double, 3, 1> &r,
-                                           const dso::Itrs2Gcrs &R) {
+                                           const dso::Itrs2Gcrs &R, double Rc2i[3][3]) {
+  /* for SOFA, transform MJD to JD */
   const double tt1 = R.tt().big() + dso::mjd0_jd;
   const double tt2 = R.tt().small();
 
@@ -151,8 +169,8 @@ Eigen::Matrix<double, 3, 1> sofa_gcrf2itrf(const Eigen::Matrix<double, 3, 1> &r,
   double s = iauS06(tt1, tt2, x, y);
 
   /* Add CIP corrections (CIP offsets wrt IAU 2006/2000A in [rad]) */
-  x += R.eop().dx * iers2010::DAS2R;
-  y += R.eop().dy * iers2010::DAS2R;
+  x += dso::sec2rad(R.eop().dx);
+  y += dso::sec2rad(R.eop().dy);
 
   /* GCRS to CIRS matrix. */
   double rc2i[3][3];
@@ -177,6 +195,9 @@ Eigen::Matrix<double, 3, 1> sofa_gcrf2itrf(const Eigen::Matrix<double, 3, 1> &r,
   /* Form celestial-terrestrial matrix (including polar motion). */
   double rc2it[3][3];
   iauRxr(rpom, rc2ti, rc2it);
+
+  /* copy to output matrix */
+  iauCr(rc2it, Rc2i);
 
   /* transform GCRS vector to ITRS vector */
   double ritrf[3];

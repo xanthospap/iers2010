@@ -1684,9 +1684,7 @@ void iers2010::sofa::nut00a(const dso::TwoPartDate &mjd_tt, double &dpsi,
   /* Interval between fundamental date J2000.0 and given date (JC). */
   const double t = mjd_tt.jcenturies_sinceJ2000();
 
-  /*
-   * LUNI-SOLAR NUTATION
-   */
+  /* LUNI-SOLAR NUTATION __________________________________________________*/
 
   /* Fundamental (Delaunay) arguments ...
    * Mean anomaly of the Moon (IERS 2003).
@@ -1730,9 +1728,7 @@ void iers2010::sofa::nut00a(const dso::TwoPartDate &mjd_tt, double &dpsi,
   const double dpsils = dp * U2R;
   const double depsls = de * U2R;
 
-  /*
-   * PLANETARY NUTATION
-   */
+  /* PLANETARY NUTATION ___________________________________________________*/
 
   /* n.b. The MHB2000 code computes the luni-solar and planetary nutation
    * in different functions, using slightly different Delaunay

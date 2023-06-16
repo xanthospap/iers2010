@@ -1,4 +1,5 @@
 #include "cel2ter.hpp"
+#include "rotations.hpp"
 #include <stdexcept>
 
 dso::Itrs2Gcrs::Itrs2Gcrs(const dso::TwoPartDate &t,
@@ -16,15 +17,15 @@ dso::Itrs2Gcrs::Itrs2Gcrs(const dso::TwoPartDate &t,
   }
 }
 
-/// @brief Return the 3x3 Rotation matrix that transforms from GCRF to TIRS
-/// This matrix (let's call it R), acts in the sense:
-///             [TIRS] = R [GCRF]
-/// so that:
-///             [ITRF] = RPOM [TIRS]
-/// The following should hold: (is this correct?? TODO)
-///             gcrf2itrf() == gcrf2tirs() * rpom()
+/* @brief Return the 3x3 Rotation matrix that transforms from GCRS to TIRS
+ * This matrix (let's call it R), acts in the sense:
+ *             [TIRS] = R [GCRF]
+ * so that:
+ *             [ITRF] = RPOM [TIRS]
+ */
 Eigen::Matrix<double, 3, 3> dso::Itrs2Gcrs::gcrf2tirs() const noexcept {
-  return Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ()) * Rc2i;
+  //return Eigen::AngleAxisd(era, -Eigen::Vector3d::UnitZ()) * Rc2i;
+  return dso::rotate<dso::RotationAxis::Z>(era, Rc2i);
 }
 
 Eigen::Matrix<double, 3, 3> dso::Itrs2Gcrs::gcrf2itrf() const noexcept {
@@ -35,7 +36,7 @@ Eigen::Matrix<double, 3, 3> dso::Itrs2Gcrs::itrf2gcrf() const noexcept {
   return gcrf2itrf().transpose();
 }
 
-/// @brief Transform a (position) vector given in ITRF to GCRF
+/* @brief Transform a (position) vector given in ITRF to GCRF */
 Eigen::Matrix<double, 3, 1> dso::Itrs2Gcrs::itrf2gcrf(
     const Eigen::Matrix<double, 3, 1> &r_itrf) const noexcept {
   return itrf2gcrf() * r_itrf;
@@ -49,7 +50,7 @@ Eigen::Matrix<double, 3, 3> dso::Itrs2Gcrs::ddt_gcrf2itrf() const noexcept {
   return Rpom * Rc2ti;
 }
 
-/// @brief Transform a (position) vector given in GCRF to ITRF
+/* @brief Transform a (position) vector given in GCRF to ITRF */
 Eigen::Matrix<double, 3, 1> dso::Itrs2Gcrs::gcrf2itrf(
     const Eigen::Matrix<double, 3, 1> &r_gcrf) const noexcept {
   return gcrf2itrf() * r_gcrf;
@@ -57,15 +58,15 @@ Eigen::Matrix<double, 3, 1> dso::Itrs2Gcrs::gcrf2itrf(
 
 Eigen::Matrix<double, 6, 1> dso::Itrs2Gcrs::gcrf2itrf(
     const Eigen::Matrix<double, 6, 1> &y_gcrf) const noexcept {
-  // result state vector
+  /* result state vector */
   Eigen::Matrix<double, 6, 1> y_itrf;
   const Eigen::Matrix<double, 3, 1> r = y_gcrf.block<3, 1>(0, 0);
   const Eigen::Matrix<double, 3, 1> v = y_gcrf.block<3, 1>(3, 0);
 
-  // transform position
+  /* transform position */
   y_itrf.block<3, 1>(0, 0) = gcrf2itrf(r);
 
-  // transform velocity
+  /* transform velocity */
   y_itrf.block<3, 1>(3, 0) = gcrf2itrf(v) /*+ ddt_gcrf2itrf() * r*/;
 
   const Eigen::Matrix<double, 3, 1> OmegaVec{{0e0, 0e0, omega_earth()}};
@@ -76,18 +77,18 @@ Eigen::Matrix<double, 6, 1> dso::Itrs2Gcrs::gcrf2itrf(
 
 Eigen::Matrix<double, 6, 1> dso::Itrs2Gcrs::itrf2gcrf(
     const Eigen::Matrix<double, 6, 1> &y_itrf) const noexcept {
-  // result state vector
+  /* result state vector */
   Eigen::Matrix<double, 6, 1> y_gcrf;
   const Eigen::Matrix<double, 3, 1> r = y_itrf.block<3, 1>(0, 0);
   const Eigen::Matrix<double, 3, 1> v = y_itrf.block<3, 1>(3, 0);
 
-  // transform position
+  /* transform position */
   y_gcrf.block<3, 1>(0, 0) = itrf2gcrf(r);
 
-  // transform velocity
+  /* transform velocity */
   y_gcrf.block<3, 1>(3, 0) = itrf2gcrf(v) /*+ ddt_gcrf2itrf().transpose()*r*/;
 
-  // according to Vallado ...
+  /* according to Vallado ... */
   const Eigen::Matrix<double, 3, 1> OmegaVec{{0e0, 0e0, omega_earth()}};
   y_gcrf.block<3, 1>(3, 0) +=
       gcrf2tirs().transpose() * OmegaVec.cross(Rpom.transpose() * r);
@@ -122,36 +123,36 @@ int dso::Itrs2Gcrs::prepare(const dso::TwoPartDate &tt_mjd) noexcept {
       return 1;
     }
 
-    // set ERA(t) angle
+    /* set ERA(t) angle */
     era = iers2010::sofa::era00(this->ut1());
 
-    // Construct Q(t) matrix (precession/nutation)
+    /* Construct Q(t) matrix (precession/nutation) */
     {
-      // call the routine XY06 to obtain the IAU 2006/2000A X, Y from series,
-      // i.e. CIP coordinates
+      /* call the routine XY06 to obtain the IAU 2006/2000A X, Y from series,
+       * i.e. CIP coordinates
+       */
       double X, Y;
       iers2010::sofa::xy06(t_tt, X, Y);
 
-      // call the routine S06 to obtain s
+      /* call the routine S06 to obtain s */
       const double s = iers2010::sofa::s06(t_tt, X, Y);
 
-      // apply CIP corrections, ΔX and ΔY (if any)
+      /* apply CIP corrections, ΔX and ΔY (if any) */
       X += dso::sec2rad(eops.dx);
       Y += dso::sec2rad(eops.dy);
 
-      // call routine C2IXYS, giving the GCRS-to-CIRS matrix
+      /* call routine C2IXYS, giving the GCRS-to-CIRS matrix */
       Rc2i = iers2010::sofa::c2ixys(X, Y, s);
-      //printf("[MINE] tt=%.12e x=%+.12e y=%+.12e s=%+.12e era=%+.12e\n", t_tt.as_mjd(), X,Y,s,era);
     }
 
-    // construct polar motion matrix
+    /* construct polar motion matrix */
     {
       const double sp = iers2010::sofa::sp00(tt_mjd);
       Rpom = iers2010::sofa::pom00(dso::sec2rad(eops.xp), dso::sec2rad(eops.yp),
                                    sp);
     }
 
-    // set current time
+    /* set current time */
     t_tt = tt_mjd;
   }
   return 0;

@@ -1,6 +1,5 @@
 #include "iau.hpp"
 #include "iersc.hpp"
-#include <datetime/dtcalendar.hpp>
 
 namespace {
 
@@ -9,8 +8,8 @@ namespace {
 // ----------------------------------------- //
 
 typedef struct {
-  int nfa[8];  // coefficients of l,l',F,D,Om,LVe,LE,pA
-  double s, c; // sine and cosine coefficients
+  int nfa[8];  /* coefficients of l,l',F,D,Om,LVe,LE,pA */
+  double s, c; /* sin and cos coefficients */
 } TERM;
 
 // Terms of order t^0
@@ -57,59 +56,62 @@ constexpr TERM e0[] = {
     {{1, 0, -2, 0, -3, 0, 0, 0}, 0.11e-6, 0.00e-6},
     {{1, 0, -2, 0, -1, 0, 0, 0}, 0.11e-6, 0.00e-6}};
 
-// Terms of order t^1
+/* Terms of order t^1 */
 constexpr TERM e1[] = {{{0, 0, 0, 0, 1, 0, 0, 0}, -0.87e-6, 0.00e-6}};
 
-// Number of terms in the series
+/* Number of terms in the series */
 constexpr int NE0 = (int)(sizeof e0 / sizeof(TERM));
 constexpr int NE1 = (int)(sizeof e1 / sizeof(TERM));
 
-}// unnamed namespace
+} /* unnamed namespace */
 
-double iers2010::sofa::eect00(/*double date1, double date2*/const dso::TwoPartDate &mjd_tt) noexcept {
+double iers2010::sofa::eect00(const dso::TwoPartDate &mjd_tt) noexcept {
 
-  // Interval between fundamental epoch J2000.0 and current date (JC).
-  // Time since J2000.0, in Julian centuries
-  // const double t = ((date1 - dso::j2000_jd) + date2) / dso::days_in_julian_cent;
+  /* Interval between fundamental epoch J2000.0 and current date (JC). */
   const double t = mjd_tt.jcenturies_sinceJ2000();
 
-  // Fundamental Arguments (from IERS Conventions 2003)
-  double fa[] = {// Mean anomaly of the Moon.
+  /* Fundamental Arguments (from IERS Conventions 2003) */
+  double fa[] = {/* Mean anomaly of the Moon. */
                  fal03(t),
-                 // Mean anomaly of the Sun.
+                 /* Mean anomaly of the Sun. */
                  falp03(t),
-                 // Mean longitude of the Moon minus that of the ascending node.
+                 /* Mean longitude of the Moon minus that of the ascending node. */
                  faf03(t),
-                 // Mean elongation of the Moon from the Sun.
+                 /* Mean elongation of the Moon from the Sun. */
                  fad03(t),
-                 // Mean longitude of the ascending node of the Moon.
+                 /* Mean longitude of the ascending node of the Moon. */
                  faom03(t),
-                 // Mean longitude of Venus.
+                 /* Mean longitude of Venus. */
                  fave03(t),
-                 // Mean longitude of Earth.
+                 /* Mean longitude of Earth. */
                  fae03(t),
-                 // General precession in longitude.
+                 /* General precession in longitude. */
                  fapa03(t)};
 
-  // Evaluate the EE complementary terms.
+  /* Evaluate the EE complementary terms. */
   double s0 = 0e0;
   double s1 = 0e0;
 
   for (int i = NE0 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)(e0[i].nfa[j]) * fa[j];
+      a += e0[i].nfa[j] * fa[j];
     }
-    s0 += e0[i].s * std::sin(a) + e0[i].c * std::cos(a);
+    const double sa = std::sin(a);
+    const double ca = std::cos(a);
+    s0 += e0[i].s * sa + e0[i].c * ca;
   }
 
   for (int i = NE1 - 1; i >= 0; i--) {
     double a = 0e0;
     for (int j = 0; j < 8; j++) {
-      a += (double)(e1[i].nfa[j]) * fa[j];
+      a += e1[i].nfa[j] * fa[j];
     }
-    s1 += e1[i].s * std::sin(a) + e1[i].c * std::cos(a);
+    const double sa = std::sin(a);
+    const double ca = std::cos(a);
+    s1 += e1[i].s * sa + e1[i].c * ca;
   }
 
-  return (s0 + s1 * t) * iers2010::DAS2R;
+  /* arcseconds to radians */
+  return dso::sec2rad(s0 + s1 * t);
 }
