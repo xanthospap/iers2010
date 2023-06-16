@@ -92,6 +92,13 @@ will run a number of checks and provide discrepancies (w.r.t. SOFA) for all
 functions/parameters common to both libraries. Explicit results can be found in
 [this table](#sofa-check-table).
 
+### Checking Descripancies <a name="checking-descripancies"></a>
+
+Descripancies for angular parameters are usually checked in units of *arcseconds*.
+Descripancies for rotation matrices (.e.g. $R_A$ and $R_B$) are obtained by the 
+*axis-angle* of the combined matrix as:
+$\theta = arccos(\frac{(R_A R_B) -1}{2})$ again transformed in *arcseconds*.
+
 # References <a name="references"></a>
 
 [^1]: International Astronomical Union, Standards of Fundamental Astronomy (SOFA) 
