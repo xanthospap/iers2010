@@ -17,6 +17,9 @@ int main() {
   printf("Function #Tests #Fails #Maxerror[sec]    Status  Type\n");
   printf("---------------------------------------------------------------\n");
 
+  //double mean_l=0e0, mean_r=0e0;
+  //double max_l=0e0, max_r=0e0;
+
   double am, as;
   int fails = 0;
   double max_error = 0e0;
@@ -30,10 +33,21 @@ int main() {
       if (std::abs(am - as) > std::abs(max_error)) {
         max_error = as - am;
       }
+      //if (ut.small()<.5e0) {
+      //  mean_l += std::abs(am - as);
+      //  if (std::abs(as-am)>max_l) max_l = as-am;
+      //} else {
+      //  mean_r += std::abs(am-as);
+      //  if (std::abs(as-am)>max_r) max_r = as-am;
+      //}
     }
   }
   printf("%8s %6d %6d %+.9e %.7s %s\n", funcs[0], NUM_TESTS, fails,
          dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED", "Angle");
 
+  //printf("Means: left=%.9e right=%.9e\n", dso::rad2sec(mean_l) / NUM_TESTS,
+  //       dso::rad2sec(mean_r) / NUM_TESTS);
+  //printf("Max  : left=%.9e right=%.9e\n", dso::rad2sec(max_l),
+  //       dso::rad2sec(max_r));
   return fails;
 }
