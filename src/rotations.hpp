@@ -92,6 +92,20 @@ rotate(double angle, const Eigen::Matrix<double, 3, 3> &Rin) noexcept {
    return Rout;
 };
 
+template <RotationAxis T>
+[[nodiscard]] Eigen::Matrix<double, 3, 1>
+rotate(double angle, const Eigen::Matrix<double, 3, 1> &r) noexcept {
+   Eigen::Matrix<double, 3, 3> R = Eigen::Matrix<double, 3, 3>::Identity();
+   if constexpr (T == RotationAxis::X)
+     rotateX(angle, R);
+   else if (T == RotationAxis::Y)
+     rotateY(angle, R);
+   else
+     rotateZ(angle, R);
+
+   return R*r;
+};
+
 }/* namespace dso */
 
 #endif
