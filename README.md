@@ -103,12 +103,13 @@ $\theta = arccos(\frac{(R_A^T R_B) -1}{2})$ again transformed in *arcseconds*.
 
 * Discrepancies between the SOFA implementation and `libiers2010` for one day of 
 GRACE orbit are presented in ??. They ammount up to $\approx 1\times10^{-4} mm$ 
-for the $X$ and $Y$ components and $\approx 2\times10^{-6} mm$ for $Z$.
+for the $X$ and $Y$ components and $\approx 2\times10^{-6} mm$ for $Z$. See results 
+[here](#sofa_ter2cel-dX)
 
 * The accuracy of the transformation is presented in presented in ??. It is 
 $\approx 5\times10^{-6} mm$ for each of the $X$, $Y$ and $Z$ components.(Note 
 that this is checked again using one day of GRACE orbit, and performing the 
-circular transformation `ICRF->ITRF->ICRF`)
+circular transformation `ICRF->ITRF->ICRF`). See results [here](#internal_ter2cel-dX)
 
 # References <a name="references"></a>
 
@@ -127,103 +128,115 @@ Software Routines from the IAU SOFA Collection were used. Copyright © Internati
 # Results <a name="results"></a>
 
 ## Discrepancies w.r.t IAU/SOFA <a name="sofa-check-table"></a>
-
 function  |argument  |num tests |num fails |max error |param. type |status    
 ----------|----------|----------|----------|----------|------------|----------
-nut00a    |dpsi      |    100000|     49379|-1.202e-12|Angle       |FAILED    
-nut00a    |deps      |    100000|     48827|4.920e-13|Angle       |FAILED    
-pom00     |          |    100000|         0|0.000e+00|RotMatrix   |OK        
-s00       |          |    100000|         0|0.000e+00|Angle       |OK        
-pn00a     |dpsi      |    100000|     49377|-1.201e-12|Angle       |FAILED    
-pn00a     |deps      |    100000|     48545|4.827e-13|Angle       |FAILED    
-pn00a     |epsa      |    100000|         0|0.000e+00|Angle       |OK        
-pn00a     |rb        |    100000|         0|0.000e+00|RotMatrix   |OK        
-pn00a     |rp        |    100000|     17689|7.529e-03|RotMatrix   |FAILED    
-pn00a     |rbp       |    100000|     20097|7.529e-03|RotMatrix   |FAILED    
-pn00a     |rn        |    100000|     53957|6.147e-03|RotMatrix   |FAILED    
-pn00a     |rbpn      |    100000|     36207|9.720e-03|RotMatrix   |FAILED    
-num06a    |          |    100000|     42829|6.147e-03|RotMatrix   |FAILED    
-bi00      |dpsibi    |    100000|         0|0.000e+00|Angle       |OK        
-bi00      |depsbi    |    100000|         0|0.000e+00|Angle       |OK        
-bi00      |dra       |    100000|         0|0.000e+00|Angle       |OK        
-c2ixys    |          |   1000000|         0|0.000e+00|RotMatrix   |OK        
-pnm06a    |          |    100000|     44542|7.529e-03|RotMatrix   |FAILED    
-bp00      |rb        |    100000|         0|0.000e+00|RotMatrix   |OK        
-bp00      |rp        |    100000|     17677|7.529e-03|RotMatrix   |FAILED    
-bp00      |rbp       |    100000|     20188|7.529e-03|RotMatrix   |FAILED    
-fal03     |fapa03    |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |fane03    |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |faur03    |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |fasa03    |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |faju03    |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |fama03    |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |fae03     |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |fave03    |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |fame03    |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |faom03    |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |fad03     |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |faf03     |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |falp03    |    100000|         0|0.000e+00|Angle       |OK        
-fal03     |fal03     |    100000|         0|0.000e+00|Angle       |OK        
-fw2m      |          |    100000|         0|0.000e+00|Angle       |OK        
-sp00      |ee06a     |    100000|     62460|1.832e-10|Angle       |FAILED    
-sp00      |gmst06    |    100000|      4612|1.172e-08|Angle       |FAILED    
-sp00      |gmst00    |    100000|      4603|1.172e-08|Angle       |FAILED    
-sp00      |gst06a    |    100000|      4678|5.863e-09|Angle       |FAILED    
-sp00      |obl06     |    100000|         2|2.290e-11|Angle       |FAILED    
-sp00      |obl80     |    100000|         0|0.000e+00|Angle       |OK        
-sp00      |ee00      |    100000|         0|0.000e+00|Angle       |OK        
-sp00      |eect00    |    100000|     25677|2.150e-17|Angle       |FAILED    
-sp00      |sp00      |    100000|      8006|5.332e-21|Angle       |FAILED    
-era00     |          |    100000|      2404|1.172e-08|Angle       |FAILED    
-xy06      |xp        |     10000|      1528|-6.262e-13|Angle       |FAILED    
-xy06      |yp        |     10000|      3272|-4.626e-13|Angle       |FAILED    
-nut06a    |dpsi      |     10000|      4926|-1.037e-12|Angle       |FAILED    
-nut06a    |deps      |     10000|      4824|-4.548e-13|Angle       |FAILED    
-c2i06a    |          |     10000|      5392|6.147e-03|RotMatrix   |FAILED    
-pn00      |rb        |     10000|         0|0.000e+00|RotMatrix   |OK        
-pn00      |rp        |     10000|      1821|6.147e-03|RotMatrix   |FAILED    
-pn00      |rbp       |     10000|      2060|7.529e-03|RotMatrix   |FAILED    
-pn00      |rn        |     10000|         0|0.000e+00|RotMatrix   |OK        
-pn00      |rbpn      |     10000|       456|7.529e-03|RotMatrix   |FAILED    
-pn00      |epsa      |     10000|         0|0.000e+00|Angle       |OK        
-numat     |          |     10000|         0|0.000e+00|RotMatrix   |OK        
-pr00      |dpsipr    |     10000|       621|2.184e-17|Angle       |FAILED    
-pr00      |depspr    |     10000|       108|2.730e-18|Angle       |FAILED    
-pfw06     |gamb      |     10000|       978|-1.398e-15|Angle       |FAILED    
-pfw06     |phib      |     10000|         0|0.000e+00|Angle       |OK        
-pfw06     |psib      |     10000|       878|-5.367e-13|Angle       |FAILED    
-pfw06     |epsa      |     10000|         0|0.000e+00|Angle       |OK        
-pn06      |rb        |     10000|     10000|6.147e-03|RotMatrix   |FAILED    
-pn06      |rp        |     10000|     10000|8.693e-03|RotMatrix   |FAILED    
-pn06      |rbp       |     10000|      3952|7.529e-03|RotMatrix   |FAILED    
-pn06      |rn        |     10000|      1217|8.693e-03|RotMatrix   |FAILED    
-pn06      |rbpn      |     10000|      1369|6.147e-03|RotMatrix   |FAILED    
-pn06      |epsa      |     10000|         0|0.000e+00|Angle       |OK        
-p06e      |eps0      |    100000|         0|0.000e+00|Angle       |OK        
-p06e      |psia      |    100000|      8446|7.156e-13|Angle       |FAILED    
-p06e      |oma       |    100000|         0|0.000e+00|Angle       |OK        
-p06e      |bpa       |    100000|      7004|6.989e-16|Angle       |FAILED    
-p06e      |bqa       |    100000|      8284|-5.591e-15|Angle       |FAILED    
-p06e      |pia       |    100000|      8149|-5.591e-15|Angle       |FAILED    
-p06e      |bpia      |    100000|         4|1.832e-10|Angle       |FAILED    
-p06e      |epsa      |    100000|         0|0.000e+00|Angle       |OK        
-p06e      |chia      |    100000|      8791|-1.398e-15|Angle       |FAILED    
-p06e      |za        |    100000|      7996|3.578e-13|Angle       |FAILED    
-p06e      |zetaa     |    100000|      8049|-3.578e-13|Angle       |FAILED    
-p06e      |thetaa    |    100000|      6403|1.789e-13|Angle       |FAILED    
-p06e      |pa        |    100000|      8500|-7.156e-13|Angle       |FAILED    
-p06e      |gam       |    100000|      8820|1.398e-15|Angle       |FAILED    
-p06e      |phi       |    100000|         0|0.000e+00|Angle       |OK        
-p06e      |psi       |    100000|      8636|-7.156e-13|Angle       |FAILED    
-c2t06a    |          |     10000|      3042|7.529e-03|RotMatrix   |FAILED    
-xys06a    |xp        |     10000|      1986|-5.367e-13|Angle       |FAILED    
-xys06a    |yp        |     10000|      2402|-3.435e-11|Angle       |FAILED    
-xys06a    |s         |     10000|      4329|4.703e-14|Angle       |FAILED    
-xys00a    |xp        |     10000|      2381|6.262e-13|Angle       |FAILED    
-xys00a    |yp        |     10000|       417|-1.145e-11|Angle       |FAILED    
-xys00a    |s         |     10000|      3324|1.687e-14|Angle       |FAILED    
-s06       |          |    100000|         0|0.000e+00|Angle       |OK
+nut00a    |dpsi <a name="nut00a-dpsi"></a>|    100000|     49547|-1e-09|Angle       |FAILED    
+nut00a    |deps <a name="nut00a-deps"></a>|    100000|     48587|-5e-10|Angle       |FAILED    
+pom00     | <a name="pom00-"></a>        |    100000|         0|+0e+00|RotMatrix   |OK        
+s00       | <a name="s00-"></a>          |    100000|         0|+0e+00|Angle       |OK        
+pn00a     |dpsi <a name="pn00a-dpsi"></a>|    100000|     49608|-1e-09|Angle       |FAILED    
+pn00a     |deps <a name="pn00a-deps"></a>|    100000|     48552|-5e-10|Angle       |FAILED    
+pn00a     |epsa <a name="pn00a-epsa"></a>|    100000|         0|+0e+00|Angle       |OK        
+pn00a     |rb <a name="pn00a-rb"></a>    |    100000|         0|+0e+00|RotMatrix   |OK        
+pn00a     |rp <a name="pn00a-rp"></a>    |    100000|     17847|+8e+00|RotMatrix   |FAILED    
+pn00a     |rbp <a name="pn00a-rbp"></a>  |    100000|     20450|+8e+00|RotMatrix   |FAILED    
+pn00a     |rn <a name="pn00a-rn"></a>    |    100000|     54116|+6e+00|RotMatrix   |FAILED    
+pn00a     |rbpn <a name="pn00a-rbpn"></a>|    100000|     36303|+9e+00|RotMatrix   |FAILED    
+ter2cel   |dX <a name="ter2cel-dX"></a>  |      2880|         0|-1e-04|linear      |-         
+ter2cel   |dY <a name="ter2cel-dY"></a>  |      2880|         0|-1e-04|linear      |-         
+ter2cel   |dZ <a name="ter2cel-dZ"></a>  |      2880|         0|-2e-06|linear      |-         
+ter2cel   |ds <a name="ter2cel-ds"></a>  |      2880|         0|+2e-04|linear      |-         
+ter2cel   |dR <a name="ter2cel-dR"></a>  |      2880|         0|+7e-03|RotMatrix   |-         
+num06a    | <a name="num06a-"></a>       |    100000|     43065|+6e+00|RotMatrix   |FAILED    
+bi00      |dpsibi <a name="bi00-dpsibi"></a>|    100000|         0|+0e+00|Angle       |OK        
+bi00      |depsbi <a name="bi00-depsbi"></a>|    100000|         0|+0e+00|Angle       |OK        
+bi00      |dra <a name="bi00-dra"></a>   |    100000|         0|+0e+00|Angle       |OK        
+c2ixys    | <a name="c2ixys-"></a>       |   1000000|         0|+0e+00|RotMatrix   |OK        
+pnm06a    | <a name="pnm06a-"></a>       |    100000|     44426|+8e+00|RotMatrix   |FAILED    
+bp00      |rb <a name="bp00-rb"></a>     |    100000|         0|+0e+00|RotMatrix   |OK        
+bp00      |rp <a name="bp00-rp"></a>     |    100000|     17721|+8e+00|RotMatrix   |FAILED    
+bp00      |rbp <a name="bp00-rbp"></a>   |    100000|     20152|+8e+00|RotMatrix   |FAILED    
+fapa03    |fapa03 <a name="fapa03-fapa03"></a>|    100000|         0|+0e+00|Angle       |OK        
+fane03    |fane03 <a name="fane03-fane03"></a>|    100000|         0|+0e+00|Angle       |OK        
+faur03    |faur03 <a name="faur03-faur03"></a>|    100000|         0|+0e+00|Angle       |OK        
+fasa03    |fasa03 <a name="fasa03-fasa03"></a>|    100000|         0|+0e+00|Angle       |OK        
+faju03    |faju03 <a name="faju03-faju03"></a>|    100000|         0|+0e+00|Angle       |OK        
+fama03    |fama03 <a name="fama03-fama03"></a>|    100000|         0|+0e+00|Angle       |OK        
+fae03     |fae03 <a name="fae03-fae03"></a>|    100000|         0|+0e+00|Angle       |OK        
+fave03    |fave03 <a name="fave03-fave03"></a>|    100000|         0|+0e+00|Angle       |OK        
+fame03    |fame03 <a name="fame03-fame03"></a>|    100000|         0|+0e+00|Angle       |OK        
+faom03    |faom03 <a name="faom03-faom03"></a>|    100000|         0|+0e+00|Angle       |OK        
+fad03     |fad03 <a name="fad03-fad03"></a>|    100000|         0|+0e+00|Angle       |OK        
+faf03     |faf03 <a name="faf03-faf03"></a>|    100000|         0|+0e+00|Angle       |OK        
+falp03    |falp03 <a name="falp03-falp03"></a>|    100000|         0|+0e+00|Angle       |OK        
+fal03     |fal03 <a name="fal03-fal03"></a>|    100000|         0|+0e+00|Angle       |OK        
+fw2m      | <a name="fw2m-"></a>         |    100000|         0|+0e+00|Angle       |OK        
+ee06a     |ee06a <a name="ee06a-ee06a"></a>|    100000|     62476|+2e-07|Angle       |FAILED    
+gmst06    |gmst06 <a name="gmst06-gmst06"></a>|    100000|     52212|+1e-05|Angle       |FAILED    
+gmst00    |gmst00 <a name="gmst00-gmst00"></a>|    100000|     51991|+1e-05|Angle       |FAILED    
+gst06a    |gst06a <a name="gst06a-gst06a"></a>|    100000|     51979|+1e-05|Angle       |FAILED    
+obl06     |obl06 <a name="obl06-obl06"></a>|    100000|         1|+2e-08|Angle       |FAILED    
+obl80     |obl80 <a name="obl80-obl80"></a>|    100000|         1|+2e-08|Angle       |FAILED    
+ee00      |ee00 <a name="ee00-ee00"></a> |    100000|         0|+0e+00|Angle       |OK        
+eect00    |eect00 <a name="eect00-eect00"></a>|    100000|     25533|+2e-14|Angle       |FAILED    
+sp00      |sp00 <a name="sp00-sp00"></a> |    100000|      7928|+5e-18|Angle       |FAILED    
+era00     | <a name="era00-"></a>        |    100000|     52066|+1e-05|Angle       |FAILED    
+xy06      |xp <a name="xy06-xp"></a>     |     10000|      1598|-6e-10|Angle       |FAILED    
+xy06      |yp <a name="xy06-yp"></a>     |     10000|      3298|-5e-10|Angle       |FAILED    
+nut06a    |dpsi <a name="nut06a-dpsi"></a>|     10000|      4987|+1e-09|Angle       |FAILED    
+nut06a    |deps <a name="nut06a-deps"></a>|     10000|      4914|-5e-10|Angle       |FAILED    
+c2i06a    | <a name="c2i06a-"></a>       |     10000|      5422|+6e+00|RotMatrix   |FAILED    
+pn00      |rb <a name="pn00-rb"></a>     |     10000|         0|+0e+00|RotMatrix   |OK        
+pn00      |rp <a name="pn00-rp"></a>     |     10000|      1751|+8e+00|RotMatrix   |FAILED    
+pn00      |rbp <a name="pn00-rbp"></a>   |     10000|      2003|+8e+00|RotMatrix   |FAILED    
+pn00      |rn <a name="pn00-rn"></a>     |     10000|         0|+0e+00|RotMatrix   |OK        
+pn00      |rbpn <a name="pn00-rbpn"></a> |     10000|       482|+8e+00|RotMatrix   |FAILED    
+pn00      |epsa <a name="pn00-epsa"></a> |     10000|         0|+0e+00|Angle       |OK        
+numat     | <a name="numat-"></a>        |     10000|         0|+0e+00|RotMatrix   |OK        
+pr00      |dpsipr <a name="pr00-dpsipr"></a>|     10000|       587|-2e-14|Angle       |FAILED    
+pr00      |depspr <a name="pr00-depspr"></a>|     10000|       116|+3e-15|Angle       |FAILED    
+pfw06     |gamb <a name="pfw06-gamb"></a>|     10000|       906|-1e-12|Angle       |FAILED    
+pfw06     |phib <a name="pfw06-phib"></a>|     10000|         0|+0e+00|Angle       |OK        
+pfw06     |psib <a name="pfw06-psib"></a>|     10000|       838|+5e-10|Angle       |FAILED    
+pfw06     |epsa <a name="pfw06-epsa"></a>|     10000|         0|+0e+00|Angle       |OK        
+pn06      |rb <a name="pn06-rb"></a>     |     10000|     10000|+6e+00|RotMatrix   |FAILED    
+pn06      |rp <a name="pn06-rp"></a>     |     10000|      9999|+9e+00|RotMatrix   |FAILED    
+pn06      |rbp <a name="pn06-rbp"></a>   |     10000|      3810|+6e+00|RotMatrix   |FAILED    
+pn06      |rn <a name="pn06-rn"></a>     |     10000|      1277|+9e+00|RotMatrix   |FAILED    
+pn06      |rbpn <a name="pn06-rbpn"></a> |     10000|      1359|+6e+00|RotMatrix   |FAILED    
+pn06      |epsa <a name="pn06-epsa"></a> |     10000|         0|+0e+00|Angle       |OK        
+p06e      |eps0 <a name="p06e-eps0"></a> |    100000|         0|+0e+00|Angle       |OK        
+p06e      |psia <a name="p06e-psia"></a> |    100000|      8588|-7e-10|Angle       |FAILED    
+p06e      |oma <a name="p06e-oma"></a>   |    100000|         0|+0e+00|Angle       |OK        
+p06e      |bpa <a name="p06e-bpa"></a>   |    100000|      7070|-7e-13|Angle       |FAILED    
+p06e      |bqa <a name="p06e-bqa"></a>   |    100000|      8407|+6e-12|Angle       |FAILED    
+p06e      |pia <a name="p06e-pia"></a>   |    100000|      8483|-6e-12|Angle       |FAILED    
+p06e      |bpia <a name="p06e-bpia"></a> |    100000|         0|+0e+00|Angle       |OK        
+p06e      |epsa <a name="p06e-epsa"></a> |    100000|         0|+0e+00|Angle       |OK        
+p06e      |chia <a name="p06e-chia"></a> |    100000|      8714|-1e-12|Angle       |FAILED    
+p06e      |za <a name="p06e-za"></a>     |    100000|      7992|-3e-10|Angle       |FAILED    
+p06e      |zetaa <a name="p06e-zetaa"></a>|    100000|      8095|-4e-10|Angle       |FAILED    
+p06e      |thetaa <a name="p06e-thetaa"></a>|    100000|      6445|+2e-10|Angle       |FAILED    
+p06e      |pa <a name="p06e-pa"></a>     |    100000|      8622|+7e-10|Angle       |FAILED    
+p06e      |gam <a name="p06e-gam"></a>   |    100000|      8926|-1e-12|Angle       |FAILED    
+p06e      |phi <a name="p06e-phi"></a>   |    100000|         0|+0e+00|Angle       |OK        
+p06e      |psi <a name="p06e-psi"></a>   |    100000|      8470|+7e-10|Angle       |FAILED    
+c2t06a    | <a name="c2t06a-"></a>       |     10000|      6647|+8e+00|RotMatrix   |FAILED    
+xys06a    |xp <a name="xys06a-xp"></a>   |     10000|      2023|+6e-10|Angle       |FAILED    
+xys06a    |yp <a name="xys06a-yp"></a>   |     10000|      2484|+2e-08|Angle       |FAILED    
+xys06a    |s <a name="xys06a-s"></a>     |     10000|      4417|-3e-11|Angle       |FAILED    
+xys00a    |xp <a name="xys00a-xp"></a>   |     10000|      2429|+6e-10|Angle       |FAILED    
+xys00a    |yp <a name="xys00a-yp"></a>   |     10000|       446|+2e-08|Angle       |FAILED    
+xys00a    |s <a name="xys00a-s"></a>     |     10000|      3396|-3e-11|Angle       |FAILED    
+s06       | <a name="s06-"></a>          |    100000|         0|+0e+00|Angle       |OK        
+internal_ter2cel|dX <a name="internal_ter2cel-dX"></a>|      2880|         0|-4e-06|linear      |-         
+internal_ter2cel|dY <a name="internal_ter2cel-dY"></a>|      2880|         0|-4e-06|linear      |-         
+internal_ter2cel|dZ <a name="internal_ter2cel-dZ"></a>|      2880|         0|+4e-06|linear      |-         
+internal_ter2cel|ds <a name="internal_ter2cel-ds"></a>|      2880|         0|+5e-06|linear      |-         
+internal_ter2celIau|dX <a name="internal_ter2celIau-dX"></a>|      2880|         0|-4e-06|linear      |-         
+internal_ter2celIau|dY <a name="internal_ter2celIau-dY"></a>|      2880|         0|+5e-06|linear      |-         
+internal_ter2celIau|dZ <a name="internal_ter2celIau-dZ"></a>|      2880|         0|-3e-06|linear      |-         
+internal_ter2celIau|ds <a name="internal_ter2celIau-ds"></a>|      2880|         0|+5e-06|linear      |-
 <!--
 # Data Files <a name="data-files"></a>
 

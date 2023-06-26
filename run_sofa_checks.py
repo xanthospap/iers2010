@@ -137,6 +137,8 @@ if __name__ == '__main__':
     for f,fargs in results.items():
         for farg in fargs:
             if args.markdown:
-                print('{:10s}|{:10s}|{:10d}|{:10d}|{:+.0e}|{:12s}|{:10s}'.format(farg['subfunc'], farg['arg'], farg['num_tests'], farg['num_fails'], farg['max_error'], farg['type'], farg['status']))
+# <a name="references"></a>
+                anchor = ' <a name="{:}"></a>'.format(farg['subfunc']+'-'+farg['arg'])
+                print('{:10s}|{:30s}|{:10d}|{:10d}|{:+.0e}|{:12s}|{:10s}'.format(farg['subfunc'], farg['arg']+anchor, farg['num_tests'], farg['num_fails'], farg['max_error'], farg['type'], farg['status']))
             else:
                 print('{:6s} {:6s} {:8d} {:8d} {:+.0e} {:12s} {:10s}'.format(farg['subfunc'], farg['arg'], farg['num_tests'], farg['num_fails'], farg['max_error'], farg['type'], farg['status']))
