@@ -1,6 +1,5 @@
 #include "cel2ter.hpp"
 #include "sofa.h"
-#include "unit_test_help.hpp"
 #include <charconv>
 #include <fstream>
 #include <vector>
@@ -22,8 +21,7 @@ const char *skip_ws(const char *c) {
 int estate_line(const char *line, GraceOrbit &orb);
 int parse_orbit(const char *fn, std::vector<GraceOrbit> &orb);
 Eigen::Matrix<double, 3, 1> sofa_gcrf2itrf(const Eigen::Matrix<double, 3, 1> &r,
-                                           const dso::Itrs2Gcrs &R,
-                                           double RotMat[3][3]);
+                                           const dso::Itrs2Gcrs &R);
 
 int verbose = 0;
 int main(int argc, char *argv[]) {
@@ -41,7 +39,7 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "ERROR. Failed parsing orbit file %s\n", argv[2]);
     return 1;
   }
-  
+
   /* Create an EOP LookUp table */
   dso::EopLookUpTable eop_lut;
   {
@@ -63,30 +61,31 @@ int main(int argc, char *argv[]) {
   double max_dy = 0e0;
   double max_dz = 0e0;
   double max_dr = 0e0;
-  double max_theta = 0e0;
-  double Rc2i[3][3];
+  double max_dx_sofa = 0e0;
+  double max_dy_sofa = 0e0;
+  double max_dz_sofa = 0e0;
+  double max_dr_sofa = 0e0;
 
   /* one by one, transform sp3 input orbit from ITRF to GCRF and back
    * check results
    */
   for (const auto &i : orb) {
     R.prepare(i.t);
-    /* my result */
+    /* GCRF-to-ITRF  (i.pos->r1) */
     Eigen::Matrix<double, 3, 1> r1 = R.gcrf2itrf(i.pos);
+    /* ITRF-to-GCRF  (r1->r2) */
+    Eigen::Matrix<double, 3, 1> r2 = R.itrf2gcrf(r1);
+
     /* sofa result */
-    Eigen::Matrix<double, 3, 1> r2 = sofa_gcrf2itrf(i.pos, R, Rc2i);
-    /* compare rotation matrices */
-    const double theta = rotation_matrix_diff(R.gcrf2itrf(), Rc2i);
-    
+    Eigen::Matrix<double, 3, 1> rs2 = sofa_gcrf2itrf(i.pos, R);
+
     if (verbose) {
-      printf("%.12e %+.9e %+.9e %+.9e %.9e %.9e\n", R.tt().as_mjd(),
-             r1(0) - r2(0), r1(1) - r2(1), r1(2) - r2(2), (r1 - r2).norm(),
-             dso::rad2sec(theta));
+      printf("%.12e %+.9e %+.9e %+.9e %.9e\n", R.tt().as_mjd(),
+             i.pos(0) - r2(0), i.pos(1) - r2(1), i.pos(2) - r2(2),
+             (i.pos - r2).norm());
     }
-    
-    if (std::abs(theta) > std::abs(max_theta))
-      max_theta = theta;
-    const auto dr = r2 - r1;
+
+    const auto dr = r2 - i.pos;
     if (std::abs(dr(0)) > std::abs(max_dx))
       max_dx = dr(0);
     if (std::abs(dr(1)) > std::abs(max_dy))
@@ -95,20 +94,36 @@ int main(int argc, char *argv[]) {
       max_dz = dr(2);
     if (dr.norm() > max_dr)
       max_dr = dr.norm();
+    
+    const auto dr_sofa = rs2 - i.pos;
+    if (std::abs(dr_sofa(0)) > std::abs(max_dx_sofa))
+      max_dx_sofa = dr_sofa(0);
+    if (std::abs(dr_sofa(1)) > std::abs(max_dy_sofa))
+      max_dy_sofa = dr_sofa(1);
+    if (std::abs(dr_sofa(2)) > std::abs(max_dz_sofa))
+      max_dz_sofa = dr_sofa(2);
+    if (dr_sofa.norm() > max_dr_sofa)
+      max_dr_sofa = dr_sofa.norm();
   }
 
   printf("Function         #Tests #Fails #Maxerror[mm/sec] Status Type\n");
   printf("---------------------------------------------------------------\n");
-  printf("%8s %7s %6d %6d %+.1e %s %s\n", "ter2cel", "dX", (int)orb.size(), 0,
-         max_dx*1e3, "-", "linear");
-  printf("%8s %7s %6d %6d %+.1e %s %s\n", "ter2cel", "dY", (int)orb.size(), 0,
-         max_dy*1e3, "-", "linear");
-  printf("%8s %7s %6d %6d %+.1e %s %s\n", "ter2cel", "dZ", (int)orb.size(), 0,
-         max_dz*1e3, "-", "linear");
-  printf("%8s %7s %6d %6d %+.1e %s %s\n", "ter2cel", "ds", (int)orb.size(), 0,
-         max_dr*1e3, "-", "linear");
-  printf("%8s %7s %6d %6d %+.1e %s %s\n", "ter2cel", "dR", (int)orb.size(), 0,
-         dso::rad2sec(max_theta), "-", "RotMatrix");
+  printf("%8s %7s %6d %6d %+.1e %s %s\n", "internal_ter2cel", "dX",
+         (int)orb.size(), 0, max_dx * 1e3, "-", "linear");
+  printf("%8s %7s %6d %6d %+.1e %s %s\n", "internal_ter2cel", "dY",
+         (int)orb.size(), 0, max_dy * 1e3, "-", "linear");
+  printf("%8s %7s %6d %6d %+.1e %s %s\n", "internal_ter2cel", "dZ",
+         (int)orb.size(), 0, max_dz * 1e3, "-", "linear");
+  printf("%8s %7s %6d %6d %+.1e %s %s\n", "internal_ter2cel", "ds",
+         (int)orb.size(), 0, max_dr * 1e3, "-", "linear");
+  printf("%8s %7s %6d %6d %+.1e %s %s\n", "internal_ter2celIau", "dX",
+         (int)orb.size(), 0, max_dx_sofa * 1e3, "-", "linear");
+  printf("%8s %7s %6d %6d %+.1e %s %s\n", "internal_ter2celIau", "dY",
+         (int)orb.size(), 0, max_dy_sofa * 1e3, "-", "linear");
+  printf("%8s %7s %6d %6d %+.1e %s %s\n", "internal_ter2celIau", "dZ",
+         (int)orb.size(), 0, max_dz_sofa * 1e3, "-", "linear");
+  printf("%8s %7s %6d %6d %+.1e %s %s\n", "internal_ter2celIau", "ds",
+         (int)orb.size(), 0, max_dr_sofa * 1e3, "-", "linear");
 
   return 0;
 }
@@ -158,7 +173,7 @@ int parse_orbit(const char *fn, std::vector<GraceOrbit> &orb) {
 
 /* SOFA GCRS to ITRS */
 Eigen::Matrix<double, 3, 1> sofa_gcrf2itrf(const Eigen::Matrix<double, 3, 1> &r,
-                                           const dso::Itrs2Gcrs &R, double Rc2i[3][3]) {
+                                           const dso::Itrs2Gcrs &R) {
   /* for SOFA, transform MJD to JD */
   const double tt1 = R.tt().big() + dso::mjd0_jd;
   const double tt2 = R.tt().small();
@@ -197,6 +212,7 @@ Eigen::Matrix<double, 3, 1> sofa_gcrf2itrf(const Eigen::Matrix<double, 3, 1> &r,
   iauRxr(rpom, rc2ti, rc2it);
 
   /* copy to output matrix */
+  double Rc2i[3][3];
   iauCr(rc2it, Rc2i);
 
   /* transform GCRS vector to ITRS vector */
@@ -204,8 +220,14 @@ Eigen::Matrix<double, 3, 1> sofa_gcrf2itrf(const Eigen::Matrix<double, 3, 1> &r,
   double rgcrf[3] = {r(0), r(1), r(2)};
   iauRxp(rc2it, rgcrf, ritrf);
 
+  /* transpose the matrix to get the inverse traansformation */
+  double Rt2c[3][3];
+  iauTr(Rc2i, Rt2c);
+  /* transform ITRS vector to GCRS vector */
+  iauRxp(Rt2c, ritrf, rgcrf);
+
   Eigen::Matrix<double, 3, 1> _r;
-  _r << ritrf[0], ritrf[1], ritrf[2];
+  _r << rgcrf[0], rgcrf[1], rgcrf[2];
 
   return _r;
 }

@@ -18,7 +18,7 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
   }
   double as[3][3];
 
-  printf("Function #Tests #Fails #Maxerror[sec]    Status\n");
+  printf("Function #Tests #Fails #Maxerror[masec]  Status\n");
   printf("---------------------------------------------------------------\n");
 
   int fails = 0;
@@ -38,8 +38,8 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
     }
     ++i;
   }
-  printf("%8s %6d %6d %+.9e %.7s %s\n", funcs[0], NUM_TESTS, fails,
-         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED",
+  printf("%8s %6d %6d %+.1e %.7s %s\n", funcs[0], NUM_TESTS, fails,
+         dso::rad2sec(max_error)*1e3, (fails == 0) ? "OK" : "FAILED",
          "RotMatrix");
 
   return fails;

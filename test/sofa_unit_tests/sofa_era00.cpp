@@ -14,11 +14,8 @@ const int num_funs = sizeof(funcs) / sizeof(funcs[0]);
 
 int main() {
 
-  printf("Function #Tests #Fails #Maxerror[sec]    Status  Type\n");
+  printf("Function #Tests #Fails #Maxerror[masec]  Status  Type\n");
   printf("---------------------------------------------------------------\n");
-
-  //double mean_l=0e0, mean_r=0e0;
-  //double max_l=0e0, max_r=0e0;
 
   double am, as;
   int fails = 0;
@@ -42,8 +39,8 @@ int main() {
       //}
     }
   }
-  printf("%8s %6d %6d %+.9e %.7s %s\n", funcs[0], NUM_TESTS, fails,
-         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED", "Angle");
+  printf("%8s %6d %6d %+.1e %.7s %s\n", funcs[0], NUM_TESTS, fails,
+         dso::rad2sec(max_error)*1e3, (fails == 0) ? "OK" : "FAILED", "Angle");
 
   //printf("Means: left=%.9e right=%.9e\n", dso::rad2sec(mean_l) / NUM_TESTS,
   //       dso::rad2sec(mean_r) / NUM_TESTS);

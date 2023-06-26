@@ -19,7 +19,7 @@ int main() {
   double max_error[14] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   int error = 0;
 
-  printf("Function         #Tests #Fails #Maxerror[sec]    Status  Type\n");
+  printf("Function         #Tests #Fails #Maxerror[masec]  Status  Type\n");
   printf("---------------------------------------------------------------\n");
 
   double am, as;
@@ -35,8 +35,8 @@ int main() {
         max_error[j] = std::abs(am - as);
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -53,8 +53,8 @@ int main() {
         max_error[j] = std::abs(am - as);
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -71,8 +71,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -89,8 +89,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -107,8 +107,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -125,8 +125,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -143,8 +143,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -161,8 +161,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -179,8 +179,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -197,8 +197,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -215,8 +215,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -233,8 +233,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -251,8 +251,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;
@@ -269,8 +269,8 @@ int main() {
       ++fails[j];
     }
   }
-  printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
-         fails[j], dso::rad2sec(max_error[j]),
+  printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[j], funcs[j], NUM_TESTS,
+         fails[j], dso::rad2sec(max_error[j])*1e3,
          (fails[j] == 0) ? "OK" : "FAILED", "Angle");
   if (fails[j])
     ++error;

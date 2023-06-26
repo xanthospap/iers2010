@@ -25,7 +25,7 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
   double rb[3][3], rp[3][3], rbp[3][3];
   Eigen::Matrix<double, 3, 3> rbm, rpm, rbpm;
 
-  printf("Function         #Tests #Fails #Maxerror[sec]    Status  Type\n");
+  printf("Function         #Tests #Fails #Maxerror[masec]  Status  Type\n");
   printf("---------------------------------------------------------------\n");
 
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -73,8 +73,8 @@ int main(int argc, [[maybe_unused]] char *argv[]) {
   }
 
   for (int j = 0; j < 3; j++) {
-    printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[0], args[j], NUM_TESTS,
-           fails[j], dso::rad2sec(max_error[j]),
+    printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[0], args[j], NUM_TESTS,
+           fails[j], dso::rad2sec(max_error[j])*1e3,
            (fails[j] == 0) ? "OK" : "FAILED", type[j]);
   }
 

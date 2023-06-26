@@ -99,7 +99,7 @@ if make_test:
   #tests_sources  = glob.glob(r"test/*.cpp")
   #tests_sources = glob.glob(r"test/cel2ter/*.cpp")
   #tests_sources = glob.glob(r"test/parsers/*.cpp")
-  tests_sources = glob.glob(r"test/internal/*.cpp")
+  tests_sources = glob.glob(r"test/internal/internal_*.cpp")
   tests_sources += glob.glob(r"test/sofa_unit_tests/sofa_*.cpp")
   link_w = "test/sofa_unit_tests/unit_test_help.cpp"
   env.Append(RPATH=root_dir)

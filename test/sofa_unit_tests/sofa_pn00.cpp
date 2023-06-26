@@ -22,7 +22,7 @@ int main() {
   Eigen::Matrix<double, 3, 3> rbm, rpm, rbpm, rnm, rbpnm;
   double epsas, epsam;
 
-  printf("Function         #Tests #Fails #Maxerror[sec]    Status\n");
+  printf("Function         #Tests #Fails #Maxerror[masec]  Status\n");
   printf("---------------------------------------------------------------\n");
 
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -83,8 +83,8 @@ int main() {
 
   error = 0;
   for (int j = 0; j < 6; j++) {
-    printf("%8s %7s %6d %6d %+.9e %.7s %s\n", funcs[0], args[j], NUM_TESTS,
-           fails[j], dso::rad2sec(max_error[j]),
+    printf("%8s %7s %6d %6d %+.1e %.7s %s\n", funcs[0], args[j], NUM_TESTS,
+           fails[j], dso::rad2sec(max_error[j])*1e3,
            (fails[j] == 0) ? "OK" : "FAILED",
            (j == 5) ? "Angle" : "RotMatrix");
     error += fails[j];

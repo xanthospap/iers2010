@@ -18,7 +18,7 @@ int main() {
   double max_error = 0e0;
   double as[3][3];
 
-  printf("Function #Tests #Fails #Maxerror[sec]    Status  Type\n");
+  printf("Function #Tests #Fails #Maxerror[masec]  Status  Type\n");
   printf("---------------------------------------------------------------\n");
 
   fails = 0;
@@ -36,8 +36,8 @@ int main() {
       }
     }
   }
-  printf("%8s %6d %6d %+.9e %.7s %s\n", funcs[0], NUM_TESTS, fails,
-         dso::rad2sec(max_error), (fails == 0) ? "OK" : "FAILED",
+  printf("%8s %6d %6d %+.1e %.7s %s\n", funcs[0], NUM_TESTS, fails,
+         dso::rad2sec(max_error)*1e3, (fails == 0) ? "OK" : "FAILED",
          "RotMatrix");
   if (fails)
     ++error;

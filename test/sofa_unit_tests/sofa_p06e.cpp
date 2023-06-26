@@ -22,7 +22,7 @@ int main() {
   double max_error[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   double as[16], am[16];
 
-  printf("Function       #Tests #Fails #Maxerror[sec]    Status  Type\n");
+  printf("Function       #Tests #Fails #Maxerror[masec]  Status  Type\n");
   printf("---------------------------------------------------------------\n");
 
   for (int i = 0; i < NUM_TESTS; i++) {
@@ -45,8 +45,8 @@ int main() {
   }
 
   for (int i = 0; i < 16; i++) {
-    printf("%8s %8s %6d %6d %+.9e %.7s %s\n", funcs[0], args[i], NUM_TESTS,
-           fails[i], dso::rad2sec(max_error[i]),
+    printf("%8s %8s %6d %6d %+.1e %.7s %s\n", funcs[0], args[i], NUM_TESTS,
+           fails[i], dso::rad2sec(max_error[i])*1e3,
            (fails[i] == 0) ? "OK" : "FAILED", "Angle");
   }
 

@@ -26,14 +26,11 @@ before_script:
   - git clone https://github.com/xanthospap/ggdatetime.git && cd ggdatetime
   - sudo scons install
   - cd ../
-  - git clone https://github.com/xanthospap/matvec.git && cd matvec
-  - sudo scons install
-  - cd ../
   - git clone https://github.com/xanthospap/ggeodesy.git && cd ggeodesy
   - sudo scons install
   - cd ../
   - sudo ldconfig
 
 script:
-  - scons eigen=1
-  - scons debug=1 eigen=1
+  - scons 
+  - scons debug=1 make-test=1

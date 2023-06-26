@@ -7,10 +7,15 @@ import re
 import subprocess
 
 def find_progs(prog_dir):
-    return [f for f in os.listdir(prog_dir) if re.match(r'sofa-.*\.out', f)]
+    dirs = ['sofa_unit_tests', 'internal']
+    progs = []
+    for dir in dirs:
+        path = os.path.join(prog_dir, dir)
+        progs += [os.path.join(dir,f) for f in os.listdir(path) if (re.match(r'sofa-.*\.out', f) or re.match(r'internal-.*\.out', f))]
+    return progs
 
 def filter_results(fn):
-    argl=[];numtestsl=[];numfailsl=[];maxerrorl=[];statusl=[];typesl=[];
+    argl=[];functionsl=[];numtestsl=[];numfailsl=[];maxerrorl=[];statusl=[];typesl=[];
     with open(fn, 'r') as fin:
         for line in fin.readlines():
             if line.startswith("Function") or line.startswith("Program") or line.startswith("---"):
@@ -18,7 +23,8 @@ def filter_results(fn):
             else:
 # pn06/   dpsi  10000   3347 +2.078386880e-12 FAILED angle
                 l = line.split()
-                function = l[0]
+                prog = l[0]
+                functionsl.append(l[0])
                 if len(l) == 7:
                     argl.append(l[1])
                     offset = 2
@@ -30,7 +36,7 @@ def filter_results(fn):
                 maxerrorl.append(float(l[offset+2]))
                 statusl.append(l[offset+3])
                 typesl.append(l[offset+4])
-    return function, [{'arg':e[0], 'num_tests': e[1], 'num_fails':e[2], 'max_error':e[3], 'status':e[4], 'type':e[5]} for e in zip(argl,numtestsl,numfailsl,maxerrorl,statusl,typesl)]
+    return prog, [{'subfunc':e[6], 'arg':e[0], 'num_tests': e[1], 'num_fails':e[2], 'max_error':e[3], 'status':e[4], 'type':e[5]} for e in zip(argl,numtestsl,numfailsl,maxerrorl,statusl,typesl,functionsl)]
 
 class myFormatter(argparse.ArgumentDefaultsHelpFormatter,
                   argparse.RawTextHelpFormatter):
@@ -52,7 +58,15 @@ parser.add_argument(
     dest='progs_dir',
     default=os.path.abspath(os.getcwd()),
     required=False,
-    help='Directory with SOFA test executables')
+    help='Directory with SOFA test executables (top-level test directory)')
+
+parser.add_argument(
+    '--data-dir',
+    metavar='DATA_DIR',
+    dest='data_dir',
+    default=os.path.abspath(os.getcwd()),
+    required=False,
+    help='Directory with test data')
 
 parser.add_argument(
     '--plots-dir',
@@ -83,6 +97,17 @@ parser.add_argument(
     dest='verbose',
     help='Verbose mode on')
 
+def append_prog_args(prog_wpath, data_dir):
+    progs_wargs = {
+        'sofa-ter2cel.out': ['eopc04_14_IAU2000.62-now', '00orbit_icrf.txt'],
+        'internal-ter2cel.out': ['eopc04_14_IAU2000.62-now', '00orbit_icrf.txt']
+    }
+    prog_name = os.path.basename(prog_wpath)
+    if prog_name in progs_wargs:
+        args = [prog_wpath]+[os.path.join(data_dir,d) for d in progs_wargs[prog_name]]
+        return args
+    return prog_wpath
+
 if __name__ == '__main__':
 
     ## parse cmd
@@ -98,9 +123,7 @@ if __name__ == '__main__':
     temp_fn = ".tmp"
     results = {}
     for prog in progs_no_path:
-        exe = os.path.join(args.progs_dir, prog)
-        #for vp in ["xy06", "s06", "c2ixys", "era00", "sp00", "pom00"]:
-        #    if vp in prog:
+        exe = append_prog_args(os.path.join(args.progs_dir, prog), args.data_dir)
         verboseprint('Running command: [{:}]'.format(exe))
         ftmp = open(temp_fn, "w")
         result = subprocess.run(exe, stdout=ftmp, check=False)
@@ -114,6 +137,6 @@ if __name__ == '__main__':
     for f,fargs in results.items():
         for farg in fargs:
             if args.markdown:
-                print('{:10s}|{:10s}|{:10d}|{:10d}|{:.3e}|{:12s}|{:10s}'.format(f, farg['arg'], farg['num_tests'], farg['num_fails'], farg['max_error'], farg['type'], farg['status']))
+                print('{:10s}|{:10s}|{:10d}|{:10d}|{:+.0e}|{:12s}|{:10s}'.format(farg['subfunc'], farg['arg'], farg['num_tests'], farg['num_fails'], farg['max_error'], farg['type'], farg['status']))
             else:
-                print('{:6s} {:6s} {:8d} {:8d} {:.3e} {:12s} {:10s}'.format(f, farg['arg'], farg['num_tests'], farg['num_fails'], farg['max_error'], farg['type'], farg['status']))
+                print('{:6s} {:6s} {:8d} {:8d} {:+.0e} {:12s} {:10s}'.format(farg['subfunc'], farg['arg'], farg['num_tests'], farg['num_fails'], farg['max_error'], farg['type'], farg['status']))

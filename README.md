@@ -61,7 +61,7 @@ $> sudo scons install
 ```
 
 ## Test Programs <a name="test-programs"></a>
-To compile the test utilities, use the `make-check` switch (i.e. `scons make-check=1`). 
+To compile the test utilities, use the `make-test` switch (i.e. `scons make-test=1`). 
 Note that the SOFA [^1] library is needed to compile and run the tests.
 
 # Library Components <a name="library-components"></a>
@@ -98,6 +98,17 @@ Descripancies for angular parameters are usually checked in units of *arcseconds
 Descripancies for rotation matrices (.e.g. $R_A$ and $R_B$) are obtained by the 
 *axis-angle* of the combined matrix as:
 $\theta = arccos(\frac{(R_A^T R_B) -1}{2})$ again transformed in *arcseconds*.
+
+### Result Key-Points
+
+* Discrepancies between the SOFA implementation and `libiers2010` for one day of 
+GRACE orbit are presented in ??. They ammount up to $\approx 1\times10^{-4} mm$ 
+for the $X$ and $Y$ components and $\approx 2\times10^{-6} mm$ for $Z$.
+
+* The accuracy of the transformation is presented in presented in ??. It is 
+$\approx 5\times10^{-6} mm$ for each of the $X$, $Y$ and $Z$ components.(Note 
+that this is checked again using one day of GRACE orbit, and performing the 
+circular transformation `ICRF->ITRF->ICRF`)
 
 # References <a name="references"></a>
 
