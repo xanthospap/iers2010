@@ -5,7 +5,6 @@
 #include "iersc.hpp"
 #include "fundarg.hpp"
 #include "geodesy/units.hpp"
-// #include "matvec/matvec.hpp"
 #include "eigen3/Eigen/Eigen"
 #include <cmath>
 #include <vector>
@@ -202,52 +201,25 @@ int utlibr(const dso::TwoPartDate &mjd, const double *const fargs, double &dut1,
 }// iers2010::utils
 int utlibr(double fmjd, double &dut1, double &dlod) noexcept;
 
-/// @brief Compute the subdiurnal librations in UT1.
-//#if __cplusplus >= 202002L
-//template <gconcepts::is_sec_dt S>
-//#else
-//template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
-//#endif
-//int utlibr(const dso::datetime<S> &t, double &dut1, double &dlod) noexcept {
-//  return utlibr(t.as_mjd(), dut1, dlod);
-//}
-
-/// @details This subroutine computes the effects of the free core nutation.
-///          Please note that the table is updated each year (see Note 4).
-///          The parameter N needs to be incremented for each additional
-///          year in the table.
-/// @param[in] mjd   Modified Julian Date, TDB (Note 1)
-/// @param[out]  x   CIP offset x component, in microas [μas]
-/// @param[out]  y   CIP offset y component, in microas [μas]
-/// @param[out] dx   Uncertainty of x component, in microas [μas]
-/// @param[out] dy   Uncertainty of y component, in microas [μas]
-/// @return          An integer value, always 0.
-///
-/// @warning Contains data table to be updated each year,
-///          see http://syrte.obspm.fr/~lambert/fcn/
-/// @note
-///      -#  Though the Modified Julian Date (MJD) is strictly TDB, it is
-///          usually more convenient to use TT, which makes no significant
-///          difference.
-///      -#  The updated table is maintained at the website
-///          http://syrte.obspm.fr/~lambert/fcn/.
-///
-/// @version 19.12.2013
-/// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
-///       Technical Note No. 36, BKG (2010); Chapter 5.5.5
-int fcnnut(double mjd, double &x, double &y, double &dx, double &dy) noexcept;
-
-/// @brief Compute corrections to the coordinates of the CIP to account for
-/// Free Core Nutation.
-#if __cplusplus >= 202002L
-template <gconcepts::is_sec_dt S>
-#else
-template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
-#endif
-int fcnnut(const dso::datetime<S> &t, double &x, double &y, double &dx,
-           double &dy) noexcept {
-  return fcnnut(t.as_mjd(), x, y, dx, dy);
-}
+/* @details This subroutine computes the effects of the free core nutation.
+ * @param[in] mjd   Date in TDB; note howver that usually more it is more 
+ *                  convenient to use TT, which makes no significant 
+ *                  difference.
+ * @param[out]  x   CIP offset x component, in microas [μas]
+ * @param[out]  y   CIP offset y component, in microas [μas]
+ * @param[out] dx   Uncertainty of x component, in microas [μas]
+ * @param[out] dy   Uncertainty of y component, in microas [μas]
+ * @return          An integer value, always 0.
+ *
+ * @warning Contains data table to be updated each year,
+ *          see http://syrte.obspm.fr/~lambert/fcn/
+ *
+ * @version 19.12.2013
+ * @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
+ *       Technical Note No. 36, BKG (2010); Chapter 5.5.5
+ */
+int fcnnut(const dso::TwoPartDate &mjd_tt, double &x, double &y, double &dx,
+           double &dy) noexcept;
 
 /// @brief Compute the angular argument which depends on time for 11 tidal
 /// argument calculations.
