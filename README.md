@@ -99,6 +99,21 @@ Descripancies for rotation matrices (.e.g. $R_A$ and $R_B$) are obtained by the
 *axis-angle* of the combined matrix as:
 $\theta = arccos(\frac{(R_A^T R_B) -1}{2})$ again transformed in *arcseconds*.
 
+## Tests and Compliance with IERS Implementation <a name="tests-and-compliance-fortran"></a>
+
+Once you have [compiled the test-suite](#test-programs), you can use the script 
+`run_fortran_checks.py` to check the compliance of the current library against 
+the FORTRAN subroutines distributed by the IERS.
+Example run:
+```
+$>./run_fortran_checks.py --for-dir fortran_impl/ \
+    --cpp-dir test/fortran_unit_tests/ \
+    --verbose
+```
+To run these unit tests however, you will need to have downloaded the IERS-distributed 
+source code accompanying the standards. Explicit results can be found in 
+[this table](#fortran-check-table).
+
 ### Result Key-Points
 
 * Discrepancies between the SOFA implementation and `libiers2010` for one day of 
@@ -127,7 +142,14 @@ Software Routines from the IAU SOFA Collection were used. Copyright © Internati
 
 # Results <a name="results"></a>
 
+## Discrepancies w.r.t IERS/FORTRAN <a name="fortran-check-table"></a>
+
+subroutine/function | discrepancies |
+--------------------|---------------|
+fcnnut              | dX=+0.0e+00 dY=+0.0e+00 dsX=+0.0e+00 dsY=+8.1e+02 [μasec] |
+
 ## Discrepancies w.r.t IAU/SOFA <a name="sofa-check-table"></a>
+
 function  |argument  |num tests |num fails |max error |param. type |status    
 ----------|----------|----------|----------|----------|------------|----------
 nut00a    |dpsi <a name="nut00a-dpsi"></a>|    100000|     49547|-1e-09|Angle       |FAILED    
