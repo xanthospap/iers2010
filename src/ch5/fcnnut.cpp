@@ -65,11 +65,11 @@ int iers2010::fcnnut(const dso::TwoPartDate &mjd_tt, double &x, double &y,
 
   /* FCN parameters period in days */
   constexpr const double per = -430.21e0;
-  
+
   /* t is given in days since J2000.0 */
   const double tdays = mjd_tt.diff<dso::DateTimeDifferenceType::FractionalDays>(
       dso::TwoPartDate(dso::j2000_mjd, 0e0));
-  
+
   /* Phase in radians */
   const double phi = (2e0 * iers2010::DPI / per) * tdays;
 
@@ -84,9 +84,8 @@ int iers2010::fcnnut(const dso::TwoPartDate &mjd_tt, double &x, double &y,
     axs = table[N - 1].xs();
     ayc = table[N - 1].yc();
     ays = table[N - 1].ys();
-    const double dt =
-        mjd_tt.diff<dso::DateTimeDifferenceType::FractionalDays>(
-            table[N - 1].date);
+    const double dt = mjd_tt.diff<dso::DateTimeDifferenceType::FractionalDays>(
+        table[N - 1].date);
     saxc = table[N - 1].sx() + mpe * dt;
     saxs = saxc;
     sayc = table[N - 1].sy() + mpe * dt;

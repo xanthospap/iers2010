@@ -39,10 +39,8 @@ constexpr const int M{sizeof(x) / sizeof(x[0])};
 static_assert(M == 25, "Invalid quasi diurnal terms in pmsdnut2.");
 }/* unnamed namespace */
 
-/* fargs should have been computed using the compute_fargs function (size=6) */
-int iers2010::utils::pmsdnut2(const dso::TwoPartDate &mjd,
-                              const double *const fargs, double &dx,
-                              double &dy) noexcept {
+int iers2010::pmsdnut2(const dso::TwoPartDate &mjd, const double *const fargs,
+                       double &dx, double &dy) noexcept {
   /*
    *  iband  - parameter defining the range of periods for the terms which
    *           are included in computations; if equal to 1 only the quasi
@@ -77,7 +75,7 @@ int iers2010::utils::pmsdnut2(const dso::TwoPartDate &mjd,
    */
   dx = dy = 0e0;
 
-  const int jstart = (iband == 1) ? 15 : 0;
+  constexpr int jstart = (iband == 1) ? 15 : 0;
   for (int j = jstart; j < M; j++) {
     /* For the j-th term of the trigonometric expansion, compute the angular
      * argument angle of sine and cosine functions as a linear integer
@@ -86,7 +84,7 @@ int iers2010::utils::pmsdnut2(const dso::TwoPartDate &mjd,
     double angle = 0e0;
     for (int i = 0; i < 6; i++)
       angle += x[j].iarg[i] * fargs[i];
-    angle = std::fmod(angle, iers2010::D2PI);
+    angle = dso::anp(angle);
     /* contribution from the j-th term to the polar motion coordinates */
     const double sa = std::sin(angle);
     const double ca = std::cos(angle);
@@ -105,9 +103,9 @@ int iers2010::utils::pmsdnut2(const dso::TwoPartDate &mjd,
   return 0;
 }
 
-int iers2010::pmsdnut2(const dso::TwoPartDate &mjd, double &dx,
+int iers2010::pmsdnut2(const dso::TwoPartDate &mjd_tt, double dut1, double &dx,
                        double &dy) noexcept {
   double fargs[6];
-  iers2010::utils::eop_fundarg(mjd, fargs);
-  return utils::pmsdnut2(mjd, fargs, dx, dy);
+  iers2010::utils::fargs(mjd_tt, dut1, fargs);
+  return iers2010::pmsdnut2(mjd_tt, fargs, dx, dy);
 }

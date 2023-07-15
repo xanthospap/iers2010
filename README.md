@@ -99,6 +99,18 @@ Descripancies for rotation matrices (.e.g. $R_A$ and $R_B$) are obtained by the
 *axis-angle* of the combined matrix as:
 $\theta = arccos(\frac{(R_A^T R_B) -1}{2})$ again transformed in *arcseconds*.
 
+### Result Key-Points
+
+* Discrepancies between the SOFA implementation and `libiers2010` for one day of 
+GRACE orbit are presented in ??. They ammount up to $\approx 1\times10^{-4} mm$ 
+for the $X$ and $Y$ components and $\approx 2\times10^{-6} mm$ for $Z$. See results 
+[here](#sofa_ter2cel-dX)
+
+* The accuracy of the transformation is presented in presented in ??. It is 
+$\approx 5\times10^{-6} mm$ for each of the $X$, $Y$ and $Z$ components.(Note 
+that this is checked again using one day of GRACE orbit, and performing the 
+circular transformation `ICRF->ITRF->ICRF`). See results [here](#internal_ter2cel-dX)
+
 ## Tests and Compliance with IERS Implementation <a name="tests-and-compliance-fortran"></a>
 
 Once you have [compiled the test-suite](#test-programs), you can use the script 
@@ -114,17 +126,12 @@ To run these unit tests however, you will need to have downloaded the IERS-distr
 source code accompanying the standards. Explicit results can be found in 
 [this table](#fortran-check-table).
 
-### Result Key-Points
+### Computation of GMST
 
-* Discrepancies between the SOFA implementation and `libiers2010` for one day of 
-GRACE orbit are presented in ??. They ammount up to $\approx 1\times10^{-4} mm$ 
-for the $X$ and $Y$ components and $\approx 2\times10^{-6} mm$ for $Z$. See results 
-[here](#sofa_ter2cel-dX)
-
-* The accuracy of the transformation is presented in presented in ??. It is 
-$\approx 5\times10^{-6} mm$ for each of the $X$, $Y$ and $Z$ components.(Note 
-that this is checked again using one day of GRACE orbit, and performing the 
-circular transformation `ICRF->ITRF->ICRF`). See results [here](#internal_ter2cel-dX)
+In this implementation computation of GMST is performed using the IAU2006 
+model, i.e. using both UT1 and TT (see Sec. 5.5.7, ERA based expressions for 
+Greenwich Sidereal Time). Contrary to this, some IERS-distributed FORTRAN 
+subroutines use an older model for GMST (i.e. `FCNNUT`, `PMSDNUT2`).
 
 # References <a name="references"></a>
 

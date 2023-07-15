@@ -15,9 +15,19 @@
 namespace iers2010 {
 
 namespace utils {
-// used within pmsdnut2 and utlibr
-int eop_fundarg(const dso::TwoPartDate &tt_fmjd, double *fargs) noexcept;
-} // iers2010::utils
+/* @brief Compute fundamental arguments and GMST+πι and arrange them in the 
+ *        fargs array as: [ GMST+pi, l, lp, f, d, om ] 
+ * @warning GMST is computed using the IAU 2006 model (see IERS2010, Sec 5.5.7)
+ *        This is different than what most IERS-distributed FORTRAN 
+ *        implementations do.
+ * @param[in] mjd_tt Date in TT
+ * @param[in] dut1   ΔUT1 in [sec]. This value should be looked up using e.g.
+ *                   IERS products
+ * @param[out] fargs GMST+πι and fundamental arguments [rad], in the order:
+ *                   GMST+pi, l, lp, f, d, om
+ */
+int fargs(const dso::TwoPartDate &mjd_tt, double dut1, double *fargs) noexcept;
+} /* iers2010::utils */
 
 dso::TwoPartDate split_fmjd(double fmjd) noexcept;
 
@@ -136,7 +146,9 @@ double solid_earth_pole_tide(const dso::datetime<S> &t, double lat, double lon,
  * found here :
  *          http://maia.usno.navy.mil/conv2010/software.html
  *
- * @param[in]  rmjd Time expressed as Modified Julian date
+ * @param[in] mjd_tt Date in TT
+ * @param[in] dut1  ΔUT1 in [sec]. This value should be looked up using e.g.
+ *                  IERS products
  * @param[out] dx   The x component of polar motion expressed in
  *                  microarcseconds [μas].
  * @param[out] dy   The y component of polar motion expressed in
@@ -149,57 +161,90 @@ double solid_earth_pole_tide(const dso::datetime<S> &t, double lat, double lon,
  * needed, set the parameter iband to 0 instead of 1, that is, replace the 
  * decleration of iband in the source code.
  */
-int pmsdnut2(const dso::TwoPartDate &mjd, double &dx, double &dy) noexcept;
-namespace utils {
-/* @brief Overload of pmsdnut2, given the Fundamental (Delaunay) arguments
- *        at the requested epoch (in fargs).
- */
-int pmsdnut2(const dso::TwoPartDate &mjd, const double *const fargs, double &dx,
+int pmsdnut2(const dso::TwoPartDate &mjd_tt, double dut1, double &dx,
              double &dy) noexcept;
-} /* namespace utils */
-int pmsdnut2(double fmjd, double &dx, double &dy) noexcept;
 
-/// @brief Compute the diurnal lunisolar effect on polar motion.
-//#if __cplusplus >= 202002L
-//template <gconcepts::is_sec_dt S>
-//#else
-//template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
-//#endif
-//int pmsdnut2(const dso::datetime<S> &t, double &dx, double &dy) noexcept {
-//  return pmsdnut2(t.as_mjd(), dx, dy);
-//}
+/* @brief Overload of pmsdnut2, given the Fundamental (Delaunay) arguments and
+ *        GMST+π at the requested epoch (in fargs).
+ *
+ * @param[in]  mjd_tt Date in TT
+ * @param[out] fargs GMST+πι and fundamental arguments, in the order:
+ *             GMST+pi, l, lp, f, d, om (see the function utils::fargs).
+ * @param[out] dx   The x component of polar motion expressed in
+ *                  microarcseconds [μas].
+ * @param[out] dy   The y component of polar motion expressed in
+ *                  microarcseconds [μas].
+ * @return          An integer value, always 0.
+ */
+int pmsdnut2(const dso::TwoPartDate &mjd_tt, const double *const fargs,
+             double &dx, double &dy) noexcept;
 
-/// @brief Compute the subdiurnal librations in UT1.
-/// @details This function evaluates the model of subdiurnal libration
-///          in the axial component of rotation, expressed by UT1 and LOD.
-///          This effect is due to the influence of tidal gravitation on
-///          the departures of the Earth's mass distribution from the
-///          rotational symmetry, expressed by the non-zonal components of
-///          geopotential. The amplitudes have been computed for an
-///          elastic Earth with liquid core. The adopted truncation level
-///          is 0.033 microseconds in UT1 corresponding to the angular
-///          displacement of 0.5 microarcseconds or to 0.015 mm at the
-///          planet surface. With this truncation level the model contains
-///          11 semidiurnal terms. The coefficients of the model are given
-///          in Table 5.1b of the IERS Conventions (2010). This function
-///          is a translation/wrapper for the fortran UTLIBR subroutine,
-///          found here : http://maia.usno.navy.mil/conv2010/software.html
-///
-/// @param[in]  rmjd Time expressed as Modified Julian date
-/// @param[out] dut1 Incremental UT1 in microseconds [μas]
-/// @param[out] dlod Incremental LOD in microseconds per day [μas/day]
-/// @return          An integer value, always 0.
-///
-/// @version 23.06.2010
-///
-/// @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
-///       Technical Note No. 36, BKG (2010); Chapter 5.5.3.3
-int utlibr(const dso::TwoPartDate &mjd, double &dut1, double &dlod) noexcept;
-namespace utils {
-int utlibr(const dso::TwoPartDate &mjd, const double *const fargs, double &dut1,
+/* @brief Compute the subdiurnal librations in UT1.
+ *
+ * @details This function evaluates the model of subdiurnal libration
+ *    in the axial component of rotation, expressed by UT1 and LOD. This 
+ *    effect is due to the influence of tidal gravitation on the departures of 
+ *    the Earth's mass distribution from the rotational symmetry, expressed by 
+ *    the non-zonal components of geopotential. The amplitudes have been 
+ *    computed for an elastic Earth with liquid core. The adopted truncation 
+ *    level is 0.033 microseconds in UT1 corresponding to the angular 
+ *    displacement of 0.5 microarcseconds or to 0.015 mm at the planet surface. 
+ *    With this truncation level the model contains 11 semidiurnal terms. The 
+ *    coefficients of the model are given in Table 5.1b of the IERS 
+ *    Conventions (2010). This function is a translation/wrapper for the 
+ *    fortran UTLIBR subroutine, found here: 
+ *    http://maia.usno.navy.mil/conv2010/software.html
+ *
+ *    Note that contrary to the FORTRAN implementation, we expect here an 
+ *    extra input argument, i.e. dut1in. That is because in this version, 
+ *    GMST is computed using the IAU2006(A) model, which depends on both TT 
+ *    and UT1.
+ *
+ * @param[in] mjd_tt  Date in TT
+ * @param[in] dut1in  ΔUT1 in [sec]. This value should be looked up using e.g.
+ *                    IERS products
+ * @param[out] dut1 Incremental UT1 in microseconds [μas]
+ * @param[out] dlod Incremental LOD in microseconds per day [μas/day]
+ * @return          An integer value, always 0.
+ *
+ * @version 23.06.2010
+ *
+ * @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
+ *       Technical Note No. 36, BKG (2010); Chapter 5.5.3.3
+ */
+int utlibr(const dso::TwoPartDate &mjd_tt, double dut1in, double &dut1,
            double &dlod) noexcept;
-}// iers2010::utils
-int utlibr(double fmjd, double &dut1, double &dlod) noexcept;
+
+/* @brief Compute the subdiurnal librations in UT1.
+ * @details This function evaluates the model of subdiurnal libration
+ *          in the axial component of rotation, expressed by UT1 and LOD.
+ *          This effect is due to the influence of tidal gravitation on
+ *          the departures of the Earth's mass distribution from the
+ *          rotational symmetry, expressed by the non-zonal components of
+ *          geopotential. The amplitudes have been computed for an
+ *          elastic Earth with liquid core. The adopted truncation level
+ *          is 0.033 microseconds in UT1 corresponding to the angular
+ *          displacement of 0.5 microarcseconds or to 0.015 mm at the
+ *          planet surface. With this truncation level the model contains
+ *          11 semidiurnal terms. The coefficients of the model are given
+ *          in Table 5.1b of the IERS Conventions (2010). This function
+ *          is a translation/wrapper for the fortran UTLIBR subroutine,
+ *          found here : http://maia.usno.navy.mil/conv2010/software.html
+ *
+ * @param[in]  mjd_tt Date in TT
+ * @param[out] fargs GMST+πι and fundamental arguments, in the order:
+ *             GMST+pi, l, lp, f, d, om (see the function utils::fargs).
+ * @param[out] dut1 Incremental UT1 in microseconds [μas]
+ * @param[out] dlod Incremental LOD in microseconds per day [μas/day]
+ * @return          An integer value, always 0.
+ *
+ * @version 23.06.2010
+ *
+ * @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS
+ *       Technical Note No. 36, BKG (2010); Chapter 5.5.3.3
+ */
+int utlibr(const dso::TwoPartDate &mjd_tt, const double *const fargs,
+           double &dut1, double &dlod) noexcept;
 
 /* @details This subroutine computes the effects of the free core nutation.
  * @param[in] mjd   Date in TDB; note howver that usually more it is more 
@@ -401,22 +446,68 @@ int ortho_eop(const dso::TwoPartDate &mjd, double &dx, double &dy,
               double &dut1) noexcept;
 int ortho_eop(double fmjd, double &dx, double &dy, double &dut1) noexcept;
 
-/// @brief Compute the diurnal and semi-diurnal variations in Earth Orientation
-/// Parameters from ocean tides.
-//#if __cplusplus >= 202002L
-//template <gconcepts::is_sec_dt S>
-//#else
-//template <typename S, typename = std::enable_if_t<S::is_of_sec_type>>
-//#endif
-//int ortho_eop(const dso::datetime<S> &t, double &dx, double &dy,
-//              double &dut1) noexcept {
-//  return ortho_eop(t.as_mjd(), dx, dy, dut1);
-//}
-
-/// @brief Evaluate the effects of zonal Earth tides on the rotation of the
-///        Earth.
+/* @details This function evaluates the effects of zonal Earth tides on the
+ *          rotation of the Earth.  The model used is a combination of Yoder
+ *          et al. (1981) elastic body tide, Wahr and Bergen (1986) inelastic
+ *          body tide, and Kantha et al. (1998) ocean tide models
+ *          as recommended by the IERS Conventions (2010).  Refer to
+ *          Chapter 8 pp. 105 - 106.  The latest version of the model is
+ *          located at http://tai.bipm.org/iers/convupdt/convupdt_c8.html. This
+ *          function is a translation/wrapper for the fortran RG_ZONT2
+ *          subroutine, found here :
+ *          http://maia.usno.navy.mil/conv2010/software.html
+ *
+ * @param[out] fundarg are the fundamental arguments, in the order:
+ *             [l, lp, f, d, om]
+ * @param[out] dut    Effect on UT1 [sec]
+ * @param[out] dlod   Effect on excess length of day (LOD) [sec/day]. The
+ *                    phrase 'per day' is generally understood, so it has
+ *                    been omitted commonly in speech and literature. See:
+ *                    Stephenson, F. R., Morrison, L. V., Whitrow, G. J., 1984,
+ *                    "Long-Term Changes in the Rotation of the Earth: 700
+ *                    B. C. to A. D. 1980 [and Discussion]", Phil. Trans. Roy.
+ *                    Soc. of London. Series A, 313, pp. 47 - 70.
+ * @param[out] domega Effect on rotational speed [rad/sec]
+ * @return            An integer value always 0.
+ *
+ * @version 20.12.2011
+ *
+ * @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010),
+ *     IERS Technical Note No. 36, BKG (2010)
+ */
 int rg_zont2(const double *const fundarg, double &dut, double &dlod,
              double &domega) noexcept;
+
+/* @details This function evaluates the effects of zonal Earth tides on the
+ *    rotation of the Earth.  The model used is a combination of Yoder et al. 
+ *    (1981) elastic body tide, Wahr and Bergen (1986) inelastic body tide, 
+ *    and Kantha et al. (1998) ocean tide models as recommended by the IERS 
+ *    Conventions (2010). Refer to Chapter 8 pp. 105 - 106. This function is a t
+ *    ranslation/wrapper for the fortran RG_ZONT2 subroutine, found here :
+ *    http://maia.usno.navy.mil/conv2010/software.html
+ *
+ *    Note that contrary to the FORTRAN implementation, we expect here an 
+ *    extra input argument, i.e. dut1in. That is because in this version, 
+ *    GMST is computed using the IAU2006(A) model, which depends on both TT 
+ *    and UT1.
+ *
+ * @param[in]  mjd_tt Date in TT
+ * @param[out] dut    Effect on UT1 [sec]
+ * @param[out] dlod   Effect on excess length of day (LOD) [sec/day]. The
+ *                    phrase 'per day' is generally understood, so it has
+ *                    been omitted commonly in speech and literature. See:
+ *                    Stephenson, F. R., Morrison, L. V., Whitrow, G. J., 1984,
+ *                    "Long-Term Changes in the Rotation of the Earth: 700
+ *                    B. C. to A. D. 1980 [and Discussion]", Phil. Trans. Roy.
+ *                    Soc. of London. Series A, 313, pp. 47 - 70.
+ * @param[out] domega Effect on rotational speed [rad/sec]
+ * @return            An integer value always 0.
+ *
+ * @version 20.12.2011
+ *
+ * @cite Petit, G. and Luzum, B. (eds.), IERS Conventions (2010),
+ *     IERS Technical Note No. 36, BKG (2010)
+ */
 int rg_zont2(const dso::TwoPartDate &tt_mjd, double &dut, double &dlod,
              double &domega) noexcept;
 

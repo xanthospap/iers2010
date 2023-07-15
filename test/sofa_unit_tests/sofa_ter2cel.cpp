@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
   {
     const int start = (int)orb[0].t.big() - 5;
     const int end = (int)orb[0].t.big() + 5;
-    if (dso::parse_iers_C0414(argv[1], start, end, eop_lut)) {
+    if (dso::parse_iers_C04(argv[1], start, end, eop_lut)) {
       fprintf(stderr, "ERROR. Failed collecting EOP data\n");
       return 1;
     }
