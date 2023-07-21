@@ -181,16 +181,16 @@ public:
                              int order) const noexcept;
 
 
-  /// @brief Interpolate and correct to get EOP/ERP parameters at given date
-  ///
-  /// See IERS Conventions 2010, Petit et al., Chapter 5.5
-  ///
-  /// @param[in] mjd Interpolation epoch given as mjd [TT] (assuming that
-  ///            the calling instance's mjd array is in TT)
-  /// @param[out] eopr EOP/ERP parameters at requested epoch, as computed by
-  ///            Lagrangian interpolation and the removal of ocen-tide effects
-  ///            and libration effects.
-  /// @return Anything other than 0 is an error
+  /* @brief Interpolate and correct to get EOP/ERP parameters at given date
+   * 
+   *  See IERS Conventions 2010, Petit et al., Chapter 5.5
+   * 
+   *  @param[in] mjd Interpolation epoch given as mjd [TT] (assuming that
+   *             the calling instance's mjd array is in TT)
+   *  @param[out] eopr EOP/ERP parameters at requested epoch, as computed by
+   *             Lagrangian interpolation and the removal of ocen-tide effects
+   *             and libration effects.
+   *  @return Anything other than 0 is an error
   int interpolate(const dso::TwoPartDate &mjd, dso::EopRecord &eopr, int order,
                   bool regularized) const noexcept;
 };/* EopLookUpTable */

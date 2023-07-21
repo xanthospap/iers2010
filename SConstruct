@@ -102,6 +102,7 @@ if make_test:
   tests_sources = glob.glob(r"test/fortran_unit_tests/test_*.cpp")
   tests_sources += glob.glob(r"test/internal/internal_*.cpp")
   tests_sources += glob.glob(r"test/sofa_unit_tests/sofa_*.cpp")
+  tests_sources += glob.glob(r"test/eop/*.cpp")
   link_w = "test/sofa_unit_tests/unit_test_help.cpp"
   env.Append(RPATH=root_dir)
   for tsource in tests_sources:

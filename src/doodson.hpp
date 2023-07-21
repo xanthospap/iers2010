@@ -14,15 +14,26 @@ namespace dso {
  * @ref "Indexing and argument conventions for tides", Richard Ray (GSFC),
  *        2017, available at:
  *  https://ivscc.gsfc.nasa.gov/hfeop_wg/memos/memo-conventions_Ray_2017Dec10.pdf
+ *
+ *  Each instance holds the 6 Fundamental Doodson variables, namely:
+ *  Table 1: Fundamental variables—Doodson versus Delaunay
+ * Variable (k_i)                      Rate (cpd)    Period
+ * ---------------------------------------------------------------------------
+ * τ  mean lunar time                  9.661 × 10−1  1.03505 d (lunar day)
+ * s  mean longitude of moon           3.660 × 10−2  27.32158 d (tropical month)
+ * h  mean longitude of sun            2.738 × 10−3  365.2422 d (tropical year)
+ * p  mean longitude of lunar perigee  3.095 × 10−4  8.847 y (lunar orbit precession)
+ * N' negative longitude of lunar node 1.471 × 10−4  18.61 y (regression of lunar node)
+ * ps mean longitude of solar perigee  1.307 × 10−7  21,000 y
  */
 class DoodsonNumber {
 private:
-  /* the six first arguemnts are the Doodson multipliers for Doodson
-   *  arguments, [τ, s, h, p, N', p_s]
-   *  the seventh term, (iar[6]) is an integer multiple of 90[deg] (see
-   *  Ray, 2017)
-   *  @warning We store here the "multipliers" of the Doodson variables,
-   *           without the +/-5 convention oftenly used (following Ray, 2017)
+  /* The six first arguemnts are the Doodson multipliers for Doodson
+   * arguments, [τ, s, h, p, N', p_s]
+   * The seventh term, (iar[6]) is an integer multiple of 90[deg] (see
+   * Ray, 2017)
+   * @warning We store here the "multipliers" of the Doodson variables,
+   *          without the +/-5 convention oftenly used (following Ray, 2017)
    */
   int iar[7] = {0};
 
@@ -97,6 +108,34 @@ public:
   /* @brief Inequality comparisson */
   bool operator!=(const DoodsonNumber &other) const noexcept {
     return !(this->operator==(other));
+  }
+
+  /* @brief Check if two tidal constituents are of the same "spicies", i.e. 
+   *        share k1 values.
+   * Richard Ray, Indexing and argument conventions for tides, 2017
+   * https://ivscc.gsfc.nasa.gov/hfeop_wg/memos/memo_conventions_Ray_2017Dec04.pdf
+   */
+  constexpr const bool same_species(const DoodsonNumber &other) const noexcept {
+    return iar[0] == other.iar[0];
+  }
+  
+  /* @brief Check if two tidal constituents are of the same "group", i.e. 
+   *        share k1 and k2 values.
+   * Richard Ray, Indexing and argument conventions for tides, 2017
+   * https://ivscc.gsfc.nasa.gov/hfeop_wg/memos/memo_conventions_Ray_2017Dec04.pdf
+   */
+  constexpr const bool same_group(const DoodsonNumber &other) const noexcept {
+    return (this->same_species(other) && (iar[1] == other.iar[1]));
+  }
+  
+  /* @brief Check if two tidal constituents are of the same "constituent", i.e. 
+   *        share k1, k2 and k3 values.
+   * Richard Ray, Indexing and argument conventions for tides, 2017
+   * https://ivscc.gsfc.nasa.gov/hfeop_wg/memos/memo_conventions_Ray_2017Dec04.pdf
+   */
+  constexpr const bool
+  same_constituent(const DoodsonNumber &other) const noexcept {
+    return (this->same_group(other) && (iar[2] == other.iar[2]));
   }
 
   /* @brief Compute θ_f = Σ(β_i * n_i), i=1,..,6 */
