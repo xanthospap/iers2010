@@ -1,4 +1,4 @@
-import os, sys, glob
+import os, sys, glob, json
 
 ## Prefic for install(ed) files
 ## prefix="/usr/local"
@@ -44,17 +44,17 @@ AddOption('--std',
 
 ## Source files (for lib)
 lib_src_files = glob.glob(r"src/*.cpp")
-lib_src_files += glob.glob(r"src/iau/*.cpp")
-lib_src_files += glob.glob(r"src/ch5/*.cpp")
-lib_src_files += glob.glob(r"src/ch7/*.cpp")
-lib_src_files += glob.glob(r"src/ch8/*.cpp")
-lib_src_files += glob.glob(r"src/ch9/*.cpp")
-lib_src_files += glob.glob(r"src/ch10/*.cpp")
-lib_src_files += glob.glob(r"src/hardisp/*.cpp")
-lib_src_files += glob.glob(r"src/dehanttideinel/*.cpp")
-lib_src_files += glob.glob(r"src/extra/atmosphere/*.cpp")
-lib_src_files += glob.glob(r"src/interpf/*.cpp")
-lib_src_files += glob.glob(r"src/eop/*.cpp")
+#lib_src_files += glob.glob(r"src/iau/*.cpp")
+#lib_src_files += glob.glob(r"src/ch5/*.cpp")
+#lib_src_files += glob.glob(r"src/ch7/*.cpp")
+#lib_src_files += glob.glob(r"src/ch8/*.cpp")
+#lib_src_files += glob.glob(r"src/ch9/*.cpp")
+#lib_src_files += glob.glob(r"src/ch10/*.cpp")
+#lib_src_files += glob.glob(r"src/hardisp/*.cpp")
+#lib_src_files += glob.glob(r"src/dehanttideinel/*.cpp")
+#lib_src_files += glob.glob(r"src/extra/atmosphere/*.cpp")
+#lib_src_files += glob.glob(r"src/interpf/*.cpp")
+#lib_src_files += glob.glob(r"src/eop/*.cpp")
 
 ## Headers (for lib)
 hdr_src_files = glob.glob(r"src/*.hpp")
@@ -67,7 +67,7 @@ penv = Environment(PREFIX=GetOption(
 
 ## Command line arguments ...
 debug = ARGUMENTS.get('debug', 0)
-make_test = ARGUMENTS.get('make-test', 0)
+make_test = ARGUMENTS.get('test', 0)
 
 ## Construct the build enviroment
 env = denv.Clone() if int(debug) else penv.Clone()
@@ -84,11 +84,11 @@ vlib = env.SharedLibrary(source=lib_src_files, target=lib_name, CPPPATH=[
                          'src/'], SHLIBVERSION=lib_version)
 
 ## Build ....
-env.Program(source='src/hardisp.cpp',
-    target='bin/hardisp',
-    LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], 
-    LIBPATH='.', 
-    CPPPATH=['src/'])
+#env.Program(source='src/hardisp.cpp',
+#    target='bin/hardisp',
+#    LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], 
+#    LIBPATH='.', 
+#    CPPPATH=['src/'])
 env.Alias(target='install', source=env.Install(dir=os.path.join(
     GetOption('prefix'), 'include', inc_dir), source=hdr_src_files))
 env.Alias(target='install', source=env.InstallVersionedLib(
@@ -96,22 +96,29 @@ env.Alias(target='install', source=env.InstallVersionedLib(
 
 ## Tests ...
 if make_test:
-  #tests_sources  = glob.glob(r"test/*.cpp")
-  #tests_sources = glob.glob(r"test/cel2ter/*.cpp")
-  #tests_sources = glob.glob(r"test/parsers/*.cpp")
-  tests_sources = glob.glob(r"test/fortran_unit_tests/test_*.cpp")
-  tests_sources += glob.glob(r"test/internal/internal_*.cpp")
-  tests_sources += glob.glob(r"test/sofa_unit_tests/sofa_*.cpp")
-  tests_sources += glob.glob(r"test/eop/*.cpp")
-  link_w = "test/sofa_unit_tests/unit_test_help.cpp"
-  env.Append(RPATH=root_dir)
+  tenv = env.Clone()
+  tenv['CXXFLAGS'] = ' '.join([ x for x in env['CXXFLAGS'].split() if 'inline' not in x])
+  cmp_error_fn = 'test/unit_tests/test_compilation_error.json'
+  cerror_dct = {}
+  if os.path.isfile(cmp_error_fn): os.remove(cmp_error_fn)
+  tests_sources  = glob.glob(r"test/unit_tests/*.cpp")
+  tenv.Append(RPATH=root_dir)
   for tsource in tests_sources:
-    pth = os.path.dirname(tsource)
-    bsn = os.path.basename(tsource)
-    ttarget = os.path.join(pth, bsn.replace(
-        '_', '-').replace('.cpp', '.out'))
-    env.Program(target=ttarget, 
-        source=[tsource, link_w], 
-        CPPPATH='src/',
-        LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], 
-        LIBPATH=root_dir, RPATH=["."])
+    ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
+    if 'mock' in os.path.basename(tsource):
+      cerror_dct[os.path.basename(tsource)] = {
+                'name': '{:}'.format(os.path.abspath(tsource)),
+                'cxx': '{:}'.format(tenv['CXX']),
+                'incp' : '{:}'.format(os.path.abspath(os.path.join(tenv['RPATH'], 'src'))),
+                'flags': '{:}'.format(' '.join(['-o', tenv['CXXFLAGS']])), 
+                'exit': 1}
+    else:
+      # print('adding target {:}'.format(ttarget))
+      tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.')
+    with open(cmp_error_fn, 'w') as fjson: print(json.dumps(cerror_dct, indent = 4), file=fjson)
+    #env.Program(target=ttarget, 
+    #    #source=[tsource, link_w], 
+    #    source=[tsource], 
+    #    CPPPATH='src/',
+    #    LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], 
+    #    LIBPATH=root_dir, RPATH=["."])
