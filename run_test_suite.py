@@ -6,7 +6,44 @@ import subprocess
 import argparse
 import ftplib
 import importlib.util
+import urllib.request
 import json
+
+def get_data_files(data_files_dct):
+    for d in data_files_dct:
+        if not os.path.isfile(d["local"]):
+            try:
+                print("Downloading data file {:} to {:}".format(d["url"], d["local"]))
+                urllib.request.urlretrieve(d["url"], d["local"])
+            except:
+                print("ERROR. Failed to download data file {:}".format(d["url"]), file=sys.stderr)
+                sys.exit(1)
+
+def prog_needs_args(prog_path, special_progs_dct):
+    prog_name = os.path.basename(prog_path)
+    for d in special_progs_dct:
+        if prog_name == d['prog']:
+            return True
+    return False
+
+def check_file_vs_str(file, str):
+    with open(file, 'r') as fin:
+        fstr = fin.read()
+        return (fstr == str)
+
+def run_progs_with_args(special_progs_dct):
+    for d in special_progs_dct:
+        if not os.path.isfile(os.path.join(d['path'],d['prog'])):
+            print('ERROR Failed to find executable {:}'.format(d['prog']), file=sys.stderr)
+            sys.exit(1)
+        exe = '{:}'.format(os.path.join(d['path'],d['prog'])) 
+        cmdargs = ['{:}'.format(x) for x in d['args']]
+        print('Running command {:}'.format(' '.join([exe]+cmdargs)))
+        with open('.tmp.result', 'w') as fout:
+            result = subprocess.run([exe] + cmdargs, stdout=fout, stderr=subprocess.STDOUT, check=False)
+        if result.returncode != int(d['exit']):
+            print('ERROR Expected exit code {:} and got {:}; program: {:}'.format(d['exit'], result.returncode, exe), file=sys.stderr)
+            sys.exit(1)
 
 class myFormatter(argparse.ArgumentDefaultsHelpFormatter,
                   argparse.RawTextHelpFormatter):
@@ -41,11 +78,11 @@ parser.add_argument(
 parser.add_argument(
     '--reference-results',
     metavar='REFERENCE_RESULTS_FILE',
-    dest='ref_respy',
+    dest='reffn',
     default=os.path.join(
         os.path.abspath(
             os.getcwd()),
-        'test/reference_results.py'),
+        'data/reference_results.py'),
     required=False,
     help='File with reference test results, for comparing against')
 
@@ -64,6 +101,13 @@ if __name__ == '__main__':
 # verbose print
     verboseprint = print if args.verbose else lambda *a, **k: None
 
+# run tests with command line arguments
+    with open(args.reffn, "rb") as source_file:
+        code = compile(source_file.read(), args.reffn, "exec")
+    exec(code)
+    get_data_files(data_files)
+    run_progs_with_args(special_progs)
+
 # run tests recursively in each-subdir
     for sdir in test_subdirs:
         path = os.path.join(args.progs_dir, sdir)
@@ -71,7 +115,7 @@ if __name__ == '__main__':
             print('ERROR Expected to find dir {:} but couldn\'t!'.format(path), file=sys.stderr)
             sys.exit(1)
         for file in os.listdir(path):
-            if file.endswith('.out'):
+            if file.endswith('.out') and not prog_needs_args(file, special_progs):
                 exe = os.path.join(path, file)
                 verboseprint('Running command: {:}'.format([exe]))
 # assert a 0 exit code

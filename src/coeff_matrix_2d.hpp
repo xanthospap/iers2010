@@ -1,6 +1,6 @@
-/** @file 
- * Naive implementation of 2-Dimensional matrices; note that this 
- * implementation targets 2-dimensional matrices that are only meant to store 
+/** @file
+ * Naive implementation of 2-Dimensional matrices; note that this
+ * implementation targets 2-dimensional matrices that are only meant to store
  * data NOT perform arithmetic operations.
  */
 
@@ -9,7 +9,6 @@
 
 #include "coeff_matrix_storage.hpp"
 #include <cstring>
-#include <cstdio>
 #ifdef DEBUG
 #include <cassert>
 #include <cstdio>
@@ -59,9 +58,9 @@ public:
   }
 
   /** @brief Row/Column indexing (rows and columns start from 0 --not 1--)
-   * 
-   * If the data is stored in a Row-Wise manner, this function will return 
-   * the offset of the ith row; if data is stored in a column-wise manner, 
+   *
+   * If the data is stored in a Row-Wise manner, this function will return
+   * the offset of the ith row; if data is stored in a column-wise manner,
    * it will return the index of the first elelement of the ith column.
    */
   const double *slice(int i) const noexcept {
@@ -69,9 +68,9 @@ public:
   }
 
   /** @brief Row/Column indexing (rows and columns start from 0 --not 1--)
-   * 
-   * If the data is stored in a Row-Wise manner, this function will return 
-   * the offset of the ith row; if data is stored in a column-wise manner, 
+   *
+   * If the data is stored in a Row-Wise manner, this function will return
+   * the offset of the ith row; if data is stored in a column-wise manner,
    * it will return the index of the first elelement of the ith column.
    */
   double *slice(int i) noexcept { return m_data + m_storage.slice(i); }
@@ -81,9 +80,20 @@ public:
    * Only defined if the MatrixStorageType uses some kind of Column Major
    * storage sequence.
    */
-  template<MatrixStorageType t = S,
-    std::enable_if_t<StorageImplementation<t>::isColMajor,bool> = true>
+  template <MatrixStorageType t = S,
+            std::enable_if_t<StorageImplementation<t>::isColMajor, bool> = true>
   double *column(int j) noexcept {
+    return slice(j);
+  }
+  
+  /** @brief Const pointer to the begining of a given column.
+   *
+   * Only defined if the MatrixStorageType uses some kind of Column Major
+   * storage sequence.
+   */
+  template <MatrixStorageType t = S,
+            std::enable_if_t<StorageImplementation<t>::isColMajor, bool> = true>
+  const double *column(int j) const noexcept {
     return slice(j);
   }
 
@@ -92,9 +102,20 @@ public:
    * Only defined if the MatrixStorageType uses some kind of Row Major
    * storage sequence.
    */
-  template<MatrixStorageType  t = S,
-    std::enable_if_t<StorageImplementation<t>::isRowMajor,bool> = true>
+  template <MatrixStorageType t = S,
+            std::enable_if_t<StorageImplementation<t>::isRowMajor, bool> = true>
   double *row(int j) noexcept {
+    return slice(j);
+  }
+  
+  /** @brief Const pointer to the begining of a given row.
+   *
+   * Only defined if the MatrixStorageType uses some kind of Row Major
+   * storage sequence.
+   */
+  template <MatrixStorageType t = S,
+            std::enable_if_t<StorageImplementation<t>::isRowMajor, bool> = true>
+  const double *row(int j) const noexcept {
     return slice(j);
   }
 
@@ -116,7 +137,7 @@ public:
   double *data() noexcept { return m_data; }
 #endif
 
-  /** Constructor using number of rows and columns; for some 
+  /** Constructor using number of rows and columns; for some
    * MatrixStorageType's, the number of columns may not be needed.
    */
   CoeffMatrix2D(int rows, int cols) noexcept
@@ -139,9 +160,10 @@ public:
   }
 
   /** Move constructor */
-  CoeffMatrix2D(CoeffMatrix2D &&mat) noexcept : m_storage(mat.m_storage), m_data(mat.m_data) {
+  CoeffMatrix2D(CoeffMatrix2D &&mat) noexcept
+      : m_storage(mat.m_storage), m_data(mat.m_data) {
     mat.m_data = nullptr;
-    mat.m_storage.__set_dimensions(0,0);
+    mat.m_storage.__set_dimensions(0, 0);
   }
 
   /** (Copy) Assignment operator */
@@ -162,7 +184,7 @@ public:
     m_data = mat.m_data;
     m_storage.__set_dimensions(mat.rows(), mat.cols());
     mat.m_data = nullptr;
-    mat.m_storage.__set_dimensions(0,0);
+    mat.m_storage.__set_dimensions(0, 0);
     return *this;
   }
 
