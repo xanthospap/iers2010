@@ -44,6 +44,10 @@ def run_progs_with_args(special_progs_dct):
         if result.returncode != int(d['exit']):
             print('ERROR Expected exit code {:} and got {:}; program: {:}'.format(d['exit'], result.returncode, exe), file=sys.stderr)
             sys.exit(1)
+        if 'results' in d:
+            if not check_file_vs_str('.tmp.result', d['results']):
+                print('ERROR. Failed test {:}; expected string did not match output'.format(exe), file=sys.stderr)
+                sys.exit(1)
 
 class myFormatter(argparse.ArgumentDefaultsHelpFormatter,
                   argparse.RawTextHelpFormatter):

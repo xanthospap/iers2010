@@ -4,8 +4,13 @@
 .sconsign.dblite
 .vscode/
 data/gpt3_?.grd
-
 var/gpt3/matlab/*.m
+
+# ICGEM files
+*.gfc
+
+# var JSON files
+*.json
 
 # Compiled Object files
 *.slo

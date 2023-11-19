@@ -12,7 +12,7 @@
 #ifndef __ICGEM_POTENTIAL_IO_HPP__
 #define __ICGEM_POTENTIAL_IO_HPP__
 
-#include "datetime/dtcalendar.hpp"
+#include "datetime/tpdate.hpp"
 #include "stokes_coefficients.hpp"
 #include <cstring>
 #include <fstream>
@@ -29,6 +29,17 @@ namespace dso {
 class Icgem {
 public:
   typedef std::ifstream::pos_type pos_type;
+  enum ErrorModel : char {No, Calibrated, Formal, CalibratedAndFormal};
+  enum DataEntryType : char {gfc, gfct, trnd, asin, acos};
+  struct DataEntry {
+    DataEntryType key;
+    int degree; /** degree of current entry term */
+    int order; /** order of current entry term */
+    double C, S; /* Cnm and Snm harmonic terms */
+    /* for ICGEM format version-1, t0 is t */
+    TwoPartDate t0, t1;
+    double period; /* in [years] */
+  }; /* struct DataEntry */
 
 private:
   /** the filename */
@@ -57,18 +68,34 @@ private:
    *   both "calibrated_and_formal" 
    * errors are included
    */
-  char _errors[64] = {'\0'};
+  ErrorModel _errors;
   /** gravitational constant times mass of the earth [m^3s^-2] */
   double _earth_gravity_constant{0e0};
   /** reference radius of the spherical harmonic development [m] */
   double _radius{0e0};
   /** maximum degree of the spherical harmonic development */
   int _max_degree{0};
+  
+  /** @brief Read the file header and assign basic information. 
+   *
+   * If the parameter \p quiet_skip is true, then the function will not emmit 
+   * warnings for header lines that were not 'stored' in any of the member 
+   * variables. If the \p quiet_skip is false, then any line within the header 
+   * section that is not 'recognized' will emit a warning message to STDERR.
+   * Warnings are only emitted for lines within the header section (i.e. 
+   * between the 'begin_of_head' and 'end_of_head' part.
+   */
+  int parse_header(bool quiet_skip=true) noexcept;
 
 public:
 
-  /** Constructor from file name (of the icgem file */
-  Icgem(const char *fn) noexcept : _filename(fn){};
+  /** Constructor from file name (of the icgem file).
+   *
+   * Note that the constructor will parse the file's header and assign member
+   * variables (via a call to parse_header). In case this fails, then it will 
+   * throw.
+   */
+  Icgem(const char *fn);
 
   /** Copy construction not allowed ! */
   Icgem(const Icgem &) noexcept = delete;
@@ -94,7 +121,7 @@ public:
   const char *tide_system() const noexcept {return _tide_system;}
   
   /** get the supplied error 'model' */
-  const char *errors() const noexcept {return _errors;}
+  ErrorModel errors() const noexcept {return _errors;}
 
   /** get max harmonics degree */
   int max_degree() const noexcept { return _max_degree; }
@@ -109,17 +136,6 @@ public:
   bool is_normalized() const noexcept {
     return !std::strcmp(_norm, "fully_normalized");
   }
-
-  /** @brief Read the file header and assign basic information. 
-   *
-   * If the parameter \p quiet_skip is true, then the function will not emmit 
-   * warnings for header lines that were not 'stored' in any of the member 
-   * variables. If the \p quiet_skip is false, then any line within the header 
-   * section that is not 'recognized' will emit a warning message to STDERR.
-   * Warnings are only emitted for lines within the header section (i.e. 
-   * between the 'begin_of_head' and 'end_of_head' part.
-   */
-  int parse_header(bool quiet_skip=true) noexcept;
 
   /** @brief Parse harmonic coefficients up to degree l and order m.
    * 
@@ -144,6 +160,13 @@ public:
   //int parse_data(int l, int k, const dso::TwoPartDate &t,
   //               StokesCoeffs *coeffs) noexcept;
 }; /* class Icgem */
+
+int resolve_icgem_data_line_v1(const char *line, Icgem::ErrorModel er,
+                               Icgem::DataEntry &entry) noexcept;
+int resolve_icgem_data_line_v2(const char *line, Icgem::ErrorModel er,
+                               Icgem::DataEntry &entry) noexcept;
+int resolve_icgem_data_date_v2(const char *line, dso::TwoPartDate &t,
+                               const char *&last) noexcept;
 
 } /* namespace dso */
 #endif

@@ -215,7 +215,22 @@ int dso::Icgem::parse_header(bool quiet_skip) noexcept {
                 "errors", _filename.c_str(), __func__);
         error = 1;
       } else {
-        right_trim(std::strcpy(_errors, arg));
+        /* right_trim(std::strcpy(_errors, arg)); */
+        if (!std::strncmp(arg, "calibrated_and_formal", 21))
+          _errors = ErrorModel::CalibratedAndFormal;
+        else if (!std::strncmp(arg, "calibrated", 10))
+          _errors = ErrorModel::Calibrated;
+        else if (!std::strncmp(arg, "formal", 10))
+          _errors = ErrorModel::Formal;
+        else if (!std::strncmp(arg, "no", 10))
+          _errors = ErrorModel::No;
+        else {
+          fprintf(stderr,
+                  "[ERROR] Failed parsing value for parameter %s in icgem "
+                  "%s(traceback: %s)\n",
+                  "errors", _filename.c_str(), __func__);
+          error = 1;
+        }
       }
 
       /* check if this the 'tide_system' field (optional keyword) */
