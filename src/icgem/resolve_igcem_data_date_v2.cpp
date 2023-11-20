@@ -1,7 +1,7 @@
 #include "icgemio.hpp"
 #include <charconv>
 
-int dso::resolve_icgem_data_date_v2(const char *line, dso::TwoPartDate &t,
+int dso::resolve_icgem_data_date_v2(const char *line, dso::Icgem::Datetime &t,
                                     const char *&ptr) noexcept {
   int ints[5];
   const char *str = line;
@@ -42,9 +42,9 @@ int dso::resolve_icgem_data_date_v2(const char *line, dso::TwoPartDate &t,
   }
 
   /* construct datetime */
-  t = dso::TwoPartDate(dso::datetime<dso::nanoseconds>(
-      dso::year(ints[0]), dso::month(ints[1]), dso::day_of_month(ints[2]),
-      dso::hours(ints[3]), dso::minutes(ints[4]), dso::nanoseconds(0)));
+  t = dso::Icgem::Datetime(dso::year(ints[0]), dso::month(ints[1]),
+                           dso::day_of_month(ints[2]), dso::hours(ints[3]),
+                           dso::minutes(ints[4]), dso::nanoseconds(0));
 
   /* set pointer to first, unresolved char */
   ptr = res.ptr;

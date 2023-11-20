@@ -44,6 +44,7 @@ AddOption('--std',
 
 ## Source files (for lib)
 lib_src_files = glob.glob(r"src/*.cpp")
+lib_src_files += glob.glob(r"src/icgem/*.cpp")
 #lib_src_files += glob.glob(r"src/iau/*.cpp")
 #lib_src_files += glob.glob(r"src/ch5/*.cpp")
 #lib_src_files += glob.glob(r"src/ch7/*.cpp")

@@ -7,12 +7,14 @@
  * and distribution of global gravitational models, associated services and
  * future plans.- Earth System Science Data, 11, pp.647 - 674, DOI :
  * http:// doi.org/10.5194/essd-11-647-2019.
+ *
+ * ICGEM format: http://icgem.gfz-potsdam.de/ICGEM-Format-2023.pdf
  */
 
 #ifndef __ICGEM_POTENTIAL_IO_HPP__
 #define __ICGEM_POTENTIAL_IO_HPP__
 
-#include "datetime/tpdate.hpp"
+#include "datetime/dtcalendar.hpp"
 #include "stokes_coefficients.hpp"
 #include <cstring>
 #include <fstream>
@@ -29,15 +31,18 @@ namespace dso {
 class Icgem {
 public:
   typedef std::ifstream::pos_type pos_type;
+  using Datetime = dso::datetime<dso::nanoseconds>;
+
   enum ErrorModel : char {No, Calibrated, Formal, CalibratedAndFormal};
   enum DataEntryType : char {gfc, gfct, trnd, asin, acos};
+  enum IcgemVersion : char { v10, v20 };
   struct DataEntry {
     DataEntryType key;
     int degree; /** degree of current entry term */
     int order; /** order of current entry term */
     double C, S; /* Cnm and Snm harmonic terms */
     /* for ICGEM format version-1, t0 is t */
-    TwoPartDate t0, t1;
+    Datetime t0, t1;
     double period; /* in [years] */
   }; /* struct DataEntry */
 
@@ -46,6 +51,11 @@ private:
   std::string _filename;
   /** start of data section (within file) */
   pos_type data_section_pos{0};
+  /** the format of the file; default is v1.0, otherwise it must be specified 
+   * within the file (header section). This is resilved at construction, when 
+   * the header is parsed.
+   */
+  IcgemVersion _version{IcgemVersion::v10};
   /** the product type */
   char _product_type[64] = {'\0'};
   /** model name: name of the model (usually the respective filename without 
@@ -83,7 +93,7 @@ private:
    * variables. If the \p quiet_skip is false, then any line within the header 
    * section that is not 'recognized' will emit a warning message to STDERR.
    * Warnings are only emitted for lines within the header section (i.e. 
-   * between the 'begin_of_head' and 'end_of_head' part.
+   * between the begining of the file and 'end_of_head' part).
    */
   int parse_header(bool quiet_skip=true) noexcept;
 
@@ -123,6 +133,9 @@ public:
   /** get the supplied error 'model' */
   ErrorModel errors() const noexcept {return _errors;}
 
+  /** version of the file */
+  IcgemVersion version() const noexcept {return _version;}
+
   /** get max harmonics degree */
   int max_degree() const noexcept { return _max_degree; }
 
@@ -157,15 +170,74 @@ public:
    *            S/C harmonic coefficients are to be stored. Note that this
    *            instance should have been allocated with enough space.
    */
-  //int parse_data(int l, int k, const dso::TwoPartDate &t,
-  //               StokesCoeffs *coeffs) noexcept;
+  int parse_data(int up_to_degree, int up_to_order, const Icgem::Datetime &t,
+                 StokesCoeffs &coeffs) noexcept;
 }; /* class Icgem */
 
+/** Parse & resolve an ICGEM v1.0 data line.
+ *
+ * The line can hold any of the 'gfc', 'gfct', 'trnd', 'asin' and 'acos' 
+ * parameters of the model. The resolved line is stored in an Icgem::DataEntry
+ * instance. The ErrorModel of the file is needed to account for a correct 
+ * parsing of the fields.
+ *
+ * @param[in] line An ICGEM v1.0 data line
+ * @param[in] er   The error model of the corresponding file
+ * @param[out] entry The parameters of the line stored as an Icgem::DataEntry 
+ *                 instance. Note that for the v1.0 format, there are no 
+ *                 t0 and t1 values, but only a t value (for the 'gfct' 
+ *                 parameter). This is tored in the t0 value.
+ * @return Anything other than 0 denotes an error.
+ */
 int resolve_icgem_data_line_v1(const char *line, Icgem::ErrorModel er,
                                Icgem::DataEntry &entry) noexcept;
+
+/** Parse & resolve an ICGEM v2.0 data line.
+ *
+ * The line can hold any of the 'gfc', 'gfct', 'trnd', 'asin' and 'acos' 
+ * parameters of the model. The resolved line is stored in an Icgem::DataEntry
+ * instance. The ErrorModel of the file is needed to account for a correct 
+ * parsing of the fields.
+ *
+ * @param[in] line An ICGEM v2.0 data line
+ * @param[in] er   The error model of the corresponding file
+ * @param[out] entry The parameters of the line stored as an Icgem::DataEntry 
+ *                 instance. 
+ * @return Anything other than 0 denotes an error.
+ */
 int resolve_icgem_data_line_v2(const char *line, Icgem::ErrorModel er,
                                Icgem::DataEntry &entry) noexcept;
-int resolve_icgem_data_date_v2(const char *line, dso::TwoPartDate &t,
+
+/** Read and parse a date given in the format: yyyymmdd.hhmm
+ *
+ * This format is normally used within the data section of the ICGEM v2 format
+ * (for validity intervals).
+ * It is expected that the input string str starts with the first digit of 
+ * year (i.e. no whitespaces before the date).
+ *
+ * @param[in] line  A null-terminated C-string of type: yyyymmdd.hhmm
+ * @param[out] t    The resolved datetime
+ * @param[out] last The first non-resolved character (i.e. one character past
+ *                  the yyyymmdd.hhmm part)
+ * @return Anything other than 0 denotes an error
+ */
+int resolve_icgem_data_date_v2(const char *line, Icgem::Datetime &t,
+                               const char *&last) noexcept;
+
+/** Read and parse a date given in the format: yyyymmdd
+ *
+ * This format is normally used within the data section of the ICGEM v1 
+ * format.
+ * It is expected that the input string str starts with the first digit of 
+ * year (i.e. no whitespaces before the date).
+ *
+ * @param[in] line  A null-terminated C-string of type: yyyymmdd
+ * @param[out] t    The resolved datetime
+ * @param[out] last The first non-resolved character (i.e. one character past
+ *                  the yyyymmdd part)
+ * @return Anything other than 0 denotes an error
+ */
+int resolve_icgem_data_date_v1(const char *line, Icgem::Datetime &t,
                                const char *&last) noexcept;
 
 } /* namespace dso */

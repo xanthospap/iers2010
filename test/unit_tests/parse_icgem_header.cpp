@@ -14,6 +14,7 @@ char *tostr(Icgem::ErrorModel e, char *buf) {
   case Icgem::ErrorModel::No:
     return std::strcpy(buf, "no");
   }
+  return nullptr;
 }
 
 int main(int argc, char *argv[]) {

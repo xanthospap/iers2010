@@ -1,9 +1,9 @@
 #include "icgemio.hpp"
 #include <cassert>
+#include <charconv>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <charconv>
 
 namespace {
 constexpr int max_header_lines = 1000;
@@ -36,7 +36,7 @@ const char *next_ws_char(const char *line) noexcept {
 const char *right_trim(char *str) noexcept {
   /* go to the rightmost character of the string */
   char *right = str + std::strlen(str) - 1;
-  while (*right && right!=str && *right == ' ') {
+  while (*right && right != str && *right == ' ') {
     *right = '\0';
     --right;
   }
@@ -106,20 +106,26 @@ int dso::Icgem::parse_header(bool quiet_skip) noexcept {
   int counter = 0;
   int error = 0;
 
-  /* first off, skip the part between the begining of the file and the start 
+  /* first off, skip the part between the begining of the file and the start
    * of the header. That is, find the line begining with the string:
    * 'begin_of_head'
+   *
+   *  Update:
+   *  The "begin_of_head" keyword is optional, hence we cannot count that it
+   *  will be present. Hence, the best solution is to read the whole part from
+   *  the begining of the file to the "end_of_head" keyword and consider it as
+   *  the header section.
    */
   fin.getline(line, bsz);
-  while (std::strncmp(line, "begin_of_head", 13)) {
-    if (!fin.getline(line, bsz) || (++counter > max_header_lines)) {
-      fprintf(stderr,
-              "[ERROR] Failed parsing header in icgem %s; too many header "
-              "lines ... (traceback: %s)\n",
-              _filename.c_str(), __func__);
-      return 1;
-    }
-  }
+  // while (std::strncmp(line, "begin_of_head", 13)) {
+  //   if (!fin.getline(line, bsz) || (++counter > max_header_lines)) {
+  //     fprintf(stderr,
+  //             "[ERROR] Failed parsing header in icgem %s; too many header "
+  //             "lines ... (traceback: %s)\n",
+  //             _filename.c_str(), __func__);
+  //     return 1;
+  //   }
+  // }
 
   /* keep reading new lines untill we meet a line starting with 'end_of_head' */
   while (std::strncmp(line, "end_of_head", 11)) {
@@ -215,14 +221,13 @@ int dso::Icgem::parse_header(bool quiet_skip) noexcept {
                 "errors", _filename.c_str(), __func__);
         error = 1;
       } else {
-        /* right_trim(std::strcpy(_errors, arg)); */
         if (!std::strncmp(arg, "calibrated_and_formal", 21))
           _errors = ErrorModel::CalibratedAndFormal;
         else if (!std::strncmp(arg, "calibrated", 10))
           _errors = ErrorModel::Calibrated;
-        else if (!std::strncmp(arg, "formal", 10))
+        else if (!std::strncmp(arg, "formal", 6))
           _errors = ErrorModel::Formal;
-        else if (!std::strncmp(arg, "no", 10))
+        else if (!std::strncmp(arg, "no", 2))
           _errors = ErrorModel::No;
         else {
           fprintf(stderr,
@@ -255,6 +260,28 @@ int dso::Icgem::parse_header(bool quiet_skip) noexcept {
         error = 1;
       } else {
         right_trim(std::strcpy(_norm, arg));
+      }
+
+      /* check for format/version */
+    } else if (match_header_keyword("format", line, arg)) {
+      if (!(*arg)) {
+        fprintf(stderr,
+                "[ERROR] Failed parsing value for parameter %s in icgem "
+                "%s(traceback: %s)\n",
+                "format", _filename.c_str(), __func__);
+        error = 1;
+      } else {
+        if (!std::strncmp("icgem1.0", arg, 8))
+          _version = IcgemVersion::v10;
+        else if (!std::strncmp("icgem2.0", arg, 8))
+          _version = IcgemVersion::v20;
+        else {
+          fprintf(stderr,
+                  "[ERROR] Invalid ICGEM version (keyword=\'format\') in icgem "
+                  "%s (traceback: %s)\n",
+                  _filename.c_str(), __func__);
+          error = 2;
+        }
       }
 
     } else {

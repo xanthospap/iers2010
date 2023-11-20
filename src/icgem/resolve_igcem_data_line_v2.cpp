@@ -65,6 +65,9 @@ int dso::resolve_icgem_data_line_v2(const char *line, dso::Icgem::ErrorModel er,
       ++error;
     /* assign entry data */
     entry.key = Icgem::DataEntryType::gfc;
+    /* assign min and max for dates */
+    entry.t0 = Icgem::Datetime::min();
+    entry.t1 = Icgem::Datetime::max();
 
   } else if (!std::strncmp(line, "gfct", 4)) {
     /* Time variable spherical harmonic coefficients, according to the
