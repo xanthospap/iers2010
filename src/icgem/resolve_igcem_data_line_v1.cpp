@@ -102,7 +102,7 @@ int dso::resolve_icgem_data_line_v1(const char *line, dso::Icgem::ErrorModel er,
     /* set key */
     entry.key = Icgem::DataEntryType::gfct;
 
-  } else if (!std::strncmp(line, "trnd", 4)) {
+  } else if ((!std::strncmp(line, "trnd", 4)) || (!std::strncmp(line, "dot ", 4))) {
     /* Time variable spherical harmonic coefficients, according to the
      * respective formulae.
      *

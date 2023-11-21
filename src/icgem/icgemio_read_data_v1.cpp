@@ -8,7 +8,7 @@ constexpr const int max_data_line = 256;
 /** @warning coeffs should have already been initialized and allocated with
  *           enough memmory to hold the (to-be-) parsed coefficients.
  */
-int dso::Icgem::parse_data(int l, int k, const Icgem::Datetime &t,
+int dso::Icgem::parse_data_v1(int l, int k, const Icgem::Datetime &t,
                            dso::StokesCoeffs &coeffs) noexcept {
 
   /* clear out Stokes coeffs (i.e. set to zero) */
@@ -42,6 +42,10 @@ int dso::Icgem::parse_data(int l, int k, const Icgem::Datetime &t,
   const int n = l;
   const int m = k;
 
+  /* max degree and order actually collected */
+  int max_degree_collected = 0;
+  int max_order_collected = 0;
+
   /* go the start of the data section (in file) -- assert file is open */
   std::ifstream fin(filename().c_str());
   if (!fin.is_open()) {
@@ -58,26 +62,55 @@ int dso::Icgem::parse_data(int l, int k, const Icgem::Datetime &t,
   char line[max_data_line];
   Icgem::DataEntry entry;
   const auto err = this->errors();
-  /* keep reading coefficients */
+  double dt=0e0;
+  int current_n=-1, current_m=-1;
+  /* keep reading coefficients. Note that any entry of type 'trnd', 'asin' 
+   * and 'acos' must be superceded by an entry of type 'gfct' so that we have 
+   * the reference epoch 't0' (recorded in gfct) 
+   */
   while (fin.getline(line, max_data_line) && !error) {
-    error += resolve_icgem_data_line_v2(line, err, entry);
+    error += resolve_icgem_data_line_v1(line, err, entry);
     {
-      int interval_ok = (t > entry.t0 && t <= entry.t1);
-      if (interval_ok && entry.degree <= n && entry.order <= m) {
-        const double dt =
-            t.diff<DateTimeDifferenceType::FractionalYears>(entry.t0);
-        const double C = entry.C * (entry.key == DataEntryType::gfc) +
-                         (entry.C * dt) * (entry.key == DataEntryType::gfct) +
-                         (entry.C * std::sin((D2PI / entry.period) * dt)) *
-                             (entry.key == DataEntryType::asin) +
-                         (entry.C * std::cos((D2PI / entry.period) * dt)) *
-                             (entry.key == DataEntryType::acos);
-        const double S = entry.C * (entry.key == DataEntryType::gfc) +
-                         (entry.S * dt) * (entry.key == DataEntryType::gfct) +
-                         (entry.S * std::sin((D2PI / entry.period) * dt)) *
-                             (entry.key == DataEntryType::asin) +
-                         (entry.S * std::cos((D2PI / entry.period) * dt)) *
-                             (entry.key == DataEntryType::acos);
+      double C=0e0,S=0e0;
+      if (entry.degree <= n && entry.order <= m) {
+        /* set maximum degree/order */
+        max_degree_collected = std::max(max_degree_collected, entry.degree);
+        max_order_collected = std::max(max_order_collected, entry.order);
+        /* compute C and S coeffs */
+        switch (entry.key) {
+          case DataEntryType::gfc:
+            C = entry.C;
+            S = entry.S;
+            break;
+          case DataEntryType::gfct:
+            C = entry.C;
+            S = entry.S;
+            /* set current degree, order and t0 */
+            current_n = entry.degree;
+            current_m = entry.order;
+            dt = t.diff<DateTimeDifferenceType::FractionalYears>(entry.t0);
+            break;
+          case DataEntryType::trnd:
+            C = entry.C * dt;
+            S = entry.S * dt;
+            assert(current_n == entry.degree);
+            assert(current_m == entry.order);
+            break;
+          case DataEntryType::asin:
+            C = entry.C * std::sin((D2PI / entry.period) * dt);
+            S = entry.S * std::sin((D2PI / entry.period) * dt);
+            assert(current_n == entry.degree);
+            assert(current_m == entry.order);
+            break;
+          case DataEntryType::acos:
+            C = entry.C * std::cos((D2PI / entry.period) * dt);
+            S = entry.S * std::cos((D2PI / entry.period) * dt);
+            assert(current_n == entry.degree);
+            assert(current_m == entry.order);
+            break;
+          default:
+            assert(1==0);
+        }
         coeffs.C(entry.degree, entry.order) += C;
         coeffs.S(entry.degree, entry.order) += S;
       } else {
@@ -109,6 +142,13 @@ int dso::Icgem::parse_data(int l, int k, const Icgem::Datetime &t,
       return 1;
     }
   }
+
+  /* no errors, assign further constants */
+  coeffs.GM() = this->gm();
+  coeffs.Re() = this->radius();
+  coeffs.normalized() = this->is_normalized();
+  /* if needed, set the actual dimensions of the StokesCoeffs instance */
+  coeffs.shrink_dimensions(max_degree_collected, max_order_collected);
 
   /* all done */
   return 0;

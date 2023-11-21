@@ -24,6 +24,7 @@ template <MatrixStorageType S> class CoeffMatrix2D {
 private:
   StorageImplementation<S> m_storage; /** storage type; dictates indexing */
   double *m_data{nullptr};            /** the actual data */
+  std::size_t _capacity{0}; /** number of doubles in allocated memory arena */
 
 public:
   /** get number of rows */
@@ -141,7 +142,8 @@ public:
    * MatrixStorageType's, the number of columns may not be needed.
    */
   CoeffMatrix2D(int rows, int cols) noexcept
-      : m_storage(rows, cols), m_data(new double[m_storage.num_elements()]) {
+      : m_storage(rows, cols), m_data(new double[m_storage.num_elements()]),
+        _capacity(m_storage.num_elements()) {
 #ifdef DEBUG
     assert(m_storage.num_elements() > 0);
 #endif
@@ -151,27 +153,32 @@ public:
   ~CoeffMatrix2D() noexcept {
     if (m_data)
       delete[] m_data;
+    _capacity = 0;
   }
 
   /** Copy constructor */
   CoeffMatrix2D(const CoeffMatrix2D &mat) noexcept
-      : m_storage(mat.m_storage), m_data(new double[mat.num_elements()]) {
+      : m_storage(mat.m_storage), m_data(new double[mat.num_elements()]),
+        _capacity(mat.num_elements()) {
     std::memcpy(m_data, mat.m_data, sizeof(double) * mat.num_elements());
   }
 
   /** Move constructor */
   CoeffMatrix2D(CoeffMatrix2D &&mat) noexcept
-      : m_storage(mat.m_storage), m_data(mat.m_data) {
+      : m_storage(mat.m_storage), m_data(mat.m_data), _capacity(mat._capacity) {
     mat.m_data = nullptr;
     mat.m_storage.__set_dimensions(0, 0);
+    mat._capacity = 0;
   }
 
   /** (Copy) Assignment operator */
   CoeffMatrix2D &operator=(const CoeffMatrix2D &mat) noexcept {
     if (this != &mat) {
-      if (m_data && (m_storage.num_elements() != mat.num_elements())) {
-        delete[] m_data;
+      /* do we need extra capacity ? */
+      if (_capacity < mat._capacity) {
+        if (m_data) delete[] m_data;
         m_data = new double[mat.num_elements()];
+        _capacity = mat.num_elements();
       }
       std::memcpy(m_data, mat.m_data, sizeof(double) * mat.num_elements());
       m_storage.__set_dimensions(mat.rows(), mat.cols());
@@ -183,19 +190,20 @@ public:
   CoeffMatrix2D &operator=(CoeffMatrix2D &&mat) noexcept {
     m_data = mat.m_data;
     m_storage.__set_dimensions(mat.rows(), mat.cols());
+    _capacity = mat._capacity;
     mat.m_data = nullptr;
     mat.m_storage.__set_dimensions(0, 0);
+    mat._capacity = 0;
     return *this;
   }
 
   /** Resize (keeping the MatrixStorageType the same) */
   void resize(int rows, int cols) {
-    /* de we need to re-allocate ? */
-    if (m_storage.num_elements() !=
-        StorageImplementation<S>(rows, cols).num_elements()) {
-      if (m_data)
-        delete[] m_data;
+    /* do we need to re-allocate ? */
+    if (StorageImplementation<S>(rows, cols).num_elements() > _capacity) {
+      if (m_data) delete[] m_data;
       m_data = new double[StorageImplementation<S>(rows, cols).num_elements()];
+      _capacity = StorageImplementation<S>(rows, cols).num_elements();
     }
     m_storage = StorageImplementation<S>(rows, cols);
   }

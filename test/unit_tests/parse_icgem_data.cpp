@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "TEST failed!\n");
     return 1;
   }
+  printf("C = %+.15e\nS = %+.15e\n", stokes.C(3,2), stokes.S(3,2));
 
   return 0;
 }

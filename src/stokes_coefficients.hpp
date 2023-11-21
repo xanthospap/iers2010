@@ -60,6 +60,17 @@ public:
    */
   void resize(int degree, int order) noexcept;
 
+  /** shrink dimensions (i.e. degree and order) without touching capacity */
+  int shrink_dimensions(int new_degree, int new_order) noexcept {
+    if ((new_order <= new_degree) && (new_degree <= m_degree) &&
+        (new_order <= m_order)) {
+      m_degree = new_degree;
+      m_order = new_order;
+      return 0;
+    }
+    return 1;
+  }
+
   /** get max degree */
   int max_degree() const noexcept { return m_degree; }
 
