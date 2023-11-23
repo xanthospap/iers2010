@@ -4,10 +4,13 @@
 using namespace dso;
 
 int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    fprintf(stderr, "Usage: %s [ICGEM file]\n", argv[0]);
+  if (argc != 4) {
+    fprintf(stderr, "Usage: %s [ICGEM file] [degree] [order]\n", argv[0]);
     return 1;
   }
+
+  int n = std::atoi(argv[2]);
+  int m = std::atoi(argv[3]);
 
   Icgem gfc(argv[1]);
   StokesCoeffs stokes(0, 0, 0e0, 0e0);
@@ -23,8 +26,8 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    /* print results for C(3,2) and S(3,2) */
-    printf("C = %+.15e S = %+.15e\n", stokes.C(3, 2), stokes.S(3, 2));
+    /* print results for C(n,m) and S(n,m) */
+    printf("C = %+.15e S = %+.15e\n", stokes.C(n, m), stokes.S(n, m));
 
     /* check the coefficients size */
     assert(stokes.max_degree() == size);
@@ -32,7 +35,7 @@ int main(int argc, char *argv[]) {
 
     /* decrease parsing size */
     size -= 5;
-    if (size < 3) size = 120;
+    if (size < n) size = 120;
   }
 
   return 0;
