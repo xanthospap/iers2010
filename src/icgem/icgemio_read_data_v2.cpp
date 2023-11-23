@@ -5,14 +5,14 @@
 
 constexpr const int max_data_line = 256;
 
-/** @warning coeffs should have already been initialized and allocated with
- *           enough memmory to hold the (to-be-) parsed coefficients.
+/** @todo In this function, we recompute sin/cos values that are not needed 
+ * (~ line 64 & 79) for C and S coefficients. This is branchless alright, but 
+ * dould nevertheless. We could avoid this by checking the type of current 
+ * coefficient parsed (i.e. 'trnd', 'asin', ...) and only compute trigs 
+ * when needed (switch loop). See also the parse_data_v1 function.
  */
 int dso::Icgem::parse_data_v2(int l, int k, const Icgem::Datetime &t,
                               dso::StokesCoeffs &coeffs) noexcept {
-
-  /* clear out Stokes coeffs (i.e. set to zero) */
-  coeffs.clear();
 
   /* check degree & order parameters */
   int error = 0;
@@ -23,24 +23,14 @@ int dso::Icgem::parse_data_v2(int l, int k, const Icgem::Datetime &t,
         __func__);
     error = 1;
   }
-  if (coeffs.max_degree() < l) {
-    fprintf(stderr,
-            "[ERROR] Cannot read harmonics of degree %d to HarmonicsCoeffs of "
-            "degree %d (traceback: %s)\n",
-            l, coeffs.max_degree(), __func__);
-    error = 1;
-  }
-  if (coeffs.max_order() < k) {
-    fprintf(stderr,
-            "[ERROR] Cannot read harmonics of order %d to HarmonicsCoeffs of "
-            "order %d (traceback: %s)\n",
-            k, coeffs.max_order(), __func__);
-    error = 1;
-  }
 
   /* set max degree and order we are collecting */
   const int n = l;
   const int m = k;
+  
+  /* clear out Stokes coeffs (i.e. set to zero) and resize (if needed) */
+  coeffs.resize(n,m);
+  coeffs.clear();
 
   /* max degree and order actually collected */
   int max_degree_collected = 0;
@@ -66,7 +56,7 @@ int dso::Icgem::parse_data_v2(int l, int k, const Icgem::Datetime &t,
   while (fin.getline(line, max_data_line) && !error) {
     error += resolve_icgem_data_line_v2(line, err, entry);
     {
-      int interval_ok = (t > entry.t0 && t <= entry.t1);
+      int interval_ok = (t >= entry.t0 && t < entry.t1);
       if (interval_ok && entry.degree <= n && entry.order <= m) {
         /* set maximum degree and order collected */
         max_degree_collected = std::max(max_degree_collected, entry.degree);
@@ -81,13 +71,14 @@ int dso::Icgem::parse_data_v2(int l, int k, const Icgem::Datetime &t,
                              (entry.key == DataEntryType::asin) +
                          (entry.C * std::cos((D2PI / entry.period) * dt)) *
                              (entry.key == DataEntryType::acos);
-        // if (entry.degree==3 && entry.order==2) {
-        //   printf("%+.15e %+.15e %+.15e %+.15e\n",
-        //          entry.C * (entry.key == DataEntryType::gfc),
-        //          (entry.C) * (entry.key == DataEntryType::gfct),
-        //          (entry.C) * (entry.key == DataEntryType::asin),
-        //          (entry.C) * (entry.key == DataEntryType::acos));
-        // }
+        //if (entry.degree==3 && entry.order==2) {
+        //  printf("%+.15e %+.15e %+.15e * %.12e %+.15e * %.12e %+.15e * %.12e\n",
+        //         entry.C * (entry.key == DataEntryType::gfc),
+        //         (entry.C) * (entry.key == DataEntryType::gfct),
+        //         (entry.C ) * (entry.key == DataEntryType::trnd), dt,
+        //         (entry.C) * (entry.key == DataEntryType::asin), std::sin((D2PI / entry.period) * dt),
+        //         (entry.C) * (entry.key == DataEntryType::acos), std::cos((D2PI / entry.period) * dt));
+        //}
         const double S = entry.S * (entry.key == DataEntryType::gfc) +
                          entry.S * (entry.key == DataEntryType::gfct) +
                          (entry.S * dt) * (entry.key == DataEntryType::trnd) +

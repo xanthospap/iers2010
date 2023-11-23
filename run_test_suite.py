@@ -26,10 +26,28 @@ def prog_needs_args(prog_path, special_progs_dct):
             return True
     return False
 
-def check_file_vs_str(file, str):
+def check_file_vs_str(file, vstr):
     with open(file, 'r') as fin:
         fstr = fin.read()
-        return (fstr == str)
+    return (fstr == vstr)
+
+def check_file_vs_str_verbose(file, vstr):
+    slist = vstr.splitlines()
+    with open(file, 'r') as fin: flist = fin.readlines()
+    line_nr = 0
+    for l1,l2 in zip(flist, slist):
+        line_nr += 1
+        if l1 != l2:
+            print('(#{:}) Encountered different lines\n[{:}]\n[{:}]'.format(line_nr, l1.strip(), l2.strip()), file=sys.stderr)
+            if len(l1) != len(l2):
+                print('Different string lengths, {:} vs {:}'.format(len(l1), len(l2)))
+                print('Last char [{:}] vs [{:}]'.format(l1[-1], l2[-1]))
+                return
+            for i in range(0, max(len(l1), len(l2))):
+                if l1[i] != l2[i]:
+                    print('Different char nr #{:} [{:}] vs [{:}]'.format(i, l1[i], l2[i]), file=sysstderr)
+            return
+
 
 def run_progs_with_args(special_progs_dct):
     for d in special_progs_dct:
@@ -47,6 +65,7 @@ def run_progs_with_args(special_progs_dct):
         if 'results' in d:
             if not check_file_vs_str('.tmp.result', d['results']):
                 print('ERROR. Failed test {:}; expected string did not match output'.format(exe), file=sys.stderr)
+                check_file_vs_str_verbose('.tmp.result', d['results'])
                 sys.exit(1)
 
 class myFormatter(argparse.ArgumentDefaultsHelpFormatter,

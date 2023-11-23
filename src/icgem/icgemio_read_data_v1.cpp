@@ -11,9 +11,6 @@ constexpr const int max_data_line = 256;
 int dso::Icgem::parse_data_v1(int l, int k, const Icgem::Datetime &t,
                            dso::StokesCoeffs &coeffs) noexcept {
 
-  /* clear out Stokes coeffs (i.e. set to zero) */
-  coeffs.clear();
-
   /* check degree & order parameters */
   int error = 0;
   if (l > max_degree() || k > l) {
@@ -23,24 +20,14 @@ int dso::Icgem::parse_data_v1(int l, int k, const Icgem::Datetime &t,
         __func__);
     error = 1;
   }
-  if (coeffs.max_degree() < l) {
-    fprintf(stderr,
-            "[ERROR] Cannot read harmonics of degree %d to HarmonicsCoeffs of "
-            "degree %d (traceback: %s)\n",
-            l, coeffs.max_degree(), __func__);
-    error = 1;
-  }
-  if (coeffs.max_order() < k) {
-    fprintf(stderr,
-            "[ERROR] Cannot read harmonics of order %d to HarmonicsCoeffs of "
-            "order %d (traceback: %s)\n",
-            k, coeffs.max_order(), __func__);
-    error = 1;
-  }
 
   /* set max degree and order we are collecting */
   const int n = l;
   const int m = k;
+  
+  /* clear out Stokes coeffs (i.e. set to zero) and resize (if needed) */
+  coeffs.resize(n,m);
+  coeffs.clear();
 
   /* max degree and order actually collected */
   int max_degree_collected = 0;

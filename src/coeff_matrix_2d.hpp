@@ -199,11 +199,16 @@ public:
 
   /** Resize (keeping the MatrixStorageType the same) */
   void resize(int rows, int cols) {
+    //printf("\tcalled %s ... ", __func__);
     /* do we need to re-allocate ? */
     if (StorageImplementation<S>(rows, cols).num_elements() > _capacity) {
       if (m_data) delete[] m_data;
       m_data = new double[StorageImplementation<S>(rows, cols).num_elements()];
       _capacity = StorageImplementation<S>(rows, cols).num_elements();
+      //printf(" re-allocated mem!\n");
+    } else {
+      //printf(" mem is enough! not re-allocating.\n");
+      ;
     }
     m_storage = StorageImplementation<S>(rows, cols);
   }

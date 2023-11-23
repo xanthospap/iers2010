@@ -134,8 +134,10 @@ private:
    *            coefficients). Irrelevant if the model only contains static 
    *            terms, i.e. 'gfc'.
    * @param[out] coeffs An instance of type StokesCoeffs where the
-   *            S/C harmonic coefficients are to be stored. Note that this
-   *            instance should have been allocated with enough space.
+   *            S/C harmonic coefficients are to be stored. If more space is 
+   *            needed to store the coefficients, the instance will 
+   *            automatically grow (i.e. no need to have the required capacity
+   *            at input).
    */
   int parse_data_v2(int up_to_degree, int up_to_order, const Icgem::Datetime &t,
                     StokesCoeffs &coeffs) noexcept;
@@ -180,8 +182,10 @@ private:
    *            coefficients). Irrelevant if the model only contains static 
    *            terms, i.e. 'gfc'.
    * @param[out] coeffs An instance of type StokesCoeffs where the
-   *            S/C harmonic coefficients are to be stored. Note that this
-   *            instance should have been allocated with enough space.
+   *            S/C harmonic coefficients are to be stored. If more space is 
+   *            needed to store the coefficients, the instance will 
+   *            automatically grow (i.e. no need to have the required capacity
+   *            at input).
    */
   int parse_data_v1(int up_to_degree, int up_to_order, const Icgem::Datetime &t,
                     StokesCoeffs &coeffs) noexcept;
@@ -291,8 +295,10 @@ public:
    *            coefficients). Irrelevant if the model only contains static 
    *            terms, i.e. 'gfc'.
    * @param[out] coeffs An instance of type StokesCoeffs where the
-   *            S/C harmonic coefficients are to be stored. Note that this
-   *            instance should have been allocated with enough space.
+   *            S/C harmonic coefficients are to be stored. If more space is 
+   *            needed to store the coefficients, the instance will 
+   *            automatically grow (i.e. no need to have the required capacity
+   *            at input).
    * @return Anythin other than zero denotes an error.
    */
   int parse_data(int max_degree, int max_order, const Icgem::Datetime &t,
