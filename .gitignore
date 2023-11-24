@@ -45,6 +45,7 @@ lib*.so.*
 *.e
 
 # Fortran
+fortran_impl
 #*.F
 #*.f
 
