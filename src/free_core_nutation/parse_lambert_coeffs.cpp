@@ -2,8 +2,9 @@
 #include <charconv>
 #include <cmath>
 #include <cstdio>
-#include <fstream>
 #include <cstring>
+#include <datetime/tpdate.hpp>
+#include <fstream>
 
 /** Structure of a coefficient file:
  * %           mjd     real     imag    sigma  (all in microas)
@@ -21,7 +22,7 @@
 namespace {
 constexpr const std::size_t LINE_LEN = 128;
 inline const char *skip_ws(const char *line) noexcept {
-  while (line && *line == ' ')
+  while (*line && *line == ' ')
     ++line;
   return line;
 }
@@ -30,6 +31,14 @@ inline const char *skip_ws(const char *line) noexcept {
 int dso::parse_lambert_coefficients(
     const char *fn, const dso::TwoPartDate &from, const dso::TwoPartDate &to,
     std::vector<fcn::LambertCoefficients> &lvec) noexcept {
+  if (to < from) {
+    fprintf(stderr,
+            "[ERROR] Invalid time interval request for parsing Lambert "
+            "coefficients (traceback: %s)\n",
+            __func__);
+    return 5;
+  }
+  
   /* clear and allocated space for the coefficients entry */
   lvec.clear();
   /* approximatelly two entries per year */
@@ -58,10 +67,10 @@ int dso::parse_lambert_coefficients(
             fn, __func__);
     return 1;
   }
-  if (skip_ws(line)[0] == '%') {
+  if (*skip_ws(line) != '%') {
     fprintf(stderr,
-            "[ERROR] Failed reading Lambert coefficients header from file %s "
-            "(traceback: %s)\n",
+            "[ERROR] Failed reading Lambert coefficients header from file %s; "
+            "expected character \'%%\' (traceback: %s)\n",
             fn, __func__);
     return 2;
   }
@@ -90,6 +99,8 @@ int dso::parse_lambert_coefficients(
       const dso::TwoPartDate t((int)ipart, fday * dso::SEC_PER_DAY);
       /* push back the coefficients entry */
       lvec.emplace_back(t, d[2], d[3], d[4]);
+    } else {
+      ;
     }
   }
 

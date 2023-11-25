@@ -16,16 +16,23 @@ offsets dX and dY. **These offsets should not be applied when the FCN model is u
 
 To use the Lambert model, we must have the (regularly) updated model coefficients. 
 These are published (in ascii) at [Paris Observatory Geodetic VLBI Center](http://ivsopar.obspm.fr/fcn/).
-This is handled by the
+Parsing is handled by the `parse_lambert_coefficients` function. Once the model 
+coefficients are parsed, a call to `lambert_fcn` can be used (with the 
+coefficients and time as input parameters), to compute CIP corrections.
 
-# References
+## IERS 2010 FCNNUT distributed routine
+
+The IERS provides the FCNNUT.f file/subroutine to model FCN, using the Lambert 
+model. It provides the needed coefficients within the source code. The most 
+recent coefficients are up to 2013 (at the time of writing). To use this 
+version of the model, you do not need any input files, just call 
+`lambert_fcn` with time as input parameter.
+
+## References
 
 <a name="Lambert-2007"></a>Lambert, S., 2007, “Empirical modeling of the retrograde Free Core Nutation,” available at
 ftp://hpiers.obspm.fr/eop-pc/models/fcn/notice.pdf.
 
-<a name="IERS2010"</a>IERS Conventions (2010). Gérard Petit and Brian Luzum (eds.). 
+<a name="IERS2010"></a>IERS Conventions (2010). Gérard Petit and Brian Luzum (eds.). 
 (IERS Technical Note ; 36) Frankfurt am Main: Verlag des Bundesamts für Kartographie und Geodäsie, 
 2010. 179 pp., ISBN 3-89888-989-6, Section 5.5.5
-
-for the most stringent accuracy applications, a FCN model may be incorporated to
-account for the FCN contribution to the CIP motion in the GCRS.
