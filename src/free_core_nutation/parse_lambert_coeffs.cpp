@@ -3,8 +3,10 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
-#include <datetime/tpdate.hpp>
 #include <fstream>
+#ifdef DEBUG
+#include "datetime/datetime_write.hpp"
+#endif
 
 /** Structure of a coefficient file:
  * %           mjd     real     imag    sigma  (all in microas)
@@ -36,6 +38,15 @@ int dso::parse_lambert_coefficients(
             "[ERROR] Invalid time interval request for parsing Lambert "
             "coefficients (traceback: %s)\n",
             __func__);
+#ifdef DEBUG
+    char db1[64], db2[64];
+    fprintf(stderr, "[ERROR] Epochs were: [%s, %s) (traceback: %s)\n",
+            dso::to_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSSF>(
+                from, db1),
+            dso::to_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSSF>(
+                to, db2),
+            __func__);
+#endif
     return 5;
   }
   

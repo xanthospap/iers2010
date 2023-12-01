@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
   /* vector of Lambert coefficients */
   std::vector<fcn::LambertCoefficients> lvec;
 
+  /* parse all data from input file */
   if (parse_lambert_coefficients(argv[1], lvec)) {
     fprintf(stderr, "ERROR Failed to parse file %s\n", argv[1]);
     return 1;
