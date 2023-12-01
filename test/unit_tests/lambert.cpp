@@ -1,28 +1,35 @@
 #include "fcn.hpp"
+#include <cmath>
 #include <cstdio>
 #include <vector>
 
 using namespace dso;
 
 int main(int argc, char *argv[]) {
-  if (argc!=2) {
+  if (argc != 2) {
     fprintf(stderr, "Usage %s [table-asc-c04.txt]\n", argv[1]);
     return 1;
   }
 
   /* vector of Lambert coefficients */
   std::vector<fcn::LambertCoefficients> lvec;
-  
+
   if (parse_lambert_coefficients(argv[1], lvec)) {
     fprintf(stderr, "ERROR Failed to parse file %s\n", argv[1]);
     return 1;
   }
-  printf("--> Read Lambert coefficients, size=%ld\n", lvec.size());
 
-  for (int mjd = 51544; mjd < 53000; mjd += 10) {
-    TwoPartDate t(mjd, 0e0);
+  TwoPartDate t;
+  for (double mjd = 51544e0; mjd < 53000e0; mjd += 10.03) {
+    /* make the date (split parts) */
+    {
+      double imjd, secday;
+      secday = std::modf(mjd, &imjd) * dso::SEC_PER_DAY;
+      t = TwoPartDate((int)imjd, secday);
+    }
     const auto res = lambert_fcn(t, lvec);
-    printf("%d %.15f\n", t.imjd(), res.xcip);
+    printf("%20.5f %18.12f %18.12f %18.12f %18.12f\n", t.as_mjd(), res.xcip,
+           res.ycip, res.sxcip, res.sycip);
   }
 
   return 0;
