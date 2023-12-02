@@ -28,6 +28,24 @@ recent coefficients are up to 2013 (at the time of writing). To use this
 version of the model, you do not need any input files, just call 
 `lambert_fcn` with time as input parameter.
 
+## Tests
+
+See the file [lambert.cpp](test/unit_tests/lambert.cpp); it checks results of 
+the implemented model against the ones obtained from the routine the 
+[IERS distributed FORTRAN routine](http://ivsopar.obspm.fr/fcn/fcndrv.f).
+
+<div style="text-align: right"> Last update Dec-2023 </div>
+
+## Issues
+
+Well, quite frankly i am not sure what time scale should the time arguments be in. 
+I **think** it is UTC, but i am not sure. For this reason, and probably because it 
+pretty much does not make any difference, date/times are treated as continuous, naive 
+epochs (hence non-UTC). At some point though, this should be clarified.
+
+When clarified, both the instances of `fcn::LambertCoefficients` should be treated 
+accordingly and the function parameters.
+
 ## References
 
 <a name="Lambert-2007"></a>Lambert, S., 2007, “Empirical modeling of the retrograde Free Core Nutation,” available at

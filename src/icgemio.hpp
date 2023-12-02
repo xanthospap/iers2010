@@ -14,7 +14,7 @@
 #ifndef __ICGEM_POTENTIAL_IO_HPP__
 #define __ICGEM_POTENTIAL_IO_HPP__
 
-#include "datetime/dtcalendar.hpp"
+#include "datetime/calendar.hpp"
 #include "stokes_coefficients.hpp"
 #include <cstring>
 #include <fstream>
