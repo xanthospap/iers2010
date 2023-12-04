@@ -1,9 +1,10 @@
 #include "iau.hpp"
 #include "fundarg.hpp"
 #include "geodesy/units.hpp"
+#include <cstring>
 
 int dso::xycip06a(const dso::MjdEpoch &tt, double &xcip,
-                  double &ycip) noexcept {
+                  double &ycip, double *outargs) noexcept {
   /* Interval between fundamental date J2000.0 and given date. */
   const double t = tt.jcenturies_sinceJ2000();
 
@@ -34,6 +35,10 @@ int dso::xycip06a(const dso::MjdEpoch &tt, double &xcip,
   /* transform to [rad] and return */
   xcip = dso::sec2rad(xcip_mas*1e-6);
   ycip = dso::sec2rad(ycip_mas*1e-6);
+
+  /* if we are given a large enough array, store the fundamental arguments */
+  if (outargs) 
+    std::memcpy(outargs, fa, sizeof(double) * 14);
 
   return 0;
 }
