@@ -47,7 +47,7 @@ inline double sp00(const MjdEpoch &tt) noexcept {
  * 5.5.4).
  * 
  * @param[in] tt MjdEpoch in [TT]
- * @param[out] x CIP X coordinate [rad].
+ * @param[out] x CIP X coordinate [rad]
  * @param[out] y CIP Y coordinate [rad]
  */
 int xycip06a(const dso::MjdEpoch &tt, double &xcip, double &ycip) noexcept;

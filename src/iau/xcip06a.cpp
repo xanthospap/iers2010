@@ -1,4 +1,5 @@
 #include "iau.hpp"
+#include "kahan.hpp"
 #include <array>
 #include <cmath>
 
@@ -6455,30 +6456,13 @@ constexpr const std::array<XYCipSeriesData, 1> X4Series = {{/* 1600*/ {
     -1.000000000e-01,
     -2.000000e-02,
     {+0, +0, +0, +0, +1, +0, +0, +0, +0, +0, +0, +0, +0, +0}}}}; /* X4Series */
-
-struct KahanSum {
-  double val{0e0};
-  double err{0e0};
-  void operator+=(double v) noexcept {
-    const double y = v - err;
-    v = val + y;
-    err = (v-val)-y;
-    val = v;
-  }
-  double operator+(double v) const noexcept {
-    return val + v;
-  }
-  double operator*(double v) const noexcept {
-    return val * v;
-  }
-};/* Kahan Sum */
 } /* unnamed namespace */
 
 double dso::detail::xcip06a(const double *const fargs, double t) noexcept {
 
   /* sum for j=4 */
   // double x4cip = 0e0;
-  KahanSum x4cip;
+  dso::KahanSum x4cip;
   for (const auto &s : X4Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -6490,7 +6474,7 @@ double dso::detail::xcip06a(const double *const fargs, double t) noexcept {
 
   /* sum for j=3 */
   // double x3cip = 0e0;
-  KahanSum x3cip;
+  dso::KahanSum x3cip;
   for (const auto &s : X3Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -6502,7 +6486,7 @@ double dso::detail::xcip06a(const double *const fargs, double t) noexcept {
 
   /* sum for j=2 */
   // double x2cip = 0e0;
-  KahanSum x2cip;
+  dso::KahanSum x2cip;
   for (const auto &s : X2Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -6514,7 +6498,7 @@ double dso::detail::xcip06a(const double *const fargs, double t) noexcept {
 
   /* sum for j=1 */
   // double x1cip = 0e0;
-  KahanSum x1cip;
+  dso::KahanSum x1cip;
   for (const auto &s : X1Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -6526,7 +6510,7 @@ double dso::detail::xcip06a(const double *const fargs, double t) noexcept {
 
   /* sum for j=0 */
   // double x0cip = 0e0;
-  KahanSum x0cip;
+  dso::KahanSum x0cip;
   for (const auto &s : X0Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -6546,11 +6530,13 @@ double dso::detail::xcip06a(const double *const fargs, double t) noexcept {
         (XPolyCoeffs[3] + (XPolyCoeffs[4] + XPolyCoeffs[5] * t) * t) * t) *
            t) *
           t;
-  printf("[X]MINE Polynomial terms: %.15e %.15e\n", xpoly, 0e0);
-  printf("[X]Series terms         : %.15e %.15e %.15e %.15e %.15e t=%.3e\n", x0cip.val, x1cip.val, x2cip.val, x3cip.val, x4cip.val, t);
 
   /* accumulate and return in [microarcseconds] */
-  //return xpoly + x0cip + (x1cip + (x2cip + (x3cip + x4cip*t)*t)*t)*t;
-  const auto xseries = x0cip + (x1cip + (x2cip + (x3cip + x4cip*t)*t)*t)*t;
+  const double x0 = (double)x0cip;
+  const double x1 = (double)x1cip;
+  const double x2 = (double)x2cip;
+  const double x3 = (double)x3cip;
+  const double x4 = (double)x4cip;
+  const auto xseries = x0 + (x1 + (x2 + (x3 + x4*t)*t)*t)*t;
   return xseries + xpoly;
 }
