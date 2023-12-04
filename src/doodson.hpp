@@ -21,18 +21,6 @@ namespace dso {
 /* @class
  * @ref "Indexing and argument conventions for tides", Richard Ray (GSFC),
  *        2017, available at [1]
- *
- *  Each instance holds the 6 Fundamental Doodson variables, namely:
- *  Table 1: Fundamental variables—Doodson versus Delaunay
- * Variable (k_i)                      Rate (cpd)    Period
- * ---------------------------------------------------------------------------
- * τ  mean lunar time                  9.661 × 10−1  1.03505 d (lunar day)
- * s  mean longitude of moon           3.660 × 10−2  27.32158 d (tropical month)
- * h  mean longitude of sun            2.738 × 10−3  365.2422 d (tropical year)
- * p  mean longitude of lunar perigee  3.095 × 10−4  8.847 y (lunar orbit
- * precession) N' negative longitude of lunar node 1.471 × 10−4  18.61 y
- * (regression of lunar node) ps mean longitude of solar perigee  1.307 × 10−7
- * 21,000 y
  */
 class DoodsonConstituent {
 private:
@@ -51,12 +39,12 @@ public:
   /* @brief Constructor given (optionally) an int array. Default values (if
    *        no array is given) are 0
    * @param[in] ar An array of 6 integers, interpreted as:
-   *  τ   = ar[0]
-   *  s   = ar[1]
-   *  h   = ar[2]
-   *  p   = ar[3]
-   *  N'  = ar[4]
-   *  p_s = ar[5]
+   *  ar[0] multiplier for τ   
+   *  ar[1] multiplier for s   
+   *  ar[2] multiplier for h   
+   *  ar[3] multiplier for p   
+   *  ar[4] multiplier for N'  
+   *  ar[5] multiplier for p_s 
    */
   explicit DoodsonConstituent(const int *ar = nullptr) {
     if (ar)
@@ -66,12 +54,12 @@ public:
   /* @brief Constructor from initializer list (of ints)
    *        i.e. enables: DoodsonConstituent d(1,2,3,4,5,6);
    * @param[in] l An initializer list of 6 ints, interpreted as:
-   *  τ   = l[0]
-   *  s   = l[1]
-   *  h   = l[2]
-   *  p   = l[3]
-   *  N'  = l[4]
-   *  p_s = l[5]
+   *   l[0] multiplier for τ   
+   *   l[1] multiplier for s   
+   *   l[2] multiplier for h   
+   *   l[3] multiplier for p   
+   *   l[4] multiplier for N'  
+   *   l[5] multiplier for p_s 
    */
   constexpr DoodsonConstituent(std::initializer_list<int> l) noexcept {
     assert(l.size() == 6);

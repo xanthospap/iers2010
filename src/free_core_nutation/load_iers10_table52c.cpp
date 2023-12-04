@@ -46,7 +46,7 @@ dso::fcn::load_iers10_table52c() noexcept {
   std::vector<dso::fcn::LambertCoefficients> vec;
   vec.reserve(Table52c_size);
   for (int i = 0; i < Table52c_size; i++) {
-    vec.emplace_back(dso::TwoPartDate(Table52c[i].mjd, 0e0), Table52c[i].xc,
+    vec.emplace_back(dso::MjdEpoch(Table52c[i].mjd, 0e0), Table52c[i].xc,
                      Table52c[i].xs, Table52c[i].sx);
   }
   return vec;

@@ -5,7 +5,7 @@
 #ifndef __DSO_FREE_CORE_NUTATION_HPP__
 #define __DSO_FREE_CORE_NUTATION_HPP__
 
-#include "datetime/tpdate.hpp"
+#include "datetime/calendar.hpp"
 #include <vector>
 
 namespace dso {
@@ -14,11 +14,11 @@ namespace fcn {
  * http://ivsopar.obspm.fr/fcn/notice.pdf
  */
 struct LambertCoefficients {
-  TwoPartDate t;
+  MjdEpoch t;
   double real;  /* in [microas] */
   double imag;  /* in [microas] */
   double sigma; /* in [microas] */
-  LambertCoefficients(const dso::TwoPartDate &t_, double r, double i,
+  LambertCoefficients(const dso::MjdEpoch &t_, double r, double i,
                       double s) noexcept
       : t(t_), real(r), imag(i), sigma(s) {}
   /* real part of coefficient, in [microas] */
@@ -59,7 +59,7 @@ std::vector<LambertCoefficients> load_iers10_table52c() noexcept;
  * epoch.
  */
 int parse_lambert_coefficients(
-    const char *fn, const TwoPartDate &from, const TwoPartDate &to,
+    const char *fn, const MjdEpoch &from, const MjdEpoch &to,
     std::vector<fcn::LambertCoefficients> &lvec) noexcept;
 
 /** @brief Parse a Lambert coefficients (ascii) file for FCN modeling.
@@ -74,8 +74,8 @@ int parse_lambert_coefficients(
  */
 inline int parse_lambert_coefficients(
     const char *fn, std::vector<fcn::LambertCoefficients> &lvec) noexcept {
-      const auto from = TwoPartDate::min();
-      const auto to = TwoPartDate::max();
+      const auto from = MjdEpoch::min();
+      const auto to = MjdEpoch::max();
   return parse_lambert_coefficients(fn, from, to,
                                     lvec);
 }
@@ -102,7 +102,7 @@ inline int parse_lambert_coefficients(
  * [3] http://ivsopar.obspm.fr/fcn/index.html
  */
 fcn::FcnResult
-lambert_fcn(const TwoPartDate &t,
+lambert_fcn(const MjdEpoch &t,
             const std::vector<fcn::LambertCoefficients> &lvec) noexcept;
 
 /** @brief Compute CIP offset (and uncertainties) in GCRS due to FCN.
@@ -123,7 +123,7 @@ lambert_fcn(const TwoPartDate &t,
  * [2] Lambert, S., 2007, “Empirical modeling of the retrograde Free Core 
  * Nutation,” available at ftp://hpiers.obspm.fr/eop-pc/models/fcn/notice.pdf.
  */
-inline fcn::FcnResult lambert_fcn(const TwoPartDate &t) noexcept {
+inline fcn::FcnResult lambert_fcn(const MjdEpoch &t) noexcept {
   return lambert_fcn(t, fcn::load_iers10_table52c());
 }
 } /* namespace dso */

@@ -3,7 +3,7 @@
 #include <algorithm>
 
 dso::fcn::FcnResult
-dso::lambert_fcn(const dso::TwoPartDate &t,
+dso::lambert_fcn(const dso::MjdEpoch &t,
                  const std::vector<fcn::LambertCoefficients> &lvec) noexcept {
   /* Mean prediction error in [microas / day] */
   constexpr const double mpe = 0.3e0;
@@ -14,7 +14,7 @@ dso::lambert_fcn(const dso::TwoPartDate &t,
   /* phase in [rad] at given date; time is fractional days since J2000 */
   const double phi =
       (dso::D2PI / per) * (t.diff<dso::DateTimeDifferenceType::FractionalDays>(
-                              dso::TwoPartDate::j2000_mjd()));
+                              dso::MjdEpoch::j2000_mjd()));
 
   /* find an entry at the coefficient vector, for which t0 <= t < t1 */
   auto rit = lvec.rbegin() + 1;

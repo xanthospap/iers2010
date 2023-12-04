@@ -31,7 +31,7 @@ inline const char *skip_ws(const char *line) noexcept {
 } /* unnamed namespace */
 
 int dso::parse_lambert_coefficients(
-    const char *fn, const dso::TwoPartDate &from, const dso::TwoPartDate &to,
+    const char *fn, const dso::MjdEpoch &from, const dso::MjdEpoch &to,
     std::vector<fcn::LambertCoefficients> &lvec) noexcept {
   if (to < from) {
     fprintf(stderr,
@@ -104,10 +104,10 @@ int dso::parse_lambert_coefficients(
     }
     /* are we interested ? */
     if (d[1] >= from.as_mjd() && d[1] < to.as_mjd()) {
-      /* resolve fractional MJD to a TwoPartDate */
+      /* resolve fractional MJD to a MjdEpoch */
       double ipart;
       const double fday = std::modf(d[1], &ipart);
-      const dso::TwoPartDate t((int)ipart, fday * dso::SEC_PER_DAY);
+      const dso::MjdEpoch t((int)ipart, fday * dso::SEC_PER_DAY);
       /* push back the coefficients entry */
       lvec.emplace_back(t, d[2], d[3], d[4]);
     } else {

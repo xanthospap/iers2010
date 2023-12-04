@@ -46,7 +46,7 @@ AddOption('--std',
 lib_src_files = glob.glob(r"src/*.cpp")
 lib_src_files += glob.glob(r"src/icgem/*.cpp")
 lib_src_files += glob.glob(r"src/free_core_nutation/*.cpp")
-#lib_src_files += glob.glob(r"src/iau/*.cpp")
+lib_src_files += glob.glob(r"src/iau/*.cpp")
 #lib_src_files += glob.glob(r"src/ch5/*.cpp")
 #lib_src_files += glob.glob(r"src/ch7/*.cpp")
 #lib_src_files += glob.glob(r"src/ch8/*.cpp")
@@ -70,6 +70,7 @@ penv = Environment(PREFIX=GetOption(
 ## Command line arguments ...
 debug = ARGUMENTS.get('debug', 0)
 make_test = ARGUMENTS.get('test', 0)
+sofa  = ARGUMENTS.get('test-vs-sofa', 0)
 
 ## Construct the build enviroment
 env = denv.Clone() if int(debug) else penv.Clone()
@@ -124,3 +125,14 @@ if make_test:
     #    CPPPATH='src/',
     #    LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], 
     #    LIBPATH=root_dir, RPATH=["."])
+
+## SOFA Tests ... 
+if sofa:
+    print('Compiling tests against SOFA')
+    tenv = env.Clone()
+    tenv['CXXFLAGS'] = ' '.join([ x for x in env['CXXFLAGS'].split() if 'inline' not in x])
+    test_sources = glob.glob(r"test/sofa/*.cpp")
+    tenv.Append(RPATH=root_dir)
+    for tsource in test_sources:
+        ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
+        tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['sofa_c'], LIBPATH='.')
