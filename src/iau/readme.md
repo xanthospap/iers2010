@@ -36,6 +36,41 @@ provided as corrections $\delta X$ and $\delta Y$ to the $X$ and $Y$ coordinates
 Using these oﬀsets, the corrected celestial position of the CIP is given by:
 $X = X(IAU 2006/2000) + \delta X$ and $Y = Y(IAU 2006/2000) + \delta Y$.
 
+# CIO Locator $s$
+
+For the computation of the CIO position, $s$, we use the IAU 2006/2000A precession-nutation 
+model (see [IERS Conventions 2010](#IERS2010) (Section 5.5.6)). Note that therein, 
+two approaches are outlined, i.e based on Table 5.2d and one on Table 5.2c, the 
+latter being of slightly better accuracy. In this implementation we use an implementation 
+based on Table 5.2c, i.e. a development of $s(t) + X_{CIP}Y_{CIP} /2$ including all 
+terms larger than $0.1 \mu as$.
+
+Differences between this implementation and SOFA, are smaller than $1e-9 [arcsec]$.
+For testing, see [s06.cpp](../blob/cleanup/test/sofa/s06.cpp).
+
+Due to the fact that the need to compute the CIO locator $s$ is coupled with the 
+CIP coordinates $(X,Y)$, and both computations require linusolar and planetary 
+arguments, the latter can be directly included in the computation by a dedicated 
+parameter. E.g.
+```
+using namespace dso;
+
+MjdEpoch tt(....);
+
+/* Store here lunisolar and planetary args for epoch tt */
+double lpargs[14];
+
+/* Compute X and Y CIP coordinates in [rad], and store lunisolar and planetary 
+ * arguments in fargs
+ */
+xycip06a(tt, xcip, ycip, lpargs);
+
+/* Compute the CIO locator, s; do not recompute lunisolar and planetary args. 
+ * Note that the computations are performed for the **same** epoch, tt.
+ */
+double s = s06(tt, xcip, ycip, lpargs);
+```
+
 ## References
 
 <a name="IERS2010"></a>IERS Conventions (2010). Gérard Petit and Brian Luzum (eds.). 
