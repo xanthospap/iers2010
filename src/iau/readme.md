@@ -57,11 +57,11 @@ using namespace dso;
 
 MjdEpoch tt(....);
 
-/* Store here lunisolar and planetary args for epoch tt */
+/* Store lunisolar and planetary args for epoch tt in lpargs array. */
 double lpargs[14];
 
 /* Compute X and Y CIP coordinates in [rad], and store lunisolar and planetary 
- * arguments in fargs
+ * arguments in lpargs.
  */
 xycip06a(tt, xcip, ycip, lpargs);
 
