@@ -1,8 +1,11 @@
 #include "fundarg.hpp"
 #include "iau.hpp"
+#ifdef USE_KAHAN_XYCIP
 #include "kahan.hpp"
+#endif
 #include <array>
 #include <cmath>
+#include <cstdint>
 
 namespace {
 /* A struct to hold terms for the expansion of the quantity s(t)+XY/2,
@@ -15,7 +18,11 @@ struct CioSeriesData {
   /* C_{c,j})_i */
   double ccj;
   /* l    l'   F    D   Om L_Me L_Ve  L_E L_Ma  L_J L_Sa  L_U L_Ne  p_A */
-  short f[14];
+  int8_t f[14];
+  int has_planetary_args() const noexcept {
+    for (int i=5; i<14; i++) if (f[i]) return 1;
+    return 0;
+  }
   /* Find argument given the full list of luni-solar and planetary arguments.
    * That is: ARGUMENT = Σ(i=0,14) N_i * F_i
    * where F_i are given (in the fargs parameter) and N_i are stored in the
@@ -23,8 +30,12 @@ struct CioSeriesData {
    */
   double arg(const double *const fargs) const noexcept {
     double arg = 0e0;
-    for (int i = 0; i < 14; i++)
-      arg += fargs[i] * f[i];
+    arg = fargs[0] * f[0] + fargs[1] * f[1] + fargs[2] * f[2] +
+          fargs[3] * f[3] + fargs[4] * f[4];
+    if (has_planetary_args()) {
+      for (int i = 5; i < 14; i++)
+        arg += fargs[i] * f[i];
+    }
     return arg;
   }
 }; /* CioSeriesData */
@@ -263,11 +274,17 @@ constexpr const std::array<CioSeriesData, 1> C4Series = {{
 }}; /* C4Series */
 } /* unnamed namespace */
 
+#ifdef USE_KAHAN_XYCIP
+  using DSumType = dso::KahanSum;
+#else
+  using DSumType = double;
+#endif
+
 double dso::detail::s06(const double *const fargs, double t, double x,
                         double y) noexcept {
   /* Compute the development for s + X*Y/2 */
   /* sum for j=4 */
-  dso::KahanSum c4csrs;
+  DSumType c4csrs(0e0);
   for (const auto &s : C4Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -278,7 +295,7 @@ double dso::detail::s06(const double *const fargs, double t, double x,
   }
 
   /* sum for j=3 */
-  dso::KahanSum c3csrs;
+  DSumType c3csrs(0e0);
   for (const auto &s : C3Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -289,7 +306,7 @@ double dso::detail::s06(const double *const fargs, double t, double x,
   }
 
   /* sum for j=2 */
-  dso::KahanSum c2csrs;
+  DSumType c2csrs(0e0);
   for (const auto &s : C2Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -300,7 +317,7 @@ double dso::detail::s06(const double *const fargs, double t, double x,
   }
 
   /* sum for j=1 */
-  dso::KahanSum c1csrs;
+  DSumType c1csrs(0e0);
   for (const auto &s : C1Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -311,7 +328,7 @@ double dso::detail::s06(const double *const fargs, double t, double x,
   }
 
   /* sum for j=0 */
-  dso::KahanSum c0csrs;
+  DSumType c0csrs(0e0);
   for (const auto &s : C0Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -333,11 +350,19 @@ double dso::detail::s06(const double *const fargs, double t, double x,
           t;
 
   /* accumulate in [microarcseconds] */
+#ifdef USE_KAHAN_XYCIP
   const double c0 = (double)c0csrs;
   const double c1 = (double)c1csrs;
   const double c2 = (double)c2csrs;
   const double c3 = (double)c3csrs;
   const double c4 = (double)c4csrs;
+#else
+  const double c0 = c0csrs;
+  const double c1 = c1csrs;
+  const double c2 = c2csrs;
+  const double c3 = c3csrs;
+  const double c4 = c4csrs;
+#endif
   const auto cseries = c0 + (c1 + (c2 + (c3 + c4 * t) * t) * t) * t;
 
   /* s + XY/2 angle in radians */

@@ -9,6 +9,20 @@
 void compare_pom(double xp, double yp, double sp) {
   double rpom[3][3];
   iauPom00(xp,yp,sp,rpom);
+  /* Equation (8) */
+  const double t = std::cos(xp/2e0) * std::cos(yp/2e0);
+  const double a = std::cos(xp/2e0) * std::sin(yp/2e0);
+  const double b = std::sin(xp/2e0) * std::cos(yp/2e0);
+  const double c = std::sin(xp/2e0) * std::sin(yp/2e0);
+  Eigen::Quaterniond q(t,a,b,c);
+  const auto Rw = q.toRotationMatrix();
+  printf("----------------------------------------------------POM diffs---\n");
+    for (int i=0; i<3; i++) {
+      for (int j=0;j<3;j++) {
+        printf(" %+18.15f ", Rw(i,j)-rpom[i][j]);
+      }
+      printf("\n");
+    }
 }
 
 Eigen::Matrix<double, 3, 3> fromq(double era, double s, double sp, double Xcip, double Ycip, double xp, double yp) {
@@ -67,6 +81,9 @@ Eigen::Matrix<double, 3, 3> sofa(double jd1, double jd2, double xp, double yp) {
   /* Form celestial-terrestrial matrix (including polar motion). */
   double rc2it[3][3];
   iauRxr(rpom, rc2ti, rc2it);
+
+  /* compare individual quaternion qw */
+  compare_pom(xp,yp,sp);
 
   printf("------------------------------------------------------quaternion\n");
   const auto R2 = fromq(era, s, iauSp00(jd1,jd2), x, y, xp, yp);

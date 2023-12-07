@@ -1,7 +1,10 @@
 #include "iau.hpp"
+#ifdef USE_KAHAN_XYCIP
 #include "kahan.hpp"
+#endif
 #include <array>
 #include <cmath>
+#include <cstdint>
 
 namespace {
 /* A struct to hold terms for the expansion of X and Y CIP coordinates,
@@ -14,7 +17,11 @@ struct XYCipSeriesData {
   /* a_{c,j})_i */
   double acj;
   /* l    l'   F    D   Om L_Me L_Ve  L_E L_Ma  L_J L_Sa  L_U L_Ne  p_A */
-  short f[14];
+  int8_t f[14];
+  int has_planetary_args() const noexcept {
+    for (int i=5; i<14; i++) if (f[i]) return 1;
+    return 0;
+  }
   /* Find argument given the full list of luni-solar and planetary arguments.
    * That is: ARGUMENT = Σ(i=0,14) N_i * F_i
    * where F_i are given (in the fargs parameter) and N_i are stored in the
@@ -22,8 +29,12 @@ struct XYCipSeriesData {
    */
   double arg(const double *const fargs) const noexcept {
     double arg = 0e0;
-    for (int i = 0; i < 14; i++)
-      arg += fargs[i] * f[i];
+    arg = fargs[0] * f[0] + fargs[1] * f[1] + fargs[2] * f[2] +
+          fargs[3] * f[3] + fargs[4] * f[4];
+    if (has_planetary_args()) {
+      for (int i = 5; i < 14; i++)
+        arg += fargs[i] * f[i];
+    }
     return arg;
   }
 }; /* XYCipSeriesData */
@@ -1340,11 +1351,16 @@ constexpr const std::array<XYCipSeriesData, 1> Y4Series = {{
 
 } /* unnamed namespace */
 
+#ifdef USE_KAHAN_XYCIP
+  using DSumType = dso::KahanSum;
+#else
+  using DSumType = double;
+#endif
+
 double dso::detail::ycip06a(const double *const fargs, double t) noexcept {
 
   /* sum for j=4 */
-  //double y4cip = 0e0;
-  dso::KahanSum y4cip;
+  DSumType y4cip(0e0);
   for (const auto &s : Y4Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -1355,8 +1371,7 @@ double dso::detail::ycip06a(const double *const fargs, double t) noexcept {
   }
 
   /* sum for j=3 */
-  //double y3cip = 0e0;
-  dso::KahanSum y3cip;
+  DSumType y3cip(0e0);
   for (const auto &s : Y3Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -1367,8 +1382,7 @@ double dso::detail::ycip06a(const double *const fargs, double t) noexcept {
   }
 
   /* sum for j=2 */
-  //double y2cip = 0e0;
-  dso::KahanSum y2cip;
+  DSumType y2cip(0e0);
   for (const auto &s : Y2Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -1379,8 +1393,7 @@ double dso::detail::ycip06a(const double *const fargs, double t) noexcept {
   }
 
   /* sum for j=1 */
-  //double y1cip = 0e0;
-  dso::KahanSum y1cip;
+  DSumType y1cip(0e0);
   for (const auto &s : Y1Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -1391,8 +1404,7 @@ double dso::detail::ycip06a(const double *const fargs, double t) noexcept {
   }
 
   /* sum for j=0 */
-  //double y0cip = 0e0;
-  dso::KahanSum y0cip;
+  DSumType y0cip(0e0);
   for (const auto &s : Y0Series) {
     /* compute ARGUMENT and its trigs */
     const double arg = s.arg(fargs);
@@ -1414,11 +1426,19 @@ double dso::detail::ycip06a(const double *const fargs, double t) noexcept {
           t;
 
   /* accumulate and return in [microarcseconds] */
+#ifdef USE_KAHAN_XYCIP
   const double y1 = (double)y1cip;
   const double y2 = (double)y2cip;
   const double y3 = (double)y3cip;
   const double y4 = (double)y4cip;
   const double y0 = (double)y0cip;
+#else
+  const double y1 = y1cip;
+  const double y2 = y2cip;
+  const double y3 = y3cip;
+  const double y4 = y4cip;
+  const double y0 = y0cip;
+#endif
   const auto yseries = y0 + (y1 + (y2 + (y3 + y4*t)*t)*t)*t;
   return ypoly + yseries;
 }

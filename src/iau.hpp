@@ -96,6 +96,9 @@ double s06(const dso::MjdEpoch &tt, double xcip, double ycip) noexcept;
 double s06(const dso::MjdEpoch &tt, double xcip, double ycip,
            const double *const fargs14) noexcept;
 
+int xys06a(const dso::MjdEpoch &tt, double &xcip,
+                  double &ycip, double &s, double *outargs=nullptr) noexcept;
+
 namespace detail {
 /** @brief X CIP coordinate in GCRS in [μas].
  *

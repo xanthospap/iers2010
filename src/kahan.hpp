@@ -29,6 +29,9 @@ public:
     return *this;
   }
 
+  /* Constructor; assignes initial value (of sum) */
+  KahanSum(double starting_val=0e0) : msum(starting_val), merr(0e0) {};
+
   /** cast to double (after summation) */
   explicit operator double() const noexcept {return msum + merr;}
 
