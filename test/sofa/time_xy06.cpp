@@ -13,7 +13,7 @@ std::mt19937 gen(rd());
 std::uniform_int_distribution<> id(0, 1000);
 std::uniform_real_distribution<double > dd(-1e0, 1e0);
 
-constexpr const int num_tests = 10'00;
+constexpr const int num_tests = 50'00;
 constexpr const double MAX_ARCSEC = 1e-9;
 struct JD {
   double jd1;
@@ -52,7 +52,7 @@ int run_sofa_timer(const std::vector<JD> &epochs) {
   return dummy;
 }
 
-int run_mine_timer(const std::vector<dso::MjdEpoch> &epochs) {
+int run_mine1_timer(const std::vector<dso::MjdEpoch> &epochs) {
   assert(epochs.size() == num_tests);
   int dummy = 0;
   auto start = high_resolution_clock::now();
@@ -66,27 +66,45 @@ int run_mine_timer(const std::vector<dso::MjdEpoch> &epochs) {
   }
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(stop - start);
-  printf("MINE run-time = %15ld\n", duration.count());
+  printf("MINE run-time = %15ld [v.normal]\n", duration.count());
   return dummy;
 }
 
-//int run_thrd_timer(const std::vector<dso::MjdEpoch> &epochs) {
-//  assert(epochs.size() == num_tests);
-//  int dummy = 0;
-//  auto start = high_resolution_clock::now();
-//  for (int i = 0; i < num_tests; i++) {
-//    /* check MINE */
-//    double xcip, ycip, s;
-//    dso::xys06a(epochs[i], xcip, ycip, s);
-//    dummy -= (int)(s-xcip+ycip);
-//    /* flush cache */
-//    dummy += flush_cache(i < 200 ? i : 200);
-//  }
-//  auto stop = high_resolution_clock::now();
-//  auto duration = duration_cast<microseconds>(stop - start);
-//  printf("MINE run-time = %15ld\n", duration.count());
-//  return dummy;
-//}
+int run_mine2_timer(const std::vector<dso::MjdEpoch> &epochs) {
+  assert(epochs.size() == num_tests);
+  int dummy = 0;
+  auto start = high_resolution_clock::now();
+  for (int i = 0; i < num_tests; i++) {
+    /* check MINE */
+    double xcip, ycip;
+    dso::xycip06a_thread(epochs[i], xcip, ycip);
+    dummy -= (int)(xcip + ycip);
+    /* flush cache */
+    dummy += flush_cache(i < 200 ? i : 200);
+  }
+  auto stop = high_resolution_clock::now();
+  auto duration = duration_cast<microseconds>(stop - start);
+  printf("MINE run-time = %15ld [v.thread]\n", duration.count());
+  return dummy;
+}
+
+int run_mine3_timer(const std::vector<dso::MjdEpoch> &epochs) {
+  assert(epochs.size() == num_tests);
+  int dummy = 0;
+  auto start = high_resolution_clock::now();
+  for (int i = 0; i < num_tests; i++) {
+    /* check MINE */
+    double xcip, ycip;
+    dso::xycip06a_sofa(epochs[i], xcip, ycip);
+    dummy -= (int)(xcip + ycip);
+    /* flush cache */
+    dummy += flush_cache(i < 200 ? i : 200);
+  }
+  auto stop = high_resolution_clock::now();
+  auto duration = duration_cast<microseconds>(stop - start);
+  printf("MINE run-time = %15ld [v.sofa]\n", duration.count());
+  return dummy;
+}
 
 int main() {
 
@@ -101,33 +119,50 @@ int main() {
                             mjd_epochs[i].fractional_days());
   }
 
-
     /* time this implementation */
-    run_mine_timer(mjd_epochs);
+    run_mine1_timer(mjd_epochs);
+    /* time SOFA */
+    run_sofa_timer(jd_epochs);
+    /* time this implementation */
+    run_mine2_timer(mjd_epochs);
+    /* time this implementation */
+    run_mine3_timer(mjd_epochs);
     
     /* time SOFA */
     run_sofa_timer(jd_epochs);
-    
-    /* time multi-thread implementation */
-    //run_thrd_timer(mjd_epochs);
+    /* time this implementation */
+    run_mine2_timer(mjd_epochs);
+    /* time this implementation */
+    run_mine3_timer(mjd_epochs);
+    /* time this implementation */
+    run_mine1_timer(mjd_epochs);
     
     /* time this implementation */
-    run_mine_timer(mjd_epochs);
-    
+    run_mine2_timer(mjd_epochs);
+    /* time this implementation */
+    run_mine3_timer(mjd_epochs);
+    /* time this implementation */
+    run_mine1_timer(mjd_epochs);
     /* time SOFA */
     run_sofa_timer(jd_epochs);
     
-    /* time multi-thread implementation */
-    //run_thrd_timer(mjd_epochs);
-    
     /* time this implementation */
-    run_mine_timer(mjd_epochs);
-    
+    run_mine3_timer(mjd_epochs);
+    /* time this implementation */
+    run_mine1_timer(mjd_epochs);
     /* time SOFA */
     run_sofa_timer(jd_epochs);
-
-    /* time multi-thread implementation */
-    //run_thrd_timer(mjd_epochs);
+    /* time this implementation */
+    run_mine2_timer(mjd_epochs);
+    
+    /* time this implementation */
+    run_mine1_timer(mjd_epochs);
+    /* time SOFA */
+    run_sofa_timer(jd_epochs);
+    /* time this implementation */
+    run_mine2_timer(mjd_epochs);
+    /* time this implementation */
+    run_mine3_timer(mjd_epochs);
 
   return 0;
 }

@@ -58,6 +58,10 @@ inline double sp00(const MjdEpoch &tt) noexcept {
  */
 int xycip06a(const dso::MjdEpoch &tt, double &xcip, double &ycip,
              double *fargs = nullptr) noexcept;
+int xycip06a_sofa(const dso::MjdEpoch &tt, double &xcip, double &ycip,
+             double *fargs = nullptr) noexcept;
+int xycip06a_thread(const dso::MjdEpoch &tt, double &xcip, double &ycip,
+             double *fargs = nullptr) noexcept;
 
 /** CIO locator compatible with the IAU 2006/2000A precession-nutation model.
  *
