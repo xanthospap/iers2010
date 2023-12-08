@@ -62,6 +62,8 @@ int xycip06a_sofa(const dso::MjdEpoch &tt, double &xcip, double &ycip,
              double *fargs = nullptr) noexcept;
 int xycip06a_thread(const dso::MjdEpoch &tt, double &xcip, double &ycip,
              double *fargs = nullptr) noexcept;
+int xycip06a_new(const dso::MjdEpoch &tt, double &xcip, double &ycip,
+             double *fargs = nullptr) noexcept;
 
 /** CIO locator compatible with the IAU 2006/2000A precession-nutation model.
  *
@@ -141,6 +143,9 @@ double xcip06a(const double *const fargs, double t) noexcept;
  * @return CIP Y coordinate in GCRS in [μas]
  */
 double ycip06a(const double *const fargs, double t) noexcept;
+
+
+int xycip06a(const double *const fargs, double t, double &xcip, double &ycip) noexcept;
 
 /** CIO locator compatible with the IAU 2006/2000A precession-nutation model.
  *
