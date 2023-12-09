@@ -2933,10 +2933,8 @@ def str2dct(tstr, component, dct={}):
 
 def catTables(str1, str2, id1='X', id2='Y'):
     dct = {}
-    print('Len of dct={:}'.format(len(dct)), file=sys.stderr)
-    dct = str2dct(str1, id1)
+    dct = str2dct(str1, id1, dct)
     dct = str2dct(str2, id2, dct)
-    print('Len of dct={:}'.format(len(dct)), file=sys.stderr)
     sls = ''; len1 = 0
     spl = ''; len2 = 0
     for k,v in dct.items():
@@ -2951,7 +2949,7 @@ if __name__ == "__main__":
     print('constexpr const std::array<XyPlntry,{:}> XyPlnJ0 = {{{{ '.format(l2))
     print(t2)
     print(' }}; /* XyPlnJ0 */')
-    t1=''; t2=''; l1=0; l2=0
+    #t1=''; t2=''; l1=0; l2=0
     
     t1, t2, l1, l2 = catTables(xj1, yj1, 'X', 'Y')
     print('constexpr const std::array<Freq,{:}> XyLunSolJ1 = {{{{ '.format(l1))
@@ -2960,7 +2958,7 @@ if __name__ == "__main__":
     print('constexpr const std::array<XyPlntry,{:}> XyPlnJ1 = {{{{ '.format(l2))
     print(t2)
     print(' }}; /* XyPlnJ1 */')
-    t1=''; t2=''; l1=0; l2=0
+    #t1=''; t2=''; l1=0; l2=0
     
     t1, t2, l1, l2 = catTables(xj2, yj2, 'X', 'Y')
     print('constexpr const std::array<Freq,{:}> XyLunSolJ2 = {{{{ '.format(l1))
@@ -2969,7 +2967,7 @@ if __name__ == "__main__":
     print('constexpr const std::array<XyPlntry,{:}> XyPlnJ2 = {{{{ '.format(l2))
     print(t2)
     print(' }}; /* XyPlnJ2 */')
-    t1=''; t2=''; l1=0; l2=0
+    #t1=''; t2=''; l1=0; l2=0
     
     t1, t2, l1, l2 = catTables(xj3, yj3, 'X', 'Y')
     print('constexpr const std::array<Freq,{:}> XyLunSolJ3 = {{{{ '.format(l1))
@@ -2978,7 +2976,7 @@ if __name__ == "__main__":
     print('constexpr const std::array<XyPlntry,{:}> XyPlnJ3 = {{{{ '.format(l2))
     print(t2)
     print(' }}; /* XyPlnJ3 */')
-    t1=''; t2=''; l1=0; l2=0
+    #t1=''; t2=''; l1=0; l2=0
     
     t1, t2, l1, l2 = catTables(xj4, yj4, 'X', 'Y')
     print('constexpr const std::array<Freq,{:}> XyLunSolJ4 = {{{{ '.format(l1))
@@ -2987,4 +2985,4 @@ if __name__ == "__main__":
     print('constexpr const std::array<XyPlntry,{:}> XyPlnJ4 = {{{{ '.format(l2))
     print(t2)
     print(' }}; /* XyPlnJ4 */')
-    t1=''; t2=''; l1=0; l2=0
+    #t1=''; t2=''; l1=0; l2=0
