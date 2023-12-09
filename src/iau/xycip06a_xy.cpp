@@ -3601,7 +3601,6 @@ int dso::detail::xycip06a(const double *const fargs, double t, double &xcip,
 #endif
   const auto xseries = x0 + (x1 + (x2 + (x3 + x4 * t) * t) * t) * t;
   xcip = xseries + xpoly;
-
   const auto yseries = y0 + (y1 + (y2 + (y3 + y4 * t) * t) * t) * t;
   ycip = yseries + ypoly;
 
@@ -3609,7 +3608,7 @@ int dso::detail::xycip06a(const double *const fargs, double t, double &xcip,
 }
 
 int dso::xycip06a_new(const dso::MjdEpoch &tt, double &xcip, double &ycip,
-                      double *outargs) noexcept {
+                      [[maybe_unused]]double *outargs) noexcept {
   /* Interval between fundamental date J2000.0 and given date. */
   const double t = tt.jcenturies_sinceJ2000();
 
@@ -3624,8 +3623,7 @@ int dso::xycip06a_new(const dso::MjdEpoch &tt, double &xcip, double &ycip,
       dso::iers2010::fane03(t), dso::iers2010::fapa03(t),
   };
 
-  /* X-coordinate of CIP [μas] */
-  /* Y-coordinate of CIP [μas] */
+  /* XY -coordinates of CIP [μas] */
   dso::detail::xycip06a(fa, t, xcip, ycip);
 
   /* transform to [rad] and return */
@@ -3633,8 +3631,8 @@ int dso::xycip06a_new(const dso::MjdEpoch &tt, double &xcip, double &ycip,
   ycip = dso::sec2rad(ycip * 1e-6);
 
   /* if we are given a large enough array, store the fundamental arguments */
-  if (outargs)
-    std::memcpy(outargs, fa, sizeof(double) * 14);
+  //if (outargs)
+  //  std::memcpy(outargs, fa, sizeof(double) * 14);
 
   return 0;
 }
