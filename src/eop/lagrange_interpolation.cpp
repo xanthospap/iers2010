@@ -1,9 +1,9 @@
 #include "eop.hpp"
 #include <datetime/dtdatetime.hpp>
 
-dso::EopInterpoationResult
+dso::EopSeries::EopInterpoationResult
 dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
-                            int order = 5) const noexcept {
+                            int order) const noexcept {
   /* find a matching interval */
   auto it = this->upper_bound(t);
 
@@ -66,11 +66,15 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
    */
   auto i = it - ndp;
   const auto stop = it + ndp;
-  double nom[ndp * 2]; /* Π_{k=0,k!=j}^{n} (x-x_k) */
-  double dom[ndp * 2]; /* Π_{k=0,k!=j}^{n} (x_j-x_k) */
+  //double nom[ndp * 2]; /* Π_{k=0,k!=j}^{n} (x-x_k) */
+  //double dom[ndp * 2]; /* Π_{k=0,k!=j}^{n} (x_j-x_k) */
+  //double * __restrict__ nom = scr1();
+  //double * __restrict__ dom = scr2();
+  auto nom = work.begin();
+  auto dom = work.begin() + MAX_POLY_INTERPOLATION_DEGREE+1;
   for (; i != stop; ++i) {
     const int j = std::distance(it - ndp, i);
-    const auto xj = j->t();
+    const auto xjt = ->t();
     auto k = it - ndp;
     for (; k != stop; ++k) {
       if (j != std::dinstance(it - ndp, k)) {

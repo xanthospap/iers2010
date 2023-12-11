@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <datetime/dtfund.hpp>
 #include <fstream>
 #ifdef DEBUG
 #include "datetime/datetime_write.hpp"
@@ -107,7 +108,8 @@ int dso::parse_lambert_coefficients(
       /* resolve fractional MJD to a MjdEpoch */
       double ipart;
       const double fday = std::modf(d[1], &ipart);
-      const dso::MjdEpoch t((int)ipart, fday * dso::SEC_PER_DAY);
+      const dso::MjdEpoch t((int)ipart,
+                            dso::FractionalSeconds{fday * dso::SEC_PER_DAY});
       /* push back the coefficients entry */
       lvec.emplace_back(t, d[2], d[3], d[4]);
     } else {

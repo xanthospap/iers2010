@@ -38,7 +38,7 @@ int dso::details::parse_iers_C0414(const char *c04fn,
                                    const dso::MjdEpoch &end,
                                    dso::EopSeries &eops) noexcept {
   /* check dates */
-  if (stop <= start) {
+  if (end <= start) {
     fprintf(stderr,
             "[ERROR] Invalid dates for parsing EOP (C04) file %s (traceback: "
             "%s)\n",
@@ -69,28 +69,26 @@ int dso::details::parse_iers_C0414(const char *c04fn,
   int error=0;
   /* keep on reading lines untill we encounter a date later than end */
   while (fin.getline(line, MAX_LINE_CHARS) && !error) {
-    const char *start;
-    const char *end = line + std::strlen(line);
-    long imjd;
-    if (line && (*line != ' ' && *line != '#')) {
+    const char *cstart;
+    const char *cend = line + std::strlen(line);
+    long imjd=0;
+    if (line[0] && (*line != ' ' && *line != '#')) {
       /* skip the data (YYYY MM DD) which is 12 chars length and get the mjd
        * (note that this is UTC)
        */
-      start = next_num(line + 12);
-      auto fcr = std::from_chars(start, end, imjd);
-      if (fcr.ec != std::errc() || fcr.ptr == start)
+      cstart = next_num(line + 12);
+      auto fcr = std::from_chars(cstart, cend, imjd);
+      if (fcr.ec != std::errc() || fcr.ptr == cstart)
         error = 1;
 
       /* integral part of current MJD (UTC) */
-      const dso::TwoPartDateUTC cutc(imjd, 0e0);
+      const dso::TwoPartDateUTC cutc(imjd, dso::FractionalSeconds{0e0});
       const dso::TwoPartDate ctt = cutc.utc2tt();
       /* ΔAT at time cutc */
       const auto dat = dso::dat(dso::modified_julian_day(cutc.imjd()));
-      int error = 0;
 
       /* if the date is within range, collect data */
       if (ctt >= start && ctt < end) {
-        error = 0;
         rec.t() = ctt;
         /* Collect the following (in given order/units :
          * x, y, UT1-UTC, LOD, dX, dY, [..errors...]
@@ -98,9 +96,9 @@ int dso::details::parse_iers_C0414(const char *c04fn,
          */
         double data[6];
         for (int i = 0; i < 6; i++) {
-          start = next_num(fcr.ptr);
-          fcr = std::from_chars(start, end, data[i]);
-          if (fcr.ec != std::errc() || fcr.ptr == start) {
+          cstart = next_num(fcr.ptr);
+          fcr = std::from_chars(cstart, cend, data[i]);
+          if (fcr.ec != std::errc() || fcr.ptr == cstart) {
             ++error;
           }
         }
@@ -114,12 +112,12 @@ int dso::details::parse_iers_C0414(const char *c04fn,
         rec.dY() = data[5];
         rec.dat() = dat;
         /* no x/y rate availabel, set to 0 */
-        rec.xrt() = 0e0;
-        rec.yrt() = 0e0;
+        rec.xp_rate() = 0e0;
+        rec.yp_rate() = 0e0;
 
         /* add entries to the EopLookUpTable */
         if (!error)
-          eoptable.push_back(rec);
+          eops.push_back(rec);
       } else if (ctt >= end) {
         break;
       }

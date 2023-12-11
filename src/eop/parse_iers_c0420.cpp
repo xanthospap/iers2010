@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstring>
 #include <fstream>
+#include <cassert>
 
 namespace {
 constexpr const std::size_t MAX_LINE_CHARS = 256;
@@ -38,7 +39,7 @@ int dso::details::parse_iers_C0420(const char *c04fn,
                                    const dso::MjdEpoch &end,
                                    dso::EopSeries &eops) noexcept {
   /* check dates */
-  if (stop <= start) {
+  if (end <= start) {
     fprintf(stderr,
             "[ERROR] Invalid dates for parsing EOP (C04) file %s (traceback: "
             "%s)\n",
@@ -69,103 +70,96 @@ int dso::details::parse_iers_C0420(const char *c04fn,
   int error = 0;
   /* keep on reading/parsing as long as we don;t encounter a date > end */
   while (fin.getline(line, MAX_LINE_CHARS) && !error) {
-    const char *start;
-    const char *end = line + std::strlen(line);
-    if (line && (*line != ' ' && *line != '#')) {
+    const char *cstart;
+    const char *cend = line + std::strlen(line);
+    if (line[0] && (*line != ' ' && *line != '#')) {
       /* skip the data (YYYY MM DD) which is 12 chars length and get the mjd
        * (note that this is UTC)
        */
-      start = next_num(line + 12);
+      cstart = next_num(line + 12);
       std::from_chars_result fcr;
 
       /* parse date -- made up or recorded hours (in day) and MJD */
-      dso::TwoPartDate ct;
+      dso::TwoPartDateUTC ct;
       { /* we have to read in (integer) hours */
         int hours;
-        fcr = std::from_chars(start, end, hours);
-        if (fcr.ec != std::errc() || fcr.ptr == start) {
+        fcr = std::from_chars(cstart, cend, hours);
+        if (fcr.ec != std::errc() || fcr.ptr == cstart) {
           fprintf(
               stderr,
               "[ERROR] Failed reading hours from eop file %s (traceback: %s)\n",
               c04fn, __func__);
           return 2;
         }
-        start = next_num(fcr.ptr);
-        const double fractional_days = hours / 24e0;
+        cstart = next_num(fcr.ptr);
+        /* read real MJD */
         double mjd;
-        fcr = std::from_chars(start, end, mjd);
-        if (fcr.ec != std::errc() || fcr.ptr == start) {
+        fcr = std::from_chars(cstart, cend, mjd);
+        if (fcr.ec != std::errc() || fcr.ptr == cstart) {
           fprintf(
               stderr,
               "[ERROR] Failed reading MJD from eop file %s (traceback: %s)\n",
               c04fn, __func__);
           return 2;
         }
-        start = next_num(fcr.ptr);
-        ct = dso::TwoPartDate(mjd, fractional_days);
+        cstart = next_num(fcr.ptr);
+        /* split the real MJD to integral and fractional part, and verify */
+        double imjd;
+        double fdays = std::modf(mjd, &imjd);
+        assert(fdays == hours/24e0);
+        ct = dso::TwoPartDateUTC(
+            (int)imjd,
+            dso::FractionalSeconds{fdays * dso::SEC_PER_DAY});
       }
 
-      int error = 0;
-
+      /* UTC date to TT and ΔAT at this UTC */
+      const dso::TwoPartDate ctt = ct.utc2tt();
+      const auto dat = dso::dat(dso::modified_julian_day(ct.imjd()));
       /* if the date is ok, collect data */
-      if (ct >= start_t && ct < end_t) {
-        error = 0;
-        rec.mjd = ct;
+      if (ctt >= start && ctt < end) {
+        rec.t() = ctt;
         /* collecting the following (values/units)
          *  x  y   UT1-UTC   dX   dY  xrt     yrt     LOD
          *  "  "   sec       "    "   "/day   "/day   sec
          */
         double data[8];
         for (int i = 0; i < 8; i++) {
-          start = next_num(fcr.ptr);
-          fcr = std::from_chars(start, end, data[i]);
-          if (fcr.ec != std::errc() || fcr.ptr == start) {
+          cstart = next_num(fcr.ptr);
+          fcr = std::from_chars(cstart, cend, data[i]);
+          if (fcr.ec != std::errc() || fcr.ptr == cstart) {
             ++error;
           }
         }
 
-        if (error) {
-          fprintf(stderr,
-                  "[ERROR] Failed resolving EOP line [%s]. EOP file is %s "
-                  "(traceback: %s/err=B)\n",
-                  line, c04fn, __func__);
-          return 2;
-        }
-
         /* assign (watch the order) */
-        rec.xp = data[0];
-        rec.yp = data[1];
-        rec.dut = data[2];
-        rec.dx = data[3];
-        rec.dy = data[4];
-        rec.xrt = data[5];
-        rec.yrt = data[6];
-        rec.lod = data[7];
+        rec.xp() = data[0];
+        rec.yp() = data[1];
+        rec.dut() = data[2];
+        rec.dX() = data[3];
+        rec.dY() = data[4];
+        rec.xp_rate() = data[5];
+        rec.yp_rate() = data[6];
+        rec.lod() = data[7];
+        rec.dat() = dat;
 
-        /* append collected data to instance */
-        eoptable.push_back(rec);
-      } else if (ct >= end_t) {
+        /* add entries to the EopLookUpTable */
+        if (!error)
+          eops.push_back(rec);
+      } else if (ctt >= end) {
         break;
       }
 
     } /* if (line[0] != ' ') ... */
   }   /* end reading lines */
 
-  /* report any errors or missing data */
-  if (days != eoptable.size()) {
+  if (error || (!fin && !fin.eof())) {
     fprintf(stderr,
-            "[WRNNG] Failed to collect EOP data for requested date span\n");
-    if (!eoptable.size()) {
-      fprintf(stderr, "[WRNNG] No epoch collected from EOP file!\n");
-    } else {
-      fprintf(stderr,
-              "[WRNNG] Requested [%ld to %ld) collected [%.3f to %.3f]\n",
-              start_mjd.as_underlying_type(), end_mjd.as_underlying_type(),
-              eoptable.epoch_vector()[0].as_mjd(),
-              eoptable.epoch_vector().back().as_mjd());
-    }
+            "[ERROR] Failed resolving EOP line [%s]. EOP file is %s "
+            "(traceback: %s)\n",
+            line, c04fn, __func__);
+    return 1;
   }
 
-  /* we were supposed to collect: */
-  return !(days == eoptable.size());
+  /* all done */
+  return 0;
 }
