@@ -2895,13 +2895,13 @@ yj3 = """ 1270         -15.22          -1.61    0    0    0    0    1    0    0 
 
 yj4 = """ 1275          -0.02           0.11    0    0    0    0    1    0    0    0    0    0    0    0    0    0"""
 
-def line2kv(line, component):
+def line2kv(line, component, power):
     fs = [float(x) for x in line.split()]
     inls = '{:}'.format(','.join(['{:+2d}'.format(int(x)) for x in fs[3:8]]))
     inpl = '{:}'.format(','.join(['{:+2d}'.format(int(x)) for x in fs[8:]]))
     aa = int(fs[0])
     asij, acij = fs[1], fs[2]
-    return inls, {'cmp': component, 'aa': aa, 'pl': inpl, 'as': asij, 'ac': acij}
+    return inls, {'cmp': component, 'aa': aa, 'pl': inpl, 'as': asij, 'ac': acij, 'pow': int(power)}
 
 def kv2car(k,v,s1,s2,len1,len2):
     xs = 0
@@ -2911,78 +2911,107 @@ def kv2car(k,v,s1,s2,len1,len2):
     for e in v:
         if e['cmp'].upper() == 'X': 
             sumpl = sum([int(x) for x in e['pl'].split(',')])
-            s2x += '{{ {:}, {{{:}}}, {:+9.6e}, {:+9.6e} }},'.format(sumpl, e['pl'], e['as'], e['ac'])
+            s2x += '{{ {:}, {{{:}}}, {:+9.6e}, {:+9.6e}, {:1d} }},'.format(sumpl, e['pl'], e['as'], e['ac'], e['pow'])
             xs += 1
         if e['cmp'].upper() == 'Y':
             sumpl = sum([int(x) for x in e['pl'].split(',')])
-            s2y += '{{ {:}, {{{:}}}, {:+9.6e}, {:+9.6e} }},'.format(sumpl, e['pl'], e['as'], e['ac'])
+            s2y += '{{ {:}, {{{:}}}, {:+9.6e}, {:+9.6e}, {:1d} }},'.format(sumpl, e['pl'], e['as'], e['ac'], e['pow'])
             ys += 1
     s2 += (s2x + s2y)
     s1 += '{{{{{:}}}, {:}, {:}}},'.format(k, xs, ys)
     return s1, s2, len1+1, len2+xs+ys
 
-def str2dct(tstr, component, dct={}):
+def str2dct(tstr, component, power, dct={}):
     for line in tstr.splitlines():
         if len(line.strip()) > 1:
-            k, v = line2kv(line, component)
+            k, v = line2kv(line, component, power)
             if k in dct:
                 dct[k].append(v)
             else:
                 dct[k] = [v]
     return dct
 
-def catTables(str1, str2, id1='X', id2='Y'):
-    dct = {}
-    dct = str2dct(str1, id1, dct)
-    dct = str2dct(str2, id2, dct)
+def appendPowerCoeffs(tstr, component, power, dct):
+    ndct = str2dct(tstr, component, power, dct)
+    return ndct
+
+def tables2car(dct):
     sls = ''; len1 = 0
     spl = ''; len2 = 0
     for k,v in dct.items():
         sls, spl, len1, len2 = kv2car(k,v,sls,spl,len1,len2)
     return sls, spl, len1, len2
 
+def catTables(str1, str2, power, id1='X', id2='Y'):
+    dct = {}
+    dct = str2dct(str1, id1, power, dct)
+    dct = str2dct(str2, id2, power, dct)
+    return dct
+    #sls = ''; len1 = 0
+    #spl = ''; len2 = 0
+    #for k,v in dct.items():
+    #    sls, spl, len1, len2 = kv2car(k,v,sls,spl,len1,len2)
+    #return sls, spl, len1, len2
+
 if __name__ == "__main__":
-    t1, t2, l1, l2 = catTables(xj0, yj0, 'X', 'Y')
-    print('constexpr const std::array<Freq,{:}> XyLunSolJ0 = {{{{ '.format(l1))
+    dct = catTables(xj0, yj0, 0, 'X', 'Y')
+    dct = appendPowerCoeffs(xj1, 'X', 1, dct)
+    dct = appendPowerCoeffs(yj1, 'Y', 1, dct)
+    dct = appendPowerCoeffs(xj2, 'X', 2, dct)
+    dct = appendPowerCoeffs(yj2, 'Y', 2, dct)
+    dct = appendPowerCoeffs(xj3, 'X', 3, dct)
+    dct = appendPowerCoeffs(yj3, 'Y', 3, dct)
+    dct = appendPowerCoeffs(xj4, 'X', 4, dct)
+    dct = appendPowerCoeffs(yj4, 'Y', 4, dct)
+    t1,t2,l1,l2 = tables2car(dct)
+    print('constexpr const std::array<Freq,{:}> XyLunSol = {{{{ '.format(l1))
     print(t1)
-    print(' }}; /* XyLunSolJ0 */')
-    print('constexpr const std::array<XyPlntry,{:}> XyPlnJ0 = {{{{ '.format(l2))
+    print(' }}; /* XyLunSol */')
+    print('constexpr const std::array<XyPlntry,{:}> XyPln = {{{{ '.format(l2))
     print(t2)
-    print(' }}; /* XyPlnJ0 */')
-    #t1=''; t2=''; l1=0; l2=0
-    
-    t1, t2, l1, l2 = catTables(xj1, yj1, 'X', 'Y')
-    print('constexpr const std::array<Freq,{:}> XyLunSolJ1 = {{{{ '.format(l1))
-    print(t1)
-    print(' }}; /* XyLunSolJ1 */')
-    print('constexpr const std::array<XyPlntry,{:}> XyPlnJ1 = {{{{ '.format(l2))
-    print(t2)
-    print(' }}; /* XyPlnJ1 */')
-    #t1=''; t2=''; l1=0; l2=0
-    
-    t1, t2, l1, l2 = catTables(xj2, yj2, 'X', 'Y')
-    print('constexpr const std::array<Freq,{:}> XyLunSolJ2 = {{{{ '.format(l1))
-    print(t1)
-    print(' }}; /* XyLunSolJ2 */')
-    print('constexpr const std::array<XyPlntry,{:}> XyPlnJ2 = {{{{ '.format(l2))
-    print(t2)
-    print(' }}; /* XyPlnJ2 */')
-    #t1=''; t2=''; l1=0; l2=0
-    
-    t1, t2, l1, l2 = catTables(xj3, yj3, 'X', 'Y')
-    print('constexpr const std::array<Freq,{:}> XyLunSolJ3 = {{{{ '.format(l1))
-    print(t1)
-    print(' }}; /* XyLunSolJ3 */')
-    print('constexpr const std::array<XyPlntry,{:}> XyPlnJ3 = {{{{ '.format(l2))
-    print(t2)
-    print(' }}; /* XyPlnJ3 */')
-    #t1=''; t2=''; l1=0; l2=0
-    
-    t1, t2, l1, l2 = catTables(xj4, yj4, 'X', 'Y')
-    print('constexpr const std::array<Freq,{:}> XyLunSolJ4 = {{{{ '.format(l1))
-    print(t1)
-    print(' }}; /* XyLunSolJ4 */')
-    print('constexpr const std::array<XyPlntry,{:}> XyPlnJ4 = {{{{ '.format(l2))
-    print(t2)
-    print(' }}; /* XyPlnJ4 */')
-    #t1=''; t2=''; l1=0; l2=0
+    print(' }}; /* XyPln */')
+
+    #t1, t2, l1, l2 = catTables(xj0, yj0, 'X', 'Y')
+    #print('constexpr const std::array<Freq,{:}> XyLunSolJ0 = {{{{ '.format(l1))
+    #print(t1)
+    #print(' }}; /* XyLunSolJ0 */')
+    #print('constexpr const std::array<XyPlntry,{:}> XyPlnJ0 = {{{{ '.format(l2))
+    #print(t2)
+    #print(' }}; /* XyPlnJ0 */')
+    ##t1=''; t2=''; l1=0; l2=0
+    #
+    #t1, t2, l1, l2 = catTables(xj1, yj1, 'X', 'Y')
+    #print('constexpr const std::array<Freq,{:}> XyLunSolJ1 = {{{{ '.format(l1))
+    #print(t1)
+    #print(' }}; /* XyLunSolJ1 */')
+    #print('constexpr const std::array<XyPlntry,{:}> XyPlnJ1 = {{{{ '.format(l2))
+    #print(t2)
+    #print(' }}; /* XyPlnJ1 */')
+    ##t1=''; t2=''; l1=0; l2=0
+    #
+    #t1, t2, l1, l2 = catTables(xj2, yj2, 'X', 'Y')
+    #print('constexpr const std::array<Freq,{:}> XyLunSolJ2 = {{{{ '.format(l1))
+    #print(t1)
+    #print(' }}; /* XyLunSolJ2 */')
+    #print('constexpr const std::array<XyPlntry,{:}> XyPlnJ2 = {{{{ '.format(l2))
+    #print(t2)
+    #print(' }}; /* XyPlnJ2 */')
+    ##t1=''; t2=''; l1=0; l2=0
+    #
+    #t1, t2, l1, l2 = catTables(xj3, yj3, 'X', 'Y')
+    #print('constexpr const std::array<Freq,{:}> XyLunSolJ3 = {{{{ '.format(l1))
+    #print(t1)
+    #print(' }}; /* XyLunSolJ3 */')
+    #print('constexpr const std::array<XyPlntry,{:}> XyPlnJ3 = {{{{ '.format(l2))
+    #print(t2)
+    #print(' }}; /* XyPlnJ3 */')
+    ##t1=''; t2=''; l1=0; l2=0
+    #
+    #t1, t2, l1, l2 = catTables(xj4, yj4, 'X', 'Y')
+    #print('constexpr const std::array<Freq,{:}> XyLunSolJ4 = {{{{ '.format(l1))
+    #print(t1)
+    #print(' }}; /* XyLunSolJ4 */')
+    #print('constexpr const std::array<XyPlntry,{:}> XyPlnJ4 = {{{{ '.format(l2))
+    #print(t2)
+    #print(' }}; /* XyPlnJ4 */')
+    ##t1=''; t2=''; l1=0; l2=0

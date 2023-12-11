@@ -16,7 +16,7 @@ int main() {
     const double dj1 = mjd.imjd() + dso::MJD0_JD;
     const double dj2 = mjd.fractional_days();
     iauXy06(dj1, dj2, &xsofa, &ysofa);
-    dso::xycip06a(mjd, xmine, ymine);
+    dso::xycip06a_new(mjd, xmine, ymine);
     assert(std::abs(xsofa-xmine) < MAX_ARCSEC);
     assert(std::abs(ysofa-ymine) < MAX_ARCSEC);
   }

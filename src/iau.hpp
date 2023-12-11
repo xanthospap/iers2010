@@ -14,6 +14,18 @@ namespace dso {
  */
 double era00(const MjdEpoch &ut1) noexcept;
 
+/** @brief Greenwich mean sidereal time (consistent with IAU 2006 precession).
+ *
+ * Both UT1 and TT are required, UT1 to predict the Earth rotation and TT to 
+ * predict the effects of precession.  If UT1 is used for both purposes, 
+ * errors of order 100 microarcseconds result.
+ * This GMST is compatible with the IAU 2006 precession and must not be used 
+ * with other precession models.
+ * The result is returned in the range 0 to 2pi.
+ * See also the iauGmst function of SOFA.
+ */
+double gmst(const MjdEpoch &tt, const MjdEpoch &ut1) noexcept;
+
 /* @brief Compute TIO locator s'
  *
  * The TIO locator s', positioning the Terrestrial Intermediate Origin

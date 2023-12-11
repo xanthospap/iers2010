@@ -152,7 +152,59 @@ public:
     return (this->same_group(other) && (iar[2] == other.iar[2]));
   }
 
+  /** @brief Compute the 'angular' argument (ARGUMENT) 
+   *
+   * The argument is often designated as ARGUMENT in the iERS standards and 
+   * often is also called 'phase'. 
+   * The computation formula is: 
+   *           θ_f = Σ(β_i * n_i), i=1,..,6
+   * where:
+   * β_i are the [τ, s, h, p, N', pl] arguments (e.g. derived from Delaunay 
+   * arguments plus GMST) and n_i are the Doodson multipliers.
+   *
+   * @return Angular argument in [rad], within the range [0,2π).
+   */
+  double
+  argument(const double *const doodson_arguments) const noexcept {
+    const double *__restrict__ f = doodson_arguments;
+    return dso::anp(f[0] * iar[0] + f[1] * iar[1] + f[2] * iar[2] +
+                    f[3] * iar[3] + f[4] * iar[4] + f[5] * iar[5]);
+  }
+
 }; /* DoodsonConstituent */
+
+/* @brief Fundamental (Delaunay) arguments to Doodson variables.
+ * All angles are in [rad] in the range [0,2π)
+ *
+ * @param[in] fundarg Fundamental (Delaunay) arguments, in the order
+ *             [l, lp, f, d, Ω], see notes.
+ * @param[out] doodson Corresponding Doodson variables, in the order
+ *             [τ, s, h, p, N', ps]
+ * 
+ * @note Explanation of symbols used:
+ *   * [0] l  : Mean anomaly of the Moon [rad]
+ *   * [1] lp : Mean anomaly of the Sun [rad]
+ *   * [2] f  : L - Ω [rad]
+ *   * [3] d  : Mean elongation of the Moon from the Sun [rad]
+ *   * [4] Ω  : Mean longitude of the ascending node of the Moon [rad]
+ *
+ *   * [0] τ  : GMST + π - s
+ *   * [1] s  : Moon's mean longitude [rad]
+ *   * [2] h  : Sun's mean longitude [rad]
+ *   * [3] p  : Longitude of Moon's mean perigee [rad]
+ *   * [4] N' : Negative longitude of Moon's mean node [rad]
+ *   * [5] pl : Longitude of Sun's mean perigee [rad]
+ */
+inline int delaunay2doodson(const double *const fundarg, double gmst,
+                           double *doodson) noexcept {
+  doodson[1] = dso::anp(fundarg[2] + fundarg[4]);
+  doodson[2] = dso::anp(fundarg[2] + fundarg[4] - fundarg[3]);
+  doodson[3] = dso::anp(fundarg[2] + fundarg[4] - fundarg[0]);
+  doodson[4] = dso::anp(-fundarg[4]);
+  doodson[5] = dso::anp(fundarg[2] + fundarg[4] - fundarg[3] - fundarg[1]);
+  doodson[0] = dso::anp(gmst + dso::DPI - doodson[1]);
+  return 0;
+}
 
 namespace detail {
 struct TidalConstituentsArrayEntry {

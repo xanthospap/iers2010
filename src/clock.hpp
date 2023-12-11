@@ -48,10 +48,10 @@ struct Clock {
   auto stop() { mstop = high_resolution_clock::now(); }
   
   auto add_sample() {
-    auto duration = duration_cast<microseconds>(mstop - mstart).count();
+    uint_least64_t duration = duration_cast<microseconds>(mstop - mstart).count();
     ++msamples;
     maverage = maverage * (msamples-1)/msamples + ((double)duration) / msamples;
-    printf("%s average runtime=%.3f\n", mname, maverage);
+    //printf("%s average runtime=%.3f\n", mname, maverage);
   }
   
   bool is_faster(const Clock &other) const noexcept {
