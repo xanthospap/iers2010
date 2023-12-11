@@ -47,7 +47,7 @@ int dso::xycip06a_thread(const dso::MjdEpoch &tt, double &xcip,
 
   /* Y-coordinate of CIP [μas] */
   double ycip_mas;
-  std::thread t2(t_xcip06a,fa, t, std::ref(ycip_mas));
+  std::thread t2(t_ycip06a,fa, t, std::ref(ycip_mas));
 
   t1.join();
   t2.join();

@@ -1,5 +1,6 @@
 #include "eop.hpp"
 #include <datetime/dtdatetime.hpp>
+#include <cstdio>
 
 dso::EopSeries::EopInterpoationResult
 dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
@@ -12,6 +13,7 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
     /* copy the first entry in series and flag the return status */
     eop = *it;
     eop.t() = t;
+    //fprintf(stderr, "--> prior to first eop record!\n");
     return EopInterpoationResult::OutOfBoundsPrior;
   }
 
@@ -20,12 +22,15 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
     --it;
     eop = *it;
     eop.t() = t;
+    //fprintf(stderr, "--> after last eop record!\n");
     return EopInterpoationResult::OutOfBoundsLater;
   }
 
   /* check that we have enough data points (left & right) */
+  //fprintf(stderr, "%.12f <= %.12f < %.12f\n", (it-1)->t().as_mjd(), t.as_mjd(), it->t().as_mjd());
   const int window = order + 1;
   int ndp = window / 2;
+  //fprintf(stderr, "initial window = %d\n", window);
   if (it - ndp < mvec.begin() || it + (ndp - 1) >= mvec.end()) {
     /* not enough data points! try setting fewer data points, until 1 */
     --ndp;
@@ -34,6 +39,7 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
       --ndp;
     }
   }
+  //fprintf(stderr, "reached window = %d\n", ndp*2);
 
   /* set all EOPs to 0 for output */
   eop.xp() = eop.yp() = eop.dut() = eop.lod() = eop.dX() = eop.dY() =
@@ -66,6 +72,7 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
    */
   auto i = it - ndp;
   const auto stop = it + ndp;
+  //fprintf(stderr, "start interpolation at %d and end at %d\n", (int)std::distance(mvec.begin(), i), (int)std::distance(mvec.begin(), stop));
   //double nom[ndp * 2]; /* Π_{k=0,k!=j}^{n} (x-x_k) */
   //double dom[ndp * 2]; /* Π_{k=0,k!=j}^{n} (x_j-x_k) */
   //double * __restrict__ nom = scr1();
@@ -73,15 +80,19 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
   auto nom = work.begin();
   auto dom = work.begin() + MAX_POLY_INTERPOLATION_DEGREE+1;
   for (; i != stop; ++i) {
+    /* j index runs through [0, 2ndp) */
     const int j = std::distance(it - ndp, i);
-    const auto xjt = ->t();
+    /* x_j i.e. t_j */
+    const auto xjt = i->t();
+    nom[j] = 1e0;
+    dom[j] = 1e0;
     auto k = it - ndp;
     for (; k != stop; ++k) {
-      if (j != std::dinstance(it - ndp, k)) {
+      if (j != std::distance(it - ndp, k)) {
         const double n =
             t.diff<dso::DateTimeDifferenceType::FractionalDays>(k->t());
         const double d =
-            xj.diff<dso::DateTimeDifferenceType::FractionalDays>(k->t());
+            xjt.diff<dso::DateTimeDifferenceType::FractionalDays>(k->t());
         nom[j] *= n;
         dom[j] *= d;
       }
@@ -94,11 +105,14 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
     int j = std::distance(it - ndp, i);
     eop.xp() += i->xp() * nom[j] / dom[j];
     eop.yp() += i->yp() * nom[j] / dom[j];
-    eop.dut() += i->dut() * nom[j] / dom[j];
+    eop.dut() += (i->dut()-i->dat()) * nom[j] / dom[j];
     eop.lod() += i->lod() * nom[j] / dom[j];
     eop.dX() += i->dX() * nom[j] / dom[j];
     eop.dY() += i->dY() * nom[j] / dom[j];
   }
 
-  return (ndp*2 == degree-1) ? PolyDegreeRequested : PolyDegreeDescreased;
+  eop.dut() += dso::dat(dso::modified_julian_day(t.tt2utc().imjd()));
+
+  return (ndp * 2 == order - 1) ? EopInterpoationResult::PolyDegreeRequested
+                                : EopInterpoationResult::PolyDegreeDescreased;
 }

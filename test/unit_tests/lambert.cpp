@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     {
       double imjd, secday;
       secday = std::modf(mjd, &imjd) * dso::SEC_PER_DAY;
-      t = TwoPartDate((int)imjd, secday);
+      t = TwoPartDate((int)imjd, FractionalSeconds{secday});
     }
     const auto res = lambert_fcn(t, lvec);
     printf("%20.5f %18.12f %18.12f %18.12f %18.12f\n", t.as_mjd(), res.xcip,

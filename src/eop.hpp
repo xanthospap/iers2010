@@ -8,6 +8,7 @@
 #include <vector>
 #include <array>
 #include <algorithm>
+#include <utility>
 
 namespace dso {
 
@@ -108,6 +109,10 @@ public:
   //    delete[] work;
   //}
 
+  const auto &give_me_the_vector() const noexcept {
+    return mvec;
+  }
+
   /** Clear all entries in the series */
   void clear() noexcept {return mvec.clear();}
 
@@ -130,6 +135,15 @@ public:
 
   EopInterpoationResult interpolate(const MjdEpoch &t, EopRecord &eop,
                                     int order = 5) const noexcept;
+  cvit nearest_neighbor(const MjdEpoch &t) const noexcept
+  {
+    cvit it = this->upper_bound(t);
+    if (it == mvec.begin()) return it;
+    if (it == mvec.end()) return (it-1);
+    double dtlow = t.diff<DateTimeDifferenceType::FractionalDays>((it-1)->t());
+    double dthgh = it->t().diff<DateTimeDifferenceType::FractionalDays>(t);
+    return dtlow <= dthgh ? (--it) : it;
+  }
 
   /** @brief Return an iterator to the first Eop record in mvec, such that 
    * t < record.t
@@ -141,12 +155,18 @@ public:
    *    t is out-of-bounds, i.e. at a latter epoch than the last EOP entry.
    */
   vit upper_bound(const MjdEpoch &t) noexcept {
-    return std::upper_bound(mvec.begin(), mvec.end(),
-                            [&](const EopRecord &r) { return t < r.t(); });
+    return std::upper_bound(
+        mvec.begin(), mvec.end(), t,
+        [/*&t = std::as_const(t)*/](const MjdEpoch &e, const EopRecord &r) {
+          return e < r.t();
+        });
   }
   cvit upper_bound(const MjdEpoch &t) const noexcept {
-    return std::upper_bound(mvec.begin(), mvec.end(),
-                            [&](const EopRecord &r) { return t < r.t(); });
+    return std::upper_bound(
+        mvec.begin(), mvec.end(), t,
+        [/*&t = std::as_const(t)*/](const MjdEpoch &e, const EopRecord &r) {
+          return e < r.t();
+        });
   }
 }; /* EopSeries */
 
