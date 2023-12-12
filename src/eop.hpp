@@ -87,19 +87,20 @@ class EopSeries {
   using cvit = std::vector<EopRecord>::const_iterator;
   static constexpr int MAX_POLY_INTERPOLATION_DEGREE = 9;
   std::vector<EopRecord> mvec{};
-  cvit last_index{mvec.end()};
+  mutable cvit last_it{mvec.end()};
   mutable std::array<double, (MAX_POLY_INTERPOLATION_DEGREE+1)*2> work;//[(MAX_POLY_INTERPOLATION_DEGREE+1)*2];
+  //mutable double work[(MAX_POLY_INTERPOLATION_DEGREE+1)*2];
   //double *scr1() noexcept {return work;}
   //double *scr2() noexcept {return work + MAX_POLY_INTERPOLATION_DEGREE+1;}
 
 public:
-  enum class EopInterpoationResult : char {
+  enum class EopInterpolationResult : char {
     OutOfBoundsPrior,
     OutOfBoundsLater,
     Linear,
     PolyDegreeDescreased,
     PolyDegreeRequested
-  }; /* EopInterpoationResult */
+  }; /* EopInterpolationResult */
 
   //EopSeries()
   //    : mvec{}, last_index{mvec.end()},
@@ -130,11 +131,62 @@ public:
    * Warning! The vector of EopRecord should always be chronologically ordered. 
    * If yous use this method be sure that the entry you are pushing is indeed 
    * later that then last current entry in the table.
+   *
+   * Warning! This function may invalidate the last_it pointer. Please, reset 
+   * it to the correct index after the call.
    */
   void push_back(const EopRecord& r) noexcept {return mvec.push_back(r);}
 
-  EopInterpoationResult interpolate(const MjdEpoch &t, EopRecord &eop,
-                                    int order = 5) const noexcept;
+  void reset_vec_iterator(int offset=-1) noexcept {
+    last_it = (offset < 0) ? mvec.end() : mvec.begin()+offset;
+  }
+
+  /** Interpolate EOPs using the data in Series, for a given epoch (TT).
+   *
+   * a. In case \p t is prior to the first entry in the instant's series, i.e. 
+   *    t <= mvec[0].t:
+   *    \p eop will be filled with the values of the first entry in the series, 
+   *    (i.e. no interpolation) aka eop == mvec[0] (apparently the equality 
+   *    excludes the epoch of \p eop, which will be \t).
+   *    The return status will be set to 
+   *    EopSeries::EopInterpolationResult::OutOfBoundsPrior
+   *
+   * b. In case \p t is later than the last entry in the instant's series, i.e. 
+   *    t >= mvec[num_entries].t:
+   *    \p eop will be filled with the values of the last entry in the series, 
+   *    (i.e. no interpolation) aka eop == mvec[num_entries] (apparently the 
+   *    equality excludes the epoch of \p eop, which will be \t).
+   *    The return status will be set to 
+   *    EopSeries::EopInterpolationResult::OutOfBoundsLater
+   * 
+   * c. For any other case, the function will try to use (degree+1)/2 data 
+   *    points on the left and right-hand side (i.e. in total degree+1 data 
+   *    points) to perform polynomial interpolation via the Lagrange method.
+   *    If this is not possible, the function will test lowering the degree of 
+   *    the interpolating polynomial (i.e. degree, degree-1, ...,1), untill it 
+   *    can find a suitable range of (degree+1)/2 data points on the left and 
+   *    right-hand side; it will then perform the interpolation using this 
+   *    degree/num of data points. If the 'final' degree is lower than the 
+   *    user-specified (i.e. \p degree), then the status 
+   *    EopSeries::EopInterpolationResult::PolyDegreeDescreased will be 
+   *    returned. In the special case where only one point on the left and one 
+   *    on the right can be used (i.e. degree=1), the status function will 
+   *    perform linear interpolation and return 
+   *    EopSeries::EopInterpolationResult::Linear. If no decreasing of the 
+   *    specified degree was needed, the function will return the status
+   *    EopSeries::EopInterpolationResult::PolyDegreeRequested.
+   *
+   * Note that the function will always use the same number of data points on 
+   * the left and right-hand side to perform interpolation. E.g., in case 
+   * degree=5, three data points prior to \p t and three later than \p t.
+   */
+  EopInterpolationResult interpolate(const MjdEpoch &t, EopRecord &eop,
+                                    int degree = 5) const noexcept;
+  EopInterpolationResult interpolatev2(const MjdEpoch &t, EopRecord &eop,
+                                    int degree = 5) const noexcept;
+  EopInterpolationResult interpolatev3(const MjdEpoch &t, EopRecord &eop,
+                                    int degree = 5) const noexcept;
+
   cvit nearest_neighbor(const MjdEpoch &t) const noexcept
   {
     cvit it = this->upper_bound(t);
@@ -169,6 +221,148 @@ public:
         });
   }
 }; /* EopSeries */
+
+class EopSeries2 {
+  using vit = std::vector<EopRecord>::iterator;
+  using cvit = std::vector<EopRecord>::const_iterator;
+  static constexpr int MAX_POLY_INTERPOLATION_DEGREE = 9;
+  std::vector<EopRecord> mvec{};
+  mutable cvit last_it{mvec.end()};
+  // mutable std::array<double, (MAX_POLY_INTERPOLATION_DEGREE+1)*2> work;//[(MAX_POLY_INTERPOLATION_DEGREE+1)*2];
+  mutable double work[(MAX_POLY_INTERPOLATION_DEGREE+1)*2];
+  //double *scr1() noexcept {return work;}
+  //double *scr2() noexcept {return work + MAX_POLY_INTERPOLATION_DEGREE+1;}
+
+public:
+  enum class EopInterpolationResult : char {
+    OutOfBoundsPrior,
+    OutOfBoundsLater,
+    Linear,
+    PolyDegreeDescreased,
+    PolyDegreeRequested
+  }; /* EopInterpolationResult */
+
+  EopSeries2(const EopSeries &e) noexcept : mvec(e.give_me_the_vector()), last_it(mvec.end()) {};
+
+  //EopSeries()
+  //    : mvec{}, last_index{mvec.end()},
+  //      work(new double[(MAX_POLY_INTERPOLATION_DEGREE + 1) * 2]){};
+  //~EopSeries() {
+  //  if (work)
+  //    delete[] work;
+  //}
+
+  const auto &give_me_the_vector() const noexcept {
+    return mvec;
+  }
+
+  /** Clear all entries in the series */
+  void clear() noexcept {return mvec.clear();}
+
+  /** Get number of epochs/entries in Series */
+  int num_entries() const noexcept {return mvec.size();}
+
+  /** Reserve capacity (not actual size!) 
+   *
+   * @param[in] capacity Number of EopRecord to reserve capacity for.
+   */
+  void reserve(int capacity) noexcept {mvec.reserve(capacity);}
+
+  /** Push back an EopRecord entry.
+   *
+   * Warning! The vector of EopRecord should always be chronologically ordered. 
+   * If yous use this method be sure that the entry you are pushing is indeed 
+   * later that then last current entry in the table.
+   *
+   * Warning! This function may invalidate the last_it pointer. Please, reset 
+   * it to the correct index after the call.
+   */
+  void push_back(const EopRecord& r) noexcept {return mvec.push_back(r);}
+
+  void reset_vec_iterator(int offset=-1) noexcept {
+    last_it = (offset < 0) ? mvec.end() : mvec.begin()+offset;
+  }
+
+  /** Interpolate EOPs using the data in Series, for a given epoch (TT).
+   *
+   * a. In case \p t is prior to the first entry in the instant's series, i.e. 
+   *    t <= mvec[0].t:
+   *    \p eop will be filled with the values of the first entry in the series, 
+   *    (i.e. no interpolation) aka eop == mvec[0] (apparently the equality 
+   *    excludes the epoch of \p eop, which will be \t).
+   *    The return status will be set to 
+   *    EopSeries::EopInterpolationResult::OutOfBoundsPrior
+   *
+   * b. In case \p t is later than the last entry in the instant's series, i.e. 
+   *    t >= mvec[num_entries].t:
+   *    \p eop will be filled with the values of the last entry in the series, 
+   *    (i.e. no interpolation) aka eop == mvec[num_entries] (apparently the 
+   *    equality excludes the epoch of \p eop, which will be \t).
+   *    The return status will be set to 
+   *    EopSeries::EopInterpolationResult::OutOfBoundsLater
+   * 
+   * c. For any other case, the function will try to use (degree+1)/2 data 
+   *    points on the left and right-hand side (i.e. in total degree+1 data 
+   *    points) to perform polynomial interpolation via the Lagrange method.
+   *    If this is not possible, the function will test lowering the degree of 
+   *    the interpolating polynomial (i.e. degree, degree-1, ...,1), untill it 
+   *    can find a suitable range of (degree+1)/2 data points on the left and 
+   *    right-hand side; it will then perform the interpolation using this 
+   *    degree/num of data points. If the 'final' degree is lower than the 
+   *    user-specified (i.e. \p degree), then the status 
+   *    EopSeries::EopInterpolationResult::PolyDegreeDescreased will be 
+   *    returned. In the special case where only one point on the left and one 
+   *    on the right can be used (i.e. degree=1), the status function will 
+   *    perform linear interpolation and return 
+   *    EopSeries::EopInterpolationResult::Linear. If no decreasing of the 
+   *    specified degree was needed, the function will return the status
+   *    EopSeries::EopInterpolationResult::PolyDegreeRequested.
+   *
+   * Note that the function will always use the same number of data points on 
+   * the left and right-hand side to perform interpolation. E.g., in case 
+   * degree=5, three data points prior to \p t and three later than \p t.
+   */
+  EopInterpolationResult interpolate(const MjdEpoch &t, EopRecord &eop,
+                                    int degree = 5) const noexcept;
+  EopInterpolationResult interpolatev2(const MjdEpoch &t, EopRecord &eop,
+                                    int degree = 5) const noexcept;
+  EopInterpolationResult interpolatev3(const MjdEpoch &t, EopRecord &eop,
+                                    int degree = 5) const noexcept;
+
+  cvit nearest_neighbor(const MjdEpoch &t) const noexcept
+  {
+    cvit it = this->upper_bound(t);
+    if (it == mvec.begin()) return it;
+    if (it == mvec.end()) return (it-1);
+    double dtlow = t.diff<DateTimeDifferenceType::FractionalDays>((it-1)->t());
+    double dthgh = it->t().diff<DateTimeDifferenceType::FractionalDays>(t);
+    return dtlow <= dthgh ? (--it) : it;
+  }
+
+  /** @brief Return an iterator to the first Eop record in mvec, such that 
+   * t < record.t
+   *
+   * Note that this means that:
+   * 1. If the first entry in the vector is returned, t is out-of-bounds, 
+   *    i.e. prior to the first EOP record.
+   * 2. If the one-past-the-end iterator is returned (i.e. mvec.end()), then 
+   *    t is out-of-bounds, i.e. at a latter epoch than the last EOP entry.
+   */
+  vit upper_bound(const MjdEpoch &t) noexcept {
+    return std::upper_bound(
+        mvec.begin(), mvec.end(), t,
+        [/*&t = std::as_const(t)*/](const MjdEpoch &e, const EopRecord &r) {
+          return e < r.t();
+        });
+  }
+  cvit upper_bound(const MjdEpoch &t) const noexcept {
+    return std::upper_bound(
+        mvec.begin(), mvec.end(), t,
+        [/*&t = std::as_const(t)*/](const MjdEpoch &e, const EopRecord &r) {
+          return e < r.t();
+        });
+  }
+}; /* EopSeries2 */
 
 namespace details {
 /* An enumeration type to define EOP format/series */
@@ -237,18 +431,8 @@ int parse_iers_C0420(const char *c04fn, const MjdEpoch &start_tt,
                      const MjdEpoch &end_tt, EopSeries &eops) noexcept;
 } /* namespace details */
 
-inline int parse_iers_C04(const char *c04fn, const MjdEpoch &start_tt,
-                          const MjdEpoch &end_tt, EopSeries &eops) noexcept {
-  details::IersEopFormat type;
-
-  if (details::choose_c04_series(c04fn, type))
-    return 1;
-
-  if (type == details::IersEopFormat::C0420)
-    return details::parse_iers_C0420(c04fn, start_tt, end_tt, eops);
-  else
-    return details::parse_iers_C0414(c04fn, start_tt, end_tt, eops);
-}
+int parse_iers_C04(const char *c04fn, const MjdEpoch &start_tt,
+                   const MjdEpoch &end_tt, EopSeries &eops) noexcept;
 } /* namespace dso */
 
 #endif

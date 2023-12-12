@@ -2,8 +2,8 @@
 #include <datetime/dtdatetime.hpp>
 #include <cstdio>
 
-dso::EopSeries2::EopInterpolationResult
-dso::EopSeries2::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
+dso::EopSeries::EopInterpolationResult
+dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
                             int degree) const noexcept {
   /* find a matching interval */
   auto it = this->upper_bound(t);
@@ -70,10 +70,8 @@ dso::EopSeries2::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
   //fprintf(stderr, "start interpolation at %d and end at %d\n", (int)std::distance(mvec.begin(), i), (int)std::distance(mvec.begin(), stop));
   //double nom[ndp * 2]; /* Π_{k=0,k!=j}^{n} (x-x_k) */
   //double dom[ndp * 2]; /* Π_{k=0,k!=j}^{n} (x_j-x_k) */
-  double * __restrict__ nom = work;
-  double * __restrict__ dom = work + MAX_POLY_INTERPOLATION_DEGREE+1;
-  //auto nom = work.begin();
-  //auto dom = work.begin() + MAX_POLY_INTERPOLATION_DEGREE+1;
+  auto nom = work.begin();
+  auto dom = work.begin() + MAX_POLY_INTERPOLATION_DEGREE+1;
   for (; i != stop; ++i) {
     /* j index runs through [0, 2ndp) */
     const int j = std::distance(it - ndp, i);
@@ -112,8 +110,8 @@ dso::EopSeries2::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
                                 : EopInterpolationResult::PolyDegreeDescreased;
 }
 
-dso::EopSeries2::EopInterpolationResult
-dso::EopSeries2::interpolatev2(const dso::MjdEpoch &t, dso::EopRecord &eop,
+dso::EopSeries::EopInterpolationResult
+dso::EopSeries::interpolatev2(const dso::MjdEpoch &t, dso::EopRecord &eop,
                             int degree) const noexcept {
   
   /* find a matching interval (try for last used iterator first) */
@@ -190,10 +188,8 @@ dso::EopSeries2::interpolatev2(const dso::MjdEpoch &t, dso::EopRecord &eop,
   const auto stop = it + ndp;
   //double nom[ndp * 2]; /* Π_{k=0,k!=j}^{n} (x-x_k) */
   //double dom[ndp * 2]; /* Π_{k=0,k!=j}^{n} (x_j-x_k) */
-  double * __restrict__ nom = work;
-  double * __restrict__ dom = work + MAX_POLY_INTERPOLATION_DEGREE+1;
-  //auto nom = work.begin();
-  //auto dom = work.begin() + MAX_POLY_INTERPOLATION_DEGREE+1;
+  auto nom = work.begin();
+  auto dom = work.begin() + MAX_POLY_INTERPOLATION_DEGREE+1;
   for (; i != stop; ++i) {
     /* j index runs through [0, 2ndp) */
     const int j = std::distance(it - ndp, i);

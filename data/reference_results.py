@@ -6,7 +6,9 @@ data_files = [
     "local": "data/EIGEN-GRGS.RL04.MEAN-FIELD.gfc"},
     {"url": "http://icgem.gfz-potsdam.de/getmodel/gfc/fc51e0803271a9355bd55be4eea2790049c50a2e0a96a2077503da1df7db3bd0/EIGEN-5C.gfc",
     "local": "data/EIGEN-5C.gfc"},
-    {"url": "http://ivsopar.obspm.fr/fcn/table-asc-c04.txt", "local": "data/table-asc-c04.txt"}
+    {"url": "http://ivsopar.obspm.fr/fcn/table-asc-c04.txt", "local": "data/table-asc-c04.txt"},
+    {"url": "https://hpiers.obspm.fr/iers/eop/eopc04_14/eopc04_IAU2000.62-now", "local": "data/eopc04_IAU2000.62-now"},
+    {"url": "https://hpiers.obspm.fr/iers/eop/eopc04/eopc04.1962-now", "local": "data/eopc04.1962-now"},
 ]
 
 str1 = """Icgem filename: data/EIGEN-6S4v2.gfc
@@ -275,6 +277,12 @@ special_progs = [
     {"prog":"lambert.out", 
      "path": "test/unit_tests",
     "args": ["data/table-asc-c04.txt"], 
-    "results": str6, "exit": 0}
+    "results": str6, "exit": 0},
+    {"prog":"eop1.out", 
+     "path": "test/unit_tests",
+    "args": ["data/eopc04_IAU2000.62-now"], "exit": 0},
+    {"prog":"eop1.out", 
+     "path": "test/unit_tests",
+    "args": ["data/eopc04.1962-now"], "exit": 0}
 ]
 
