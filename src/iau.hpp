@@ -70,12 +70,18 @@ inline double sp00(const MjdEpoch &tt) noexcept {
  */
 int xycip06a(const dso::MjdEpoch &tt, double &xcip, double &ycip,
              double *fargs = nullptr) noexcept;
-int xycip06a_sofa(const dso::MjdEpoch &tt, double &xcip, double &ycip,
+
+namespace extra {
+/** This version is slower than the dso::xycip06a function, but way more clear. 
+ * It is kept here mainly for testing/debugging purposes. It uses two, 
+ * consecutive, seperate calls for the X- and Y- components of the CIP (i.e. 
+ * detail::xcip06a and detail::ycip06a). It is thus way more clear than the 
+ * dso::xycip06a version, but it lacks efficiency, even if the calls are 
+ * made parallel.
+ */
+int xycip06a(const dso::MjdEpoch &tt, double &xcip, double &ycip,
              double *fargs = nullptr) noexcept;
-int xycip06a_thread(const dso::MjdEpoch &tt, double &xcip, double &ycip,
-             double *fargs = nullptr) noexcept;
-int xycip06a_new(const dso::MjdEpoch &tt, double &xcip, double &ycip,
-             double *fargs = nullptr) noexcept;
+}
 
 /** CIO locator compatible with the IAU 2006/2000A precession-nutation model.
  *
@@ -156,8 +162,27 @@ double xcip06a(const double *const fargs, double t) noexcept;
  */
 double ycip06a(const double *const fargs, double t) noexcept;
 
-
-int xycip06a(const double *const fargs, double t, double &xcip, double &ycip) noexcept;
+/** @brief (X,Y) CIP coordinate in GCRS in [μas].
+ *
+ * The computation follows the IAU 2006 precession and IAU 2000A_R06
+ * nutation model(s).
+ * Development is valid at the microarcsecond level, based on the IAU 2006
+ * precession and IAU 2000A nutation. For more information, see IERS 2010,
+ * Section 5.5.4.
+ * See also the Table 5.2a published by IERS (2010), i.e.
+ * https://iers-conventions.obspm.fr/content/chapter5/additional_info/tab5.2a.txt
+ *
+ * @param[in] fargs Luni-solar and planetary arguments in the order:
+ *  [l, l', F, D, Om, L_Me, L_Ve, L_E, L_Ma, L_J, L_Sa, L_U, L_Ne, p_A]
+ *  (i.e. size=14). All units are [rad]
+ * @param[in] t = (TT − 2000 January 1d 12h TT) in days/3652 (see IERS 2010,
+ *  Sec. 5.3 Eq. 5.2
+ * @param[out] xcip X-component of CIP in [μas]
+ * @param[out] ycip Y-component of CIP in [μas]
+ * @return Always 0
+ */
+int xycip06a(const double *const fargs, double t, double &xcip,
+             double &ycip) noexcept;
 
 /** CIO locator compatible with the IAU 2006/2000A precession-nutation model.
  *

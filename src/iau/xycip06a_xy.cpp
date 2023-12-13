@@ -9,6 +9,13 @@
 #include <cstring>
 
 namespace {
+  /** Store series for the computation of X- and Y- CIP components as 
+   * described in IERS 2010 (Section 5.5.4) and Tables 5.2a and 5.2b.
+   * The following structs have been populated using the program 
+   * tables52ab.py found under the script/ folder. They are a combination 
+   * of the various values recorded there, stored in a way that favors 
+   * efficiency.
+   */
 struct Freq {
   int8_t f[5];
   int16_t nx;
@@ -3735,6 +3742,12 @@ using DSumType = dso::KahanSum;
 using DSumType = double;
 #endif
 
+#ifdef USE_KAHAN_XYCIP
+using DSumType = dso::KahanSum;
+#else
+using DSumType = double;
+#endif
+
 int dso::detail::xycip06a(const double *const fargs, double t, double &xcip,
                           double &ycip) noexcept {
   /* powers of t */
@@ -3801,8 +3814,8 @@ int dso::detail::xycip06a(const double *const fargs, double t, double &xcip,
   return 0;
 }
 
-int dso::xycip06a_new(const dso::MjdEpoch &tt, double &xcip, double &ycip,
-                      [[maybe_unused]] double *outargs) noexcept {
+int dso::xycip06a(const dso::MjdEpoch &tt, double &xcip, double &ycip,
+                  double *outargs) noexcept {
   /* Interval between fundamental date J2000.0 and given date. */
   const double t = tt.jcenturies_sinceJ2000();
 

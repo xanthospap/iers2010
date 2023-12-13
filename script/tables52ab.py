@@ -1,5 +1,11 @@
 #! /usr/bin/python
 
+##
+## This script is used to format the Tables 5.2[ab] from the IERS 2010 
+## standards in a convinient format (i.e. C++ struct) to perform the series 
+## expansion for the X- and Y- CIP components.
+##
+
 import sys
 
 xj0 = """    1    -6844318.44        1328.67    0    0    0    0    1    0    0    0    0    0    0    0    0    0
@@ -2947,11 +2953,6 @@ def catTables(str1, str2, power, id1='X', id2='Y'):
     dct = str2dct(str1, id1, power, dct)
     dct = str2dct(str2, id2, power, dct)
     return dct
-    #sls = ''; len1 = 0
-    #spl = ''; len2 = 0
-    #for k,v in dct.items():
-    #    sls, spl, len1, len2 = kv2car(k,v,sls,spl,len1,len2)
-    #return sls, spl, len1, len2
 
 if __name__ == "__main__":
     dct = catTables(xj0, yj0, 0, 'X', 'Y')
@@ -2970,48 +2971,3 @@ if __name__ == "__main__":
     print('constexpr const std::array<XyPlntry,{:}> XyPln = {{{{ '.format(l2))
     print(t2)
     print(' }}; /* XyPln */')
-
-    #t1, t2, l1, l2 = catTables(xj0, yj0, 'X', 'Y')
-    #print('constexpr const std::array<Freq,{:}> XyLunSolJ0 = {{{{ '.format(l1))
-    #print(t1)
-    #print(' }}; /* XyLunSolJ0 */')
-    #print('constexpr const std::array<XyPlntry,{:}> XyPlnJ0 = {{{{ '.format(l2))
-    #print(t2)
-    #print(' }}; /* XyPlnJ0 */')
-    ##t1=''; t2=''; l1=0; l2=0
-    #
-    #t1, t2, l1, l2 = catTables(xj1, yj1, 'X', 'Y')
-    #print('constexpr const std::array<Freq,{:}> XyLunSolJ1 = {{{{ '.format(l1))
-    #print(t1)
-    #print(' }}; /* XyLunSolJ1 */')
-    #print('constexpr const std::array<XyPlntry,{:}> XyPlnJ1 = {{{{ '.format(l2))
-    #print(t2)
-    #print(' }}; /* XyPlnJ1 */')
-    ##t1=''; t2=''; l1=0; l2=0
-    #
-    #t1, t2, l1, l2 = catTables(xj2, yj2, 'X', 'Y')
-    #print('constexpr const std::array<Freq,{:}> XyLunSolJ2 = {{{{ '.format(l1))
-    #print(t1)
-    #print(' }}; /* XyLunSolJ2 */')
-    #print('constexpr const std::array<XyPlntry,{:}> XyPlnJ2 = {{{{ '.format(l2))
-    #print(t2)
-    #print(' }}; /* XyPlnJ2 */')
-    ##t1=''; t2=''; l1=0; l2=0
-    #
-    #t1, t2, l1, l2 = catTables(xj3, yj3, 'X', 'Y')
-    #print('constexpr const std::array<Freq,{:}> XyLunSolJ3 = {{{{ '.format(l1))
-    #print(t1)
-    #print(' }}; /* XyLunSolJ3 */')
-    #print('constexpr const std::array<XyPlntry,{:}> XyPlnJ3 = {{{{ '.format(l2))
-    #print(t2)
-    #print(' }}; /* XyPlnJ3 */')
-    ##t1=''; t2=''; l1=0; l2=0
-    #
-    #t1, t2, l1, l2 = catTables(xj4, yj4, 'X', 'Y')
-    #print('constexpr const std::array<Freq,{:}> XyLunSolJ4 = {{{{ '.format(l1))
-    #print(t1)
-    #print(' }}; /* XyLunSolJ4 */')
-    #print('constexpr const std::array<XyPlntry,{:}> XyPlnJ4 = {{{{ '.format(l2))
-    #print(t2)
-    #print(' }}; /* XyPlnJ4 */')
-    ##t1=''; t2=''; l1=0; l2=0
