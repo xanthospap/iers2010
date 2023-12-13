@@ -136,4 +136,4 @@ if sofa:
     tenv.Append(RPATH=root_dir)
     for tsource in test_sources:
         ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
-        tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['sofa_c'], LIBPATH='.')
+        tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['sofa_c', 'datetime'], LIBPATH='.')

@@ -68,7 +68,7 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
     eop.xp()  = x0->xp()  * dx0 + x1-> xp() *dx1;
     eop.yp()  = x0->yp()  * dx0 + x1-> yp() *dx1;
     /* continuous (UT1-TAI)j <- (UT1-UTC)j - ΔATj */
-    eop.dut() = (x0->dut()-x0.dat()) * dx0 + (x1->dut()-x1->dat())*dx1;
+    eop.dut() = (x0->dut()-x0->dat()) * dx0 + (x1->dut()-x1->dat())*dx1;
     eop.dut() += dso::dat(dso::modified_julian_day(t.tt2utc().imjd()));
     eop.lod() = x0->lod() * dx0 + x1-> lod()*dx1;
     eop.dX()  = x0->dX()  * dx0 + x1-> dX() *dx1;

@@ -53,7 +53,6 @@ int run_sofa_timer(const std::vector<JD> &epochs, Clock &c) {
     dummy += flush_cache(i < 200 ? i : 200);
   }
   c.stop();
-  c.add_sample();
   return dummy;
 }
 
@@ -68,7 +67,6 @@ int run_mine1_timer(const std::vector<dso::MjdEpoch> &epochs, Clock &c) {
     dummy += flush_cache(i < 200 ? i : 200);
   }
   c.stop();
-  c.add_sample();
   return dummy;
 }
 
@@ -83,7 +81,6 @@ int run_mine2_timer(const std::vector<dso::MjdEpoch> &epochs, Clock &c) {
     dummy += flush_cache(i < 200 ? i : 200);
   }
   c.stop();
-  c.add_sample();
   return dummy;
 }
 
@@ -98,7 +95,6 @@ int run_mine3_timer(const std::vector<dso::MjdEpoch> &epochs, Clock &c) {
     dummy += flush_cache(i < 200 ? i : 200);
   }
   c.stop();
-  c.add_sample();
   return dummy;
 }
 
@@ -113,7 +109,6 @@ int run_mine4_timer(const std::vector<dso::MjdEpoch> &epochs, Clock &c) {
     dummy += flush_cache(i < 200 ? i : 200);
   }
   c.stop();
-  c.add_sample();
   return dummy;
 }
 
