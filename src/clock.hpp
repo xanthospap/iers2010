@@ -2,65 +2,65 @@
 #include <cstring>
 #include <stdint.h>
 #include <cstdio>
-using namespace std::chrono;
 
 struct Clock {
-  // uint_least64_t mruntime;
-  double maverage;
-  long msamples;
-  time_point<high_resolution_clock> mstart;
-  time_point<high_resolution_clock> mstop;
+  using clock_t = std::chrono::high_resolution_clock;
+  using duration_t = clock_t::duration;
+  
+  clock_t::time_point start_time;
+  clock_t::duration total_duration{0};
+  int msamples{0};
   char mname[24] = {'\0'};
+
+  duration_t get_elapsed_time() const { return (clock_t::now() - start_time); }
+  void start() { start_time = clock_t::now(); }
+  void stop() {
+    total_duration += get_elapsed_time();
+    ++msamples;
+  }
+  template <typename T = std::chrono::microseconds> auto get_total_duration() const {
+    return std::chrono::duration_cast<T>(total_duration);
+  }
+  template <typename T = std::chrono::microseconds>
+  double average_running_time() const {
+    return get_total_duration<T>().count() / msamples;
+  }
 
   Clock(const char *n) { std::strcpy(mname, n); }
 
   Clock(const Clock &other) {
-    // mruntime = other.mruntime;
-    maverage = other.maverage;
+    start_time = other.start_time;
+    total_duration = other.total_duration;
     msamples = other.msamples;
-    mstart = other.mstart;
-    mstop = other.mstop;
     std::strcpy(mname, other.mname);
   }
 
   Clock(Clock &&other) {
-    //mruntime = other.mruntime;
-    maverage = other.maverage;
+    start_time = other.start_time;
+    total_duration = other.total_duration;
     msamples = other.msamples;
-    mstart = other.mstart;
-    mstop = other.mstop;
     std::strcpy(mname, other.mname);
   }
 
   Clock &operator=(const Clock &other) {
     if (this != &other) {
-      //mruntime = other.mruntime;
-      maverage = other.maverage;
+      start_time = other.start_time;
+      total_duration = other.total_duration;
       msamples = other.msamples;
-      mstart = other.mstart;
-      mstop = other.mstop;
       std::strcpy(mname, other.mname);
     }
     return *this;
   }
 
-  void start() { mstart = high_resolution_clock::now(); }
-  auto stop() { mstop = high_resolution_clock::now(); }
-  
-  auto add_sample() {
-    uint_least64_t duration = duration_cast<microseconds>(mstop - mstart).count();
-    ++msamples;
-    maverage = maverage * (msamples-1)/msamples + ((double)duration) / msamples;
-    //printf("%s average runtime=%.3f\n", mname, maverage);
-  }
-  
+  const char *name() const {return mname;}
+
   bool is_faster(const Clock &other) const noexcept {
-    return maverage < other.maverage;
+    return average_running_time() < other.average_running_time();
   }
   
   void compare(const Clock &other) const noexcept {
-    double ref = (double)(other.maverage);
-    double y = (double)maverage;
+    double ref = other.average_running_time();
+    double y = average_running_time();
     const double dx = 1e2 * (y-ref) / ref;
     printf("%s wrt %s : %+.1f %%\n", mname, other.mname, dx);
   }
