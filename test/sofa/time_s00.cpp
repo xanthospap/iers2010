@@ -5,6 +5,8 @@
 #include <cassert>
 #include <random>
 #include <chrono>
+#include "clock.hpp"
+#include <unistd.h>
 using namespace std::chrono;
 
 std::random_device rd;
@@ -30,10 +32,10 @@ int flush_cache(int n) noexcept {
   return d >= 0 ? 1 : 0;
 }
 
-int run_sofa_timer(const std::vector<JD> &epochs) {
+int run_sofa_timer(const std::vector<JD> &epochs, Clock &c) {
   assert(epochs.size() == num_tests);
   int dummy = 0;
-  auto start = high_resolution_clock::now();
+  c.start();
   for (int i = 0; i < num_tests; i++) {
     /* Two-part JD */
     const double dj1 = epochs[i].jd1;
@@ -44,16 +46,14 @@ int run_sofa_timer(const std::vector<JD> &epochs) {
     /* flush cache */
     dummy += flush_cache(i < 200 ? i : 200);
   }
-  auto stop = high_resolution_clock::now();
-  auto duration = duration_cast<microseconds>(stop - start);
-  printf("SOFA run-time = %15ld\n", duration.count());
+  c.stop();
   return dummy;
 }
 
-int run_mine_timer(const std::vector<dso::MjdEpoch> &epochs) {
+int run_mine_timer(const std::vector<dso::MjdEpoch> &epochs, Clock &c) {
   assert(epochs.size() == num_tests);
   int dummy = 0;
-  auto start = high_resolution_clock::now();
+  c.start();
   for (int i = 0; i < num_tests; i++) {
     /* check MINE */
     const auto s = dso::s06(epochs[i], 0, 0);
@@ -61,29 +61,9 @@ int run_mine_timer(const std::vector<dso::MjdEpoch> &epochs) {
     /* flush cache */
     dummy += flush_cache(i < 200 ? i : 200);
   }
-  auto stop = high_resolution_clock::now();
-  auto duration = duration_cast<microseconds>(stop - start);
-  printf("MINE run-time = %15ld\n", duration.count());
+  c.stop();
   return dummy;
 }
-
-//int run_thrd_timer(const std::vector<dso::MjdEpoch> &epochs) {
-//  assert(epochs.size() == num_tests);
-//  int dummy = 0;
-//  auto start = high_resolution_clock::now();
-//  for (int i = 0; i < num_tests; i++) {
-//    /* check MINE */
-//    double xcip, ycip, s;
-//    dso::xys06a(epochs[i], xcip, ycip, s);
-//    dummy -= (int)(s-xcip+ycip);
-//    /* flush cache */
-//    dummy += flush_cache(i < 200 ? i : 200);
-//  }
-//  auto stop = high_resolution_clock::now();
-//  auto duration = duration_cast<microseconds>(stop - start);
-//  printf("MINE run-time = %15ld\n", duration.count());
-//  return dummy;
-//}
 
 int main() {
 
@@ -98,32 +78,40 @@ int main() {
                             mjd_epochs[i].fractional_days());
   }
 
-    /* time SOFA */
-    run_sofa_timer(jd_epochs);
+  int dummy = 0;
+  Clock c1("sofa"), c2("mine"), c5("dummy");
 
-    /* time this implementation */
-    run_mine_timer(mjd_epochs);
-    
-    /* time multi-thread implementation */
-    //run_thrd_timer(mjd_epochs);
-    
-    /* time SOFA */
-    run_sofa_timer(jd_epochs);
+  dummy += run_sofa_timer(jd_epochs, c5);
+  sleep(1);
+  dummy +=  run_mine_timer(mjd_epochs, c2);
+  sleep(1);
+  dummy +=  run_sofa_timer(jd_epochs, c1);
+  sleep(1);
+  dummy +=  run_mine_timer(mjd_epochs, c2);
+  sleep(1);
+  dummy +=  run_sofa_timer(jd_epochs, c1);
+  sleep(1);
+  dummy +=  run_mine_timer(mjd_epochs, c2);
+  sleep(1);
+  dummy +=  run_mine_timer(mjd_epochs, c2);
+  sleep(1);
+  dummy +=  run_mine_timer(mjd_epochs, c2);
+  sleep(1);
+  dummy +=  run_sofa_timer(jd_epochs, c1);
+  sleep(1);
+  dummy +=  run_sofa_timer(jd_epochs, c1);
+  sleep(1);
+  dummy +=  run_sofa_timer(jd_epochs, c1);
+  sleep(1);
+  
+  // choose faster clock
+  Clock ref(c1);
+  if (! ref.is_faster(c2) ) ref = c2;
+  c1.compare(ref);
+  c2.compare(ref);
 
-    /* time this implementation */
-    run_mine_timer(mjd_epochs);
-    
-    /* time multi-thread implementation */
-    //run_thrd_timer(mjd_epochs);
-    
-    /* time SOFA */
-    run_sofa_timer(jd_epochs);
-
-    /* time this implementation */
-    run_mine_timer(mjd_epochs);
-    
-    /* time multi-thread implementation */
-    //run_thrd_timer(mjd_epochs);
+  // write dummy so that it is not optimized-out
+  printf("%d\n", dummy);
 
   return 0;
 }

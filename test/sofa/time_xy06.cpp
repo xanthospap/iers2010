@@ -112,7 +112,10 @@ int main() {
   }
 
   int dummy = 0;
-  Clock c1("v1"), c2("v2"), c5("sofa-c");
+  Clock c1("v1"), c2("v2"), c5("sofa-c"), cd("dummy");
+  
+  dummy += run_mine2_timer(mjd_epochs,c5); /* first call, no timer */
+  sleep(1);
 
   dummy += run_mine1_timer(mjd_epochs,c1);
   sleep(1);
@@ -151,15 +154,12 @@ int main() {
   // choose faster clock
   Clock ref(c1);
   if (! ref.is_faster(c2) ) ref = c2;
-  //if (! ref.is_faster(c3) ) ref = c3;
-  //if (! ref.is_faster(c4) ) ref = c4;
   if (! ref.is_faster(c5) ) ref = c5;
   c1.compare(ref);
   c2.compare(ref);
-  //c3.compare(ref);
-  //c4.compare(ref);
   c5.compare(ref);
 
+  // write dummy so that it is not optimized-out
   printf("%d\n", dummy);
 
   return 0;

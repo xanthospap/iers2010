@@ -6,16 +6,16 @@
 #include <limits>
 
 constexpr const int num_tests = 100'000;
-constexpr const double MAX_ARCSEC = 1e-9;
+constexpr const double MAX_ARCSEC = 1e-12;
 constexpr const double MIND = std::numeric_limits<double>::min();
 
 int main() {
   double xsofa, ysofa;
   double xmine,ymine;
   double xminex,yminex;
-  double maxsofav1[2] = {MIND, MIND};
-  double maxsofav2[2] = {MIND, MIND};
-  double maxv1v2[2] = {MIND, MIND};
+  [[maybe_unused]]double maxsofav1[2] = {MIND, MIND};
+  [[maybe_unused]]double maxsofav2[2] = {MIND, MIND};
+  [[maybe_unused]]double maxv1v2[2] = {MIND, MIND};
 
   for (int i=0; i<num_tests; i++) {
     /* random MJD Epoch */

@@ -6,7 +6,7 @@
 #include <random>
 
 constexpr const int num_tests = 100'000;
-constexpr const double MAX_ARCSEC = 1e-9;
+constexpr const double MAX_ARCSEC = 1e-12;
 
 int main() {
   double ssofa;
@@ -22,7 +22,7 @@ int main() {
     const auto mjd = dso::MjdEpoch::random(40587, 66154);
     const double dj1 = mjd.imjd() + dso::MJD0_JD;
     const double dj2 = mjd.fractional_days();
-    ssofa = iauS00(dj1, dj2, x, y);
+    ssofa = iauS06(dj1, dj2, x, y);
     smine = dso::s06(mjd, x, y);
     assert(std::abs(ssofa-smine) < MAX_ARCSEC);
   }
