@@ -31,11 +31,11 @@ $$ Q(t) = \begin{pmatrix} 1-\alpha X^2 & -\alpha XY   & X \\
           \end{pmatrix} \cdot R_3 (s) $$
 
 where:
-    - $X = \sin d \cos E$,
-    - $Y = \sin d \sin E$,
-    - $Z = \cos d$, 
-    - $s$ is the ``CIO locator'' (see [below](#ciolocator)), and
-    - $\alpha = 1/(1 + \cos d ) \approx 1/2 + 1/8(X^2 + Y^2)$ within $1 [\mu as]$
+ - $X = \sin d \cos E$,
+ - $Y = \sin d \sin E$,
+ - $Z = \cos d$, 
+ - $s$ is the ``CIO locator'' (see [below](#ciolocator)), and
+ - $\alpha = 1/(1 + \cos d ) \approx 1/2 + 1/8(X^2 + Y^2)$ within $1 [\mu as]$
 
 $X$ and $Y$ are the [CIP coordinates](#cipingcrs).
 
@@ -78,7 +78,7 @@ CIP coordinates $(X,Y)$, and both computations require linusolar and planetary
 arguments, the latter can be directly included in the computation by a dedicated 
 parameter. E.g.
 
-```
+```cpp
 using namespace dso;
 
 MjdEpoch tt(....);
