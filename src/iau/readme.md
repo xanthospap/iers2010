@@ -12,23 +12,23 @@ where:
 
 ## Precession, Nutation and Matrix $\bm{Q}$
 
-The matrix $\bm{Q}(t)$ accounts for *precession* and *nutation* and represents the 
+The matrix $Q(t)$ accounts for *precession* and *nutation* and represents the 
 dynamical motion of the **Celestial Intermediate Pole** in response to torques 
 arising from the gravitational attraction of the Sun, Moon and planets (see 
 [Almanac](#EXAlmanac), Section 6.1). Traditionally, precession accounted for the 
 secular part of the motion, while nutation for the periodic component and their 
-impact was modeled using two individual (rotation) matrices $\bm{P}(t)$ and 
-$\bm{N}(t)$.
+impact was modeled using two individual (rotation) matrices $P(t)$ and 
+$N(t)$.
 
-The matrix $\bm{Q}$, relates (i.e. transforms between) the CIRS and GCRS frames.
+The matrix $Q(t)$, relates (i.e. transforms between) the CIRS and GCRS frames.
 It can be computed by the formulae (see [IERS Conventions 2010](#IERS2010) 
 (Eq. 5.6 through 5.10)):
 
-$$ $\bm{Q}(t) = R_3 (-E) R_2 (-d) R_3 (E) R_3 (s) $$,
+$$ $Q(t) = R_3 (-E) R_2 (-d) R_3 (E) R_3 (s) $$,
 
 or
 
-$$ \bm{Q}(t) = \begin{pmatrix} 1-\alpha X^2 & -\alpha XY   & X \\
+$$ Q(t) = \begin{pmatrix} 1-\alpha X^2 & -\alpha XY   & X \\
                                 -\alpha XY  & 1-\alpha Y^2 & Y \\
                                 -X          & -Y           & 1-\alpha (X^2 + Y^2)
                \end{pmatrix} \dot R_3 (s) $$
