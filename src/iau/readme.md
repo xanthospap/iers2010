@@ -1,3 +1,60 @@
+# Transformation between the International Terrestrial Reference System and the Geocentric Celestial Reference System
+
+The transformation to be used to relate the ITRS to the GCRS at the date $t$ 
+of the observation can be written as:
+
+$$ \bm{x}_{GCRS} = \bm{Q}(t) \bm{R}(t) \bm{W}(t) \bm{x}_{ITRS} $$
+
+where:
+ - $bm{Q}(t)$ accounts for *precession* and *nutation*,
+ - $\bm{R}(t)$ accounts for Earth's rotation, and
+ - $\bm{W}(t)$ accounts for polar motion
+
+## Precession, Nutation and Matrix $\bm{Q}$
+
+The matrix $\bm{Q}(t)$ accounts for *precession* and *nutation* and represents the 
+dynamical motion of the **Celestial Intermediate Pole** in response to torques 
+arising from the gravitational attraction of the Sun, Moon and planets (see 
+[Almanac](#EXAlmanac), Section 6.1). Traditionally, precession accounted for the 
+secular part of the motion, while nutation for the periodic component and their 
+impact was modeled using two individual (rotation) matrices $\bm{P}(t)$ and 
+$\bm{N}(t)$.
+
+The matrix $\bm{Q}$, relates (i.e. transforms between) the CIRS and GCRS frames.
+It can be computed by the formulae (see [IERS Conventions 2010](#IERS2010) 
+(Eq. 5.6 through 5.10)):
+
+$$ $\bm{Q}(t) = R_3 (-E) R_2 (-d) R_3 (E) R_3 (s) $$,
+
+or
+
+$$ \bm{Q}(t) = \begin{pmatrix} 1-\alpha X^2 & -\alpha XY   & X \\
+                                -\alpha XY  & 1-\alpha Y^2 & Y \\
+                                -X          & -Y           & 1-\alpha (X^2 + Y^2)
+               \end{pmatrix} \dot R_3 (s) $$
+
+## Coordinates of CIP in the GCRS
+
+The coordinates of the CIP in the GCRS (i.e. $(X,Y)$), are computed as developments 
+as function of time (as described in [IERS Conventions 2010](#IERS2010) (Section 5.5.4)).
+The developments are valid at the microarcsecond level, based on the IAU 2006 
+precession and IAU 2000A nutation.
+
+Differences between this implementation and SOFA (see function `iauXy06`), are 
+way below $1e-12 [arcsec]$ (i.e. machine prescision). For testing, see 
+[xy06a.cpp](../blob/cleanup/test/sofa/xy06a.cpp).
+
+VLBI observations have shown that there are deﬁciencies in the IAU 2006/2000A 
+precession-nutation model of the order of $0.2 mas$, mainly due to the fact 
+that the free core nutation (FCN) is not part of the model. The IERS publishes 
+observed estimates of the corrections to the IAU precession-nutation model (w.r.t 
+the conventional celestial pole position deﬁned by the models), named "celestial pole oﬀsets". 
+Such time-dependent oﬀsets from the direction of the pole of the GCRS must be 
+provided as corrections $\delta X$ and $\delta Y$ to the $X$ and $Y$ coordinates.
+Using these oﬀsets, the corrected celestial position of the CIP is given by:
+$X = X(IAU 2006/2000) + \delta X$ and $Y = Y(IAU 2006/2000) + \delta Y$.
+
+
 # Earth Rotation Angle (ERA)
 
 Computation of ERA follows Equation 5.15 in [IERS Conventions 2010](#IERS2010). 
@@ -15,26 +72,6 @@ $s\prime = -47 µas t$.
 [^1]: TIO was labelled TEO before IAU 2006 Resolution B2, which harmonized 
 “intermediate” in the names of the pole and the origin (i.e. celestial and
 terrestrial intermediate origins, CIO and TIO instead of CEO and TEO, respectively).
-
-# Coordinates of CIP in the GCRS
-
-The coordinates of the CIP in the GCRS (i.e. $(X,Y)$), are computed as developments 
-as function of time (as described in [IERS Conventions 2010](#IERS2010) (Section 5.5.4)).
-The developments are valid at the microarcsecond level, based on the IAU 2006 
-precession and IAU 2000A nutation.
-
-Differences between this implementation and SOFA (see function `iauXy06`), are smaller 
-than $1e-9 [arcsec]$. For testing, see [xy06a.cpp](../blob/cleanup/test/sofa/xy06a.cpp).
-
-VLBI observations have shown that there are deﬁciencies in the IAU 2006/2000A 
-precession-nutation model of the order of $0.2 mas$, mainly due to the fact 
-that the free core nutation (FCN) is not part of the model. The IERS publishes 
-observed estimates of the corrections to the IAU precession-nutation model (w.r.t 
-the conventional celestial pole position deﬁned by the models), named "celestial pole oﬀsets". 
-Such time-dependent oﬀsets from the direction of the pole of the GCRS must be 
-provided as corrections $\delta X$ and $\delta Y$ to the $X$ and $Y$ coordinates.
-Using these oﬀsets, the corrected celestial position of the CIP is given by:
-$X = X(IAU 2006/2000) + \delta X$ and $Y = Y(IAU 2006/2000) + \delta Y$.
 
 # CIO Locator $s$
 
@@ -56,7 +93,7 @@ parameter. E.g.
 using namespace dso;
 
 MjdEpoch tt(....);
-
+#
 /* Store lunisolar and planetary args for epoch tt in lpargs array. */
 double lpargs[14];
 
@@ -80,3 +117,7 @@ double s = s06(tt, xcip, ycip, lpargs);
 <a name="TIORefPaper"></a>Lambert, S. and Bizouard, C., 2002, 
 “Positioning the Terrestrial Ephemeris Origin in the International Terrestrial Reference Frame,” 
 Astron. Astrophys., 394(1), pp. 317–321, doi:10.1051/0004-6361:20021139.
+
+<a name="EXAlmanac"></a>A Seidelmann, P. Kenneth, Urban, Sean E., 
+Explanatory Supplement to the Astronomical Almanac, Third Edition,
+American Astronomical Society Meeting Abstracts, 2010

@@ -17,7 +17,7 @@ std::uniform_int_distribution<> id(0, 1000);
 std::uniform_real_distribution<double> dd(-1e0, 1e0);
 
 constexpr const int num_tests = 50'00;
-constexpr const double MAX_ARCSEC = 1e-9;
+// constexpr const double MAX_ARCSEC = 1e-9;
 struct JD {
   double jd1;
   double jd2;
@@ -159,6 +159,8 @@ int main() {
   //c3.compare(ref);
   //c4.compare(ref);
   c5.compare(ref);
+
+  printf("%d\n", dummy);
 
   return 0;
 }
