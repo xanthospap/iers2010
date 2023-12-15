@@ -7,6 +7,7 @@
 ##
 
 import sys
+import math
 
 xj0 = """    1    -6844318.44        1328.67    0    0    0    0    1    0    0    0    0    0    0    0    0    0
     2     -523908.04        -544.75    0    0    2   -2    2    0    0    0    0    0    0    0    0    0
@@ -2901,58 +2902,156 @@ yj3 = """ 1270         -15.22          -1.61    0    0    0    0    1    0    0 
 
 yj4 = """ 1275          -0.02           0.11    0    0    0    0    1    0    0    0    0    0    0    0    0    0"""
 
+class PlanetaryTerm:
+    def __init__(self, dct):
+        self.component = dct['cmp']
+        self.aa = dct['aa']
+        self.plmult = dct['pl']
+        self.asij = dct['as']
+        self.acij = dct['ac']
+        self.pow = dct['pow']
+        return
+
+    def toIntList(self):
+        return [int(x) for x in self.plmult.split(',')]
+
+    def sumpl(self):
+        return sum([abs(int(x)) for x in self.plmult.split(',')])
+
+    def __str__(self):
+        return '{{ {:}, {{{:}}}, {:+12.9e}, {:+12.9e}, {:1d} }}'.format(self.sumpl(), self.plmult, self.asij, self.acij, self.pow)
+
+class DelauneyTerm:
+    def __init__(self, lsmultstr):
+        self.lsmult = lsmultstr
+        self.xpl = []
+        self.ypl = []
+    
+    def toIntList(self):
+        return [int(x) for x in self.lsmult.split(',')]
+
+    def sumplfreqs(self):
+        return len(self.xpl) + len(self.ypl)
+
+    def dstr(self):
+        return '{{ {{{:}}}, {:}, {:} }}'.format(self.lsmult, len(self.xpl), len(self.ypl))
+
+    def xplstr(self):
+        if len(self.xpl) == 0 : return ''
+        return ', '.join(str(x) for x in self.xpl)
+    
+    def yplstr(self):
+        if len(self.ypl) == 0 : return ''
+        return ', '.join(str(x) for x in self.ypl)
+
+    def plstr(self):
+        if len(self.xpl) == 0 and len(self.ypl) == 0:
+            return ''
+        if len(self.xpl) == 0 and len(self.ypl) != 0:
+            return self.yplstr()
+        if len(self.xpl) != 0 and len(self.ypl) == 0:
+            return self.xplstr()
+        return ','.join([self.xplstr(), self.yplstr()])
+
+    def minj(self):
+        minj = 100
+        for e in self.xpl:
+            if e.pow < minj:
+                minj = e.pow
+        for e in self.ypl:
+            if e.pow < minj:
+                minj = e.pow
+        return minj
+
+    def maxampl(self):
+        maxampl = 0e0
+        for e in self.xpl:
+            ampl = math.sqrt(math.pow(e.asij,2) + math.pow(e.acij,2))
+            if ampl > maxampl:
+                maxampl = ampl
+        for e in self.ypl:
+            ampl = math.sqrt(math.pow(e.asij,2) + math.pow(e.acij,2))
+            if ampl > maxampl:
+                maxampl = ampl
+        return maxampl
+
+    # something like an overload of this < other
+    def compare(self, other):
+        if self.minj() > other.minj():
+            return False
+        if self.minj() == other.minj():
+            return self.maxampl() < other.maxampl()
+        return True
+    
+    def __lt__(self, other): return self.compare(other)
+
+    def append_planetary(self, plterm):
+        initial_size = len(self.xpl) + len(self.ypl)
+        slfl = self.xpl if plterm.component.lower() == 'x' else self.ypl
+        if len(slfl) == 0:
+           slfl.append(plterm)
+        else:
+# first, sort by power
+            for i,v in enumerate(slfl):
+                if v.pow < plterm.pow:
+# insert before
+                    slfl.insert(i, plterm)
+                    break
+                elif v.pow == plterm.pow:
+# second, sort by aplitude
+                    campl = math.sqrt(math.pow(v.asij,2) + math.pow(v.acij,2))
+                    vampl = math.sqrt(math.pow(plterm.asij,2) + math.pow(plterm.acij,2))
+                    if vampl <= campl:
+                        slfl.insert(i, plterm)
+                        break
+        assert(len(self.xpl) + len(self.ypl) == initial_size + 1)
+
+def carrays(dlist):
+    lsstr = 'constexpr const std::array<Freq,{:}> XyLunSol = {{{{\n'.format(len(dlist))
+    plstr = 'constexpr const std::array<XyPlntry,{:}> XyPln = {{{{\n'.format(sum([x.sumplfreqs() for x in dlist]))
+    for d in dlist:
+        lsstr += d.dstr() + ',\n'
+        plstr +=  d.plstr() + ',\n'
+    lsstr += ' }}; /* XyLunSol */'
+    plstr += ' }}; /* XyPln */'
+    return lsstr, plstr
+
+def lsinlist(ls, lslst):
+    for i,e in enumerate(lslst):
+        if e.lsmult == ls.lsmult:
+            return True, i
+    return False, -1
+
 def line2kv(line, component, power):
     fs = [float(x) for x in line.split()]
     inls = '{:}'.format(','.join(['{:+2d}'.format(int(x)) for x in fs[3:8]]))
     inpl = '{:}'.format(','.join(['{:+2d}'.format(int(x)) for x in fs[8:]]))
     aa = int(fs[0])
     asij, acij = fs[1], fs[2]
-    return inls, {'cmp': component, 'aa': aa, 'pl': inpl, 'as': asij, 'ac': acij, 'pow': int(power)}
+    pl = PlanetaryTerm({'cmp': component, 'aa': aa, 'pl': inpl, 'as': asij, 'ac': acij, 'pow': int(power)})
+    ls = DelauneyTerm(inls)
+    return ls, pl
 
-def kv2car(k,v,s1,s2,len1,len2):
-    xs = 0
-    ys = 0
-    s2x = ''
-    s2y = ''
-    for e in v:
-        if e['cmp'].upper() == 'X': 
-            sumpl = sum([int(x) for x in e['pl'].split(',')])
-            s2x += '{{ {:}, {{{:}}}, {:+9.6e}, {:+9.6e}, {:1d} }},'.format(sumpl, e['pl'], e['as'], e['ac'], e['pow'])
-            xs += 1
-        if e['cmp'].upper() == 'Y':
-            sumpl = sum([int(x) for x in e['pl'].split(',')])
-            s2y += '{{ {:}, {{{:}}}, {:+9.6e}, {:+9.6e}, {:1d} }},'.format(sumpl, e['pl'], e['as'], e['ac'], e['pow'])
-            ys += 1
-    s2 += (s2x + s2y)
-    s1 += '{{{{{:}}}, {:}, {:}}},'.format(k, xs, ys)
-    return s1, s2, len1+1, len2+xs+ys
-
-def str2dct(tstr, component, power, dct={}):
+def str2dct(tstr, component, power, dl=[]):
     for line in tstr.splitlines():
         if len(line.strip()) > 1:
-            k, v = line2kv(line, component, power)
-            if k in dct:
-                dct[k].append(v)
+            ls,pl = line2kv(line, component, power)
+            b,j = lsinlist(ls, dl)
+            if b == False:
+                ls.append_planetary(pl)
+                dl.append(ls)
             else:
-                dct[k] = [v]
-    return dct
+                dl[j].append_planetary(pl)
+    return dl
 
-def appendPowerCoeffs(tstr, component, power, dct):
-    ndct = str2dct(tstr, component, power, dct)
+def appendPowerCoeffs(tstr, component, power, dl):
+    ndct = str2dct(tstr, component, power, dl)
     return ndct
 
-def tables2car(dct):
-    sls = ''; len1 = 0
-    spl = ''; len2 = 0
-    for k,v in dct.items():
-        sls, spl, len1, len2 = kv2car(k,v,sls,spl,len1,len2)
-    return sls, spl, len1, len2
-
 def catTables(str1, str2, power, id1='X', id2='Y'):
-    dct = {}
-    dct = str2dct(str1, id1, power, dct)
-    dct = str2dct(str2, id2, power, dct)
-    return dct
+    dl = str2dct(str1, id1, power)
+    dl = str2dct(str2, id2, power, dl)
+    return dl
 
 if __name__ == "__main__":
     dct = catTables(xj0, yj0, 0, 'X', 'Y')
@@ -2964,10 +3063,6 @@ if __name__ == "__main__":
     dct = appendPowerCoeffs(yj3, 'Y', 3, dct)
     dct = appendPowerCoeffs(xj4, 'X', 4, dct)
     dct = appendPowerCoeffs(yj4, 'Y', 4, dct)
-    t1,t2,l1,l2 = tables2car(dct)
-    print('constexpr const std::array<Freq,{:}> XyLunSol = {{{{ '.format(l1))
-    print(t1)
-    print(' }}; /* XyLunSol */')
-    print('constexpr const std::array<XyPlntry,{:}> XyPln = {{{{ '.format(l2))
-    print(t2)
-    print(' }}; /* XyPln */')
+    ls, pl = carrays(sorted(dct))
+    print(ls)
+    print(pl)

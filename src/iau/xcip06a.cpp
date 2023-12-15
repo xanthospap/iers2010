@@ -1,7 +1,5 @@
 #include "iau.hpp"
-#ifdef USE_KAHAN_XYCIP
 #include "kahan.hpp"
-#endif
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -6469,13 +6467,9 @@ constexpr const std::array<XYCipSeriesData, 1> X4Series = {{/* 1600*/ {
     {+0, +0, +0, +0, +1, +0, +0, +0, +0, +0, +0, +0, +0, +0}}}}; /* X4Series */
 } /* unnamed namespace */
 
-#ifdef USE_KAHAN_XYCIP
-  using DSumType = dso::KahanSum;
-#else
-  using DSumType = double;
-#endif
 
 double dso::detail::xcip06a(const double *const fargs, double t) noexcept {
+using DSumType = dso::KahanSum;
 
   /* sum for j=4 */
   DSumType x4cip(0e0);
@@ -6544,19 +6538,12 @@ double dso::detail::xcip06a(const double *const fargs, double t) noexcept {
           t;
 
   /* accumulate and return in [microarcseconds] */
-#ifdef USE_KAHAN_XYCIP
   const double x0 = (double)x0cip;
   const double x1 = (double)x1cip;
   const double x2 = (double)x2cip;
   const double x3 = (double)x3cip;
   const double x4 = (double)x4cip;
-#else
-  const double x0 = x0cip;
-  const double x1 = x1cip;
-  const double x2 = x2cip;
-  const double x3 = x3cip;
-  const double x4 = x4cip;
-#endif
+  
   const auto xseries = x0 + (x1 + (x2 + (x3 + x4*t)*t)*t)*t;
   return xseries + xpoly;
 }

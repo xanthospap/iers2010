@@ -1,7 +1,5 @@
 #include "iau.hpp"
-#ifdef USE_KAHAN_XYCIP
 #include "kahan.hpp"
-#endif
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -1351,13 +1349,9 @@ constexpr const std::array<XYCipSeriesData, 1> Y4Series = {{
 
 } /* unnamed namespace */
 
-#ifdef USE_KAHAN_XYCIP
-  using DSumType = dso::KahanSum;
-#else
-  using DSumType = double;
-#endif
 
 double dso::detail::ycip06a(const double *const fargs, double t) noexcept {
+  using DSumType = dso::KahanSum;
 
   /* sum for j=4 */
   DSumType y4cip(0e0);
@@ -1426,19 +1420,11 @@ double dso::detail::ycip06a(const double *const fargs, double t) noexcept {
           t;
 
   /* accumulate and return in [microarcseconds] */
-#ifdef USE_KAHAN_XYCIP
   const double y1 = (double)y1cip;
   const double y2 = (double)y2cip;
   const double y3 = (double)y3cip;
   const double y4 = (double)y4cip;
   const double y0 = (double)y0cip;
-#else
-  const double y1 = y1cip;
-  const double y2 = y2cip;
-  const double y3 = y3cip;
-  const double y4 = y4cip;
-  const double y0 = y0cip;
-#endif
   const auto yseries = y0 + (y1 + (y2 + (y3 + y4*t)*t)*t)*t;
   return ypoly + yseries;
 }
