@@ -3,12 +3,12 @@
 The transformation to be used to relate the ITRS to the GCRS at the date $t$ 
 of the observation can be written as:
 
-$$ \bm{x}_{GCRS} = \bm{Q}(t) \bm{R}(t) \bm{W}(t) \bm{x}_{ITRS} $$
+$$ \mathbf{x}_{GCRS} = Q(t) R(t) W(t) \mathbf{x}_{ITRS} $$
 
 where:
- - $bm{Q}(t)$ accounts for *precession* and *nutation*,
- - $\bm{R}(t)$ accounts for Earth's rotation, and
- - $\bm{W}(t)$ accounts for polar motion
+ - $Q(t)$ accounts for *precession* and *nutation*,
+ - $R(t)$ accounts for Earth's rotation, and
+ - $W(t)$ accounts for polar motion
 
 ## Precession, Nutation and Matrix $\bm{Q}$
 
