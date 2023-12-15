@@ -10,7 +10,7 @@ where:
  - $R(t)$ accounts for Earth's rotation, and
  - $W(t)$ accounts for polar motion
 
-## Precession, Nutation and Matrix $\bm{Q}$
+## Precession, Nutation and Matrix $Q(t)$
 
 The matrix $Q(t)$ accounts for *precession* and *nutation* and represents the 
 dynamical motion of the **Celestial Intermediate Pole** in response to torques 
@@ -31,9 +31,18 @@ or
 $$ Q(t) = \begin{pmatrix} 1-\alpha X^2 & -\alpha XY   & X \\
                                 -\alpha XY  & 1-\alpha Y^2 & Y \\
                                 -X          & -Y           & 1-\alpha (X^2 + Y^2)
-               \end{pmatrix} \dot R_3 (s) $$
+               \end{pmatrix} \cdot R_3 (s) $$
 
-## Coordinates of CIP in the GCRS
+where:
+    - $X = \sin d \cos E$,
+    - $Y = \sin d \sin E$,
+    - $Z = \cos d$, 
+    - $s$ is the ``CIO locator'', and
+    - $\alpha = 1/(1 + \cos d ) \approx 1/2 + 1/8(X^2 + Y^2)$ within $1 [\mu as]$
+
+$X$ and $Y$ are the [CIP coordinates](#cipingcrs).
+
+## Coordinates of CIP in the GCRS <a name="cipingcrs"></a>
 
 The coordinates of the CIP in the GCRS (i.e. $(X,Y)$), are computed as developments 
 as function of time (as described in [IERS Conventions 2010](#IERS2010) (Section 5.5.4)).
