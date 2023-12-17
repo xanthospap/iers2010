@@ -195,7 +195,7 @@ public:
  *   * [4] N' : Negative longitude of Moon's mean node [rad]
  *   * [5] pl : Longitude of Sun's mean perigee [rad]
  */
-inline int delaunay2doodson(const double *const fundarg, double gmst,
+inline double *delaunay2doodson(const double *const fundarg, double gmst,
                            double *doodson) noexcept {
   doodson[1] = dso::anp(fundarg[2] + fundarg[4]);
   doodson[2] = dso::anp(fundarg[2] + fundarg[4] - fundarg[3]);
@@ -203,7 +203,7 @@ inline int delaunay2doodson(const double *const fundarg, double gmst,
   doodson[4] = dso::anp(-fundarg[4]);
   doodson[5] = dso::anp(fundarg[2] + fundarg[4] - fundarg[3] - fundarg[1]);
   doodson[0] = dso::anp(gmst + dso::DPI - doodson[1]);
-  return 0;
+  return doodson;
 }
 
 namespace detail {
