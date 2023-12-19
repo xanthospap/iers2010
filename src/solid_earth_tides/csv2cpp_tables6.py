@@ -16,7 +16,7 @@ def iers_line_to_cpp(line):
 # Doodson Number;τ;s;h;p;N’;ps;l;l’;F;D;Ω;Re(δkf)*1e-5;Im(δkf)*1e-5 ;In-Phase Amp * 1e-12;Out-Of-Phase Amp * 1e-12
 # 0              1 2 3 4 5  6  7 8  9 101112           13            14                   15
     assert( len(l) == 16 )
-    return ('{{/*{:}*/ {:}, {:+.8e}, {:+.8e} }},'.format(l[0], ','.join(['{:2d}'.format(int(x)) for x in l[1:7]]), float(l[14]), float(l[15]))) 
+    return ('{{/*{:}*/ {{{:}}}, {:+.8e}, {:+.8e} }},'.format(l[0], ','.join(['{:2d}'.format(int(x)) for x in l[1:7]]), float(l[14]), float(l[15]))) 
 
 if __name__ == '__main__':
 
