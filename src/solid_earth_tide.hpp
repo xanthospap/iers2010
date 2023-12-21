@@ -11,6 +11,7 @@
 
 #include "stokes_coefficients.hpp"
 #include "datetime/calendar.hpp"
+#include "eigen3/Eigen/Eigen"
 
 namespace dso {
 
@@ -18,6 +19,11 @@ class SolidEarthTide {
   static constexpr const int degree = 4;
 
 private:
+  /* gravitational constant of Sun */
+  double mGMSun;
+  /* gravitational constant of Moon */
+  double mGMMoon;
+  /* Stokes coefficients of (n,m) = (4,4) */
   StokesCoeffs m_cs;
 
   /* @brief Compute the Step-1 effect of Solid Earth Tides on geopotential
@@ -30,12 +36,12 @@ private:
    * computed as corrections (to the normalized coefficients), ie. ΔC{nm} and
    * ΔS{nm}. Affects the ΔC_nm and ΔS_nm (correction) coefficients, for:
    *
-   *        (nm) = (20), (3,0), (4,0)
-   *               (21), (3,1), (4,1)
-   *               (22), (3,2), (4,2)
-   *                     (3,3)
-   *               -----|------|------
-   *                6.6   6.6    6.7      [IERS2010 Equation nr]
+   *        (nm) = (2,0), (3,0), (4,0)
+   *               (2,1), (3,1), (4,1)
+   *               (2,2), (3,2), (4,2)
+   *                      (3,3)
+   *               ------|------|------
+   *                6.6    6.6     6.7   [IERS2010 Equation nr]
    *
    * The 'third bodies' considered here are the Sun and Moon.
    *
@@ -84,7 +90,33 @@ public:
   SolidEarthTide(double GMearth, double Rearth, double GMmoon,
                  double GMsun) noexcept {};
 
-  int operator()();
+  /** Compute corrections to geopotemtial coefficients (ΔC, ΔS) due to Solid 
+   * Earth tide according to IERS 2010.
+   *
+   * This function follows the IERS 2010 model, using a two-step approach.
+   * Both Step-1 (due to Sun and Moon) and Step-2 (frequency-dependent) 
+   * corrections are considered.
+   * The degree/order corrections actually computed span n=2,3,4; for n=4, 
+   * max(m)=2 (i.e. we compute (4,0), (4,1) and (4,2)). However, the instance 
+   * will hold a Stokes coefficient matrix of (n,m)=(4,4), placing zero values
+   * where needed.
+   * After the computation, the instance's m_cnm member will be filled with 
+   * the computed geopotential coefficient corrections (computed here). Hence, 
+   * the m_cnm instance could be added to the values of a geopotential model 
+   * to account for the Solid Earth Tide effect.
+   *
+   * @param[in] mjdtt  Time/epoch of computation in [TT]
+   * @param[in] mjdut1 Time/epoch of computation in [UT1]
+   * @param[in] rMoon ECEF coordinates of moon [m]
+   * @param[in] rSun  ECEF coordinates of Sun [m]
+   * @param[in] delaunay_args Fundamental/Delaunay arguments at the time of 
+   *            computation, i.e. [l, lp, f, d, Ω] in [rad]
+   * @return Always 0
+   */
+  int stokes_coeffs(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
+                    const Eigen::Matrix<double, 3, 1> &rMoon,
+                    const Eigen::Matrix<double, 3, 1> &rSun,
+                    const double *const delaunay_args) noexcept;
 }; /* SolidEarthTide */
 } /* namespace dso */
 

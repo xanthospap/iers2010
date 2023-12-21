@@ -19,10 +19,10 @@ constexpr const double shida_l3 = 0.015e0;
  *
  * @param[in] Re Equatorial radius of the Earth [m]
  * @param[in] GM Gravitational constant of Earth
- * @param[in] rtb ECEF, cartesian position vector of third body (sun or
- *            Moon) [m]
+ * @param[in] rtb ECEF, spherical coordinates of third body (sun or
+ *            Moon) [rad] and [m]
  * @param[in] GMtb Gravitational constant of Third body
- * @param[in] rsta ECEF, cartesian position vector of site/point on Earth
+ * @param[in] rsta ECEF, spherical coordinates of site/point on Earth
  *
  * TODO return ?
  */
@@ -31,7 +31,7 @@ step1_in_phase(double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb,
                double GMtb, const Eigen::Matrix<double, 3, 1> &sta) noexcept {
 
   /* get geocentric latitude and longitude of site */
-  // TODO phi, lambda
+  const auto sta_spherical = dso::cartesian2spherical(sta);
 
   /* degree 2 Love number, taking latitude into consideration, Eq. (2) */
   const double slat = std::sin(lat);
