@@ -1,4 +1,6 @@
 #include "solid_earth_tide.hpp"
+#include "doodson.hpp"
+#include "iau.hpp"
 #include <array>
 
 namespace {
@@ -6,7 +8,7 @@ namespace {
 /* @brief Table 6.5a from IERS2010, to compute Step 2 corrections for m=0 */
 struct Step2TidesCoeffs {
   /* Doodson Number */
-  DoodsonConstituent mdn;
+  dso::DoodsonConstituent mdn;
   /* In-Phase Amp i.e. A_m * Real(δk_f) * H_f * 1e12 */
   double ampInPhase; 
   /* Out-Of-Phase Amp, i.e. A_m * Imag(δk_f) * H_f * 1e12 */
@@ -92,7 +94,7 @@ constexpr const std::array<Step2TidesCoeffs,71> Step2 = {{
 }}; /* Step2m20 */
 } /* unnamed namespace */
 
-int dso::SolidEarthTide::solid_earth_tide_step2(const dso::MjdEpoch &mjdtt,
+int dso::SolidEarthTide::potential_step2(const dso::MjdEpoch &mjdtt,
                                                 const dso::MjdEpoch &mjdut1,
                                                 const double *const delaunay_args,
                                                 double &dC20, double &dC21,
@@ -100,7 +102,7 @@ int dso::SolidEarthTide::solid_earth_tide_step2(const dso::MjdEpoch &mjdtt,
                                                 double &dS22) const noexcept {
 
   /* compute GMST using IAU 2006/2000A [rad] */
-  const double gmst = dso::gmst06(mjdtt, mjdut1);
+  const double gmst = dso::gmst(mjdtt, mjdut1);
 
   /* compute six-vector of multipliers ni from Delaunay vars */
   double __dargs[6];

@@ -119,7 +119,7 @@ int iers2010_solid_earth_tide_anelastic_tb(
 }
 } /* unnamed namespace */
 
-int dso::SolidEarthTide::solid_earth_tide_step1(
+int dso::SolidEarthTide::potential_step1(
     const Eigen::Matrix<double, 3, 1> &rMoon,
     const Eigen::Matrix<double, 3, 1> &rSun, std::array<double, 12> &dC,
     std::array<double, 12> &dS) noexcept {

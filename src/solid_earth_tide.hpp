@@ -11,6 +11,7 @@
 
 #include "stokes_coefficients.hpp"
 #include "datetime/calendar.hpp"
+#include "geodesy/geodesy.hpp"
 #include "eigen3/Eigen/Eigen"
 
 namespace dso {
@@ -18,13 +19,34 @@ namespace dso {
 class SolidEarthTide {
   static constexpr const int degree = 4;
 
+  struct PointSphericalTrigs {
+    /* spherical coordinates */
+    dso::SphericalCrd msph;
+    /* sin (geocentric latitude) */
+    double mslat;
+    /* cos (geocentric latitude) */
+    double mclat;
+    /* sin (longitude) */
+    double mslon;
+    /* cos (longitude) */
+    double mclon;
+
+    explicit PointSphericalTrigs(const dso::CartesianCrd &rsta) noexcept
+        : msph(dso::cartesian2spherical(rsta)) {
+      mslat = std::sin(msph.lat());
+      mclat = std::cos(msph.lat());
+      mslon = std::sin(msph.lon());
+      mclon = std::cos(msph.lon());
+    }
+  }; /* struct PointsSphericalTrigs */
+
 private:
   /* gravitational constant of Sun */
   double mGMSun;
   /* gravitational constant of Moon */
   double mGMMoon;
   /* Stokes coefficients of (n,m) = (4,4) */
-  StokesCoeffs m_cs;
+  StokesCoeffs mcs;
 
   /* @brief Compute the Step-1 effect of Solid Earth Tides on geopotential
    *  coefficient corrections ΔC_{nm} and ΔS_{nm}.
@@ -52,7 +74,7 @@ private:
    * @param[out] dS   Normalized corrections to S coefficients, in the order:
    *             dS = 0,S21,S22,0,S31,S32,S33,0,S41,S42,0,0
    */
-  int solid_earth_tide_step1(const Eigen::Matrix<double, 3, 1> &rMoon,
+  int potential_step1(const Eigen::Matrix<double, 3, 1> &rMoon,
                              const Eigen::Matrix<double, 3, 1> &rSun,
                              std::array<double, 12> &dC,
                              std::array<double, 12> &dS) noexcept;
@@ -75,10 +97,70 @@ private:
    * @param[out] dC20, dC21, dS21, dC22, dS22 Step-2 corrections for the 
    *            respective geopotential coefficients.
    */
-  int solid_earth_tide_step2(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
+  int potential_step2(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
                              const double *const delaunay_args, double &dC20,
                              double &dC21, double &dS21, double &dC22,
                              double &dS22) const noexcept;
+
+/** Compute displacement at a given point due to degree n = 2,3 tide 
+ * both for in-phase and out-of-phase, including contribution from latitude 
+ * dependence.
+ *
+ * The formulation here follows the IERS 2010 standrads, Section 7.1.1.1
+ * Conventional model for solid Earth tides.
+ * This function treats the Step-1 :
+ *  + in-phase corrections for degrees n=2,3, following Equations (5) and (6) 
+ *  respectively
+ *  + out-of-phase corrections for degree n=2, following Equations (10) and 
+ *  (11) for the diurnal and semi-diurnal tides respectively, and
+ *  + adds the contribution from latitude dependence (Equations (8) and (9)) 
+ *  for the diurnal and semi-diurnal bands.
+ *
+ * @param[in] rsta ECEF, cartesian coordinates of site/point on Earth [m]
+ * @param[in] rMoon ECEF, cartesian coordinates of Moon [m]
+ * @param[in] rSun ECEF, cartesian coordinates of Sun [m]
+ * @param[in] tSta An instance of type PointSphericalTrigs, holding trig 
+ *            numbers for rsta
+ * @param[in] tMoon An instance of type PointSphericalTrigs, holding trig 
+ *            numbers for rMoon
+ * @param[in] tSun An instance of type PointSphericalTrigs, holding trig 
+ *            numbers for rSun
+ *
+ * TODO return ?
+ */
+  Eigen::Matrix<double, 3, 1> step1_displacement(
+      const Eigen::Matrix<double, 3, 1> &rsta,
+      const Eigen::Matrix<double, 3, 1> &rMoon,
+      const Eigen::Matrix<double, 3, 1> &rSun,
+      const dso::SolidEarthTide::PointSphericalTrigs &tSta,
+      const dso::SolidEarthTide::PointSphericalTrigs &tMoon,
+      const dso::SolidEarthTide::PointSphericalTrigs &tSun) noexcept;
+
+  /** This function computes corrections to Step-1 Solid Earth tide -induced 
+   * displacement at a given point, due to frequency dependence of Love 
+   * and Shida numbers.
+   * Both diurnal (for degree n=2) and long-period tides (n=2) are considered 
+   * here.
+   *
+   * The model follows IERS 2010 Conventions, Section 7.1.1.1 Conventional 
+   * model for solid Earth tides. Equations involved are (mainly) Eq. 12 and 
+   * Eq. 13, while the consodered frequencies are taken from Tables 7.3a and 
+   * 7.3b.
+   *
+   * @param[in] mjdtt  Time/epoch of computation in [TT]
+   * @param[in] mjdut1 Time/epoch of computation in [UT1]
+   * @param[in] rsta ECEF, cartesian coordinates of site/point on Earth [m]
+   * @param[in] tSta An instance of type PointSphericalTrigs, holding trig 
+   *            numbers for rsta
+   * @param[in] delaunay_args Fundamental/Delaunay arguments at the time of 
+   *            computation, i.e. [l, lp, f, d, Ω] in [rad]
+   *
+   */
+  Eigen::Matrix<double, 3, 1>
+  step2_displacement(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
+                     const Eigen::Matrix<double, 3, 1> &rsta,
+                     const dso::SolidEarthTide::PointSphericalTrigs &tsta,
+                     const double *const fargs) noexcept;
 
 public:
   /// @brief Constructor
@@ -88,7 +170,8 @@ public:
   /// @param GMmoon Standard gravitational parameter μ=GM for the Moon [m^2/s^2]
   /// @param GMsun Standard gravitational parameter μ=GM for the Moon [m^2/s^2]
   SolidEarthTide(double GMearth, double Rearth, double GMmoon,
-                 double GMsun) noexcept {};
+                 double GMsun) noexcept
+      : mGMSun(GMsun), mGMMoon(GMmoon), mcs(degree, degree, GMearth, Rearth){};
 
   /** Compute corrections to geopotemtial coefficients (ΔC, ΔS) due to Solid 
    * Earth tide according to IERS 2010.
@@ -117,6 +200,27 @@ public:
                     const Eigen::Matrix<double, 3, 1> &rMoon,
                     const Eigen::Matrix<double, 3, 1> &rSun,
                     const double *const delaunay_args) noexcept;
+  
+  /** Compute site displacement due to Solid Earth tide according to IERS 2010.
+   *
+   * This function follows the IERS 2010 model, using a two-step approach.
+   * Both Step-1 (due to Sun and Moon) and Step-2 (frequency-dependent) 
+   * corrections are considered.
+   *
+   * @param[in] mjdtt  Time/epoch of computation in [TT]
+   * @param[in] mjdut1 Time/epoch of computation in [UT1]
+   * @param[in] rMoon ECEF coordinates of moon [m]
+   * @param[in] rSun  ECEF coordinates of Sun [m]
+   * @param[in] delaunay_args Fundamental/Delaunay arguments at the time of 
+   *            computation, i.e. [l, lp, f, d, Ω] in [rad]
+   * @return Always 0
+   */
+  Eigen::Matrix<double, 3, 1>
+  displacement(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
+               const Eigen::Matrix<double, 3, 1> &rsta,
+               const Eigen::Matrix<double, 3, 1> &rMoon,
+               const Eigen::Matrix<double, 3, 1> &rSun,
+               const double *const delaunay_args) noexcept;
 }; /* SolidEarthTide */
 } /* namespace dso */
 

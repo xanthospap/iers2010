@@ -19,23 +19,21 @@ constexpr const double shida_l3 = 0.015e0;
  *
  * @param[in] Re Equatorial radius of the Earth [m]
  * @param[in] GM Gravitational constant of Earth
- * @param[in] rtb ECEF, spherical coordinates of third body (sun or
+ * @param[in] rtb ECEF, cartesian coordinates of third body (sun or
  *            Moon) [rad] and [m]
  * @param[in] GMtb Gravitational constant of Third body
  * @param[in] rsta ECEF, spherical coordinates of site/point on Earth
- *
- * TODO return ?
+ * @return The displacement vector Δr in topocentric spherical coordinates,
+ *         i.e. TODO return ?
  */
-Eigen::Matrix<double, 3, 1>
-step1_in_phase(double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb,
-               double GMtb, const Eigen::Matrix<double, 3, 1> &sta) noexcept {
-
-  /* get geocentric latitude and longitude of site */
-  const auto sta_spherical = dso::cartesian2spherical(sta);
+Eigen::Matrix<double, 3, 1> step1_in_phase(
+    double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb, double GMtb,
+    const Eigen::Matrix<double, 3, 1> &rsta,
+    const dso::SolidEarthTide::PointSphericalTrigs &statrigs) noexcept {
 
   /* degree 2 Love number, taking latitude into consideration, Eq. (2) */
-  const double slat = std::sin(lat);
-  const double __3sfm1d2 = (3e0 * slat * slat - 1e0) / 2e0;
+  const double __sf = statrigs.mslat;
+  const double __3sfm1d2 = (3e0 * __sf * __sf - 1e0) / 2e0;
   const double love2 = love_h0 + love_h2 * __3sfm1d2;
   /* degree 2 Shida number, taking latitude into consideration, Eq. (2) */
   const double shida2 = shida_l0 + shida_l2 * __3sfm1d2;
@@ -64,16 +62,16 @@ step1_in_phase(double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb,
   return scale * dr;
 }
 
-/** @brief Compute displacement due to degree n=2 tide (out-of-phase) and the 
+/** @brief Compute displacement due to degree n=2 tide (out-of-phase) and the
  *   constribution from latitude dependence.
  *
  * The formulation here follows the IERS 2010 standrads, Section 7.1.1.1
  * Conventional model for solid Earth tides.
- * This function treats the Step-1 out-of-phase corrections for degree n=2, 
- * following Equations (10) and (11) for the diurnal and semi-diurnal 
+ * This function treats the Step-1 out-of-phase corrections for degree n=2,
+ * following Equations (10) and (11) for the diurnal and semi-diurnal
  * tides respectively.
  *
- * Additionally, the function add the contribution from latitude dependence 
+ * Additionally, the function add the contribution from latitude dependence
  * (Equations (8) and (9)) for the diurnal and semi-diurnal band.
  *
  * @param[in] Re Equatorial radius of the Earth [m]
@@ -85,50 +83,56 @@ step1_in_phase(double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb,
  *
  * TODO return ?
  */
-Eigen::Matrix<double, 3, 1>
-step1_outof_phase(double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb,
-                  double GMtb,
-                  const Eigen::Matrix<double, 3, 1> &sta) noexcept {
-  /* get geocentric latitude and longitude of third body */
-  // TODO Phi, Lambda
-  /* get geocentric latitude and longitude of site */
-  // TODO phi lambda
-  // unit vector in east direction: ue
-  // unit vector perpendicular to ˆr in the northward direction. un
+Eigen::Matrix<double, 3, 1> step1_outof_phase(
+    double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb, double GMtb,
+    const Eigen::Matrix<double, 3, 1> &rsta,
+    const dso::SolidEarthTide::PointSphericalTrigs &tbtrigs,
+    const dso::SolidEarthTide::PointSphericalTrigs &statrigs) noexcept {
 
-  const double __s2Phi = std::sin(2e0 * Phi);
-  const double __s2phi = std::sin(2e0 * phi);
-  const double __sphi = std::sin(phi);
-  const double __sPhi = std::sin(Phi);
-  const double __cPhi = std::cos(Phi);
-  const double __c2phi = std::cos(2e0 * phi);
-  const double __slmL = std::sin(lambda - Lambda);
-  const double __clmL = std::cos(lambda - Lambda);
+  /* var trigonometric numbers */
+  const double __s2Phi = 2e0 * tbtrigs.mslat * tbtrigs.mclat;
+  const double __cPhi = tbtrigs.mclat;
+  const double __s2phi = 2e0 * statrigs.mslat * statrigs.mclat;
+  const double __c2phi =
+      statrigs.mclat * statrigs.mclat - statrigs.mslat * statrigs.mslat;
+  const double __sphi = statrigs.mslat;
+  const double __sPhi = tbtrigs.mslat;
+  const double __slmL = std::sin(statrigs.msph.lon() - tbtrigs.msph.lon());
+  const double __clmL = std::cos(statrigs.msph.lon() - tbtrigs.msph.lon());
+  const double __s2lmL = 2e0 * __slmL * __clmL;
+  const double __c2lmL = __clmL * __clmL - __slmL * __slmL;
 
   /* displacement vector (to be returned) */
-  Eigen::Matrix<double, 3, 1> dt = Eigen::Matrix<double, 3, 1>::Zero();
-  double radial = 0e0;
+  Eigen::Matrix<double, 3, 1> dr = Eigen::Matrix<double, 3, 1>::Zero();
 
   /* Eq. (10a) for radial and (10b) traverse directions; diurnal
    * tides (n=2)
    */
   {
-    const double love_hI10 = -0.0025e0 const double shida_lI10 =
-        -0.0007e0 radial =
-            -(3e0 / 4e0) * love_hI10 * __s2Phi * __s2phi * __slmL;
-    dt = -(3e0 / 2e0) * shida_lI10 * __s2Phi *
-         (__c2phi * __slmL * un + __sphi * __clmL * ue);
+    const double love_hI10 = -0.0025e0;
+    const double shida_lI10 = -0.0007e0;
+    /* east */
+    dr(0) = -(3e0 / 2e0) * shida_lI10 * __s2Phi * __sphi * __clmL;
+    /* north */
+    dr(1) = -(3e0 / 2e0) * shida_lI10 * __s2Phi * __c2phi * __slmL;
+    /* radial */
+    dr(2) = -(3e0 / 4e0) * love_hI10 * __s2Phi * __s2phi * __slmL;
   }
 
   /* Eq. (11a) for radial and (11b) traverse directions; semi-diurnal
    * tides (n=2)
    */
   {
-    const double love_hI11 = -0.0022e0 const double shida_lI11 =
-        -0.0007e0 double radial =
-            -(3e0 / 4e0) * love_hI10 * __s2Phi * __s2phi * __slmL;
-    dt += -(3e0 / 2e0) * shida_lI10 * __s2Phi *
-          (__c2phi * __slmL * un + __sphi * __clmL * ue);
+    const double love_hI11 = -0.0022e0;
+    const double shida_lI11 = -0.0007e0;
+    const double __cPhi2 = __cPhi * __cPhi;
+    const double __cphi2 = __cphi * __cphi;
+    /* east */
+    dr(0) += -(3e0 / 2e0) * shida_lI11 * __cPhi2 * __cphi * __c2lmL;
+    /* north */
+    d(1) += (3e0 / 4e0) * shida_lI11 * __cPhi2 * __s2phi * __s2lmL;
+    /* radial */
+    dr(2) += -(3e0 / 4e0) * love_hI11 * __cPhi2 * __cphi2 * __s2lmL;
   }
 
   /* contribution from the diurnal band, with l(1) = 0.0012, i.e.
@@ -137,8 +141,10 @@ step1_outof_phase(double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb,
   {
     const double shida_l18 = 0.0012e0;
     const double P21 = -3e0 * __sPhi * __cPhi;
-    dt += -shida_l18 * __sphi * P21 *
-          (__sphi * __clmL * un - __c2phi * __slmL * ue);
+    /* east */
+    dr(0) += shida_l18 * __sphi * P21 * __c2phi * __slmL;
+    /* north */
+    dr(1) -= shida_l18 * __sphi * P21 * __sphi * __clmL;
   }
 
   /* contribution from the semi-diurnal band, with l(1) = 0.0024, i.e.
@@ -147,10 +153,10 @@ step1_outof_phase(double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb,
   {
     const double shida_l19 = 0.0024e0;
     const double P22 = 3e0 * __cPhi * __cPhi;
-    const double __s2lmL = std::sin(2e0 * (lambda - Lambda));
-    const double __c2lmL = std::cos(2e0 * (lambda - Lambda));
-    dt +=
-        -.5e0 * __sphi * __cphi * P22 * (__c2lmL * un + __sphi * __s2lmL * ue);
+    /* east */
+    dr(0) += -.5e0 * shida_l19 * __sphi * __cphi * P22 * __sphi * __s2lmL;
+    /* north */
+    dr(1) += -.5e0 * shida_l19 * __sphi * __cphi * P22 * __c2lmL;
   }
 
   /* scale and return */
@@ -159,11 +165,27 @@ step1_outof_phase(double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb,
 }
 } /* unnamed namespace */
 
-Eigen::Matrix<double,3,1> displacement() noexcept {
-  /* step-1 corrections (time domain) */
-  // step1 : Sun 
-  // step1 : Moon
-  // step1 : out-of-phase (+lat.dependence)
-  
-  /* step-2 corrections (frequency domain) */
+Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step1_displacement(
+    const Eigen::Matrix<double, 3, 1> &rsta,
+    const Eigen::Matrix<double, 3, 1> &rMoon,
+    const Eigen::Matrix<double, 3, 1> &rSun,
+    const dso::SolidEarthTide::PointSphericalTrigs &tSta,
+    const dso::SolidEarthTide::PointSphericalTrigs &tMoon,
+    const dso::SolidEarthTide::PointSphericalTrigs &tSun) noexcept {
+  /* Cartesian to Spherical and trig numbers */
+  dso::SolidEarthTide::PointSphericalTrigs trigs_sun(rSun);
+  dso::SolidEarthTide::PointSphericalTrigs trigs_mon(rMoon);
+  dso::SolidEarthTide::PointSphericalTrigs trigs_sta(rsta);
+
+  /* step-1 corrections (time domain) for Sun */
+  Eigen::Matrix<double, 3, 1> dr =
+      step1_in_phase(mcs.Re(), mcs.GM(), rSun, mGMSun, rsta);
+  dr += step1_in_phase(mcs.Re(), mcs.GM(), rMoon, mGMMoon, rsta);
+
+  /* step1 : out-of-phase (+lat.dependence) */
+  dr += step1_outof_phase(mcs.Re(), mcs.GM(), rSun, mGMSun, rsta);
+  dr += step1_outof_phase(mcs.Re(), mcs.GM(), rMoon, mGMMoon, rsta);
+
+  /* all done */
+  return dr;
 }
