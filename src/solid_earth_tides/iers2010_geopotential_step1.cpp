@@ -3,6 +3,7 @@
 #include <cmath>
 #include <array>
 #include <algorithm>
+#include <geodesy/crdtype_warppers.hpp>
 
 namespace {
 /* @brief Third body (Sun or Moon) Solid earth tide geopotential coefficient
@@ -32,7 +33,8 @@ int iers2010_solid_earth_tide_anelastic_tb(
     std::array<double, 12> &dC, std::array<double, 12> &dS) noexcept {
 
   /* get spherical coordinates of third body */
-  const auto rtb_spherical = dso::cartesian2spherical(rtb);
+  const auto rtb_spherical =
+      dso::cartesian2spherical(dso::CartesianCrdConstView(rtb));
   /* trigonometric numbers (of third body) */
   const double __sf = std::sin(rtb_spherical.lat());
   const double __sfsq = __sf * __sf;
@@ -65,10 +67,10 @@ int iers2010_solid_earth_tide_anelastic_tb(
    */
   const double __cl = std::cos(rtb_spherical.lon());
   const double __sl = std::sin(rtb_spherical.lon());
-  const double __c2l = std::cos(2e0 * rtb_spherical.lon());
-  const double __s2l = std::sin(2e0 * rtb_spherical.lon());
-  const double __c3l = std::cos(3e0 * rtb_spherical.lon());
-  const double __s3l = std::sin(3e0 * rtb_spherical.lon());
+  const double __c2l = __cl * __cl - __sl *__sl;
+  const double __s2l = 2e0 * __cl * __sl;
+  const double __c3l = 4e0 * __cl * __cl * __cl - 3e0 * __cl;
+  const double __s3l = -4e0 * __sl * __sl * __sl + 3e0 * __sl;
 
   /* temporary storage; latter on dCt and dSt will be added to dC and dS. */
   std::array<double, 12> dCt = {0e0}, dSt = {0e0};
@@ -129,10 +131,10 @@ int dso::SolidEarthTide::potential_step1(
   std::fill(dS.begin(), dS.end(), 0e0);
 
   /* start with Sun geopotential corrections */
-  iers2010_solid_earth_tide_anelastic_tb(cs.Re(), cs.GM(), rSun, mGMsun, dC,
+  iers2010_solid_earth_tide_anelastic_tb(mcs.Re(), mcs.GM(), rSun, mGMSun, dC,
                                          dS);
   /* add Moon */
-  iers2010_solid_earth_tide_anelastic_tb(cs.Re(), cs.GM(), rMoon, mGMmoon, dC,
+  iers2010_solid_earth_tide_anelastic_tb(mcs.Re(), mcs.GM(), rMoon, mGMMoon, dC,
                                          dS);
   /* all done for step 1 */
   return 0;

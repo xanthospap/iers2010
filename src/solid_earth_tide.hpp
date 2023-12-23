@@ -17,6 +17,7 @@
 namespace dso {
 
 class SolidEarthTide {
+public:
   static constexpr const int degree = 4;
 
   struct PointSphericalTrigs {
@@ -31,7 +32,9 @@ class SolidEarthTide {
     /* cos (longitude) */
     double mclon;
 
-    explicit PointSphericalTrigs(const dso::CartesianCrd &rsta) noexcept
+    template <typename T,
+              typename = std::enable_if_t<CoordinateTypeTraits<T>::isCartesian>>
+    explicit PointSphericalTrigs(const /*dso::CartesianCrd*/ T &rsta) noexcept
         : msph(dso::cartesian2spherical(rsta)) {
       mslat = std::sin(msph.lat());
       mclat = std::cos(msph.lat());
@@ -41,9 +44,9 @@ class SolidEarthTide {
   }; /* struct PointsSphericalTrigs */
 
 private:
-  /* gravitational constant of Sun */
+  /* gravitational constant of Sun/Earth */
   double mGMSun;
-  /* gravitational constant of Moon */
+  /* gravitational constant of Moon/Earth */
   double mGMMoon;
   /* Stokes coefficients of (n,m) = (4,4) */
   StokesCoeffs mcs;

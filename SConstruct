@@ -70,8 +70,8 @@ penv = Environment(PREFIX=GetOption(
 
 ## Command line arguments ...
 debug = ARGUMENTS.get('debug', 0)
-make_test = ARGUMENTS.get('test', 0)
-sofa  = ARGUMENTS.get('test-vs-sofa', 0)
+test = ARGUMENTS.get('test', 0)
+sofa = ARGUMENTS.get('test-vs-sofa', 0)
 
 ## Construct the build enviroment
 env = denv.Clone() if int(debug) else penv.Clone()
@@ -99,16 +99,18 @@ env.Alias(target='install', source=env.InstallVersionedLib(
     dir=os.path.join(GetOption('prefix'), 'lib'), source=vlib))
 
 ## Tests ...
-if make_test:
+if test:
+  print('--> Compiling tests ...')
   tenv = env.Clone()
   tenv['CXXFLAGS'] = ' '.join([ x for x in env['CXXFLAGS'].split() if 'inline' not in x])
   cmp_error_fn = 'test/unit_tests/test_compilation_error.json'
   cerror_dct = {}
   if os.path.isfile(cmp_error_fn): os.remove(cmp_error_fn)
-  tests_sources  = glob.glob(r"test/unit_tests/*.cpp")
-  tests_sources  = glob.glob(r"test/time/*.cpp")
+  tests_sources = glob.glob(r"test/unit_tests/*.cpp")
+  tests_sources += glob.glob(r"test/time/*.cpp")
   tenv.Append(RPATH=root_dir)
   for tsource in tests_sources:
+    #print('\t--> Compiling test {:} ...'.format(tsource))
     ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
     if 'mock' in os.path.basename(tsource):
       cerror_dct[os.path.basename(tsource)] = {

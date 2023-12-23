@@ -56,7 +56,7 @@ constexpr const std::array<Table7, 16> Tables7 = {
 
 Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step2_displacement(
     const dso::MjdEpoch &mjdtt, const dso::MjdEpoch &mjdut1,
-    const Eigen::Matrix<double, 3, 1> &rsta,
+    [[maybe_unused]]const Eigen::Matrix<double, 3, 1> &rsta,
     const dso::SolidEarthTide::PointSphericalTrigs &tsta,
     const double *const delaunay_args) noexcept {
 
@@ -108,5 +108,6 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step2_displacement(
 
   /* [mm] to [m] */
   dr *= 1e-3;
+  printf("\tStep2 :%+.6f %+.6f %+.6f (Tides)\n", dr(0), dr(1), dr(2));
   return dr;
 }

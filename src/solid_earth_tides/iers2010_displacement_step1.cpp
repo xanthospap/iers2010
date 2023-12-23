@@ -1,5 +1,8 @@
 #include "solid_earth_tide.hpp"
+#include "geodesy/geodesy.hpp"
 #include <cmath>
+#include <cstdio>
+#include <geodesy/crd_transformations.hpp>
 
 namespace {
 /** Nominal Love & Shida numbers */
@@ -23,8 +26,8 @@ constexpr const double shida_l3 = 0.015e0;
  *            Moon) [rad] and [m]
  * @param[in] GMtb Gravitational constant of Third body
  * @param[in] rsta ECEF, spherical coordinates of site/point on Earth
- * @return The displacement vector Δr in topocentric spherical coordinates,
- *         i.e. TODO return ?
+ * @return The displacement vector Δr in ECEF Cartesian coordinates, i.e. 
+ *         Δr = [δX, δY, δZ]
  */
 Eigen::Matrix<double, 3, 1> step1_in_phase(
     double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb, double GMtb,
@@ -48,17 +51,17 @@ Eigen::Matrix<double, 3, 1> step1_in_phase(
   /* Eq. (5), displacement due to degree n=2 */
   const auto __Rjr = urtb.dot(ursta);
   dr = love2 * ursta * ((3e0 * __Rjr * __Rjr - 1e0) / 2e0) +
-       3e0 * shida_l2 * __Rjr * (urtb - __Rjr * ursta);
+       3e0 * shida2 * __Rjr * (urtb - __Rjr * ursta);
   /* Eq. (6), displacement due to degree n=3 */
   const double scale3 = Re / rtb.norm();
   dr += scale3 *
         (love_h3 * ursta *
-             ((5e0 / 2e0) * __Rjr * __Rjr * __Rjr - (3e0 / 2e0) * __Rjr) +
+             ((5e0 / 2e0) * __Rjr * __Rjr - (3e0 / 2e0) * __Rjr) +
          shida_l3 * ((15e0 / 2e0) * __Rjr * __Rjr -
-                     (3e0 / 2e0) * (urtb - __Rjr * ursta)));
+                     (3e0 / 2e0)) * (urtb - __Rjr * ursta));
 
   /* scale and return */
-  const double scale = (GM / GMtb) * std::pow(Re / rtb.norm(), 3) * Re;
+  const double scale = (GMtb / GM) * std::pow(Re / rtb.norm(), 3) * Re;
   return scale * dr;
 }
 
@@ -80,12 +83,14 @@ Eigen::Matrix<double, 3, 1> step1_in_phase(
  *            Moon) [m]
  * @param[in] GMtb Gravitational constant of Third body
  * @param[in] rsta ECEF, cartesian position vector of site/point on Earth
- *
- * TODO return ?
+ * @return Displacement vector in local tangent coordinates, where the 
+ *         Up is in the radial (not vertical) direction and East and North 
+ *         are perpendicular to that direction, i.e.
+ *         Δr = [East, North, Up/Radial]
  */
 Eigen::Matrix<double, 3, 1> step1_outof_phase(
     double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb, double GMtb,
-    const Eigen::Matrix<double, 3, 1> &rsta,
+    [[maybe_unused]]const Eigen::Matrix<double, 3, 1> &rsta,
     const dso::SolidEarthTide::PointSphericalTrigs &tbtrigs,
     const dso::SolidEarthTide::PointSphericalTrigs &statrigs) noexcept {
 
@@ -96,6 +101,7 @@ Eigen::Matrix<double, 3, 1> step1_outof_phase(
   const double __c2phi =
       statrigs.mclat * statrigs.mclat - statrigs.mslat * statrigs.mslat;
   const double __sphi = statrigs.mslat;
+  const double __cphi = statrigs.mclat;
   const double __sPhi = tbtrigs.mslat;
   const double __slmL = std::sin(statrigs.msph.lon() - tbtrigs.msph.lon());
   const double __clmL = std::cos(statrigs.msph.lon() - tbtrigs.msph.lon());
@@ -130,7 +136,7 @@ Eigen::Matrix<double, 3, 1> step1_outof_phase(
     /* east */
     dr(0) += -(3e0 / 2e0) * shida_lI11 * __cPhi2 * __cphi * __c2lmL;
     /* north */
-    d(1) += (3e0 / 4e0) * shida_lI11 * __cPhi2 * __s2phi * __s2lmL;
+    dr(1) += (3e0 / 4e0) * shida_lI11 * __cPhi2 * __s2phi * __s2lmL;
     /* radial */
     dr(2) += -(3e0 / 4e0) * love_hI11 * __cPhi2 * __cphi2 * __s2lmL;
   }
@@ -160,7 +166,7 @@ Eigen::Matrix<double, 3, 1> step1_outof_phase(
   }
 
   /* scale and return */
-  const double scale = (GM / GMtb) * std::pow(Re / rtb.norm(), 3) * Re;
+  const double scale = (GMtb / GM) * std::pow(Re / rtb.norm(), 3) * Re;
   return scale * dr;
 }
 } /* unnamed namespace */
@@ -172,19 +178,25 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step1_displacement(
     const dso::SolidEarthTide::PointSphericalTrigs &tSta,
     const dso::SolidEarthTide::PointSphericalTrigs &tMoon,
     const dso::SolidEarthTide::PointSphericalTrigs &tSun) noexcept {
-  /* Cartesian to Spherical and trig numbers */
-  dso::SolidEarthTide::PointSphericalTrigs trigs_sun(rSun);
-  dso::SolidEarthTide::PointSphericalTrigs trigs_mon(rMoon);
-  dso::SolidEarthTide::PointSphericalTrigs trigs_sta(rsta);
 
-  /* step-1 corrections (time domain) for Sun */
-  Eigen::Matrix<double, 3, 1> dr =
-      step1_in_phase(mcs.Re(), mcs.GM(), rSun, mGMSun, rsta);
-  dr += step1_in_phase(mcs.Re(), mcs.GM(), rMoon, mGMMoon, rsta);
+  /* step-1 corrections (time domain) for Sun (Cartesian, ECEF) */
+  Eigen::Matrix<double, 3, 1> drxyz =
+      step1_in_phase(mcs.Re(), mcs.GM(), rSun, mGMSun, rsta, tSta);
+  drxyz += step1_in_phase(mcs.Re(), mcs.GM(), rMoon, mGMMoon, rsta, tSta);
+
+  /* get rotation matrix to transform between Cartesian and topocentric, i.e.
+   * [x,y,z] = R *[enu]
+   */
+  const auto R = dso::geodetic2lvlh(tSta.msph.lat(), tSta.msph.lon());
+  
+  /* transform displacement vector from Cartesian to topocentric (enu) */
+  Eigen::Matrix<double, 3, 1> dr = R.transpose() * drxyz;
 
   /* step1 : out-of-phase (+lat.dependence) */
-  dr += step1_outof_phase(mcs.Re(), mcs.GM(), rSun, mGMSun, rsta);
-  dr += step1_outof_phase(mcs.Re(), mcs.GM(), rMoon, mGMMoon, rsta);
+  dr += step1_outof_phase(mcs.Re(), mcs.GM(), rSun, mGMSun, rsta, tSun, tSta);
+  dr +=
+      step1_outof_phase(mcs.Re(), mcs.GM(), rMoon, mGMMoon, rsta, tMoon, tSta);
+  printf("\tStep1 :%+.6f %+.6f %+.6f (Sun+Moon)\n", dr(0), dr(1), dr(2));
 
   /* all done */
   return dr;
