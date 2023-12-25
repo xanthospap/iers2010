@@ -48,6 +48,10 @@ private:
   double mGMSun;
   /* gravitational constant of Moon/Earth */
   double mGMMoon;
+  /* Mass of Moon / Mass of Earth */
+  double mmeratio{dso::MoonEarthMassRatio};
+  /* Mass of Moon / Mass of Earth */
+  double mseratio{332946.0482e0};
   /* Stokes coefficients of (n,m) = (4,4) */
   StokesCoeffs mcs;
 

@@ -1,6 +1,12 @@
 /** @file 
  * This file includes numeric constants defined in IERS2010 standards
- *  @see IERS Technical Note N.36, Chapter 1, Table 1.1
+ * @see IERS Technical Note N.36, Chapter 1, Table 1.1
+ *
+ * References:
+ * [1] Pitjeva, Elena V. and Erland Myles Standish. “Proposals for the masses 
+ * of the three largest asteroids, the Moon-Earth mass ratio and the 
+ * Astronomical Unit.” Celestial Mechanics and Dynamical Astronomy 103 
+ * (2009): 365-372.
  */
 
 #ifndef __IERS2010_GEN_CONSTANTS_HPP__
@@ -64,5 +70,16 @@ constexpr const double GMSun = 1.32712442099e20;
 constexpr const double ge = 9.7803278e0;
 
 } /* iers2010 */
+
+namespace dso {
+/** Constants not included in IERS 2010 Standards. These are defined within 
+ * the dso namespace
+ */
+
+/** Moon-Earth mass ratio according to [1] */
+constexpr const double MoonEarthMassRatio = 0.0123000371e0;
+/** Earth–Moon mass ratio according to [1] */
+constexpr const double EarthMoonMassRatio = 81.300568e0;
+} /* namespace dso */
 
 #endif

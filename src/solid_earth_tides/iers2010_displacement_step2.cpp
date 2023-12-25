@@ -76,6 +76,10 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step2_displacement(
 
   /* displacement vector (to be returned) */
   Eigen::Matrix<double, 3, 1> dr = Eigen::Matrix<double, 3, 1>::Zero();
+#ifdef DEBUG
+  Eigen::Matrix<double, 3, 1> ddr = Eigen::Matrix<double, 3, 1>::Zero();
+  Eigen::Matrix<double, 3, 1> ldr = Eigen::Matrix<double, 3, 1>::Zero();
+#endif
 
   /* Contributions from the diurnal band, for n=2 */
   for (const auto &tc : Tables7) {
@@ -92,6 +96,12 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step2_displacement(
       dr(0) += (__ca * tc.dTip - __sa * tc.dTop) * __sphi;
       /* north */
       dr(1) += (__sa * tc.dTip + __ca * tc.dTop) * __c2phi;
+#ifdef DEBUG
+      //printf("[dirnal] theta: %10.6f\n", arg);
+      ddr(2) += (__sa * tc.dRip + __ca * tc.dRop) * __s2phi;
+      ddr(0) += (__ca * tc.dTip - __sa * tc.dTop) * __sphi;
+      ddr(1) += (__sa * tc.dTip + __ca * tc.dTop) * __c2phi;
+#endif
     } else {
       /* long-period band, Eqs. 12 */
       const double __sa = std::sin(arg);
@@ -103,11 +113,25 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step2_displacement(
       dr(0) += 0e0;
       /* north */
       dr(1) += (tc.dTip * __ca + tc.dTop * __sa) * __s2phi;
+#ifdef DEBUG
+      ldr(2) += ((3e0 / 2e0) * __sphi * __sphi - .5e0) *
+               (tc.dRip * __ca + tc.dRip * __sa);
+      ldr(0) += 0e0;
+      ldr(1) += (tc.dTip * __ca + tc.dTop * __sa) * __s2phi;
+#endif
     }
   }
 
   /* [mm] to [m] */
   dr *= 1e-3;
-  printf("\tStep2 :%+.6f %+.6f %+.6f (Tides)\n", dr(0), dr(1), dr(2));
+#ifdef DEBUG
+  const auto R = dso::geodetic2lvlh(tsta.msph.lat(), tsta.msph.lon());
+  ddr = R * ddr;
+  ldr = R * ldr;
+  ddr *= 1e-3;
+  ldr *= 1e-3;
+  //printf("STEP2 Diurnal : %10.6f %10.6f %10.6f\n", ddr(0), ddr(1), ddr(2));
+  //printf("STEP2 long    : %10.6f %10.6f %10.6f\n", ldr(0), ldr(1), ldr(2));
+#endif
   return dr;
 }

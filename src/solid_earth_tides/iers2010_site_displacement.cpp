@@ -16,8 +16,15 @@ dso::SolidEarthTide::displacement(const dso::MjdEpoch &mjdtt,
   dso::SolidEarthTide::PointSphericalTrigs trigs_sta{
       dso::CartesianCrdConstView(rsta)};
 
+#ifdef DEBUG
+  const auto Rt = dso::geodetic2lvlh(trigs_sta.msph.lat(), trigs_sta.msph.lon());
+#endif
   auto dr = this->step1_displacement(rsta, rMoon, rSun, trigs_sta, trigs_mon,
                                      trigs_sun);
+#ifdef DEBUG
+  auto dx = Rt * dr;
+  printf("STEP1         : %15.9f %15.9f %15.9f\n", dx(0), dx(1), dx(2));
+#endif
 
   /* step-2 corrections (frequency domain) */
   dr += step2_displacement(mjdtt, mjdut1, rsta, trigs_sta, delaunay_args);
