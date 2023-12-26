@@ -174,7 +174,10 @@ private:
    *            numbers for rsta
    * @param[in] delaunay_args Fundamental/Delaunay arguments at the time of 
    *            computation, i.e. [l, lp, f, d, Ω] in [rad]
-   *
+   * @return Displacement vector in local tangent coordinates, where the
+   *         Up is in the radial (not vertical) direction and East and North
+   *         are perpendicular to that direction, i.e.
+   *         Δr = [East, North, Up/Radial]
    */
   Eigen::Matrix<double, 3, 1>
   step2_displacement(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,

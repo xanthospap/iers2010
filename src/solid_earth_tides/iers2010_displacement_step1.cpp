@@ -28,9 +28,7 @@ constexpr const double shida_l3 = 0.015e0;
  * @return The displacement vector Δr in ECEF Cartesian coordinates, i.e.
  *         Δr = [δX, δY, δZ]
  */
-[[deprecated]]
-[[maybe_unused]]
-Eigen::Matrix<double, 3, 1>
+[[deprecated]] [[maybe_unused]] Eigen::Matrix<double, 3, 1>
 step1_in_phase(double Re, double GMratio,
                const Eigen::Matrix<double, 3, 1> &rtb,
                const Eigen::Matrix<double, 3, 1> &rsta,
@@ -91,9 +89,7 @@ step1_in_phase(double Re, double GMratio,
  *         are perpendicular to that direction, i.e.
  *         Δr = [East, North, Up/Radial]
  */
-[[deprecated]]
-[[maybe_unused]]
-Eigen::Matrix<double, 3, 1> step1_outof_phase(
+[[deprecated]] [[maybe_unused]] Eigen::Matrix<double, 3, 1> step1_outof_phase(
     double Re, double GMratio, const Eigen::Matrix<double, 3, 1> &rtb,
     [[maybe_unused]] const Eigen::Matrix<double, 3, 1> &rsta,
     const dso::SolidEarthTide::PointSphericalTrigs &tbtrigs,
@@ -176,7 +172,7 @@ Eigen::Matrix<double, 3, 1> step1_outof_phase(
   return scale * dr;
 }
 
-/** @brief Compute Step-1 displacement due to solid earth tides, according to 
+/** @brief Compute Step-1 displacement due to solid earth tides, according to
  *   IERS 2010.
  *
  * Step-1 corrections, include:
@@ -185,8 +181,8 @@ Eigen::Matrix<double, 3, 1> step1_outof_phase(
  *    Conventional model for solid Earth tides.
  *    This function treats the Step-1 in-phase corrections for degrees n=2,3,
  *    following Equations (5) and (6) respectively.
- *  
- *  + Displacement due to degree n=2 tide (out-of-phase) and the contribution 
+ *
+ *  + Displacement due to degree n=2 tide (out-of-phase) and the contribution
  *    from latitude dependence.
  *    The formulation here follows the IERS 2010 standrads, Section 7.1.1.1
  *    Conventional model for solid Earth tides.
@@ -207,39 +203,35 @@ Eigen::Matrix<double, 3, 1> step1_outof_phase(
  * @param[in] rmoon ECEF, cartesian position vector of Moon
  * @param[in] Msun_earth_ratio  Mass ration of Sun/Earth
  * @param[in] Mmoon_earth_ratio Mass ration of Moon/Earth
- * @param[in] tsta  An instance of type SolidEarthTide::PointSphericalTrigs 
- *            holding spherical coordinates and trigonometric numbers of 
+ * @param[in] tsta  An instance of type SolidEarthTide::PointSphericalTrigs
+ *            holding spherical coordinates and trigonometric numbers of
  *            the site
- * @param[in] tsun  An instance of type SolidEarthTide::PointSphericalTrigs 
- *            holding spherical coordinates and trigonometric numbers of 
+ * @param[in] tsun  An instance of type SolidEarthTide::PointSphericalTrigs
+ *            holding spherical coordinates and trigonometric numbers of
  *            the Sun
- * @param[in] tmoon An instance of type SolidEarthTide::PointSphericalTrigs 
- *            holding spherical coordinates and trigonometric numbers of 
+ * @param[in] tmoon An instance of type SolidEarthTide::PointSphericalTrigs
+ *            holding spherical coordinates and trigonometric numbers of
  *            the Moon
  * @return Displacement vector in local tangent coordinates, where the
  *         Up is in the radial (not vertical) direction and East and North
  *         are perpendicular to that direction, i.e.
  *         Δr = [East, North, Up/Radial]
  */
-Eigen::Matrix<double, 3, 1> step1(
-    double Re, 
-    const Eigen::Matrix<double, 3, 1> &rsta,
-    const Eigen::Matrix<double, 3, 1> &rsun,
-    const Eigen::Matrix<double, 3, 1> &rmoon,
-    double Msun_earth_ratio,
-    double Mmoon_earth_ratio,
-    const dso::SolidEarthTide::PointSphericalTrigs &tsta,
-    const dso::SolidEarthTide::PointSphericalTrigs &tsun,
-    const dso::SolidEarthTide::PointSphericalTrigs &tmoon
-    ) noexcept 
-{
+Eigen::Matrix<double, 3, 1>
+step1(double Re, const Eigen::Matrix<double, 3, 1> &rsta,
+      const Eigen::Matrix<double, 3, 1> &rsun,
+      const Eigen::Matrix<double, 3, 1> &rmoon, double Msun_earth_ratio,
+      double Mmoon_earth_ratio,
+      const dso::SolidEarthTide::PointSphericalTrigs &tsta,
+      const dso::SolidEarthTide::PointSphericalTrigs &tsun,
+      const dso::SolidEarthTide::PointSphericalTrigs &tmoon) noexcept {
   /* degree 2 Love number, taking latitude into consideration, Eq. (2) */
   const double __sf = rsta(2) / rsta.norm();
   const double __3sfm1d2 = (3e0 * __sf * __sf - 1e0) / 2e0;
   const double love2 = love_h0 + love_h2 * __3sfm1d2;
   /* degree 2 Shida number, taking latitude into consideration, Eq. (2) */
   const double shida2 = shida_l0 + shida_l2 * __3sfm1d2;
-  
+
   /* Factors for Sun and Moon */
   const double facSun = Msun_earth_ratio * std::pow(Re / rsun.norm(), 3) * Re;
   const double facMon = Mmoon_earth_ratio * std::pow(Re / rmoon.norm(), 3) * Re;
@@ -272,22 +264,21 @@ Eigen::Matrix<double, 3, 1> step1(
     const auto __Rjr3 = __Rjr2 * __Rjr;
     Eigen::Matrix<double, 3, 1> dxm = Eigen::Matrix<double, 3, 1>::Zero();
     dxm = love2 * ursta * ((3e0 * __Rjr2 - 1e0) / 2e0) +
-         3e0 * shida2 * __Rjr * (urtb - __Rjr * ursta);
+          3e0 * shida2 * __Rjr * (urtb - __Rjr * ursta);
     /* Eq. (6), displacement due to degree n=3 */
     const double scale3 = Re / rmoon.norm();
     dxm += (love_h3 * ursta * (5e0 * __Rjr3 - 3e0 * __Rjr) / 2e0 +
-           shida_l3 * (15e0 * __Rjr2 - 3e0) / 2e0 * (urtb - __Rjr * ursta)) *
-          scale3;
+            shida_l3 * (15e0 * __Rjr2 - 3e0) / 2e0 * (urtb - __Rjr * ursta)) *
+           scale3;
     dx += facMon * dxm;
   }
-  
+
   /* displacement vector */
   Eigen::Matrix<double, 3, 1> dr = Eigen::Matrix<double, 3, 1>::Zero();
 
   /* site-based trigonometric numbers */
   const double __s2phi = 2e0 * tsta.mslat * tsta.mclat;
-  const double __c2phi =
-      tsta.mclat * tsta.mclat - tsta.mslat * tsta.mslat;
+  const double __c2phi = tsta.mclat * tsta.mclat - tsta.mslat * tsta.mslat;
   const double __sphi = tsta.mslat;
   const double __cphi = tsta.mclat;
 
@@ -316,19 +307,19 @@ Eigen::Matrix<double, 3, 1> step1(
       const double __cphi2 = __cphi * __cphi;
       /* east */
       drs(0) = -1.50e0 * shida_lI10 * __s2Phi * __sphi * __clmL +
-              -1.50e0 * shida_lI11 * __cPhi2 * __cphi * __c2lmL +
-              F18 * (-__c2phi * __slmL) + F19 * (__sphi * __s2lmL);
+               -1.50e0 * shida_lI11 * __cPhi2 * __cphi * __c2lmL +
+               F18 * (-__c2phi * __slmL) + F19 * (__sphi * __s2lmL);
       /* north */
       drs(1) = -1.50e0 * shida_lI10 * __s2Phi * __c2phi * __slmL +
-              0.75e0 * shida_lI11 * __cPhi2 * __s2phi * __s2lmL +
-              F18 * (__sphi * __clmL) + F19 * __c2lmL;
+               0.75e0 * shida_lI11 * __cPhi2 * __s2phi * __s2lmL +
+               F18 * (__sphi * __clmL) + F19 * __c2lmL;
       /* radial */
       drs(2) = -0.75e0 * love_hI10 * __s2Phi * __s2phi * __slmL +
-              -0.75e0 * love_hI11 * __cPhi2 * __cphi2 * __s2lmL;
+               -0.75e0 * love_hI11 * __cPhi2 * __cphi2 * __s2lmL;
       dr += drs * facSun;
     }
   }
-  
+
   { /* Step-1 out-of-phase and latitude dependent corrections for Moon */
     const double __s2Phi = 2e0 * tmoon.mslat * tmoon.mclat;
     const double __cPhi = tmoon.mclat;
@@ -354,19 +345,19 @@ Eigen::Matrix<double, 3, 1> step1(
       const double __cphi2 = __cphi * __cphi;
       /* east */
       drs(0) = -1.50e0 * shida_lI10 * __s2Phi * __sphi * __clmL +
-              -1.50e0 * shida_lI11 * __cPhi2 * __cphi * __c2lmL +
-              F18 * (-__c2phi * __slmL) + F19 * (__sphi * __s2lmL);
+               -1.50e0 * shida_lI11 * __cPhi2 * __cphi * __c2lmL +
+               F18 * (-__c2phi * __slmL) + F19 * (__sphi * __s2lmL);
       /* north */
       drs(1) = -1.50e0 * shida_lI10 * __s2Phi * __c2phi * __slmL +
-              0.75e0 * shida_lI11 * __cPhi2 * __s2phi * __s2lmL +
-              F18 * (__sphi * __clmL) + F19 * __c2lmL;
+               0.75e0 * shida_lI11 * __cPhi2 * __s2phi * __s2lmL +
+               F18 * (__sphi * __clmL) + F19 * __c2lmL;
       /* radial */
       drs(2) = -0.75e0 * love_hI10 * __s2Phi * __s2phi * __slmL +
-              -0.75e0 * love_hI11 * __cPhi2 * __cphi2 * __s2lmL;
+               -0.75e0 * love_hI11 * __cPhi2 * __cphi2 * __s2lmL;
       dr += drs * facMon;
     }
   }
-  
+
   /* get rotation matrix to transform between Cartesian and topocentric,
    * i.e. [x,y,z] = R *[enu]
    */
@@ -385,27 +376,28 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step1_displacement(
     const dso::SolidEarthTide::PointSphericalTrigs &tSun) noexcept {
 
   ///* step-1 corrections (time domain) for Sun (Cartesian, ECEF) */
-  //Eigen::Matrix<double, 3, 1> drxyz =
-  //    step1_in_phase(mcs.Re(), mseratio, rSun, rsta, tSta);
-  //drxyz += step1_in_phase(mcs.Re(), mmeratio, rMoon, rsta, tSta);
+  // Eigen::Matrix<double, 3, 1> drxyz =
+  //     step1_in_phase(mcs.Re(), mseratio, rSun, rsta, tSta);
+  // drxyz += step1_in_phase(mcs.Re(), mmeratio, rMoon, rsta, tSta);
 
   ///* get rotation matrix to transform between Cartesian and topocentric,
   // * i.e. [x,y,z] = R *[enu]
   // */
-  //const auto R = dso::geodetic2lvlh(tSta.msph.lat(), tSta.msph.lon());
+  // const auto R = dso::geodetic2lvlh(tSta.msph.lat(), tSta.msph.lon());
 
   ///* transform displacement vector from Cartesian to topocentric (enu) */
-  //Eigen::Matrix<double, 3, 1> dr = R.transpose() * drxyz;
+  // Eigen::Matrix<double, 3, 1> dr = R.transpose() * drxyz;
 
   ///* step1 : out-of-phase (+lat.dependence) */
-  //dr += step1_outof_phase(mcs.Re(), mseratio, rSun, rsta, tSun, tSta);
-  //dr += step1_outof_phase(mcs.Re(), mmeratio, rMoon, rsta, tMoon, tSta);
+  // dr += step1_outof_phase(mcs.Re(), mseratio, rSun, rsta, tSun, tSta);
+  // dr += step1_outof_phase(mcs.Re(), mmeratio, rMoon, rsta, tMoon, tSta);
 
-  //auto dx2 =
-  //    step1(mcs.Re(), rsta, rSun, rMoon, mseratio, mmeratio, tSta, tSun, tMoon);
-  //assert(std::abs(dx2(0)-dr(0))< 1e-15);
-  //assert(std::abs(dx2(1)-dr(1))< 1e-15);
-  //assert(std::abs(dx2(2)-dr(2))< 1e-15);
+  // auto dx2 =
+  //     step1(mcs.Re(), rsta, rSun, rMoon, mseratio, mmeratio, tSta, tSun,
+  //     tMoon);
+  // assert(std::abs(dx2(0)-dr(0))< 1e-15);
+  // assert(std::abs(dx2(1)-dr(1))< 1e-15);
+  // assert(std::abs(dx2(2)-dr(2))< 1e-15);
 
   /* all done */
   return step1(mcs.Re(), rsta, rSun, rMoon, mseratio, mmeratio, tSta, tSun,
