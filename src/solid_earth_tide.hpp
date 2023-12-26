@@ -109,32 +109,45 @@ private:
                              double &dC21, double &dS21, double &dC22,
                              double &dS22) const noexcept;
 
-/** Compute displacement at a given point due to degree n = 2,3 tide 
- * both for in-phase and out-of-phase, including contribution from latitude 
- * dependence.
- *
- * The formulation here follows the IERS 2010 standrads, Section 7.1.1.1
- * Conventional model for solid Earth tides.
- * This function treats the Step-1 :
- *  + in-phase corrections for degrees n=2,3, following Equations (5) and (6) 
- *  respectively
- *  + out-of-phase corrections for degree n=2, following Equations (10) and 
- *  (11) for the diurnal and semi-diurnal tides respectively, and
- *  + adds the contribution from latitude dependence (Equations (8) and (9)) 
- *  for the diurnal and semi-diurnal bands.
- *
- * @param[in] rsta ECEF, cartesian coordinates of site/point on Earth [m]
- * @param[in] rMoon ECEF, cartesian coordinates of Moon [m]
- * @param[in] rSun ECEF, cartesian coordinates of Sun [m]
- * @param[in] tSta An instance of type PointSphericalTrigs, holding trig 
- *            numbers for rsta
- * @param[in] tMoon An instance of type PointSphericalTrigs, holding trig 
- *            numbers for rMoon
- * @param[in] tSun An instance of type PointSphericalTrigs, holding trig 
- *            numbers for rSun
- *
- * TODO return ?
- */
+  /** @brief Compute Step-1 displacement due to solid earth tides, according to
+   *   IERS 2010.
+   *
+   * Step-1 corrections, include:
+   *  + Displacement due to degree n = 2,3 tide (in-phase).
+   *    The formulation here follows the IERS 2010 standrads, Section 7.1.1.1
+   *    Conventional model for solid Earth tides.
+   *    This function treats the Step-1 in-phase corrections for degrees 
+   *    n=2,3 following Equations (5) and (6) respectively.
+   *
+   *  + Displacement due to degree n=2 tide (out-of-phase) and the contribution
+   *    from latitude dependence.
+   *    The formulation here follows the IERS 2010 standrads, Section 7.1.1.1
+   *    Conventional model for solid Earth tides.
+   *    This function treats the Step-1 out-of-phase corrections for degree 
+   *    n=2, following Equations (10) and (11) for the diurnal and 
+   *    semi-diurnal tides respectively.
+   * 
+   *  + Additionally, the function add the contribution from latitude 
+   *    dependence (Equations (8) and (9)) for the diurnal and semi-diurnal 
+   *    band.
+   *
+   * @param[in] rsta  ECEF, cartesian position vector of site/point on Earth
+   * @param[in] rsun  ECEF, cartesian position vector of Sun
+   * @param[in] rmoon ECEF, cartesian position vector of Moon
+   * @param[in] tsta  An instance of type SolidEarthTide::PointSphericalTrigs
+   *            holding spherical coordinates and trigonometric numbers of
+   *            the site
+   * @param[in] tsun  An instance of type SolidEarthTide::PointSphericalTrigs
+   *            holding spherical coordinates and trigonometric numbers of
+   *            the Sun
+   * @param[in] tmoon An instance of type SolidEarthTide::PointSphericalTrigs
+   *            holding spherical coordinates and trigonometric numbers of
+   *            the Moon
+   * @return Displacement vector in local tangent coordinates, where the
+   *         Up is in the radial (not vertical) direction and East and North
+   *         are perpendicular to that direction, i.e.
+   *         Δr = [East, North, Up/Radial]
+   */
   Eigen::Matrix<double, 3, 1> step1_displacement(
       const Eigen::Matrix<double, 3, 1> &rsta,
       const Eigen::Matrix<double, 3, 1> &rMoon,

@@ -37,6 +37,8 @@ dso::SolidEarthTide::displacement(const dso::MjdEpoch &mjdtt,
   /* transform displacement vector from Cartesian to topocentric (enu) */
   Eigen::Matrix<double, 3, 1> dxyz = R * dr;
 
+  printf("Dehantideinel: %.9f %.9f %.9f\n", dxyz(0), dxyz(1), dxyz(2));
+
   /* all done */
   return dxyz;
 }

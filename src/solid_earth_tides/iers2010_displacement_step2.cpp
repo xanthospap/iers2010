@@ -62,7 +62,7 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step2_displacement(
 
   /* trigs */
   const double __sphi = tsta.mslat;
-  const double __s2phi = 1e0 * tsta.mslat * tsta.mclat;
+  const double __s2phi = 2e0 * tsta.mslat * tsta.mclat;
   const double __c2phi = tsta.mclat * tsta.mclat - tsta.mslat * tsta.mslat;
   const double lambda = tsta.msph.lon();
 
@@ -73,6 +73,13 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step2_displacement(
   double __dargs[6];
   const double *__restrict__ f =
       dso::delaunay2doodson(delaunay_args, gmst, __dargs);
+#ifdef DEBUG
+  //printf("T=%19.12f FHR=%15.10f/%15.10f\n", 
+  //mjdtt.jcenturies_sinceJ2000(), mjdtt.seconds()/3600e0, mjdut1.seconds()/3600e0);
+  //printf("%10.6f %10.6f %10.6f %10.6f %10.6f %10.6f\n", rad2deg(f[0]),
+  //       rad2deg(f[1]), rad2deg(f[2]), rad2deg(f[3]), rad2deg(f[4]),
+  //       rad2deg(f[5]));
+#endif
 
   /* displacement vector (to be returned) */
   Eigen::Matrix<double, 3, 1> dr = Eigen::Matrix<double, 3, 1>::Zero();
@@ -90,32 +97,33 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step2_displacement(
       const double ang = dso::anp(arg + lambda);
       const double __sa = std::sin(ang);
       const double __ca = std::cos(ang);
-      /* radial */
-      dr(2) += (__sa * tc.dRip + __ca * tc.dRop) * __s2phi;
       /* east */
       dr(0) += (__ca * tc.dTip - __sa * tc.dTop) * __sphi;
       /* north */
       dr(1) += (__sa * tc.dTip + __ca * tc.dTop) * __c2phi;
+      /* radial */
+      dr(2) += (__sa * tc.dRip + __ca * tc.dRop) * __s2phi;
 #ifdef DEBUG
-      //printf("[dirnal] theta: %10.6f\n", arg);
+      //printf("[dirnal] theta: %10.6f SIN=  %15.9f  COS=%15.9f\n", arg, std::sin(arg), std::cos(arg));
       ddr(2) += (__sa * tc.dRip + __ca * tc.dRop) * __s2phi;
       ddr(0) += (__ca * tc.dTip - __sa * tc.dTop) * __sphi;
       ddr(1) += (__sa * tc.dTip + __ca * tc.dTop) * __c2phi;
+      //printf("Correction     : %15.9f %15.9f %15.9f\n", ddr(0), ddr(1), ddr(2));
 #endif
     } else {
-      /* long-period band, Eqs. 12 */
+      /* long-period band, Eqs. 13 */
       const double __sa = std::sin(arg);
       const double __ca = std::cos(arg);
-      /* radial */
-      dr(2) += ((3e0 / 2e0) * __sphi * __sphi - .5e0) *
-               (tc.dRip * __ca + tc.dRip * __sa);
       /* east */
       dr(0) += 0e0;
       /* north */
       dr(1) += (tc.dTip * __ca + tc.dTop * __sa) * __s2phi;
+      /* radial */
+      dr(2) += (1.50e0 * __sphi * __sphi - .5e0) *
+               (tc.dRip * __ca + tc.dRop * __sa);
 #ifdef DEBUG
-      ldr(2) += ((3e0 / 2e0) * __sphi * __sphi - .5e0) *
-               (tc.dRip * __ca + tc.dRip * __sa);
+      ldr(2) += (1.50e0 * __sphi * __sphi - .5e0) * (tc.dRip * __ca + tc.dRop * __sa);
+               
       ldr(0) += 0e0;
       ldr(1) += (tc.dTip * __ca + tc.dTop * __sa) * __s2phi;
 #endif
@@ -130,7 +138,8 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step2_displacement(
   ldr = R * ldr;
   ddr *= 1e-3;
   ldr *= 1e-3;
-  //printf("STEP2 Diurnal : %10.6f %10.6f %10.6f\n", ddr(0), ddr(1), ddr(2));
+  printf("STEP2 Diurnal : %10.6f %10.6f %10.6f\n", ddr(0), ddr(1), ddr(2));
+  printf("STEP2 Long    : %10.6f %10.6f %10.6f\n", ldr(0), ldr(1), ldr(2));
   //printf("STEP2 long    : %10.6f %10.6f %10.6f\n", ldr(0), ldr(1), ldr(2));
 #endif
   return dr;
