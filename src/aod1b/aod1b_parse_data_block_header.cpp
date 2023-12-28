@@ -2,7 +2,6 @@
 #include "datetime/datetime_read.hpp"
 #include <charconv>
 #include <cstdio>
-#include <cstring>
 
 namespace {
 inline const char *skipws(const char *line) noexcept {

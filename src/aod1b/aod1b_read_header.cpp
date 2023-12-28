@@ -4,7 +4,6 @@
 #include <charconv>
 #include <cstdio>
 #include <cstring>
-#include <fstream>
 
 namespace {
 const char *header_field(const char *line) noexcept {

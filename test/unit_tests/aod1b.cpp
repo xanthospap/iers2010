@@ -41,6 +41,5 @@ int main(int argc, char *argv[]) {
     j = it.advance();
   }
 
-
   return 0;
 }

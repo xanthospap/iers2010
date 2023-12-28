@@ -16,10 +16,18 @@ namespace dso {
 enum class AOD1BCoefficientType { ATM, OCN, GLO, OBA };
 
 /** A class to assist parsing of AOD1B product files.
- * Documentation can be found at: 
+ * Documentation can be found at:
  * ftp://isdcftp.gfz-potsdam.de/grace/DOCUMENTS/Level-1/
  * Reference document:
  * GRACE_AOD1B_Product_Description_Document_for_RL06.pdf
+ *
+ * This class is only meant to parse/store/interface-with the header part of
+ * the product file. It also provides a list of function that can assist the
+ * parsing of data and especially navigating through its header/data blocks.
+ * It does not hold a stream to the file though (i.e. an ifstream instance)
+ * but can act as an intermediate for more robust and sophisticated streams,
+ * or more precisely stream iterators to the AOD1B file. See for example the
+ * class Aod1bDataBlockIterator.
  */
 class Aod1bIn {
   /* from offset=0 with size = 19 + '\0' */
@@ -36,13 +44,13 @@ class Aod1bIn {
   static constexpr int MaxArenaChars = 80;
 
 public:
-/** A struct to represent a data block header for any coefficient type */
-struct Aod1bBlockHeader {
-  int mset_nr;
-  int mnum_lines;
-  Datetime<nanoseconds> mepoch;
-  AOD1BCoefficientType mtype;
-}; /* Aod1bBlockHeader */
+  /** A struct to represent a data block header for any coefficient type */
+  struct Aod1bBlockHeader {
+    int mset_nr;
+    int mnum_lines;
+    Datetime<nanoseconds> mepoch;
+    AOD1BCoefficientType mtype;
+  }; /* Aod1bBlockHeader */
 
 private:
   /* filename */
@@ -77,28 +85,29 @@ private:
   Datetime<nanoseconds> mfirst_epoch;
   Datetime<nanoseconds> mlast_epoch;
 
-  /** Given a data block hedaer line, this function will parse it into a 
+  /** Given a data block hedaer line, this function will parse it into a
    * Aod1bBlockHeader instance
    */
-  int parse_data_block_header(const char *line, Aod1bBlockHeader &rec) const noexcept;
+  int parse_data_block_header(const char *line,
+                              Aod1bBlockHeader &rec) const noexcept;
 
   /** Given a stream (fin) to the top of an AOD1B file, skip the header block */
   int skip_header(std::ifstream &fin) const noexcept;
 
-  /** Given a stream (fin) to an AOD1B file, go to the next data block header. 
-   * Note that the stream should be placed at a position so that the next line 
+  /** Given a stream (fin) to an AOD1B file, go to the next data block header.
+   * Note that the stream should be placed at a position so that the next line
    * to be read is a data block header
    */
   int goto_next_block(std::ifstream &fin, Aod1bBlockHeader &rec) const noexcept;
 
-  /** Read and skip a given number of lines within an AOD1B file (starting 
+  /** Read and skip a given number of lines within an AOD1B file (starting
    * from the given position within the file)
    */
   int skip_lines(std::ifstream &fin, int num_lines) const noexcept;
 
-  /** Given a stream (fin) to an AOD1B file, go to the start of the next data 
+  /** Given a stream (fin) to an AOD1B file, go to the start of the next data
    * block of type \p type.
-   * Note that the stream should be placed at a position so that the next line 
+   * Note that the stream should be placed at a position so that the next line
    * to be read is a data block header
    */
   int goto_next_block(std::ifstream &fin, AOD1BCoefficientType type,
@@ -155,15 +164,15 @@ public:
   Datetime<nanoseconds> &last_epoch() noexcept { return mlast_epoch; }
 
   /** Constructor from AOD1B filename.
-   * The constructor will automatically call read_header on the instance, 
+   * The constructor will automatically call read_header on the instance,
    * and collect/assign all header info.
    */
   Aod1bIn(const char *fn);
 
   Aod1bIn(const Aod1bIn &other) noexcept;
   Aod1bIn(Aod1bIn &&other) noexcept;
-  Aod1bIn& operator=(const Aod1bIn &other) noexcept;
-  Aod1bIn& operator=(Aod1bIn &&other) noexcept;
+  Aod1bIn &operator=(const Aod1bIn &other) noexcept;
+  Aod1bIn &operator=(Aod1bIn &&other) noexcept;
   ~Aod1bIn() noexcept {};
 
   /** Read and parse an AOD1B header block, assigning info to the instance */
@@ -171,38 +180,52 @@ public:
 
 }; /* class Aod1bIn */
 
-template<AOD1BCoefficientType T>
-class Aod1bDataBlockIterator {
+/** A comfort class to assist iterating through an AOD1B file.
+ * Iterating is meant here in the sense of iterating through the data blocks
+ * of the file, for a given coefficient type (i.e. ATM, OCN, GLO, etc).
+ */
+template <AOD1BCoefficientType T> class Aod1bDataBlockIterator {
+  /* header infor and filename of the AOD1B file */
   const Aod1bIn *maod;
+  /* a stream to the file */
   std::ifstream mfin;
+  /* current block header */
   Aod1bIn::Aod1bBlockHeader mheader;
 
 public:
-  Aod1bDataBlockIterator(const Aod1bIn &aod) : maod(&aod), mfin(aod.mfn.c_str()) {};
+  /** Constructor; we need a Aod1bIn instance (and not e.g. the AOD1B 
+   * filename) so that we know that all relevant info are already parsed 
+   * off from the file.
+   * We will also try to get a stream to the file.
+   */
+  Aod1bDataBlockIterator(const Aod1bIn &aod)
+      : maod(&aod), mfin(aod.mfn.c_str()){};
 
-  const Aod1bIn::Aod1bBlockHeader &header() const noexcept {return mheader;}
-  
+  /** get current header */
+  const Aod1bIn::Aod1bBlockHeader &header() const noexcept { return mheader; }
+
+  /** set the instance to the first data block in the AOD1B file */
   Aod1bDataBlockIterator &set_begin() {
     /* goto top of file and skip the header part */
     if (maod->skip_header(mfin)) {
-      throw std::runtime_error("[ERROR] Failed to skip header off from AOD1B file\n");
+      throw std::runtime_error(
+          "[ERROR] Failed to skip header off from AOD1B file\n");
     }
     /* read untill we meet a data block header of given type */
     int j = maod->goto_next_block(mfin, T, mheader);
     /* hopefully nothing went wrong ... */
     if (j < 0 || j > 0) {
-      throw std::runtime_error("[ERROR] Failed to get begin data block from AOD1B file\n");
+      throw std::runtime_error(
+          "[ERROR] Failed to get begin data block from AOD1B file\n");
     }
     return *this;
   }
 
-  void skip() noexcept {
-    maod->skip_lines(mfin, mheader.mnum_lines);
-  }
+  /** skip the current data block (i.e. the one corresponding to this mheader */
+  void skip() noexcept { maod->skip_lines(mfin, mheader.mnum_lines); }
 
-  int advance() noexcept {
-    return maod->goto_next_block(mfin, T, mheader);
-  }
+  /** go/advance to the next data block */
+  int advance() noexcept { return maod->goto_next_block(mfin, T, mheader); }
 }; /* Aod1bDataBlockIterator<T> */
 
 } /* namespace dso */
