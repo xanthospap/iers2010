@@ -28,16 +28,27 @@ int main(int argc, char *argv[]) {
   printf("Coeff normalized: %d\n", aod.coeff_normalized());
   printf("C GM: %.15e\n", aod.GM());
 
+  dso::StokesCoeffs cs(180, 180, 0e0, 0e0);
+
   char buf[64];
   /* iterator for the ATM coefficients */
   dso::Aod1bDataBlockIterator<dso::AOD1BCoefficientType::ATM> it(aod);
   it.set_begin();
-  int j = 0;
+  int j = 0, k=0;
   while (!j) {
     printf("New data block at %s\n",
           dso::to_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSSF,
                          dso::nanoseconds>(it.header().mepoch, buf));
-    it.skip();
+    ++k;
+    if (k == 3) {
+      printf("\tcollecting all coeffs ...\n");
+      it.collect(cs);
+    } else if (k == 6) {
+      printf("\tcollecting coeffs 120x100 \n");
+      it.collect(cs, 120, 100);
+    } else {
+      it.skip();
+    }
     j = it.advance();
   }
 

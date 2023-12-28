@@ -6,6 +6,7 @@
 #define __DSO_AOD1B_IPARSER_GPP__
 
 #include "datetime/calendar.hpp"
+#include "stokes_coefficients.hpp"
 #include <cstring>
 #include <fstream>
 #include <stdexcept>
@@ -101,9 +102,23 @@ private:
   int goto_next_block(std::ifstream &fin, Aod1bBlockHeader &rec) const noexcept;
 
   /** Read and skip a given number of lines within an AOD1B file (starting
-   * from the given position within the file)
+   * from the given position within the file).
    */
   int skip_lines(std::ifstream &fin, int num_lines) const noexcept;
+
+  /** Collect Stokes coefficients.
+   * The function assumes that the stream passed in is placed just before 
+   * the start of a (new) data block, i.e. the previous line read was the 
+   * data block header.
+   * It will continue reading lines and store coefficients for all 
+   * (n,m)<=(max_degree,max_order). We do not assume that the the (n,m) 
+   * coefficients are stored in some ordelry fashion, hence we must have an 
+   * end condition, i.e. "when do we stop reading more lines ?". The 
+   * criterion is given by the \p max_lines parameter. Hence, the function 
+   * will continue to consume lines untill we reach max_lines.
+   */
+  int collect_coeffs(std::ifstream &fin, int max_degree, int max_order,
+                     int max_lines, StokesCoeffs &cs) const noexcept;
 
   /** Given a stream (fin) to an AOD1B file, go to the start of the next data
    * block of type \p type.
@@ -223,6 +238,20 @@ public:
 
   /** skip the current data block (i.e. the one corresponding to this mheader */
   void skip() noexcept { maod->skip_lines(mfin, mheader.mnum_lines); }
+
+  int collect(StokesCoeffs &cs, int max_degree=-1, int max_order=-1) noexcept {
+    /* set max degree/order to collect */
+    if (max_degree < 0)
+      max_degree = maod->max_degree();
+    if (max_order < 0)
+      max_order = maod->max_degree();
+    /* collect coefficients */
+    if (maod->collect_coeffs(mfin, max_degree, max_order, mheader.mnum_lines,
+                             cs)) {
+      return 1;
+    }
+    return 0;
+  }
 
   /** go/advance to the next data block */
   int advance() noexcept { return maod->goto_next_block(mfin, T, mheader); }

@@ -43,6 +43,10 @@ int dso::Aod1bIn::skip_lines(std::ifstream &fin, int num_lines) const noexcept {
     return 1;
   }
 
+  /* don't even get into trouble if lines are 0 */
+  if (!num_lines) return 0;
+
+  /* quick read requested number of lines */
   constexpr const int MAXL = 124;
   char line[MAXL];
   int linenr = 0;
