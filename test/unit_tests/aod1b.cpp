@@ -1,4 +1,5 @@
 #include "aod1b.hpp"
+#include "datetime/datetime_write.hpp"
 #include <cstdio>
 
 int main(int argc, char *argv[]) {
@@ -26,6 +27,20 @@ int main(int argc, char *argv[]) {
   printf("Coeff errors: %d\n", aod.coeff_errors());
   printf("Coeff normalized: %d\n", aod.coeff_normalized());
   printf("C GM: %.15e\n", aod.GM());
+
+  char buf[64];
+  /* iterator for the ATM coefficients */
+  dso::Aod1bDataBlockIterator<dso::AOD1BCoefficientType::ATM> it(aod);
+  it.set_begin();
+  int j = 0;
+  while (!j) {
+    printf("New data block at %s\n",
+          dso::to_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSSF,
+                         dso::nanoseconds>(it.header().mepoch, buf));
+    it.skip();
+    j = it.advance();
+  }
+
 
   return 0;
 }
