@@ -54,12 +54,22 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     '-f',
     '--from',
-    metavar='FROM',
+    metavar='START_DATE',
     dest='tfrom',
     default=None,
     required=True,
     type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d'),
     help='Starting date as YYYY-MM-DD.')
+
+parser.add_argument(
+    '-t',
+    '--to',
+    metavar='END_DATE',
+    dest='tend',
+    default=None,
+    required=False,
+    type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d'),
+    help='Ending date as YYYY-MM-DD (exlusive).')
 
 parser.add_argument(
     '-n',
@@ -94,21 +104,28 @@ parser.add_argument(
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    dct = product_name(**{'t':args.tfrom, 'rl': args.rlnn, 'tidal': args.is_tidal})
+# if ending date not give, set it to starting date plus one day
+    args.tend = args.tend if args.tend is not None else args.tfrom + datetime.timedelta(days=1)
+# download products, one file/one day at a time
+    t = args.tfrom
+    while t < args.tend:
+        dct = product_name(**{'t':t, 'rl': args.rlnn, 'tidal': args.is_tidal})
 # if file already there, skip download
-    if os.path.isfile(os.path.join(args.out_dir, dct['fn'])) or os.path.isfile(os.path.join(args.out_dir, dct['fn'].replace('.gz',''))):
-        print('Note: skipping download; target file already present')
-        saveas = os.path.join(args.out_dir, dct['fn']) if os.path.isfile(os.path.join(args.out_dir, dct['fn'])) else os.path.join(args.out_dir, dct['fn'].replace('.gz',''))
-    else:
-        saveas = ftpget(dct['url'], dct['dir'], dct['fn'], args.out_dir)
+        if os.path.isfile(os.path.join(args.out_dir, dct['fn'])) or os.path.isfile(os.path.join(args.out_dir, dct['fn'].replace('.gz',''))):
+            print('Note: skipping download; target file already present')
+            saveas = os.path.join(args.out_dir, dct['fn']) if os.path.isfile(os.path.join(args.out_dir, dct['fn'])) else os.path.join(args.out_dir, dct['fn'].replace('.gz',''))
+        else:
+            saveas = ftpget(dct['url'], dct['dir'], dct['fn'], args.out_dir)
 # double-check we downloaded the target file
-    if not os.path.isfile(saveas) and not os.path.isfile(saveas.replace('.gz', '')):
-        print('ERROR. Failed to fetch product file {:} from {:}@{:}'.format(dct['fn'], dct['dir'], dct['url']))
-        sys.exit(9)
+        if not os.path.isfile(saveas) and not os.path.isfile(saveas.replace('.gz', '')):
+            print('ERROR. Failed to fetch product file {:} from {:}@{:}'.format(dct['fn'], dct['dir'], dct['url']))
+            sys.exit(9)
 # do we need to decompress ?
-    if saveas.endswith('.gz') and args.dcmp:
-        ns = saveas[0:-3]
-        with gzip.open(saveas, 'rb') as fin:
-            with open(ns, 'wb') as fout:
-                shutil.copyfileobj(fin, fout)
-        saveas = ns
+        if saveas.endswith('.gz') and args.dcmp:
+            ns = saveas[0:-3]
+            with gzip.open(saveas, 'rb') as fin:
+                with open(ns, 'wb') as fout:
+                    shutil.copyfileobj(fin, fout)
+            saveas = ns
+# next day
+        t += datetime.timedelta(days=1)
