@@ -9,6 +9,7 @@ data_files = [
     {"url": "http://ivsopar.obspm.fr/fcn/table-asc-c04.txt", "local": "data/table-asc-c04.txt"},
     {"url": "https://hpiers.obspm.fr/iers/eop/eopc04_14/eopc04_IAU2000.62-now", "local": "data/eopc04_IAU2000.62-now"},
     {"url": "https://hpiers.obspm.fr/iers/eop/eopc04/eopc04.1962-now", "local": "data/eopc04.1962-now"},
+    {"url": "ftp://isdcftp.gfz-potsdam.de/grace/Level-1B/GFZ/AOD/RL06/2023/AOD1B_2023-11-09_X_06.asc.gz", "local": "data/AOD1B_2023-11-09_X_06.asc.gz", "actions":["decompress"]}
 ]
 
 str1 = """Icgem filename: data/EIGEN-6S4v2.gfc
@@ -253,6 +254,25 @@ str6 = """         51544.00000    15.095507060257   -49.415936302589     6.35139
          52998.35000  -102.225700627480   -69.218941585233     5.509627601314     5.509627601314
 """
 
+str7 = """ 0.39860044180000e+15 0.63781366000000e+07 0.29825642000000e+03 0.72921150000000e-04
+0.109053717E-09 0.000000000E+00
+-.259096266E-11 0.000000000E+00
+0.776330564E-15 -.135635491E-14
+0.105419266E-09 0.000000000E+00
+-.151110407E-11 0.000000000E+00
+0.369440708E-14 -.364688481E-16
+0e0 0e0
+0.104711441E-09 0.000000000E+00
+-.905136737E-12 0.000000000E+00
+-.108791907E-14 0.638417999E-14
+0e0 0e0
+0.110480198E-09 0.000000000E+00
+0.132776264E-11 0.000000000E+00
+-.226430074E-14 0.602612698E-14
+-.339843487E-14 0.956340433E-15
+"""
+str7 = ' '.join(['{:.14e}'.format(float(x)) for l in str7.splitlines() for x in l.split()])
+
 special_progs = [
     {"prog":"parse-icgem-header.out", 
      "path": "test/unit_tests",
@@ -283,6 +303,13 @@ special_progs = [
     "args": ["data/eopc04_IAU2000.62-now"], "exit": 0},
     {"prog":"eop1.out", 
      "path": "test/unit_tests",
-    "args": ["data/eopc04.1962-now"], "exit": 0}
+    "args": ["data/eopc04.1962-now"], "exit": 0},
+    {"prog":"eop2.out", 
+     "path": "test/unit_tests",
+    "args": ["data/eopc04.1962-now"], "exit": 0},
+    {"prog":"test-aod1b1.out", 
+     "path": "test/unit_tests",
+    "args": ["data/AOD1B_2023-11-09_X_06.asc"], 
+    "results": str7, "exit": 0}
 ]
 

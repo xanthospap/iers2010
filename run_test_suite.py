@@ -8,6 +8,8 @@ import ftplib
 import importlib.util
 import urllib.request
 import json
+import gzip
+import shutil
 
 def get_data_files(data_files_dct):
     for d in data_files_dct:
@@ -18,6 +20,13 @@ def get_data_files(data_files_dct):
             except:
                 print("ERROR. Failed to download data file {:}".format(d["url"]), file=sys.stderr)
                 sys.exit(1)
+            if 'actions' in d:
+                actions = d['actions']
+                for action in actions:
+                    if action == 'decompress':
+                        with gzip.open(d['local'], 'rb') as f_in:
+                            with open(d['local'][0:-3], 'wb') as f_out:
+                                shutil.copyfileobj(f_in, f_out)
 
 def prog_needs_args(prog_path, special_progs_dct):
     prog_name = os.path.basename(prog_path)
@@ -56,7 +65,7 @@ def run_progs_with_args(special_progs_dct):
         if 'results' in d:
             if not check_file_vs_str('.tmp.result', d['results']):
                 print('ERROR. Failed test {:}; expected string did not match output'.format(exe), file=sys.stderr)
-                check_file_vs_str_verbose('.tmp.result', d['results'])
+                #check_file_vs_str_verbose('.tmp.result', d['results'])
                 sys.exit(1)
 
 class myFormatter(argparse.ArgumentDefaultsHelpFormatter,

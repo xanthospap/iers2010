@@ -3,8 +3,10 @@
 *.obsolete
 .sconsign.dblite
 .vscode/
-data/gpt3_?.grd
+data/
 var/gpt3/matlab/*.m
+foo*
+*.swp
 
 # ICGEM files
 *.gfc

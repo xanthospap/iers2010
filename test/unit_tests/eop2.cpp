@@ -18,10 +18,10 @@ int main(int argc, char *argv[]) {
   }
   assert(eop.num_entries() == 9);
 
-  for (const auto &e : eop.give_me_the_vector()) {
-    printf("TT %.12f %.12e %.12e %.12e %.12e %.12e %.12e\n", e.t().as_mjd(),
-           e.xp(), e.yp(), e.dut(), e.lod(), e.dX(), e.dY());
-  }
+  //for (const auto &e : eop.give_me_the_vector()) {
+  //  printf("TT %.12f %.12e %.12e %.12e %.12e %.12e %.12e\n", e.t().as_mjd(),
+  //         e.xp(), e.yp(), e.dut(), e.lod(), e.dX(), e.dY());
+  //}
 
   dso::MjdEpoch t(57750);
   dso::EopRecord ie;
@@ -79,23 +79,6 @@ int main(int argc, char *argv[]) {
   assert(eop.interpolate(t, ie) ==
          dso::EopSeries::EopInterpolationResult::PolyDegreeRequested);
   assert(ie.t() == t);
-
-  // dso::MjdEpoch t(57752);
-  // while (t < dso::MjdEpoch(57754)) {
-  //   dso::EopRecord ie;
-  //   eop.interpolate(t, ie);
-  //   printf("%.12f %.12e %.12e %.12e %.12e %.12e %.12e\n", t.as_mjd(),
-  //   ie.xp(), ie.yp(), ie.dut(), ie.lod(), ie.dX(), ie.dY());
-  //   t.add_seconds(30e0);
-  // }
-
-  // for (const auto &e : eop.give_me_the_vector()) {
-  //   if (e.t() >= dso::MjdEpoch(57752) && e.t() <= dso::MjdEpoch(57754,
-  //   dso::FractionalSeconds{3600})) {
-  //     printf("R %.12f %.12e %.12e %.12e %.12e %.12e %.12e\n", e.t().as_mjd(),
-  //            e.xp(), e.yp(), e.dut(), e.lod(), e.dX(), e.dY());
-  //   }
-  // }
-
+  
   return 0;
 }

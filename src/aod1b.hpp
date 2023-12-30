@@ -198,6 +198,34 @@ public:
 /** A comfort class to assist iterating through an AOD1B file.
  * Iterating is meant here in the sense of iterating through the data blocks
  * of the file, for a given coefficient type (i.e. ATM, OCN, GLO, etc).
+ *
+ * Example usage:
+ * // create an AodbIn instance from an AOD1B file
+ * Aod1bIn aod(AODB1_FILE_NAME);
+ * // a large enough Coefficients instance to hold data if needed
+ * StokesCoeffs cs(aod.max_degree(), aod.max_degree(), ...); 
+ * // create a data-block iterator, bind to the instance, for coefficients of 
+ * // type 'ATM'
+ * Aod1bDataBlockIterator<AOD1BCoefficientType::ATM> it(aod);
+ * // set the iterator to the first data block
+ * it.set_begin();
+ * int error = 0;
+ * while (!error) {
+ *   if (SOME_CONDITION) {
+ *     // collect all coefficients of the current block
+ *     it.collect(cs);
+ *   } else if (SOME_CONDITION) {
+ *     // collect coefficients up to degree and order 120
+ *     it.collect(cs, 120, 100);
+ *   } else {
+ *     // we don't need to store the data; skip it
+ *     it.skip();
+ *   }
+ *   // advance iterator to the next data block
+ *   j = it.advance();
+ * }
+ * // if j < 0 at the end of loop, we encountered EOF, i.e. we read through
+ * // all the data blocks in the AOD1B file
  */
 template <AOD1BCoefficientType T> class Aod1bDataBlockIterator {
   /* header infor and filename of the AOD1B file */
@@ -219,7 +247,14 @@ public:
   /** get current header */
   const Aod1bIn::Aod1bBlockHeader &header() const noexcept { return mheader; }
 
-  /** set the instance to the first data block in the AOD1B file */
+  /** Set the instance to the first data block in the AOD1B file.
+   *
+   * At success, the instance's mheader will hold the header of the first 
+   * data block of the AOD1B file (of type T, e.g. "ATM").
+   * The stream will be placed in a convinient position for a subsequent call 
+   * to either skip() or collect() the data block.
+   * In case of error, the function will throw.
+   */
   Aod1bDataBlockIterator &set_begin() {
     /* goto top of file and skip the header part */
     if (maod->skip_header(mfin)) {
@@ -236,9 +271,19 @@ public:
     return *this;
   }
 
-  /** skip the current data block (i.e. the one corresponding to this mheader */
+  /** Skip the current data block (i.e. the one corresponding to this mheader */
   void skip() noexcept { maod->skip_lines(mfin, mheader.mnum_lines); }
 
+  /** Collect the coefficients of the current data block.
+   * 
+   * Collect the coefficients of the current data block, up to maximum degree 
+   * and order (max_degree, max_order). If these parameters are set to 
+   * negative integers, all of the coefficients will be collected (i.e. max 
+   * degree and order will be as reported in the AOD1B header).
+   * The coefficients will be stored in the passed in StokesCoeffs instance, 
+   * which must be large enough to hold them.
+   * On success, 0 is returned. Any other integer denotes an error.
+   */
   int collect(StokesCoeffs &cs, int max_degree=-1, int max_order=-1) noexcept {
     /* set max degree/order to collect */
     if (max_degree < 0)
@@ -253,7 +298,15 @@ public:
     return 0;
   }
 
-  /** go/advance to the next data block */
+  /** Go/advance to the next data block.
+   *
+   * Note that before calling this function, either skip() or collect should 
+   * have been called, depending on what we want to do with data.
+   * @return An integer denoting:
+   *         -1 : EOF encountered
+   *          0 : Success
+   *          1 : Error
+   * */
   int advance() noexcept { return maod->goto_next_block(mfin, T, mheader); }
 }; /* Aod1bDataBlockIterator<T> */
 
