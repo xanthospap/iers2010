@@ -2,11 +2,11 @@
 #include <cstdio>
 
 namespace {
-inline const char *skipws(const char *line) noexcept {
-  while (*line && *line == ' ')
-    ++line;
-  return line;
-}
+//inline const char *skipws(const char *line) noexcept {
+//  while (*line && *line == ' ')
+//    ++line;
+//  return line;
+//}
 } /* unnamed namespace */
 
 int dso::Aod1bIn::skip_header(std::ifstream &fin) const noexcept {

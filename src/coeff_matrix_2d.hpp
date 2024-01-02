@@ -27,6 +27,22 @@ private:
   std::size_t _capacity{0}; /** number of doubles in allocated memory arena */
 
 public:
+
+  /** Swap current instance with another */
+  void swap(CoeffMatrix2D<S> &b) noexcept {
+    using std::swap;
+    StorageImplementation<S> tmp_s = b.m_storage;
+    std::size_t tmp_c = b._capacity;
+
+    swap(m_data, b.m_data);
+    b.m_storage = this->m_storage;
+    b._capacity = this->_capacity;
+    this->m_storage = tmp_s;
+    this->_capacity = tmp_c;
+
+    return;
+  }
+
   /** get number of rows */
   constexpr int rows() const noexcept { return m_storage.nrows(); }
 
@@ -214,6 +230,11 @@ public:
   }
 
 }; /* class CoeffMatrix2D */
+
+template <MatrixStorageType S>
+inline void swap(CoeffMatrix2D<S> &a, CoeffMatrix2D<S> &b) noexcept {
+  a.swap(b);
+}
 
 } /* namespace dso */
 

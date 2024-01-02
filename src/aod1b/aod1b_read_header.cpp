@@ -1,5 +1,6 @@
 #include "aod1b.hpp"
 #include "datetime/datetime_read.hpp"
+#include "datetime/datetime_write.hpp"
 #include <cctype>
 #include <charconv>
 #include <cstdio>
@@ -99,6 +100,7 @@ int dso::Aod1bIn::read_header() noexcept {
       time_epoch() =
           dso::from_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSS,
                          dso::nanoseconds>(header_field(line + 21));
+      time_epoch() =  time_epoch().gps2tt();
     } else if (!std::strncmp(line, "TIME FIRST OBS(SEC PAST EPOCH)", 30)) {
       const char *last = line + std::strlen(line);
       double sec;
@@ -119,7 +121,7 @@ int dso::Aod1bIn::read_header() noexcept {
       dso::Datetime<dso::nanoseconds> tmp =
           dso::from_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSS,
                          dso::nanoseconds>(res.ptr);
-      assert(tmp == first_epoch());
+      assert((tmp=tmp.gps2tt()) == first_epoch());
     } else if (!std::strncmp(line, "TIME LAST OBS(SEC PAST EPOCH)", 29)) {
       const char *last = line + std::strlen(line);
       double sec;
@@ -140,7 +142,7 @@ int dso::Aod1bIn::read_header() noexcept {
       dso::Datetime<dso::nanoseconds> tmp =
           dso::from_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSS,
                          dso::nanoseconds>(res.ptr);
-      assert(tmp == last_epoch());
+      assert(tmp.gps2tt() == last_epoch());
     } else if (!std::strncmp(line, "NUMBER OF DATA RECORDS", 22)) {
       const char *last = line + std::strlen(line);
       if (std::from_chars(header_field(line + 22), last, num_data_records())

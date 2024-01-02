@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
   auto bt42 = aod.first_epoch();
   bt42.add_seconds(_23_hour_nanosec);
 
-  int record=1;
+  [[maybe_unused]]int record=1;
   int j = 0;
   while (!j) {
     if (it.header().mepoch <= bt1) {

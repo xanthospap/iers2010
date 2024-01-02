@@ -34,6 +34,8 @@ int dso::Aod1bIn::parse_data_block_header(
   str = skipws(str + 17);
   rec.mepoch = dso::from_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSS,
                               dso::nanoseconds>(str, &res.ptr);
+  /* GPST to TT */
+  rec.mepoch = rec.mepoch.gps2tt();
 
   str = res.ptr + 1;
   if (std::strncmp(skipws(str), "OF TYPE", 7))

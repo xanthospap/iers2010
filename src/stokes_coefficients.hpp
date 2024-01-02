@@ -40,6 +40,18 @@ private:
   CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> _Snm;
 
 public:
+  
+  void swap(StokesCoeffs &b) noexcept {
+    using std::swap;
+    std::swap(_GM, b._GM);
+    std::swap(_Re, b._Re);
+    std::swap(_cnormalized, b._cnormalized);
+    std::swap(m_degree, b.m_degree);
+    std::swap(m_order, b.m_order);
+    swap(_Cnm, b._Cnm);
+    swap(_Snm, b._Snm);
+  }
+
   /** Default constructor */
   //StokesCoeffs() noexcept
   //    : _GM(iers2010::GMe), _Re(iers2010::Re), _cnormalized(true), m_degree(0),
@@ -154,14 +166,18 @@ public:
    *
    * The function will add the coefficients of the passed in instance (\p sc)
    * to the corresponding of the calling instance.
-   * The degree and order of the passed in instance, should be equal to or
-   * less than the ones of the calling instance.
+   * The degree and order of the passed in instance (\p sc), should be equal 
+   * to or less than the ones of the calling instance.
    *
-   * @warning calling instance should be larger than argument (\p sc)
+   * @warning calling instance should be larger than argument (\p sc).
    */
   StokesCoeffs &operator+=(const StokesCoeffs &sc);
 
 }; /* StokesCoeffs */
+
+inline void swap(StokesCoeffs &a, StokesCoeffs &b) noexcept {
+  a.swap(b);
+}
 
 } /* namespace dso */
 

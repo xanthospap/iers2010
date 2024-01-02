@@ -10,6 +10,7 @@
 #include <cstring>
 #include <fstream>
 #include <stdexcept>
+#include <array>
 
 namespace dso {
 
@@ -29,6 +30,11 @@ enum class AOD1BCoefficientType { ATM, OCN, GLO, OBA };
  * but can act as an intermediate for more robust and sophisticated streams,
  * or more precisely stream iterators to the AOD1B file. See for example the
  * class Aod1bDataBlockIterator.
+ *
+ * Note that the epochs in AOD1B files are normally given in GPSTime, but the 
+ * class holds dates in TT; the parsers take care of time scale 
+ * transformations when the relevant functions are callled and all instance 
+ * members (that hold datetimes) are stored in TT.
  */
 class Aod1bIn {
   /* from offset=0 with size = 19 + '\0' */
@@ -45,45 +51,52 @@ class Aod1bIn {
   static constexpr int MaxArenaChars = 80;
 
 public:
-  /** A struct to represent a data block header for any coefficient type */
+  /** A struct to represent a data block header for any coefficient type. */
   struct Aod1bBlockHeader {
+    /** Data set number (i.e. within this AOD1B file, for a given coeff type */
     int mset_nr;
+    /** Number of lines for this block */
     int mnum_lines;
+    /** Epoch of block in TT */ 
     Datetime<nanoseconds> mepoch;
+    /** Type of coefficients */
     AOD1BCoefficientType mtype;
   }; /* Aod1bBlockHeader */
 
 private:
-  /* filename */
+  /** filename */
   std::string mfn;
-  /* buffer to store all character/string information in an AOD1B header */
+  /** buffer to store all character/string information in an AOD1B header */
   char charArena[MaxArenaChars];
-  /* file type -- should be 999 */
+  /** file type -- should be 999 */
   int mfile_type;
-  /* file format: 0=binary 1=ascii */
+  /** file format: 0=binary 1=ascii */
   int mfile_format;
-  /* number of header records */
+  /** number of header records */
   int mnum_header_records;
-  /* number of data records */
+  /** number of data records */
   int mnum_data_records;
-  /* maximum degree for harmonic coeffs */
+  /** maximum degree for harmonic coeffs */
   int mmax_degree;
-  /* coefficient errors (yes/no) */
+  /** coefficient errors (yes/no) */
   int mcoeff_errors;
-  /* coeff. normalized (yes/no) */
+  /** coeff. normalized (yes/no) */
   int mcoeff_normalized;
-  /* constant gm [m^3/s^2] */
+  /** constant gm [m^3/s^2] */
   double mGM;
-  /* constant a [m] */
+  /** constant a [m] */
   double mRe;
-  /* constant flat [-] */
+  /** constant flat [-] */
   double mflat;
-  /* constant omega [rad/s] */
+  /** constant omega [rad/s] */
   double momega;
-  /* number of data sets */
+  /** number of data sets */
   int mnum_data_sets;
+  /** Reference epoch in TT */
   Datetime<nanoseconds> mtime_epoch;
+  /** Time of first data block in TT */
   Datetime<nanoseconds> mfirst_epoch;
+  /** Time of last data block in TT */
   Datetime<nanoseconds> mlast_epoch;
 
   /** Given a data block hedaer line, this function will parse it into a
@@ -171,6 +184,7 @@ public:
   double &flat() noexcept { return mflat; }
   double omega() const noexcept { return momega; }
   double &omega() noexcept { return momega; }
+  const std::string &fn() const noexcept {return mfn;}
   Datetime<nanoseconds> time_epoch() const noexcept { return mtime_epoch; }
   Datetime<nanoseconds> &time_epoch() noexcept { return mtime_epoch; }
   Datetime<nanoseconds> first_epoch() const noexcept { return mfirst_epoch; }
@@ -244,8 +258,19 @@ public:
   Aod1bDataBlockIterator(const Aod1bIn &aod)
       : maod(&aod), mfin(aod.mfn.c_str()){};
 
+  /** get a const reference to the underlying Aod1bIn instance */
+  const Aod1bIn &aod1b() const {return *maod;}
+
   /** get current header */
   const Aod1bIn::Aod1bBlockHeader &header() const noexcept { return mheader; }
+
+  /** mark this instance as EOF */
+  void set_eof() noexcept {
+    mheader.mepoch = Datetime<nanoseconds>::min();
+  }
+
+  /** check if this instance is marked as EOF */
+  bool is_eof() const noexcept { return mheader.mepoch == Datetime<nanoseconds>::min(); }
 
   /** Set the instance to the first data block in the AOD1B file.
    *
@@ -307,7 +332,11 @@ public:
    *          0 : Success
    *          1 : Error
    * */
-  int advance() noexcept { return maod->goto_next_block(mfin, T, mheader); }
+  int advance() noexcept { 
+    int j = maod->goto_next_block(mfin, T, mheader);
+    if (j<0) set_eof();
+    return j;
+  }
 }; /* Aod1bDataBlockIterator<T> */
 
 } /* namespace dso */

@@ -1,14 +1,6 @@
 #include "aod1b.hpp"
 #include <cstdio>
 
-namespace {
-inline const char *skipws(const char *line) noexcept {
-  while (*line && *line == ' ')
-    ++line;
-  return line;
-}
-} /* unnamed namespace */
-
 int dso::Aod1bIn::goto_next_block(
     std::ifstream &fin, dso::Aod1bIn::Aod1bBlockHeader &rec) const noexcept {
   if (!fin.is_open()) {
