@@ -166,8 +166,14 @@ int dso::Aod1bIn::read_header() noexcept {
       const char *r = header_field(line + 24, sz);
       std::memcpy(process_level(), r, sizeof(char) * sz);
     } else if (!std::strncmp(line, "PRESSURE TYPE (SP OR VI)", 24)) {
+      /* present in non-tidal loading files */
       int sz = 0;
       const char *r = header_field(line + 24, sz);
+      std::memcpy(pressure_type(), r, sizeof(char) * sz);
+    } else if (!std::strncmp(line, "PRESSURE TYPE (ATM OR OCN)", 26)) {
+      /* present in tidal files */
+      int sz = 0;
+      const char *r = header_field(line + 26, sz);
       std::memcpy(pressure_type(), r, sizeof(char) * sz);
     } else if (!std::strncmp(line, "MAXIMUM DEGREE", 14)) {
       const char *last = line + std::strlen(line);
@@ -264,8 +270,9 @@ int dso::Aod1bIn::read_header() noexcept {
       }
     } else if (!std::strncmp(line, "DATA FORMAT (N,M,C,S)", 21)) {
       ;
-    } else if (!std::strncmp(line, "END OF HEADER", 13)) {
-      break;
+    } else if (!std::strncmp(line, "PARTIAL TIDE", 12)) {
+      /* present in tidal files */
+      // TODO translate this to a Doodson number using the array defined in doodson.hpp
     } else {
       fprintf(stderr,
               "[ERROR] Unrecognized header line [%s] in AOD1B file %s "
