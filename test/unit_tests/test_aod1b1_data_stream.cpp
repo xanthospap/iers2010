@@ -2,6 +2,10 @@
 #include "datetime/datetime_write.hpp"
 #include <cstdio>
 
+/* To produce reference results for this test, use the script
+ * src/aod1b/linear_interpolate_coeffs.py
+ */
+
 int main(int argc, char *argv[]) {
   if (argc != 2) {
     fprintf(stderr, "Usage: %s [AOD1B]\n", argv[0]);
