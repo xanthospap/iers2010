@@ -270,7 +270,9 @@ public:
   }
 
   /** check if this instance is marked as EOF */
-  bool is_eof() const noexcept { return mheader.mepoch == Datetime<nanoseconds>::min(); }
+  bool is_eof() const noexcept { 
+    return (mheader.mepoch == Datetime<nanoseconds>::min() && mfin.eof());
+  }
 
   /** Set the instance to the first data block in the AOD1B file.
    *
@@ -281,6 +283,8 @@ public:
    * In case of error, the function will throw.
    */
   Aod1bDataBlockIterator &set_begin() {
+    /* first clear the stream (maybe it saw EOF) */
+    mfin.clear();
     /* goto top of file and skip the header part */
     if (maod->skip_header(mfin)) {
       throw std::runtime_error(

@@ -47,7 +47,34 @@ def check_file_vs_str_verbose(file, vstr):
     for s in zip(fstr,rstr):
         print('[{:}/{:}]'.format(s[0],s[1]))
         if s[0] != s[1]: return
-    
+
+def check_w_precision(fn1, fn2str, cols, precision):
+    ## just for fun, collect and report actual precision
+    accuracy = {}
+    for c in cols: accuracy[c] = 0e0
+    with open(fn1, 'r') as f1in: f1lines = f1in.readlines()
+    f2lines = fn2str.splitlines()
+    line_nr = 1
+    for l12 in zip(f1lines, f2lines):
+        l1 = l12[0].split()
+        l2 = l12[1].split()
+        assert(len(l1) == len(l2))
+        for c in range(0, len(l1)):
+            if c not in cols:
+                if l1[c] != l2[c]:
+                    print('Result Missmatch! line/col is {:}/{:}'.format(line_nr,c+1))
+                assert(l1[c] == l2[c])
+        for k in zip(cols,precision):
+            if abs(float(l1[k[0]]) - float(l2[k[0]])) > k[1]:
+                print('Result Missmatch! line/col is {:}/{:} diff {:.15e} > {:.3e}'.format(line_nr,k[0],abs(float(l1[k[0]]) - float(l2[k[0]])),k[1]))
+            if abs(float(l1[k[0]]) - float(l2[k[0]])) > accuracy[k[0]]:
+                accuracy[k[0]] = abs(float(l1[k[0]]) - float(l2[k[0]]))
+            assert(abs(float(l1[k[0]]) - float(l2[k[0]])) < k[1])
+        line_nr += 1
+    rep = '[NOTE] Actual/Measured accuracy by column(s): '
+    for k,v in accuracy.items():
+        rep += ' {:}/{:.15e}'.format(k,v)
+    return rep
 
 def run_progs_with_args(special_progs_dct):
     for d in special_progs_dct:
@@ -58,15 +85,20 @@ def run_progs_with_args(special_progs_dct):
         cmdargs = ['{:}'.format(x) for x in d['args']]
         print('Running command {:}'.format(' '.join([exe]+cmdargs)))
         with open('.tmp.result', 'w') as fout:
-            result = subprocess.run([exe] + cmdargs, stdout=fout, stderr=subprocess.STDOUT, check=False)
+            #result = subprocess.run([exe] + cmdargs, stdout=fout, stderr=subprocess.STDOUT, check=False)
+            result = subprocess.run([exe] + cmdargs, stdout=fout, stderr=subprocess.DEVNULL, check=False)
         if result.returncode != int(d['exit']):
             print('ERROR Expected exit code {:} and got {:}; program: {:}'.format(d['exit'], result.returncode, exe), file=sys.stderr)
             sys.exit(1)
         if 'results' in d:
-            if not check_file_vs_str('.tmp.result', d['results']):
-                print('ERROR. Failed test {:}; expected string did not match output'.format(exe), file=sys.stderr)
-                #check_file_vs_str_verbose('.tmp.result', d['results'])
-                sys.exit(1)
+            if 'testwp' in d:
+                report = check_w_precision('.tmp.result', d['results'], d['testwp']['cols'], d['testwp']['precision'])
+                print(report)
+            else:
+                if not check_file_vs_str('.tmp.result', d['results']):
+                    print('ERROR. Failed test {:}; expected string did not match output'.format(exe), file=sys.stderr)
+                    #check_file_vs_str_verbose('.tmp.result', d['results'])
+                    sys.exit(1)
 
 class myFormatter(argparse.ArgumentDefaultsHelpFormatter,
                   argparse.RawTextHelpFormatter):
