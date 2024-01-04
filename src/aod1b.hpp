@@ -7,6 +7,7 @@
 
 #include "datetime/calendar.hpp"
 #include "stokes_coefficients.hpp"
+#include "doodson.hpp"
 #include <cstring>
 #include <fstream>
 #include <stdexcept>
@@ -98,6 +99,8 @@ private:
   Datetime<nanoseconds> mfirst_epoch;
   /** Time of last data block in TT */
   Datetime<nanoseconds> mlast_epoch;
+  /** Only for TIDAL files */
+  DoodsonConstituent mdoodson;
 
   /** Given a data block hedaer line, this function will parse it into a
    * Aod1bBlockHeader instance
@@ -140,6 +143,11 @@ private:
    */
   int goto_next_block(std::ifstream &fin, AOD1BCoefficientType type,
                       Aod1bBlockHeader &rec) const noexcept;
+
+  /** @warning This function is only meant to be used for TIDAL AOD1B files
+   */
+  int get_tidal_wave(std::ifstream &fin, int max_degree, int max_order,
+                     StokesCoeffs &cs) const noexcept;
 
   template <AOD1BCoefficientType T> friend class Aod1bDataBlockIterator;
 

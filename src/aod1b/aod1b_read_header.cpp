@@ -272,7 +272,19 @@ int dso::Aod1bIn::read_header() noexcept {
       ;
     } else if (!std::strncmp(line, "PARTIAL TIDE", 12)) {
       /* present in tidal files */
-      // TODO translate this to a Doodson number using the array defined in doodson.hpp
+      int sz = 0;
+      const char *r = header_field(line + 12, sz);
+      char buf[8] = "\0";
+      std::memcpy(buf, r, sizeof(char) * sz);
+      try {
+        mdoodson = dso::get_wave(buf)._d;
+      } catch (std::exception &) {
+        fprintf(stderr,
+                "[ERROR] Failed resolving tidal wave from AOD1B file %s "
+                "(traceback: %s)\n",
+                mfn.c_str(), __func__);
+        ++error;
+      }
     } else {
       fprintf(stderr,
               "[ERROR] Unrecognized header line [%s] in AOD1B file %s "
