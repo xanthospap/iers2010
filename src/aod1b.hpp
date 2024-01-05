@@ -101,6 +101,9 @@ private:
   Datetime<nanoseconds> mlast_epoch;
   /** Only for TIDAL files */
   DoodsonConstituent mdoodson;
+  
+  /** Read and parse an AOD1B header block, assigning info to the instance */
+  int read_header(std::ifstream &fin) noexcept;
 
   /** Given a data block hedaer line, this function will parse it into a
    * Aod1bBlockHeader instance
@@ -143,11 +146,6 @@ private:
    */
   int goto_next_block(std::ifstream &fin, AOD1BCoefficientType type,
                       Aod1bBlockHeader &rec) const noexcept;
-
-  /** @warning This function is only meant to be used for TIDAL AOD1B files
-   */
-  int get_tidal_wave(std::ifstream &fin, int max_degree, int max_order,
-                     StokesCoeffs &cs) const noexcept;
 
   template <AOD1BCoefficientType T> friend class Aod1bDataBlockIterator;
 
@@ -206,6 +204,11 @@ public:
    */
   Aod1bIn(const char *fn);
 
+private:
+  /** Only used for very special cases; does not belong to class API */ 
+  Aod1bIn() noexcept {};
+
+public:
   Aod1bIn(const Aod1bIn &other) noexcept;
   Aod1bIn(Aod1bIn &&other) noexcept;
   Aod1bIn &operator=(const Aod1bIn &other) noexcept;
@@ -214,6 +217,20 @@ public:
 
   /** Read and parse an AOD1B header block, assigning info to the instance */
   int read_header() noexcept;
+
+
+  /** Read in and parse coefficients from a tidal AOD1B file, for a given
+   * tidal constituent.
+   * The passed in AOD1B file (as filename in \p fn), should be a TIDAL 
+   * product, i.e. an AOD1B file containing coefficients for a given tidal
+   * wave/constituent.
+   *  
+   * @warning This function is only meant to be used for TIDAL AOD1B files
+   */
+  static int get_tidal_wave_coeffs(const char *fn, StokesCoeffs &cCs,
+                                   StokesCoeffs &sCs, Aod1bIn *aod1b,
+                                   int max_degree = -1,
+                                   int max_order = -1) noexcept;
 
 }; /* class Aod1bIn */
 

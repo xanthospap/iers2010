@@ -18,15 +18,18 @@ const char *header_field(const char *line) noexcept {
 }
 const char *header_field(const char *line, int &sz) noexcept {
   /* start in reverse, find last char that is not ws */
-  const char *c = line + std::strlen(line);
-  while (*c && *c == ' ')
+  const char *c = line + std::strlen(line) - 1;
+  // while (*c && *c == ' ')
+  while (*c && std::isspace(static_cast<unsigned char>(*c)))
     --c;
-  const char *last = (--c);
+  //printf("\tLeftmost character: %c [%s], just after %c\n", *c, c, *(c-1));
+  const char *last = c;
   /* find delimeter, i.e. ':' */
   while (*c && *c != ':')
     --c;
   /* first non ws character after delimeter */
   c = header_field(c);
+  //printf("\tRightmost character: %c [%s]\n", *c, c);
   sz = (last - c) + 1;
   return c;
 }
@@ -34,11 +37,17 @@ const char *header_field(const char *line, int &sz) noexcept {
 
 int dso::Aod1bIn::read_header() noexcept {
   std::ifstream fin(mfn.c_str());
+  return this->read_header(fin);
+}
+
+int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
   if (!fin.is_open()) {
     fprintf(stderr, "[ERROR] Failed opening AOD1B file %s (traceback: %s)\n",
             mfn.c_str(), __func__);
     return 1;
   }
+
+  fin.seekg(0, std::ios::beg);
 
   constexpr const int MAXLS = 100;
   constexpr const int MAXL = 124;
@@ -122,6 +131,19 @@ int dso::Aod1bIn::read_header() noexcept {
           dso::from_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSS,
                          dso::nanoseconds>(res.ptr);
       assert((tmp=tmp.gps2tt()) == first_epoch());
+    } else if (!std::strncmp(line, "TIME FIRST OBS (YEAR START)", 27)) {
+      const char *last = line + std::strlen(line);
+      int year;
+      auto res = std::from_chars(header_field(line + 27), last, year);
+      if (res.ec != std::errc{}) {
+        fprintf(stderr,
+                "[ERROR] Failed parsing line: [%s] from AOD1B file %s "
+                "(traceback: %s)\n",
+                line, mfn.c_str(), __func__);
+        ++error;
+      }
+      mfirst_epoch =
+          dso::Datetime<nanoseconds>(dso::year(year), dso::day_of_year(1));
     } else if (!std::strncmp(line, "TIME LAST OBS(SEC PAST EPOCH)", 29)) {
       const char *last = line + std::strlen(line);
       double sec;
@@ -143,6 +165,19 @@ int dso::Aod1bIn::read_header() noexcept {
           dso::from_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSS,
                          dso::nanoseconds>(res.ptr);
       assert(tmp.gps2tt() == last_epoch());
+    } else if (!std::strncmp(line, "TIME LAST OBS (YEAR END)", 24)) {
+      const char *last = line + std::strlen(line);
+      int year;
+      if (std::from_chars(header_field(line + 24), last, year).ec !=
+          std::errc{}) {
+        fprintf(stderr,
+                "[ERROR] Failed parsing line: [%s] from AOD1B file %s "
+                "(traceback: %s)\n",
+                line, mfn.c_str(), __func__);
+        ++error;
+      }
+      mlast_epoch =
+          dso::Datetime<nanoseconds>(dso::year(year), dso::day_of_year(1));
     } else if (!std::strncmp(line, "NUMBER OF DATA RECORDS", 22)) {
       const char *last = line + std::strlen(line);
       if (std::from_chars(header_field(line + 22), last, num_data_records())
@@ -276,6 +311,7 @@ int dso::Aod1bIn::read_header() noexcept {
       const char *r = header_field(line + 12, sz);
       char buf[8] = "\0";
       std::memcpy(buf, r, sizeof(char) * sz);
+      printf("The wave to resolve, is: [%s] with size=%d\n", buf, sz);
       try {
         mdoodson = dso::get_wave(buf)._d;
       } catch (std::exception &) {
