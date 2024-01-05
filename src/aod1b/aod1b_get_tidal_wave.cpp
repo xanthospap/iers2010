@@ -20,7 +20,7 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
   if (aod.read_header(fin)) {
     fprintf(
         stderr,
-        "[ERROR] Failed to read (tidal) AOD1B fil %s header! (traceback: %s)\n",
+        "[ERROR] Failed to read (tidal) AOD1B file %s header! (traceback: %s)\n",
         fn, __func__);
     return 1;
   }
@@ -52,14 +52,13 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
   const char *end = line + std::strlen(line);
   if (std::strncmp(skipws(line), "DATA SET 01:", 12))
     ++error;
-  if (std::from_chars(skipws(line), end, max_lines).ec != std::errc{})
-    ++error;
-  end += 20;
-  if (std::strncmp(skipws(end), "COEFFICIENTS OF TYPE cos", 24))
+  auto res = std::from_chars(skipws(line+12), end, max_lines);
+  error += (res.ec != std::errc{});
+  if (std::strncmp(skipws(res.ptr), "COEFFICIENTS OF TYPE cos", 24))
     ++error;
   if (error) {
     fprintf(stderr,
-            "[ERROR] failed resolving (tidal) header from line %s from AOD1B "
+            "[ERROR] Failed resolving (tidal) header from line %s from AOD1B "
             "file %s (trceback: %s)\n",
             line, fn, __func__);
     return 1;
@@ -69,7 +68,7 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
   while ((lines_parsed < max_lines) && (!error) && fin.getline(line, MAXL)) {
     int l, m;
     const char *stop = line + std::strlen(line);
-    auto res = std::from_chars(skipws(line), stop, l);
+    res = std::from_chars(skipws(line), stop, l);
     error += (res.ec != std::errc{});
     res = std::from_chars(skipws(res.ptr), stop, m);
     error += (res.ec != std::errc{});
@@ -88,7 +87,6 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
             "[ERROR] Failed parsing coefficients for AOD1B file %s "
             "(traceback: %s)\n",
             fn, __func__);
-    fprintf(stderr, "Parsing stopped at line [%s]\n", line);
     return 1;
   }
 
@@ -96,16 +94,15 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
   lines_parsed = 0;
   fin.getline(line, MAXL);
   end = line + std::strlen(line);
-  if (std::strncmp(skipws(line), "DATA SET 01:", 12))
+  if (std::strncmp(skipws(line), "DATA SET 02:", 12))
     ++error;
-  if (std::from_chars(skipws(line), end, max_lines).ec != std::errc{})
-    ++error;
-  end += 20;
-  if (std::strncmp(skipws(end), "COEFFICIENTS OF TYPE sin", 24))
+  res = std::from_chars(skipws(line+12), end, max_lines);
+  error += (res.ec != std::errc{});
+  if (std::strncmp(skipws(res.ptr), "COEFFICIENTS OF TYPE sin", 24))
     ++error;
   if (error) {
     fprintf(stderr,
-            "[ERROR] failed resolving (tidal) header from line %s from AOD1B "
+            "[ERROR] Failed resolving (tidal) header from line %s from AOD1B "
             "file %s (trceback: %s)\n",
             line, fn, __func__);
     return 1;
@@ -115,7 +112,7 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
   while ((lines_parsed < max_lines) && (!error) && fin.getline(line, MAXL)) {
     int l, m;
     const char *stop = line + std::strlen(line);
-    auto res = std::from_chars(skipws(line), stop, l);
+    res = std::from_chars(skipws(line), stop, l);
     error += (res.ec != std::errc{});
     res = std::from_chars(skipws(res.ptr), stop, m);
     error += (res.ec != std::errc{});
@@ -129,12 +126,21 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
   }
 
   /* check for errors */
-  if (error || (!fin.good() && !fin.eof())) {
+  if (error || !fin.good()) {
     fprintf(stderr,
             "[ERROR] Failed parsing coefficients for AOD1B file %s "
             "(traceback: %s)\n",
             fn, __func__);
-    fprintf(stderr, "Parsing stopped at line [%s]\n", line);
+    return 1;
+  }
+
+  /* make sure there is no more data left in the file */
+  fin.getline(line, MAXL);
+  if (!fin.eof()) {
+    fprintf(stderr,
+            "[ERROR] Expected to reach EOF for AOD1B file %s but didn't! "
+            "(traceback: %s)\n",
+            fn, __func__);
     return 1;
   }
 

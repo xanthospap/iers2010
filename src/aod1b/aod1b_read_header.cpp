@@ -19,17 +19,15 @@ const char *header_field(const char *line) noexcept {
 const char *header_field(const char *line, int &sz) noexcept {
   /* start in reverse, find last char that is not ws */
   const char *c = line + std::strlen(line) - 1;
-  // while (*c && *c == ' ')
-  while (*c && std::isspace(static_cast<unsigned char>(*c)))
+  while (*c && *c == ' ')
+  // while (*c && std::isspace(static_cast<unsigned char>(*c)))
     --c;
-  //printf("\tLeftmost character: %c [%s], just after %c\n", *c, c, *(c-1));
   const char *last = c;
   /* find delimeter, i.e. ':' */
   while (*c && *c != ':')
     --c;
   /* first non ws character after delimeter */
   c = header_field(c);
-  //printf("\tRightmost character: %c [%s]\n", *c, c);
   sz = (last - c) + 1;
   return c;
 }
@@ -311,7 +309,6 @@ int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
       const char *r = header_field(line + 12, sz);
       char buf[8] = "\0";
       std::memcpy(buf, r, sizeof(char) * sz);
-      printf("The wave to resolve, is: [%s] with size=%d\n", buf, sz);
       try {
         mdoodson = dso::get_wave(buf)._d;
       } catch (std::exception &) {
@@ -321,6 +318,8 @@ int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
                 mfn.c_str(), __func__);
         ++error;
       }
+    } else if (!std::strncmp(line, "END OF HEADER", 13)) {
+      break;
     } else {
       fprintf(stderr,
               "[ERROR] Unrecognized header line [%s] in AOD1B file %s "
@@ -331,7 +330,7 @@ int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
   }
 
   /* hopefully no error occured with the stream! */
-  if (!fin.good() || j >= MAXLS) {
+  if (!fin.good() || (j >= MAXLS) || (error)) {
     fprintf(
         stderr,
         "[ERROR] Failed reading header from AOD1B file %s (traceback: %s)\n",

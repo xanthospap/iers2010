@@ -218,6 +218,14 @@ struct TidalConstituentsArrayEntry {
 /** Given a tidal constituent name, return its details */
 detail::TidalConstituentsArrayEntry get_wave(const char *name);
 
+/**
+ * Refernces: 
+ * 1. IERS 2010
+ * 2. https://www5.obs-mip.fr/wp-content-omp/uploads/sites/12/2016/10/ttb-1.pdf
+ * 3. See also the Section Chapter V. "Harmonic tidal equation" of Bernard 
+ * Simon, Coastal Tides, Institut océanographique, Fondation Albert Ier, 
+ * Prince de Monaco, 2013
+ */
 constexpr static std::array<detail::TidalConstituentsArrayEntry, 166>
     TidalConstituentsArray = {{
         {/*055565*/ DoodsonConstituent(0, +0, +0, +0, +1, +0, +1.0e+00),
