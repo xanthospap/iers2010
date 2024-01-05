@@ -309,9 +309,8 @@ int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
       const char *r = header_field(line + 12, sz);
       char buf[8] = "\0";
       std::memcpy(buf, r, sizeof(char) * sz);
-      try {
-        mdoodson = dso::get_wave(buf)._d;
-      } catch (std::exception &) {
+      mdentry = dso::get_wave(buf);
+      if (!mdentry) {
         fprintf(stderr,
                 "[ERROR] Failed resolving tidal wave from AOD1B file %s "
                 "(traceback: %s)\n",

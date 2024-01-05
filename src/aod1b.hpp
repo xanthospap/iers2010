@@ -100,7 +100,7 @@ private:
   /** Time of last data block in TT */
   Datetime<nanoseconds> mlast_epoch;
   /** Only for TIDAL files */
-  DoodsonConstituent mdoodson;
+  const detail::TidalConstituentsArrayEntry *mdentry;
   
   /** Read and parse an AOD1B header block, assigning info to the instance */
   int read_header(std::ifstream &fin) noexcept;
