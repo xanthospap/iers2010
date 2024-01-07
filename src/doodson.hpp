@@ -122,6 +122,8 @@ public:
     return iar[i];
   }
 
+  double pifactor() const noexcept {return pifac;}
+
   /* @brief Equality comparisson */
   bool operator==(const DoodsonConstituent &other) const noexcept {
     return (iar[0] == other.iar[0] && iar[1] == other.iar[1] &&

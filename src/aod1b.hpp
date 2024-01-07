@@ -148,6 +148,7 @@ private:
                       Aod1bBlockHeader &rec) const noexcept;
 
   template <AOD1BCoefficientType T> friend class Aod1bDataBlockIterator;
+  friend class AtmosphericTides;
 
 public:
   const char *agency() const noexcept { return charArena + agency_offset; }
@@ -197,16 +198,15 @@ public:
   Datetime<nanoseconds> &first_epoch() noexcept { return mfirst_epoch; }
   Datetime<nanoseconds> last_epoch() const noexcept { return mlast_epoch; }
   Datetime<nanoseconds> &last_epoch() noexcept { return mlast_epoch; }
+  const detail::TidalConstituentsArrayEntry *tidal_wave() const {
+    return mdentry;
+  }
 
   /** Constructor from AOD1B filename.
    * The constructor will automatically call read_header on the instance,
    * and collect/assign all header info.
    */
   Aod1bIn(const char *fn);
-
-private:
-  /** Only used for very special cases; does not belong to class API */ 
-  Aod1bIn() noexcept {};
 
 public:
   Aod1bIn(const Aod1bIn &other) noexcept;
@@ -215,22 +215,30 @@ public:
   Aod1bIn &operator=(Aod1bIn &&other) noexcept;
   ~Aod1bIn() noexcept {};
 
-  /** Read and parse an AOD1B header block, assigning info to the instance */
+  /** Read and parse an AOD1B header block, assigning info to the instance 
+   *
+   * This fucntion works for both non-tidal and tidal AOD1B files/products.
+   */
   int read_header() noexcept;
 
 
   /** Read in and parse coefficients from a tidal AOD1B file, for a given
    * tidal constituent.
-   * The passed in AOD1B file (as filename in \p fn), should be a TIDAL 
-   * product, i.e. an AOD1B file containing coefficients for a given tidal
-   * wave/constituent.
+   *
+   * The calling AOD1B instance, should be a TIDAL product, i.e. an AOD1B file 
+   * containing coefficients for a given tidal wave/constituent.
+   * Obviously, the header of the instance should heave already been parsed.
+   *
+   * If max_degree and/or max_order are set to negative numbers, the function 
+   * will parse/store all coefficients found, i.e. up to maximum degree and 
+   * order available in the AOD1B file. Else, the \p max_degree and 
+   * \p max_order parameters should be at minimum equal to the respective 
+   * parameters in the AOD1B file.
    *  
    * @warning This function is only meant to be used for TIDAL AOD1B files
    */
-  static int get_tidal_wave_coeffs(const char *fn, StokesCoeffs &cCs,
-                                   StokesCoeffs &sCs, Aod1bIn *aod1b,
-                                   int max_degree = -1,
-                                   int max_order = -1) noexcept;
+  int get_tidal_wave_coeffs(StokesCoeffs &cCs, StokesCoeffs &sCs,
+                            int max_degree = -1, int max_order = -1) noexcept;
 
 }; /* class Aod1bIn */
 

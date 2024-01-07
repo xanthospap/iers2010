@@ -5,38 +5,42 @@
 #ifndef __DSO_SOLID_EARTH_TIDE_HPP__
 #define __DSO_SOLID_EARTH_TIDE_HPP__
 
-#include "doodson.hpp"
 #include "aod1b.hpp"
-#include "stokes_coefficients.hpp"
 #include "datetime/calendar.hpp"
-#include "geodesy/geodesy.hpp"
+#include "doodson.hpp"
 #include "eigen3/Eigen/Eigen"
+#include "geodesy/geodesy.hpp"
+#include "stokes_coefficients.hpp"
 #include <vector>
 
 namespace dso {
 
 namespace detail {
-class AtmosphericTidalWave {
-  TidalConstituentsArrayEntry mdentry;
-  StokesCoeffs mCosCs;
-  StokesCoeffs mSinCs;
-}; /* AtmosphericTidalWave */
+  class AtmosphericTidalWave {
+public:
+    TidalConstituentsArrayEntry mdentry;
+    StokesCoeffs mCosCs;
+    StokesCoeffs mSinCs;
+    AtmosphericTidalWave(const TidalConstituentsArrayEntry* wave, double Gm,
+        double Re, int max_degree, int max_order) noexcept
+        : mdentry(*wave)
+        , mCosCs(max_degree, max_order, Gm, Re)
+        , mSinCs(max_degree, max_order, Gm, Re) {};
+  }; /* AtmosphericTidalWave */
 } /* namespace detail */
 
 class AtmosphericTides {
-private:
+  private:
   std::vector<detail::AtmosphericTidalWave> mwaves;
-public:
-  int append_wave(const char *aod1b_fn) noexcept {
-    AtmosphericTidalWave newWave;
+  StokesCoeffs mcs;
 
-    return Aod1bIn::get_tidal_wave_coeffs(aod1b_fn, ,
-                                   newWave.mCosCs, newWave.msinCs, Aod1bIn *aod1b,
-                                   int max_degree = -1,
-                                   int max_order = -1) noexcept;
-  }
+  public:
+  int append_wave(const char* aod1b_fn, int max_degree, int max_order) noexcept;
+
+  int stokes_coeffs(const MjdEpoch& mjdtt, const MjdEpoch& mjdut1,
+      const double* const delaunay_args) noexcept;
 }; /* AtmosphericTides */
 
-}/* namespace dso */
+} /* namespace dso */
 
 #endif

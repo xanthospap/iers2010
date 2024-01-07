@@ -10,30 +10,40 @@ inline const char *skipws(const char *line) noexcept {
 }
 } /* unnamed namespace */
 
-int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
-                                        dso::StokesCoeffs &sCs,
-                                        dso::Aod1bIn *aod1b, int max_degree,
+int dso::Aod1bIn::get_tidal_wave_coeffs(dso::StokesCoeffs &cCs,
+                                        dso::StokesCoeffs &sCs, int max_degree,
                                         int max_order) noexcept {
-  /* first of all, create an instance and read header */
-  dso::Aod1bIn aod;
-  std::ifstream fin(fn);
-  if (aod.read_header(fin)) {
-    fprintf(
-        stderr,
-        "[ERROR] Failed to read (tidal) AOD1B file %s header! (traceback: %s)\n",
-        fn, __func__);
+  /* open the file and skip the header */
+  std::ifstream fin(fn().c_str());
+  if (skip_header(fin)) {
+    fprintf(stderr,
+            "[ERROR] Failed to skip (tidal) AOD1B file %s header! (traceback: "
+            "%s)\n",
+            fn().c_str(), __func__);
     return 1;
   }
 
   /* set max degree & order */
-  if (max_degree < 0) max_degree = aod.max_degree();
-  if (max_order < 0) max_order = aod.max_degree();
+  if (max_degree < 0)
+    max_degree = this->max_degree();
+  if (max_order < 0)
+    max_order = this->max_degree();
 
-  if ((max_degree < max_order) || (max_degree > aod.max_degree())) {
+  if ((max_degree < max_order) || (max_degree > this->max_degree())) {
     fprintf(stderr,
             "[ERROR] Invalid max degree/order given for coefficient parsing; "
             "AOD1B file %s (traceback: %s)\n",
-            fn, __func__);
+            fn().c_str(), __func__);
+    return 1;
+  }
+
+  if ((cCs.max_degree() < max_degree || cCs.max_order() < max_order) ||
+      (sCs.max_degree() < max_degree || sCs.max_order() < max_order)) {
+    fprintf(stderr,
+            "[ERROR] Invalid max degree/order given for coefficient parsing; "
+            "Stokes Coeffs too small to store data; "
+            "AOD1B file %s (traceback: %s)\n",
+            fn().c_str(), __func__);
     return 1;
   }
 
@@ -52,7 +62,7 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
   const char *end = line + std::strlen(line);
   if (std::strncmp(skipws(line), "DATA SET 01:", 12))
     ++error;
-  auto res = std::from_chars(skipws(line+12), end, max_lines);
+  auto res = std::from_chars(skipws(line + 12), end, max_lines);
   error += (res.ec != std::errc{});
   if (std::strncmp(skipws(res.ptr), "COEFFICIENTS OF TYPE cos", 24))
     ++error;
@@ -60,7 +70,7 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
     fprintf(stderr,
             "[ERROR] Failed resolving (tidal) header from line %s from AOD1B "
             "file %s (trceback: %s)\n",
-            line, fn, __func__);
+            line, fn().c_str(), __func__);
     return 1;
   }
 
@@ -86,7 +96,7 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
     fprintf(stderr,
             "[ERROR] Failed parsing coefficients for AOD1B file %s "
             "(traceback: %s)\n",
-            fn, __func__);
+            fn().c_str(), __func__);
     return 1;
   }
 
@@ -96,7 +106,7 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
   end = line + std::strlen(line);
   if (std::strncmp(skipws(line), "DATA SET 02:", 12))
     ++error;
-  res = std::from_chars(skipws(line+12), end, max_lines);
+  res = std::from_chars(skipws(line + 12), end, max_lines);
   error += (res.ec != std::errc{});
   if (std::strncmp(skipws(res.ptr), "COEFFICIENTS OF TYPE sin", 24))
     ++error;
@@ -104,7 +114,7 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
     fprintf(stderr,
             "[ERROR] Failed resolving (tidal) header from line %s from AOD1B "
             "file %s (trceback: %s)\n",
-            line, fn, __func__);
+            line, fn().c_str(), __func__);
     return 1;
   }
 
@@ -130,7 +140,7 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
     fprintf(stderr,
             "[ERROR] Failed parsing coefficients for AOD1B file %s "
             "(traceback: %s)\n",
-            fn, __func__);
+            fn().c_str(), __func__);
     return 1;
   }
 
@@ -140,14 +150,9 @@ int dso::Aod1bIn::get_tidal_wave_coeffs(const char *fn, dso::StokesCoeffs &cCs,
     fprintf(stderr,
             "[ERROR] Expected to reach EOF for AOD1B file %s but didn't! "
             "(traceback: %s)\n",
-            fn, __func__);
+            fn().c_str(), __func__);
     return 1;
   }
-
-  /* on success, set the Aod1bIn pointer to the instance we created, via 
-   * a move
-   */
-  if (aod1b) *aod1b = std::move(aod);
 
   return 0;
 }
