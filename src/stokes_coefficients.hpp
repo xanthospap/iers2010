@@ -8,6 +8,7 @@
 
 #include "coeff_matrix_2d.hpp"
 #include "iersconst.hpp"
+#include <cassert>
 
 namespace dso {
 
@@ -39,8 +40,164 @@ private:
   /* Snm coefficients */
   CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> _Snm;
 
+  /** Get the underlying data of the C coefficient matrix for given index.
+   * Use with care! There is not certain way of telling the (n,m) index 
+   * of the element requested. This function should only be used if we want 
+   * to do smthng with all the elements of C, which is very rare.
+   * This function is mstly used for assistance within the Expression 
+   * Templates.
+   */
+  double Cdata(int i) const noexcept {return _Cnm.data()[i];}
+
+  /** Get the underlying data of the S coefficient matrix for given index.
+   * Use with care! There is not certain way of telling the (n,m) index 
+   * of the element requested. This function should only be used if we want 
+   * to do smthng with all the elements of S, which is very rare.
+   * This function is mstly used for assistance within the Expression 
+   * Templates.
+   */
+  double Sdata(int i) const noexcept {return _Snm.data()[i];}
+
 public:
+
+  /** Expression Template: Assist the summation of two StokesCoeffs instances 
+   * using a proxy object. This proxy only holds references to the underlying 
+   * StokesCoeffs instances, using lazy evaluation at the time od assignment.
+   *
+   * _SumProxy instances can only handle StokesCoeffs instances of same size 
+   * (degree and order) and parameters (i.e. GM, Re, and normalized).
+   */
+  template<typename T1, typename T2>
+  struct _SumProxy {
+    const T1 &lhs;
+    const T2 &rhs;
+    int max_degree() const noexcept {return lhs.max_degree();}
+    int max_order() const noexcept {return lhs.max_order();}
+    double GM() const noexcept {return lhs.GM();}
+    double Re() const noexcept {return lhs.Re();}
+    bool normalized() const noexcept {return lhs.normalized();}
+
+    double C(int i, int j) const noexcept {
+      return lhs.C(i,j) + rhs.C(i,j);
+    }
+    double S(int i, int j) const noexcept {
+      return lhs.S(i,j) + rhs.S(i,j);
+    }
+    double Cdata(int i) const noexcept {return lhs.Cdata(i) + rhs.Cdata(i);}
+    double Sdata(int i) const noexcept {return lhs.Sdata(i) + rhs.Sdata(i);}
+    
+    _SumProxy(const T1 &ml, const T2 &mr) noexcept : lhs(ml), rhs(mr) {
+      assert((ml.max_degree() == mr.max_degree()) &&
+             (ml.max_order() == mr.max_order()) && (ml.GM() == mr.GM()) &&
+             (ml.Re() == mr.Re()) && (ml.normalized() == mr.normalized()));
+    }
+
+    /** Add two _SumProxy instances */
+    template <typename U1, typename U2>
+    _SumProxy<_SumProxy, _SumProxy<U1, U2>>
+    operator+(const _SumProxy<U1, U2> &other) const noexcept {
+      return _SumProxy<_SumProxy, _SumProxy<U1, U2>>(*this, other);
+    }
+
+  }; /* _SumProxy */
+
+  /** Expression Template: Assist the scaling (i.e. multiplication) of a 
+   * StokesCoeffs instance using a proxy object. This proxy only holds a
+   * reference to the underlying StokesCoeffs instance and a scaling factor 
+   * (double), using lazy evaluation at the time od assignment.
+   */
+  template<typename T>
+  struct _ScaledProxy {
+    const T &lhs;
+    double scale;
+    int max_degree() const noexcept {return lhs.m_degree;}
+    int max_order() const noexcept {return lhs.m_order;}
+    double GM() const noexcept {return lhs._GM;}
+    double Re() const noexcept {return lhs._Re;}
+    bool normalized() const noexcept {return lhs._cnormalized;}
+    double C(int i, int j) const noexcept {
+      return lhs.C(i,j) * scale;
+    }
+    double S(int i, int j) const noexcept {
+      return lhs.S(i,j) * scale;
+    }
+    double Cdata(int i) const noexcept {return lhs.Cdata(i)*scale;}
+    double Sdata(int i) const noexcept {return lhs.Sdata(i)*scale;}
+
+    _ScaledProxy(const T&m, double f) noexcept : lhs(m), scale(f) {}
+
+    /** Add two _ScaledProxy instances to create a _SumProxy */
+    _SumProxy<_ScaledProxy, _ScaledProxy>
+    operator+(const _ScaledProxy &other) const noexcept {
+      return _SumProxy<_ScaledProxy, _ScaledProxy>(*this, other);
+    }
+
+  }; /* _ScaledProxy */
+
+public:
+  /** Copy constructor */
+  StokesCoeffs(const StokesCoeffs &other) noexcept
+      : _GM(other._GM), _Re(other._Re), _cnormalized(other._cnormalized),
+        m_degree(other.m_degree), m_order(other.m_order), _Cnm(other._Cnm),
+        _Snm(other._Snm) 
+  {
+    printf("\t!! calling StokesCoeffs copy c'tor\n");
+  }
+
+  template<typename T> StokesCoeffs(T &&other) noexcept 
+      : _GM(other.GM()), _Re(other.Re()), _cnormalized(other.normalized()),
+        m_degree(other.max_degree()), m_order(other.max_order()), _Cnm(m_degree+1, m_order+1),
+        _Snm(m_degree+1, m_order+1) 
+  {
+    const int N = _Cnm.num_elements();
+    double *__restrict__ c = _Cnm.data();
+    for (int i=0; i<N; i++) 
+      c[i] = other.Cdata(i);
+    double *__restrict__ s = _Snm.data();
+    for (int i=0; i<N; i++) 
+      s[i] = other.Sdata(i);
+    printf("\t!! Calling template move constructor !!\n");
+  }
+
+  /** Move constructor */
+  StokesCoeffs(StokesCoeffs &&other) noexcept
+      : _GM(other._GM), _Re(other._Re), _cnormalized(other._cnormalized),
+        m_degree(other.m_degree), m_order(other.m_order),
+        _Cnm(std::move(other._Cnm)), _Snm(std::move(other._Snm)) 
+  {
+    printf("\t!! calling StokesCoeffs move c'tor\n");
+  }
+
+  /** Assignment operator */
+  StokesCoeffs &operator=(const StokesCoeffs &other) noexcept {
+    if (this != &other) {
+      _GM = other._GM;
+      _Re = other._Re;
+      _cnormalized = other._cnormalized;
+      m_degree = other.m_degree;
+      m_order = other.m_order;
+      _Cnm = other._Cnm;
+      _Snm = other._Snm;
+    }
+    printf("\t!! calling StokesCoeffs &operator=(const StokesCoeffs &other)\n");
+    return *this;
+  }
   
+  /** Move assignment operator */
+  StokesCoeffs &operator=(StokesCoeffs &&other) noexcept {
+    if (this != &other) {
+      _GM = other._GM;
+      _Re = other._Re;
+      _cnormalized = other._cnormalized;
+      m_degree = other.m_degree;
+      m_order = other.m_order;
+      _Cnm = std::move(other._Cnm);
+      _Snm = std::move(other._Snm);
+    }
+    printf("\t!! calling StokesCoeffs &operator=(StokesCoeffs &&other)\n");
+    return *this;
+  }
+
   void swap(StokesCoeffs &b) noexcept {
     using std::swap;
     std::swap(_GM, b._GM);
@@ -60,7 +217,10 @@ public:
   /** Constructor given degree, order, GM and radius R */
   StokesCoeffs(int n, int m, double GM, double Re)
       : _GM(GM), _Re(Re), _cnormalized(true), m_degree(n), m_order(m),
-        _Cnm(n + 1, m + 1), _Snm(n + 1, m + 1) {}
+        _Cnm(n + 1, m + 1), _Snm(n + 1, m + 1) 
+  {
+    printf("\t!! calling StokesCoeffs constructor\n");
+  }
 
   /** Constructor given degree (n)*/
   //StokesCoeffs(int n)
@@ -173,10 +333,75 @@ public:
    */
   StokesCoeffs &operator+=(const StokesCoeffs &sc);
 
+  /** Assign from a _SumProxy or a _ScaledProxy */
+  //template<typename T> StokesCoeffs &operator=(T &&other) noexcept {
+  //  const int N = _Cnm.num_elements();
+  //  double *__restrict__ c = _Cnm.data();
+  //  for (int i=0; i<N; i++) 
+  //    c[i] = other.Cdata(i);
+  //  double *__restrict__ s = _Snm.data();
+  //  for (int i=0; i<N; i++) 
+  //    s[i] = other.Sdata(i);
+  //  printf("\t!! Calling template assignment !!\n");
+  //  return *this;
+  //}
+
+  template<typename T>
+  _SumProxy<StokesCoeffs, T> operator+(const T &rhs) const noexcept {
+    return _SumProxy<StokesCoeffs, T>(*this, rhs);
+  }
+
+  /** Overload += operator. The right hand side can be a _SumProxy or a
+   * _ScaledProxy.
+   *
+   * Note that the right hand side can either:
+   * 1. have the same size (i.e. max degree and order) with the calling 
+   *    instance, or
+   * 2. have smaller size (i.e. lhs.degree >= rhs.degree and 
+   *    lhs.order >= lhs.order0
+   */
+  template <typename T> StokesCoeffs &operator+=(const T &rhs) noexcept {
+    assert((this->max_degree() >= rhs.max_degree()) &&
+           (this->max_order() >= rhs.max_order()) && (this->GM() == rhs.GM()) &&
+           (this->Re() == rhs.Re()) &&
+           (this->normalized() == rhs.normalized()));
+    if ((this->max_degree() == rhs.max_degree()) &&
+        (this->max_order() == rhs.max_order())) {
+      const int N = _Cnm.num_elements();
+      double *__restrict__ c = _Cnm.data();
+      for (int i = 0; i < N; i++)
+        c[i] += rhs.Cdata(i);
+      double *__restrict__ s = _Snm.data();
+      for (int i = 0; i < N; i++)
+        s[i] += rhs.Sdata(i);
+    } else {
+      for (int m = 0; m <= rhs.max_order(); m++) {
+        for (int n = m; n <= rhs.max_degree(); n++) {
+          C(n, m) += rhs.C(n, m);
+          S(n, m) += rhs.S(n, m);
+        }
+      }
+    }
+    return *this;
+  }
+
 }; /* StokesCoeffs */
 
 inline void swap(StokesCoeffs &a, StokesCoeffs &b) noexcept {
   a.swap(b);
+}
+
+/** _SumProxy <- StokesCoeffs + _SumProxy */
+template <typename T1, typename T2>
+inline StokesCoeffs::_SumProxy<T1, T2> operator+(const T1 &lhs,
+                                                 const T2 &rhs) noexcept {
+  return StokesCoeffs::_SumProxy<T1, T2>(lhs, rhs);
+}
+
+/** _ScaledProxy <- s * StokesCoeffs */
+inline StokesCoeffs::_ScaledProxy<StokesCoeffs>
+operator*(double f, const StokesCoeffs &sc) noexcept {
+  return StokesCoeffs::_ScaledProxy<StokesCoeffs>(sc, f);
 }
 
 } /* namespace dso */

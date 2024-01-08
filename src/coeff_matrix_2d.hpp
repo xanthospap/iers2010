@@ -149,10 +149,9 @@ public:
 
   /** get a pointer to the data */
   const double *data() const noexcept { return m_data; }
-
-#ifdef DEBUG
+  
+  /** get a non-const pointer to the data */
   double *data() noexcept { return m_data; }
-#endif
 
   /** Constructor using number of rows and columns; for some
    * MatrixStorageType's, the number of columns may not be needed.
