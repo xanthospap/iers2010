@@ -8,7 +8,6 @@
 #include "aod1b.hpp"
 #include "datetime/calendar.hpp"
 #include "doodson.hpp"
-#include "eigen3/Eigen/Eigen"
 #include "geodesy/geodesy.hpp"
 #include "stokes_coefficients.hpp"
 #include <vector>
@@ -16,29 +15,28 @@
 namespace dso {
 
 namespace detail {
-  class AtmosphericTidalWave {
+class AtmosphericTidalWave {
 public:
-    TidalConstituentsArrayEntry mdentry;
-    StokesCoeffs mCosCs;
-    StokesCoeffs mSinCs;
-    AtmosphericTidalWave(const TidalConstituentsArrayEntry* wave, double Gm,
-        double Re, int max_degree, int max_order) noexcept
-        : mdentry(*wave)
-        , mCosCs(max_degree, max_order, Gm, Re)
-        , mSinCs(max_degree, max_order, Gm, Re) {};
-  }; /* AtmosphericTidalWave */
+  TidalConstituentsArrayEntry mdentry;
+  StokesCoeffs mCosCs;
+  StokesCoeffs mSinCs;
+  AtmosphericTidalWave(const TidalConstituentsArrayEntry *wave, double Gm,
+                       double Re, int max_degree, int max_order) noexcept
+      : mdentry(*wave), mCosCs(max_degree, max_order, Gm, Re),
+        mSinCs(max_degree, max_order, Gm, Re){};
+}; /* AtmosphericTidalWave */
 } /* namespace detail */
 
 class AtmosphericTides {
-  private:
+private:
   std::vector<detail::AtmosphericTidalWave> mwaves;
   StokesCoeffs mcs;
 
-  public:
-  int append_wave(const char* aod1b_fn, int max_degree, int max_order) noexcept;
+public:
+  int append_wave(const char *aod1b_fn, int max_degree, int max_order) noexcept;
 
-  int stokes_coeffs(const MjdEpoch& mjdtt, const MjdEpoch& mjdut1,
-      const double* const delaunay_args) noexcept;
+  int stokes_coeffs(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
+                    const double *const delaunay_args) noexcept;
 }; /* AtmosphericTides */
 
 } /* namespace dso */

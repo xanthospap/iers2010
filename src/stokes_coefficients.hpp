@@ -141,7 +141,6 @@ public:
         m_degree(other.m_degree), m_order(other.m_order), _Cnm(other._Cnm),
         _Snm(other._Snm) 
   {
-    printf("\t!! calling StokesCoeffs copy c'tor\n");
   }
 
   template<typename T> StokesCoeffs(T &&other) noexcept 
@@ -156,7 +155,6 @@ public:
     double *__restrict__ s = _Snm.data();
     for (int i=0; i<N; i++) 
       s[i] = other.Sdata(i);
-    printf("\t!! Calling template move constructor !!\n");
   }
 
   /** Move constructor */
@@ -165,7 +163,6 @@ public:
         m_degree(other.m_degree), m_order(other.m_order),
         _Cnm(std::move(other._Cnm)), _Snm(std::move(other._Snm)) 
   {
-    printf("\t!! calling StokesCoeffs move c'tor\n");
   }
 
   /** Assignment operator */
@@ -179,7 +176,6 @@ public:
       _Cnm = other._Cnm;
       _Snm = other._Snm;
     }
-    printf("\t!! calling StokesCoeffs &operator=(const StokesCoeffs &other)\n");
     return *this;
   }
   
@@ -194,7 +190,6 @@ public:
       _Cnm = std::move(other._Cnm);
       _Snm = std::move(other._Snm);
     }
-    printf("\t!! calling StokesCoeffs &operator=(StokesCoeffs &&other)\n");
     return *this;
   }
 
@@ -219,7 +214,6 @@ public:
       : _GM(GM), _Re(Re), _cnormalized(true), m_degree(n), m_order(m),
         _Cnm(n + 1, m + 1), _Snm(n + 1, m + 1) 
   {
-    printf("\t!! calling StokesCoeffs constructor\n");
   }
 
   /** Constructor given degree (n)*/
@@ -332,19 +326,6 @@ public:
    * @warning calling instance should be larger than argument (\p sc).
    */
   StokesCoeffs &operator+=(const StokesCoeffs &sc);
-
-  /** Assign from a _SumProxy or a _ScaledProxy */
-  //template<typename T> StokesCoeffs &operator=(T &&other) noexcept {
-  //  const int N = _Cnm.num_elements();
-  //  double *__restrict__ c = _Cnm.data();
-  //  for (int i=0; i<N; i++) 
-  //    c[i] = other.Cdata(i);
-  //  double *__restrict__ s = _Snm.data();
-  //  for (int i=0; i<N; i++) 
-  //    s[i] = other.Sdata(i);
-  //  printf("\t!! Calling template assignment !!\n");
-  //  return *this;
-  //}
 
   template<typename T>
   _SumProxy<StokesCoeffs, T> operator+(const T &rhs) const noexcept {

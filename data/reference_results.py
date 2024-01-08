@@ -696,6 +696,9 @@ str8 = """2023/11/09 00:00:00.000000000 -6.595101880000000e-13 +2.16466785000000
 """
 
 special_progs = [
+    {"prog":"coeff-matrix-2d-tricolwise21-error.out", 
+     "path": "test/unit_tests",
+    "args": [], "exit": 1},
     {"prog":"parse-icgem-header.out", 
      "path": "test/unit_tests",
     "args": ["data/EIGEN-GRGS.RL04.MEAN-FIELD.gfc"], 

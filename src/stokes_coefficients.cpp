@@ -29,6 +29,5 @@ dso::StokesCoeffs &dso::StokesCoeffs::operator+=(const dso::StokesCoeffs &sc) {
     }
   }
 
-  printf("\t!! Calling non-template assignment !!\n");
   return *this;
 }
