@@ -8,8 +8,8 @@
 #define __COMPACT_2D_SIMPLE_MATRIX_HPP__
 
 #include "coeff_matrix_storage.hpp"
-#include <cstring>
 #include <cassert>
+#include <cstring>
 #ifdef DEBUG
 #include <cstdio>
 #endif
@@ -25,56 +25,48 @@ private:
   StorageImplementation<S> m_storage; /** storage type; dictates indexing */
   double *m_data{nullptr};            /** the actual data */
   std::size_t _capacity{0}; /** number of doubles in allocated memory arena */
-  
+
   /** Access an element from the underlying data; use with care IF needed */
   double data(int i) const noexcept { return m_data[i]; }
 
-  static MatrixStorageType storageType() {return S;}
-
 public:
+  /** Expression Template: Structure to hold a scaled CoeffMatrix2D (i.e. the
+   * multiplication of some a matrix by a real number.
+   */
+  template <typename T1> struct _ScaledProxy {
+    const T1 &mat;
+    double fac;
+    int rows() const noexcept { return mat.rows(); }
+    int cols() const noexcept { return mat.cols(); }
+    _ScaledProxy(const T1 &t1, double d) noexcept : mat(t1), fac(d){};
+    double operator()(int i, int j) const noexcept { return mat(i, j) * fac; }
+    double data(int i) const noexcept { return mat.data(i) * fac; }
+  }; /* _ScaledProxy */
 
-  template<typename T1, typename T2>
-  struct _SumProxy {
+  template <typename T1, typename T2> struct _SumProxy {
     const T1 &lhs;
     const T2 &rhs;
-    int rows() const noexcept {return lhs.rows();}
-    int cols() const noexcept {return lhs.cols();}
-    MatrixStorageType storageType() const {return lhs.storageType();}
-    const double &operator()(int i, int j) const noexcept {
+    int rows() const noexcept { return lhs.rows(); }
+    int cols() const noexcept { return lhs.cols(); }
+    double operator()(int i, int j) const noexcept {
       return rhs(i, j) + lhs(i, j);
     }
-    double data(int i) const noexcept {return lhs.data(i) + rhs.data(i);}
+    double data(int i) const noexcept { return lhs.data(i) + rhs.data(i); }
     _SumProxy(const T1 &t1, const T2 &t2) noexcept : lhs(t1), rhs(t2) {
-      assert( t1.storageType() == t2.storageType() );
-      assert( (lhs.rows() == rhs.rows()) && (lhs.cols() == rhs.cols()) );
+      assert((lhs.rows() == rhs.rows()) && (lhs.cols() == rhs.cols()));
     }
-    template <typename U1, typename U2>
-    _SumProxy<_SumProxy, _SumProxy<U1, U2>>
-    operator+(const _SumProxy<U1, U2> &other) noexcept {
-      return _SumProxy<_SumProxy, _SumProxy<U1, U2>>(*this, other);
+    /** Allow for _SumProxy<T,1,T2> + _ScaledProxy<U> */
+    template <typename U>
+    _SumProxy<_SumProxy<T1, T2>, _ScaledProxy<U>>
+    operator+(const _ScaledProxy<U> &scaled) const noexcept {
+      return _SumProxy<_SumProxy<T1, T2>, _ScaledProxy<U>>(*this, scaled);
     }
-    _SumProxy<_SumProxy, CoeffMatrix2D>
-    operator+(const CoeffMatrix2D &mat) noexcept {
-      return _SumProxy<_SumProxy, CoeffMatrix2D>(*this, mat);
+    /** Allow for _SumProxy<T,1,T2> + CoeffMatrix2D<S> */
+    _SumProxy<_SumProxy<T1, T2>, CoeffMatrix2D>
+    operator+(const CoeffMatrix2D &mat) const noexcept {
+      return _SumProxy<_SumProxy<T1, T2>, CoeffMatrix2D>(*this, mat);
     }
   }; /* SumProxy */
-
-  template <typename T1> struct _ScaledProxy {
-    const T1 &m;
-    double fac;
-    int rows() const noexcept { return m.rows(); }
-    int cols() const noexcept { return m.cols(); }
-    MatrixStorageType storageType() const {return m.storageType();}
-    const double &operator()(int i, int j) const noexcept {
-      return m(i, j) * fac;
-    }
-    double data(int i) const noexcept {return m.data(i)*fac;}
-    _ScaledProxy(const T1 &t1, double d) noexcept : m(t1), fac(d) {}
-    _SumProxy<_ScaledProxy, _ScaledProxy>
-    operator+(const _ScaledProxy &other) const noexcept {
-      return _SumProxy<_ScaledProxy, _ScaledProxy>(*this, other);
-    }
-  }; /* _ScaledProxy */
 
   /** Swap current instance with another */
   void swap(CoeffMatrix2D<S> &b) noexcept {
@@ -150,7 +142,7 @@ public:
   double *column(int j) noexcept {
     return slice(j);
   }
-  
+
   /** @brief Const pointer to the begining of a given column.
    *
    * Only defined if the MatrixStorageType uses some kind of Column Major
@@ -172,7 +164,7 @@ public:
   double *row(int j) noexcept {
     return slice(j);
   }
-  
+
   /** @brief Const pointer to the begining of a given row.
    *
    * Only defined if the MatrixStorageType uses some kind of Row Major
@@ -197,7 +189,7 @@ public:
 
   /** get a pointer to the data */
   const double *data() const noexcept { return m_data; }
-  
+
   /** get a non-const pointer to the data */
   double *data() noexcept { return m_data; }
 
@@ -234,15 +226,23 @@ public:
     mat._capacity = 0;
   }
 
-  template <typename T>
-  CoeffMatrix2D(T &&mat) noexcept
-      : m_storage(mat.rows(), mat.cols()),
+  template <typename T1, typename T2>
+  CoeffMatrix2D(_SumProxy<T1, T2> &&sum) noexcept
+      : m_storage(sum.rows(), sum.cols()),
         m_data(new double[m_storage.num_elements()]),
         _capacity(m_storage.num_elements()) {
     for (std::size_t i = 0; i < m_storage.num_elements(); i++) {
-      m_data[i] = mat.data(i);
+      m_data[i] = sum.data(i);
     }
-      printf("\tCalled CoeffMatrix2D(T &&mat)\n");
+  }
+  template <typename T1>
+  CoeffMatrix2D(_ScaledProxy<T1> &&fac) noexcept
+      : m_storage(fac.rows(), fac.cols()),
+        m_data(new double[m_storage.num_elements()]),
+        _capacity(m_storage.num_elements()) {
+    for (std::size_t i = 0; i < m_storage.num_elements(); i++) {
+      m_data[i] = fac.data(i);
+    }
   }
 
   /** (Copy) Assignment operator */
@@ -250,7 +250,8 @@ public:
     if (this != &mat) {
       /* do we need extra capacity ? */
       if (_capacity < mat._capacity) {
-        if (m_data) delete[] m_data;
+        if (m_data)
+          delete[] m_data;
         m_data = new double[mat.num_elements()];
         _capacity = mat.num_elements();
       }
@@ -275,7 +276,8 @@ public:
   void resize(int rows, int cols) {
     /* do we need to re-allocate ? */
     if (StorageImplementation<S>(rows, cols).num_elements() > _capacity) {
-      if (m_data) delete[] m_data;
+      if (m_data)
+        delete[] m_data;
       m_data = new double[StorageImplementation<S>(rows, cols).num_elements()];
       _capacity = StorageImplementation<S>(rows, cols).num_elements();
     } else {
@@ -283,15 +285,29 @@ public:
     }
     m_storage = StorageImplementation<S>(rows, cols);
   }
-  
-  template<typename T>
-  _SumProxy<CoeffMatrix2D, T> operator+(const T &rhs) const noexcept {
-    return _SumProxy<CoeffMatrix2D, T>(*this, rhs);
+
+  /** Sum of two CoeffMatrix2D instances create a proxy instance _SumProxy */
+  _SumProxy<CoeffMatrix2D, CoeffMatrix2D>
+  operator+(const CoeffMatrix2D &rhs) const noexcept {
+    return _SumProxy<CoeffMatrix2D, CoeffMatrix2D>(*this, rhs);
   }
-  
+
+  /** Sum of a CoeffMatrix2D and a Scaled CoeffMatrix2D creates a proxy
+   * instance _SumProxy
+   */
+  template <typename T>
+  _SumProxy<CoeffMatrix2D, _ScaledProxy<T>>
+  operator+(const _ScaledProxy<T> &rhs) const noexcept {
+    return _SumProxy<CoeffMatrix2D, _ScaledProxy<T>>(*this, rhs);
+  }
+
+  /** CoeffMatrix2D * Real is a Scaled matrix */
+  _ScaledProxy<CoeffMatrix2D> operator*(double factor) const noexcept {
+    return _ScaledProxy<CoeffMatrix2D>(*this, factor);
+  }
+
   template <typename T> CoeffMatrix2D &operator+=(const T &rhs) noexcept {
-    assert( this->storageType() == rhs.storageType() );
-    assert( (this->rows() == rhs.rows()) && (this->cols() == rhs.cols()) );
+    assert((this->rows() == rhs.rows()) && (this->cols() == rhs.cols()));
     for (std::size_t i = 0; i < m_storage.num_elements(); i++) {
       m_data[i] += rhs.data(i);
     }
@@ -305,18 +321,25 @@ inline void swap(CoeffMatrix2D<S> &a, CoeffMatrix2D<S> &b) noexcept {
   a.swap(b);
 }
 
-//template <typename T1, typename T2, MatrixStorageType S>
-//inline typename CoeffMatrix2D<S>::template _SumProxy<T1, T2>
-//operator+(const T1 &lhs, const T2 &rhs) noexcept {
-//  return typename CoeffMatrix2D<S>::template _SumProxy<T1, T2>(lhs, rhs);
-//}
-  
-/** _ScaledProxy <- s * CoeffMatrix2D */
+/** Real * CoeffMatrix2D returns a ScaledProxy instance */
 template <MatrixStorageType S>
-inline typename CoeffMatrix2D<S>::template _ScaledProxy<CoeffMatrix2D<S>>
-operator*(double f, const CoeffMatrix2D<S> &sc) noexcept {
-  return
-      typename CoeffMatrix2D<S>::template _ScaledProxy<CoeffMatrix2D<S>>(sc, f);
+typename CoeffMatrix2D<S>::template _ScaledProxy<CoeffMatrix2D<S>>
+operator*(double factor, const CoeffMatrix2D<S> &mat) noexcept {
+  return typename CoeffMatrix2D<S>::template _ScaledProxy<CoeffMatrix2D<S>>(
+      mat, factor);
+}
+
+template <MatrixStorageType S, typename T1, typename T2, typename T3>
+typename CoeffMatrix2D<S>::template _SumProxy<
+    typename CoeffMatrix2D<S>::template _SumProxy<T1, T2>,
+    typename CoeffMatrix2D<S>::template _ScaledProxy<T3>>
+operator+(
+    const typename CoeffMatrix2D<S>::template _ScaledProxy<T3> &scaled,
+    const typename CoeffMatrix2D<S>::template _SumProxy<
+        typename CoeffMatrix2D<S>::template _SumProxy<T1, T2>> &sum) noexcept {
+  return typename CoeffMatrix2D<S>::template _SumProxy<
+      typename CoeffMatrix2D<S>::template _SumProxy<T1, T2>,
+      typename CoeffMatrix2D<S>::template _ScaledProxy<T3>>(sum, scaled);
 }
 
 } /* namespace dso */
