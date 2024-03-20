@@ -50,16 +50,12 @@ lib_src_files += glob.glob(r"src/iau/*.cpp")
 lib_src_files += glob.glob(r"src/aod1b/*.cpp")
 lib_src_files += glob.glob(r"src/doodson/*.cpp")
 lib_src_files += glob.glob(r"src/solid_earth_tides/*.cpp")
-#lib_src_files += glob.glob(r"src/ch5/*.cpp")
-#lib_src_files += glob.glob(r"src/ch7/*.cpp")
-#lib_src_files += glob.glob(r"src/ch8/*.cpp")
-#lib_src_files += glob.glob(r"src/ch9/*.cpp")
-#lib_src_files += glob.glob(r"src/ch10/*.cpp")
-#lib_src_files += glob.glob(r"src/hardisp/*.cpp")
-#lib_src_files += glob.glob(r"src/dehanttideinel/*.cpp")
-#lib_src_files += glob.glob(r"src/extra/atmosphere/*.cpp")
-#lib_src_files += glob.glob(r"src/interpf/*.cpp")
+lib_src_files += glob.glob(r"src/atmospheric_tides/*.cpp")
+lib_src_files += glob.glob(r"src/earth_rotation/*.cpp")
 lib_src_files += glob.glob(r"src/eop/*.cpp")
+lib_src_files += glob.glob(r"src/gravity/*.cpp")
+#lib_src_files += glob.glob(r"src/grid/*.cpp")
+#lib_src_files += glob.glob(r"src/trp/*.cpp")
 
 ## Headers (for lib)
 hdr_src_files = glob.glob(r"src/*.hpp")
@@ -74,6 +70,7 @@ penv = Environment(PREFIX=GetOption(
 debug = ARGUMENTS.get('debug', 0)
 test = ARGUMENTS.get('test', 0)
 sofa = ARGUMENTS.get('test-vs-sofa', 0)
+costg = ARGUMENTS.get('test-vs-costg', 0)
 
 ## Construct the build enviroment
 env = denv.Clone() if int(debug) else penv.Clone()
@@ -142,3 +139,14 @@ if sofa:
     for tsource in test_sources:
         ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
         tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['sofa_c', 'datetime'], LIBPATH='.')
+
+## COSTG Tests ... 
+if costg:
+    print('Compiling tests against COSTG')
+    tenv = env.Clone()
+    tenv['CXXFLAGS'] = ' '.join([ x for x in env['CXXFLAGS'].split() if 'inline' not in x])
+    test_sources = glob.glob(r"costg-benchmark/bin/*.cpp")
+    tenv.Append(RPATH=root_dir)
+    for tsource in test_sources:
+        ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
+        tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+[ 'geodesy', 'datetime'], LIBPATH='.')

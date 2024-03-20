@@ -5,6 +5,7 @@
 #include "geodesy/units.hpp"
 #include "eigen3/Eigen/Eigen"
 #include "eigen3/Eigen/src/Geometry/Quaternion.h"
+#include <geodesy/geoconst.hpp>
 
 namespace dso {
 /* @brief Compute ERA, i.e. Earth rotation angle (IAU 2000 model).
@@ -27,6 +28,16 @@ double era00(const MjdEpoch &ut1) noexcept;
  * See also the iauGmst function of SOFA.
  */
 double gmst(const MjdEpoch &tt, const MjdEpoch &ut1) noexcept;
+
+/** @brief Time derivative of Greenwich mean sidereal time (consistent with 
+ * IAU 2006 precession).
+ *
+ * @return [rad]/[day]
+ *
+ * TODO is this precise enough? e.g. we are considering no derivative between 
+ * UT1 and TT
+ */
+double dgmst(const MjdEpoch &tt) noexcept;
 
 /* @brief Compute TIO locator s'
  *

@@ -40,11 +40,11 @@ double *fundarg(double tjc, double *fargs) noexcept;
  * @param[in]  t     TT, Julian centuries since J2000
  * @param[out] fargs A 5-element array containing the computed derivatives of 
  *             fundamental arguments, in the following order:
- *    fargs[0] -> d(l)/dt  in [rad / Julian Centuries] 
- *    fargs[1] -> d(lp)/dt in [rad / Julian Centuries]
- *    fargs[2] -> d(f)/dt  in [rad / Julian Centuries]
- *    fargs[3] -> d(d)/dt  in [rad / Julian Centuries]
- *    fargs[4] -> d(om)/dt in [rad / Julian Centuries]
+ *    fargs[0] -> d(l)/dt  in [rad / day] 
+ *    fargs[1] -> d(lp)/dt in [rad / day]
+ *    fargs[2] -> d(f)/dt  in [rad / day]
+ *    fargs[3] -> d(d)/dt  in [rad / day]
+ *    fargs[4] -> d(om)/dt in [rad / day]
  * @return Pointer to the first element in fargs
  */
 double *fundarg_derivs(double tjc, double *fargs) noexcept;
@@ -58,17 +58,24 @@ double *fundarg_derivs(double tjc, double *fargs) noexcept;
  * @param[in] t Julian centuries since J2000.0 [TT] or [TDB]
  * @return mean anomaly of the Moon, [rad] in range [0,2π)
  */
-#if defined(__clang__)
-__attribute__((optnone))
-#elif defined(__GNUC__) || defined(__GNUG__)
-__attribute__((optimize("O0")))
-#endif
 inline double fal03(double t) noexcept {
   const double a = dso::sec2rad(std::fmod(
       485868.249036e0 +
           t * (1717915923.2178e0 +
                t * (31.8792e0 + t * (0.051635e0 + t * (-0.00024470e0)))),
       dso::TURNAS));
+  return a;
+}
+
+/* @brief Time derivative of mean anomaly of the Moon, i.e. d(fal)/dTT
+ *
+ * @param[in] t Julian centuries since J2000.0 [TT] or [TDB]
+ * @return derivative of mean anomaly of the Moon, [rad/day]
+ */
+inline double dfal03(double t) noexcept {
+  const double a =
+      dso::sec2rad(1717915923.2178e0 +
+                   t * (31.8792e0 + t * (0.051635e0 + t * (-0.00024470e0))));
   return a;
 }
 
@@ -90,6 +97,18 @@ inline double falp03(double t) noexcept {
   return a;
 }
 
+/* @brief Derivative of mean anomaly of the Sun, i.e. d(flap)/dTT
+ *
+ * @param[in] t Julian centuries since J2000.0 [TT] or [TDB]
+ * @return derivative of mean anomaly of the Sun, [rad/day]
+ */
+inline double dfalp03(double t) noexcept {
+  const double a =
+      dso::sec2rad(129596581.0481e0 +
+                   t * (-0.5532e0 + t * (0.000136e0 + t * (-0.00001149e0))));
+  return a;
+}
+
 /* @brief Fundamental argument, IERS Conventions (2003): mean longitude of the
  *        Moon minus mean longitude of the ascending node
  *
@@ -105,6 +124,19 @@ inline double faf03(double t) noexcept {
           t * (1739527262.8478e0 +
                t * (-12.7512e0 + t * (-0.001037e0 + t * (0.00000417e0)))),
       dso::TURNAS));
+  return a;
+}
+
+/* @brief Derivative of mean longitude of the Moon minus mean longitude of 
+ *  the ascending node, i.e. d(faf)/dTT
+ *
+ * @param[in] t Julian centuries since J2000.0 [TT] or [TDB]
+ * @return dF/dTT, in [rad/day] 
+ */
+inline double dfaf03(double t) noexcept {
+  const double a =
+      dso::sec2rad(1739527262.8478e0 +
+                   t * (-12.7512e0 + t * (-0.001037e0 + t * (0.00000417e0))));
   return a;
 }
 
@@ -126,6 +158,22 @@ inline double fad03(double t) noexcept {
   return a;
 }
 
+/* @brief Derivative of mean elongation of the Moon from the Sun, i.e. 
+ *  d(D)/dTT
+ *
+ * Though t is strictly TDB, it is usually more convenient to use TT, which
+ * makes no significant difference.
+ *
+ * @param[in] t Julian centuries since J2000.0 [TT] or [TDB]
+ * @return  d(D)/dTT in [rad/day]
+ */
+inline double dfad03(double t) noexcept {
+  const double a =
+      dso::sec2rad(1602961601.2090e0 +
+                   t * (-6.3706e0 + t * (0.006593e0 + t * (-0.00003169e0))));
+  return a;
+}
+
 /* @brief Fundamental argument, IERS Conventions (2003): mean longitude of the
  *        Moon's ascending node.
  *
@@ -141,6 +189,19 @@ inline double faom03(double t) noexcept {
           t * (-6962890.5431e0 +
                t * (7.4722e0 + t * (0.007702e0 + t * (-0.00005939e0)))),
       dso::TURNAS));
+  return a;
+}
+
+/* @brief Derivative of mean longitude of the Moon's ascending node, i.e. 
+ * d(Ω)dTT.
+ *
+ * @param[in] t Julian centuries since J2000.0 [TT] or [TDB]
+ * @return d(Ω)/dTT in [rad/day]
+ */
+inline double dfaom03(double t) noexcept {
+  const double a =
+      dso::sec2rad(-6962890.5431e0 +
+                   t * (7.4722e0 + t * (0.007702e0 + t * (-0.00005939e0))));
   return a;
 }
 
@@ -260,7 +321,6 @@ inline double fane03(double t) noexcept {
 inline double fapa03(double t) noexcept {
   return (0.024381750e0 + 0.00000538691e0 * t) * t;
 }
-//#pragma GCC pop_options
 
 } /* namespace iers2010 */
 
@@ -285,9 +345,19 @@ inline double fal03(const dso::MjdEpoch &tt) noexcept {
   return iers2010::fal03(tt.jcenturies_sinceJ2000());
 }
 
+/* @brief Overload of dfal03 using a MjdEpoch */
+inline double dfal03(const dso::MjdEpoch &tt) noexcept {
+  return iers2010::dfal03(tt.jcenturies_sinceJ2000());
+}
+
 /* @brief Overload of falp03 using a MjdEpoch */
 inline double falp03(const dso::MjdEpoch &tt) noexcept {
   return iers2010::falp03(tt.jcenturies_sinceJ2000());
+}
+
+/* @brief Overload of dfalp03 using a MjdEpoch */
+inline double dfalp03(const dso::MjdEpoch &tt) noexcept {
+  return iers2010::dfalp03(tt.jcenturies_sinceJ2000());
 }
 
 /* @brief Overload of faf03 using a MjdEpoch */
@@ -295,13 +365,29 @@ inline double faf03(const dso::MjdEpoch &tt) noexcept {
   return iers2010::faf03(tt.jcenturies_sinceJ2000());
 }
 
+/* @brief Overload of dfaf03 using a MjdEpoch */
+inline double dfaf03(const dso::MjdEpoch &tt) noexcept {
+  return iers2010::faf03(tt.jcenturies_sinceJ2000());
+}
+
 /* @brief Overload of fad03 using a MjdEpoch */
 inline double fad03(const dso::MjdEpoch &tt) noexcept {
   return iers2010::fad03(tt.jcenturies_sinceJ2000());
 }
+
+/* @brief Overload of fad03 using a MjdEpoch */
+inline double dfad03(const dso::MjdEpoch &tt) noexcept {
+  return iers2010::dfad03(tt.jcenturies_sinceJ2000());
+}
+
 /* @brief Overload of faom03 using a MjdEpoch */
 inline double faom03(const dso::MjdEpoch &tt) noexcept {
   return iers2010::faom03(tt.jcenturies_sinceJ2000());
+}
+
+/* @brief Overload of dfaom03 using a MjdEpoch */
+inline double dfaom03(const dso::MjdEpoch &tt) noexcept {
+  return iers2010::dfaom03(tt.jcenturies_sinceJ2000());
 }
 
 /* @brief Overload of fame03 using a MjdEpoch */

@@ -1,17 +1,17 @@
 #include "eop.hpp"
-#include <cstdio>
 #include <cassert>
+#include <cstdio>
 
 dso::EopSeries::EopInterpolationResult
 dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
                             int degree) const noexcept {
-  assert(degree<=MAX_POLY_INTERPOLATION_DEGREE);
-  
+  assert(degree <= MAX_POLY_INTERPOLATION_DEGREE);
+
   /* find a matching interval (try for last used iterator first) */
   auto it = last_it;
   {
     if (last_it != mvec.begin() && last_it != mvec.end()) {
-      if (!((last_it-1)->t() >= t && last_it->t() < t)) {
+      if (!((last_it - 1)->t() >= t && last_it->t() < t)) {
         it = this->upper_bound(t);
       }
     } else {
@@ -55,7 +55,7 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
 
   /* perform linear interpolation [it-1, it+1)*/
   if (ndp == 1) {
-    const auto x0 = it-1;
+    const auto x0 = it - 1;
     const auto x1 = it;
     const double dx1x0 =
         x1->t().diff<dso::DateTimeDifferenceType::FractionalDays>(x0->t());
@@ -65,18 +65,18 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
         t.diff<dso::DateTimeDifferenceType::FractionalDays>(x0->t());
     const double dx0 = dx1x / dx1x0;
     const double dx1 = dxx0 / dx1x0;
-    eop.xp()  = x0->xp()  * dx0 + x1-> xp() *dx1;
-    eop.yp()  = x0->yp()  * dx0 + x1-> yp() *dx1;
+    eop.xp() = x0->xp() * dx0 + x1->xp() * dx1;
+    eop.yp() = x0->yp() * dx0 + x1->yp() * dx1;
     /* continuous (UT1-TAI)j <- (UT1-UTC)j - ΔATj */
-    eop.dut() = (x0->dut()-x0->dat()) * dx0 + (x1->dut()-x1->dat())*dx1;
+    eop.dut() = (x0->dut() - x0->dat()) * dx0 + (x1->dut() - x1->dat()) * dx1;
     eop.dut() += dso::dat(dso::modified_julian_day(t.tt2utc().imjd()));
-    eop.lod() = x0->lod() * dx0 + x1-> lod()*dx1;
-    eop.dX()  = x0->dX()  * dx0 + x1-> dX() *dx1;
-    eop.dY()  = x0->dY()  * dx0 + x1-> dY() *dx1;
+    eop.lod() = x0->lod() * dx0 + x1->lod() * dx1;
+    eop.dX() = x0->dX() * dx0 + x1->dX() * dx1;
+    eop.dY() = x0->dY() * dx0 + x1->dY() * dx1;
     return EopInterpolationResult::Linear;
   }
 
-  /* Lagrange interpolation with a total of ndp data points, from 
+  /* Lagrange interpolation with a total of ndp data points, from
    * [it-ndp, it+ndp).
    */
   auto i = it - ndp;
@@ -84,7 +84,7 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
   /* nom[j] <- Π_{k=0,k!=j}^{n} (x-x_k) */
   /* dom[j] <- Π_{k=0,k!=j}^{n} (x_j-x_k) */
   auto nom = work.begin();
-  auto dom = work.begin() + MAX_POLY_INTERPOLATION_DEGREE+1;
+  auto dom = work.begin() + MAX_POLY_INTERPOLATION_DEGREE + 1;
   for (; i != stop; ++i) {
     /* j index runs through [0, 2ndp) */
     const int j = std::distance(it - ndp, i);
@@ -124,5 +124,5 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
 
   /* all done */
   return (ndp * 2 == degree + 1) ? EopInterpolationResult::PolyDegreeRequested
-                                : EopInterpolationResult::PolyDegreeDescreased;
+                                 : EopInterpolationResult::PolyDegreeDescreased;
 }

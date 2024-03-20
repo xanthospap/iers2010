@@ -30,6 +30,8 @@ private:
   double data(int i) const noexcept { return m_data[i]; }
 
 public:
+  template <typename T1, typename T2> struct _SumProxy;
+
   /** Expression Template: Structure to hold a scaled CoeffMatrix2D (i.e. the
    * multiplication of some a matrix by a real number.
    */
@@ -41,6 +43,11 @@ public:
     _ScaledProxy(const T1 &t1, double d) noexcept : mat(t1), fac(d){};
     double operator()(int i, int j) const noexcept { return mat(i, j) * fac; }
     double data(int i) const noexcept { return mat.data(i) * fac; }
+    template <typename T2>
+    _SumProxy<_ScaledProxy, _ScaledProxy<T2>>
+    operator+(const _ScaledProxy<T2> &s2) const noexcept {
+      return _SumProxy<_ScaledProxy, _ScaledProxy<T2>>(*this, s2);
+    }
   }; /* _ScaledProxy */
 
   template <typename T1, typename T2> struct _SumProxy {
@@ -55,13 +62,13 @@ public:
     _SumProxy(const T1 &t1, const T2 &t2) noexcept : lhs(t1), rhs(t2) {
       assert((lhs.rows() == rhs.rows()) && (lhs.cols() == rhs.cols()));
     }
-    /** Allow for _SumProxy<T,1,T2> + _ScaledProxy<U> */
+    /** Allow for _SumProxy<T1,T2> + _ScaledProxy<U> */
     template <typename U>
     _SumProxy<_SumProxy<T1, T2>, _ScaledProxy<U>>
     operator+(const _ScaledProxy<U> &scaled) const noexcept {
       return _SumProxy<_SumProxy<T1, T2>, _ScaledProxy<U>>(*this, scaled);
     }
-    /** Allow for _SumProxy<T,1,T2> + CoeffMatrix2D<S> */
+    /** Allow for _SumProxy<T1,T2> + CoeffMatrix2D<S> */
     _SumProxy<_SumProxy<T1, T2>, CoeffMatrix2D>
     operator+(const CoeffMatrix2D &mat) const noexcept {
       return _SumProxy<_SumProxy<T1, T2>, CoeffMatrix2D>(*this, mat);

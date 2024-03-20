@@ -48,6 +48,19 @@ instance used to store the coefs.
   max_parsed_order  = stokes.max_order();
   // or assert degree/order if they must satisfy some condition(s)
 ```
+
+## FORTRAN-style floating point representation
+
+While debugging the functions relevant to ICGEM, we came accross a couple of 
+files which included floating point numeric values in the FORTRAN scientific 
+representation, i.e. instead of `1.23423e-0` the alphanumeric `1.23423D-0` is 
+used.
+
+To surpass this, we have included a FORTRAN-style to C-style floating point 
+conversion. It takes a bit more time (every line has to be inspected before 
+resolving), but it works.
+
+This check/conversion is only performed for the version-1 ICGEM files.
  
 # References 
 

@@ -54,12 +54,20 @@ public:
   static constexpr const bool isColMajor = false;
 
   /** Constructor; not interested in number of cols */
-  constexpr StorageImplementation(int r, [[maybe_unused]] int _) noexcept
-      : rows(r){};
+  constexpr StorageImplementation(int r, [[maybe_unused]] int c) noexcept
+      : rows(r)
+  {
+#ifdef DEBUG
+    assert(r==c);
+#endif
+  };
 
   /** (Re-) set dimensions */
   void __set_dimensions(int _rows, [[maybe_unused]] int _cols) noexcept {
     rows = _rows;
+#ifdef DEBUG
+    assert(_rows==_cols);
+#endif
   }
 
   /** @brief Compute number of elements stored */
@@ -111,8 +119,13 @@ public:
   static constexpr const bool isColMajor = true;
 
   /** Constructor; not interested in number of cols */
-  constexpr StorageImplementation(int r, [[maybe_unused]] int _) noexcept
-      : rows(r){};
+  constexpr StorageImplementation(int r, [[maybe_unused]] int c) noexcept
+      : rows(r)
+      {
+#ifdef DEBUG
+    assert(r==c);
+#endif
+      }
 
   /** @brief Compute number of elements stored */
   constexpr std::size_t num_elements() const noexcept {
@@ -122,6 +135,9 @@ public:
   /** (Re-) set dimensions */
   void __set_dimensions(int _rows, [[maybe_unused]] int _cols) noexcept {
     rows = _rows;
+#ifdef DEBUG
+    assert(_rows==_cols);
+#endif
   }
 
   /** number of rows */

@@ -6,8 +6,7 @@ int dso::AtmosphericTides::stokes_coeffs(
     const dso::MjdEpoch &mjdtt, const dso::MjdEpoch &mjdut1,
     const double *const delaunay_args) noexcept {
   /* nullify geopotential coeffs */
-  mCosCs.clear();
-  mSinCs.clear();
+  mcs.clear();
   
   /* compute GMST using IAU 2006/2000A [rad] */
   const double gmst = dso::gmst(mjdtt, mjdut1);
@@ -18,14 +17,13 @@ int dso::AtmosphericTides::stokes_coeffs(
       dso::delaunay2doodson(delaunay_args, gmst, __dargs);
 
   /* iterate through individual constituents */
-  for (const auto wave: mwaves) {
-    const double arg = wave.mdentry.
+  for (const auto &wave: mwaves) {
     /* compute angle: θ(f) = Σ(i=1,6) n(i)*β(i) */
-    const double arg = wave.mdentry._d.argument(f) + wave.mdentry.pifac;
+    const double arg = wave.mdentry._d.argument(f) + wave.mdentry._d.pifactor();
     const double carg = std::cos(arg);
     const double sarg = std::sin(arg);
-    mcs.C += carg * wave.mCosCs.C + sarg * wave.mSinCs.C;
-    mcs.S += carg * wave.mSinCs.S + sarg * wave.mSinCs.S;
+    mcs.Cnm() += wave.mCosCs.Cnm() * carg + wave.mSinCs.Cnm() * sarg;
+    mcs.Snm() += wave.mCosCs.Snm() * carg + wave.mSinCs.Snm() * sarg;
   }
 
   return 0;
