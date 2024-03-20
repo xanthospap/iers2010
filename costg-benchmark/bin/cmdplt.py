@@ -1,6 +1,7 @@
 #! /usr/bin/python
 
 import sys
+import math
 from scipy import stats
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,7 +9,6 @@ import numpy as np
 t = []
 a1x = []; a1y=[]; a1z=[];
 a2x = []; a2y=[]; a2z=[];
-
 
 if __name__ == "__main__":
     for line in sys.stdin:
@@ -19,22 +19,39 @@ if __name__ == "__main__":
             a1x.append(x1); a1y.append(y1); a1z.append(z1);
             a2x.append(x2); a2y.append(y2); a2z.append(z2);
 
+    ## do nothing on empty input
+    if len(t) <= 1: sys.exit(1)
+
 ## Get statistics of differences
-    sx = stats.describe([z[0]-z[1] for z in zip(a1x,a2x)])
-    sy = stats.describe([z[0]-z[1] for z in zip(a1y,a2y)])
-    sz = stats.describe([z[0]-z[1] for z in zip(a1z,a2z)])
+    ar = [z[0]-z[1] for z in zip(a1x,a2x)]
+    sx = stats.describe(ar)
+    xstr = r'X: max={:.2e} mean={:+.2e}$\pm${:.3e}'.format(max(abs(x) for x in sx.minmax), sx.mean, math.sqrt(sx.variance))
+    ar = [z[0]-z[1] for z in zip(a1y,a2y)]
+    sy = stats.describe(ar)
+    ystr = r'Y: max={:.2e} mean={:+.2e}$\pm${:.3e}'.format(max(abs(x) for x in sy.minmax), sy.mean, math.sqrt(sy.variance))
+    ar = [z[0]-z[1] for z in zip(a1z,a2z)]
+    sz = stats.describe(ar)
+    zstr = r'Z: max={:.2e} mean={:+.2e}$\pm${:.3e}'.format(max(abs(x) for x in sz.minmax), sz.mean, math.sqrt(sz.variance))
 
 ## Plot differences (this-COST-G)
+    plt.rcParams["font.family"] = "monospace"
+
     ax1 = plt.subplot(311)
     plt.plot(t, [z[0]-z[1] for z in zip(a1x,a2x)])
+    plt.text(t[0], sx.minmax[0], xstr)
     plt.tick_params('x', labelsize=6)
-# share x only
+    plt.tick_params('x', labelbottom=False)
+    
     ax2 = plt.subplot(312, sharex=ax1)
     plt.plot(t, [z[0]-z[1] for z in zip(a1y,a2y)])
-# make these tick labels invisible
+    plt.text(t[0], sy.minmax[0], ystr)
     plt.tick_params('x', labelbottom=False)
-# share x and y
+    plt.ylabel('Gravitational acceleration discrepancies $[m/s^2]$')
+    
     ax3 = plt.subplot(313, sharex=ax1)
     plt.plot(t, [z[0]-z[1] for z in zip(a1z,a2z)])
-    plt.tick_params('x', labelbottom=False)
+    plt.text(t[0], sz.minmax[0], zstr)
+    plt.tick_params('x', labelsize=6)
+    plt.xlabel('Seconds of Day')
+    
     plt.show()
