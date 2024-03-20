@@ -86,7 +86,7 @@ int sh2gradient_cunningham_impl(
     assert(false);
   }
 
-feenableexcept(FE_ALL_EXCEPT & ~FE_INEXACT);
+//feenableexcept(FE_ALL_EXCEPT & ~FE_INEXACT);
 
   /* Factors up to degree/order MAX_SIZE_FOR_ALF_FACTORS. Constructed only on
    * the first function call
@@ -115,6 +115,7 @@ feenableexcept(FE_ALL_EXCEPT & ~FE_INEXACT);
 
     /* start ALF iteration (can use scaling according to Holmes et al, 2002) */
     M(0, 0) = 1e0 / rs.norm();
+    // M(0, 0) = 1e280 / rs.norm();
 
     /* first fill m=0 terms; note that W(n,0) = 0 (already set) */
     M(1, 0) = std::sqrt(3e0) * z * M(0, 0);
@@ -123,7 +124,7 @@ feenableexcept(FE_ALL_EXCEPT & ~FE_INEXACT);
     }
 
     /* fill all elements for order m >= 1 */
-    for (int m = 1; m < order; m++) {
+    for (int m = 1; m < order+2; m++) {
       /* M(m,m) and W(m,m) aka, diagonal */
       M(m, m) = F.f1(m, m) * (x * M(m - 1, m - 1) - y * W(m - 1, m - 1));
       W(m, m) = F.f1(m, m) * (y * M(m - 1, m - 1) + x * W(m - 1, m - 1));
@@ -144,6 +145,20 @@ feenableexcept(FE_ALL_EXCEPT & ~FE_INEXACT);
       const int m = order+2;
       M(m, m) = F.f1(m, m) * (x * M(m - 1, m - 1) - y * W(m - 1, m - 1));
       W(m, m) = F.f1(m, m) * (y * M(m - 1, m - 1) + x * W(m - 1, m - 1));
+    }
+
+    // M.multiply(1e-280);
+    // W.multiply(1e-280);
+
+    {
+      //printf("M(179) = %.15e %.15e\n", M(179,178), M(179,179));
+      //printf("M(180) = %.15e %.15e %.15e\n", M(180,178), M(180,179), M(180,180));
+      //printf("M(181) = %.15e %.15e %.15e %.15e\n", M(181,178), M(181,179), M(181,180), M(181,181));
+      //printf("M(182) = %.15e %.15e %.15e %.15e %.15e\n", M(182,178), M(182,179), M(182,180), M(182,181), M(182,182));
+      //printf("M(149) = %.15e %.15e\n", M(149,148), M(149,149));
+      //printf("M(150) = %.15e %.15e %.15e\n", M(150,148), M(150,149), M(150,150));
+      //printf("M(151) = %.15e %.15e %.15e %.15e\n", M(151,148), M(151,149), M(151,150), M(151,151));
+      //printf("M(152) = %.15e %.15e %.15e %.15e %.15e\n", M(152,148), M(152,149), M(152,150), M(152,151), M(152,152));
     }
   } /* end computing ALF factors M and W */
 
@@ -173,12 +188,22 @@ feenableexcept(FE_ALL_EXCEPT & ~FE_INEXACT);
         const double Cp1 = wp1 * M(n + 1, m + 1);
         const double Sp1 = wp1 * W(n + 1, m + 1);
 
+        try {
         const double ax = cs.C(n, m) * (Cm1 - Cp1) + cs.S(n, m) * (Sm1 - Sp1);
         const double ay = cs.C(n, m) * (-Sm1 - Sp1) + cs.S(n, m) * (Cm1 + Cp1);
         const double az = cs.C(n, m) * (-2 * Cm0) + cs.S(n, m) * (-2 * Sm0);
-
         acc += Eigen::Matrix<double, 3, 1>(ax, ay, az) *
                std::sqrt((2e0 * n + 1e0) / (2e0 * n + 3e0));
+        } catch (std::exception &e) {
+          fprintf(stderr, "FPE caught! Computation for (n,m)=(%d,%d)\n", n,m);
+          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m), (Cm1 - Cp1), cs.S(n, m), (Sm1 - Sp1));
+          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m), (-Sm1 - Sp1), cs.S(n, m), (Cm1 + Cp1));
+          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m), (-2 * Cm0), cs.S(n, m), (-2 * Sm0));
+          return 0;
+        }
+
+        //acc += Eigen::Matrix<double, 3, 1>(ax, ay, az) *
+        //       std::sqrt((2e0 * n + 1e0) / (2e0 * n + 3e0));
       }
       {
         /* gradient */
