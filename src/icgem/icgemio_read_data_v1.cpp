@@ -100,9 +100,6 @@ int dso::Icgem::parse_data_v1(int l, int k, const Icgem::Datetime &t,
         }
         coeffs.C(entry.degree, entry.order) += C;
         coeffs.S(entry.degree, entry.order) += S;
-        if (entry.degree==150 && entry.order==150) {
-          fprintf(stderr, "Reporting from %s; C(150,150)=%.15e\n", __func__, C);
-        }
       } else {
         ;
       }

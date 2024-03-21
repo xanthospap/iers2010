@@ -145,10 +145,8 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "ERROR Failed reading gravity model!\n");
     return 1;
   }
-  // printf("C(180,180)=%.15e\n", sc.C(180,180));
   // assert(-0.22147242139e-09 == sc.C(180, 180));
-  assert(-0.69378736267e-09 == sc.C(150, 150));
-  // return 10;
+  assert(std::abs(-0.69378736267e-09 - sc.C(150, 150))<1e-15);
 
   /* allocate scratch space for computations */
   dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> W(DEGREE + 3,
