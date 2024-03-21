@@ -1,6 +1,11 @@
 #ifndef __DSO_TOOLS_GRID_HPP__
 #define __DSO_TOOLS_GRID_HPP__
 
+/*
+ * Currently not used anywhere (obsolete)
+ * Will later be used for tropo grids
+ */
+
 #include <cstdio>
 #include <cmath>
 #include <stdexcept>
@@ -94,10 +99,6 @@ public:
     return CellNodes(node(idx), node(idx+1));
   }
 
-  void print() const noexcept {
-    printf("Cell from/to/step %.3f/%.3f/%.3f\n", _start * 1e0,
-           _start * 1e0 + _nodes * _step, _step * 1e0);
-  }
 }; /* class GridAxis */
 
 class TwoDimGrid {

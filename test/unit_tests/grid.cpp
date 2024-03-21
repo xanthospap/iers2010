@@ -8,7 +8,6 @@ int main() {
 
   {
     GridAxis ga(2e0, 14.5e0, 2.5e0);
-    ga.print();
     assert(ga.num_cells() == 5);
     double x = 2e0;
     while (x<=14.5e0) {
@@ -40,8 +39,6 @@ int main() {
     double x = 19e0;
     while (x>=-3e0) {
       auto x12 = ga.cell_nodes(ga.lower_bound(x));
-      // assert(x12.prev <= x && x12.next > x);
-      // printf("%.4f < %.4f < %.4f\n", x12.prev, x, x12.next);
       assert(x12.prev >= x && x12.next < x);
       int idx = ga.lower_bound(x);
       assert(ga.node(idx) >= x && x > ga.node(idx+1));
@@ -79,7 +76,6 @@ int main() {
     double x = M_PI;
     while (x>=-M_PI) {
       auto x12 = ga.cell_nodes(ga.lower_bound(x));
-      // printf("%.9f >= %.9f > %.9f\n", x12.prev, x, x12.next);
       assert(x12.prev >= x && x12.next < x);
       int idx = ga.lower_bound(x);
       assert(ga.node(idx) >= x && x >= ga.node(idx+1));

@@ -35,6 +35,9 @@ def prog_needs_args(prog_path, special_progs_dct):
             return True
     return False
 
+def report(prog_name, exit_status, comment):
+    print('{:50s} {:7s} {:20s}'.format(prog_name, exit_status, comment))
+
 def check_file_vs_str(file, vstr):
     with open(file, 'r') as fin:
         fstr = fin.read().replace(' ', '').replace('\n','')
@@ -83,22 +86,29 @@ def run_progs_with_args(special_progs_dct):
             sys.exit(1)
         exe = '{:}'.format(os.path.join(d['path'],d['prog'])) 
         cmdargs = ['{:}'.format(x) for x in d['args']]
-        print('Running command {:}'.format(' '.join([exe]+cmdargs)))
+        # print('Running command {:}'.format(' '.join([exe]+cmdargs)))
+## run prrogram and store results in '.tmp.result'
         with open('.tmp.result', 'w') as fout:
             #result = subprocess.run([exe] + cmdargs, stdout=fout, stderr=subprocess.STDOUT, check=False)
             result = subprocess.run([exe] + cmdargs, stdout=fout, stderr=subprocess.DEVNULL, check=False)
+## check exit code
         if result.returncode != int(d['exit']):
             print('ERROR Expected exit code {:} and got {:}; program: {:}'.format(d['exit'], result.returncode, exe), file=sys.stderr)
             sys.exit(1)
+## check result string vs reference result
         if 'results' in d:
             if 'testwp' in d:
-                report = check_w_precision('.tmp.result', d['results'], d['testwp']['cols'], d['testwp']['precision'])
-                print(report)
+                treport = check_w_precision('.tmp.result', d['results'], d['testwp']['cols'], d['testwp']['precision'])
+                print(treport)
+                report(d['prog'], 'OK', 'precision ok')
             else:
                 if not check_file_vs_str('.tmp.result', d['results']):
                     print('ERROR. Failed test {:}; expected string did not match output'.format(exe), file=sys.stderr)
-                    #check_file_vs_str_verbose('.tmp.result', d['results'])
                     sys.exit(1)
+                report(d['prog'], 'OK', '{:}'.join(cmdargs))
+        else:
+            report(d['prog'], 'OK', '{:}'.join(cmdargs))
+
 
 class myFormatter(argparse.ArgumentDefaultsHelpFormatter,
                   argparse.RawTextHelpFormatter):
@@ -156,6 +166,10 @@ if __name__ == '__main__':
 # verbose print
     verboseprint = print if args.verbose else lambda *a, **k: None
 
+# Report header    
+    print('{:50s} {:7s} {:20s}'.format('Program Name', 'Status', 'Comment'))
+    print('{:50s} {:7s} {:20s}'.format('-'*50, '-'*7, '-'*20))
+
 # run tests with command line arguments
     with open(args.reffn, "rb") as source_file:
         code = compile(source_file.read(), args.reffn, "exec")
@@ -169,13 +183,17 @@ if __name__ == '__main__':
         if not os.path.isdir(path):
             print('ERROR Expected to find dir {:} but couldn\'t!'.format(path), file=sys.stderr)
             sys.exit(1)
+# choose all files that end with .out but are not listed in the dictionary
+# reference_results::special_progs
         for file in os.listdir(path):
             if file.endswith('.out') and not prog_needs_args(file, special_progs):
                 exe = os.path.join(path, file)
                 verboseprint('Running command: {:}'.format([exe]))
 # assert a 0 exit code
                 subprocess.run([exe], stdout=sys.stderr, check=True)
-                print('Test {:} OK!'.format(exe))
+                #print('Test {:} OK!'.format(exe))
+                report(file, 'OK', '')
+# encountered the json file - these are mocks, should not compile
             elif file.endswith('.json'):
                 with open(os.path.join(path, file), 'r') as jin: data = json.load(jin)
                 for prog, dct in data.items():
@@ -188,4 +206,5 @@ if __name__ == '__main__':
                             dct['exit'], result.returncode, prog), file=sys.stderr)
                         sys.exit(2)
                     else:
-                        print('Test {:} OK! (failed to compile)'.format(prog))
+                        #print('Test {:} OK! (failed to compile)'.format(prog))
+                        report(prog, 'OK', 'Mock test; successefuly failed to compile')

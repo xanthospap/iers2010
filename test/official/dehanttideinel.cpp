@@ -11,7 +11,7 @@ int main() {
                      1.32712442099e20);
 
   /* Example 1 */
-  printf("\nTest Case 1:\n");
+  // printf("\nTest Case 1:\n");
   rsta.x() = 4075578.385e0;       //[m]
   rsta.y() = 931852.890e0;        //[m]
   rsta.z() = 4801570.154e0;       //[m]

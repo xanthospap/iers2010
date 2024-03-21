@@ -126,7 +126,7 @@ public:
 
   /** Default constructor */
   StokesCoeffs() noexcept
-      : _GM(iers2010::GMe), _Re(iers2010::Re), _cnormalized(true), m_degree(0),
+      : _GM(::iers2010::GMe), _Re(::iers2010::Re), _cnormalized(true), m_degree(0),
         m_order(0), _Cnm{0, 0}, _Snm{0, 0} {}
 
   /** Constructor given degree, order, GM and radius R */
@@ -138,7 +138,7 @@ public:
 
   /** Constructor given degree (n)*/
   StokesCoeffs(int n, int m = -1)
-      : _GM(iers2010::GMe), _Re(iers2010::Re), _cnormalized(true), m_degree(n),
+      : _GM(::iers2010::GMe), _Re(::iers2010::Re), _cnormalized(true), m_degree(n),
         m_order((m > 0) ? m : n), _Cnm(n + 1, n + 1), _Snm(n + 1, n + 1) {}
 
   /* @brief Resize; check current capacity and only re-allocated data if
