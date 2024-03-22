@@ -191,7 +191,6 @@ if __name__ == '__main__':
                 verboseprint('Running command: {:}'.format([exe]))
 # assert a 0 exit code
                 subprocess.run([exe], stdout=sys.stderr, check=True)
-                #print('Test {:} OK!'.format(exe))
                 report(file, 'OK', '')
 # encountered the json file - these are mocks, should not compile
             elif file.endswith('.json'):

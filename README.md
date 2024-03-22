@@ -46,6 +46,18 @@ installed (on your system) to successefuly compile this library.
 Vector/Matrix operations are implemented using the [eigen3](https://eigen.tuxfamily.org/index.php?title=Main_Page) 
 library. Availability of this library is also mandatory.
 
+# CSPICE <a name="cspice"></a>
+
+Interaction with planetary ephemeris files (i.e. JPL's published DE), is 
+done via the [SPICE Toolkit](https://naif.jpl.nasa.gov/naif/toolkit.html). 
+The toolkit is a C library with a corresponding API. 
+
+## Installation
+
+* Download the C library from the [correponding site](https://naif.jpl.nasa.gov/naif/toolkit_C.html) and uncompress
+
+* Use the scripts [c2cpp_header.py](script/cppspice/c2cpp_header.py) and [install.sh](script/cppspice/install.sh) file to install the library:
+
 # Compilation / Installation <a name="compilation-installation"></a>
 
 > January 2022:

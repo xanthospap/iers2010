@@ -13,7 +13,9 @@ namespace dso {
 /** Spherical harmonics of Earth's gravity potential to acceleration and
  *  gradient using the algorithm due to Cunningham. The acceleration and
  *  gradient are computed in Cartesian components, i.e.
+ *
  *  acceleration = (ax, ay, az), and
+ *
  *             | dax/dx dax/dy dax/dz |
  *  gradient = | day/dx day/dy day/dz |
  *             | daz/dx daz/dy daz/dz |

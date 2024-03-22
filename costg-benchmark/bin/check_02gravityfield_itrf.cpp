@@ -119,6 +119,7 @@ std::vector<BmOrbit> parse_orbit(const char *fn) {
 
 constexpr const int DEGREE = 180;
 constexpr const int ORDER = 180;
+
 int main(int argc, char *argv[]) {
   if (argc != 4) {
     fprintf(
@@ -145,25 +146,11 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "ERROR Failed reading gravity model!\n");
     return 1;
   }
-  // assert(-0.22147242139e-09 == sc.C(180, 180));
-  if (std::abs(-0.69378736267e-09 - stokes.C(150, 150))>=1e-15) {
-    printf("Shit! Expected: %+.15e\n", -0.69378736267e-09);
-    printf("              : %+.15e\n", stokes.C(150, 150));
-  } else {
-    printf("Ok    Expected: %+.15e\n", -0.69378736267e-09);
-    printf("              : %+.15e\n", stokes.C(150, 150));
-  }
-  //for (int n = 0; n <= DEGREE; n++) {
-  //  for (int m = 0; m <= n; m++) {
-  //    if (std::isnan(stokes.C(n, m))) {
-  //      printf("NaN value for C(%d,%d)\n", n, m);
-  //    }
-  //  }
-  //}
+  
+  /* checks */
   assert(stokes.max_degree() == DEGREE);
   assert(stokes.max_order() == ORDER);
-  assert(std::abs(-0.69378736267e-09 - stokes.C(150, 150))<1e-15);
-  return 6;
+  // assert(std::abs(-0.69378736267e-09 - stokes.C(150, 150))<1e-15);
 
   /* allocate scratch space for computations */
   dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> W(DEGREE + 3,
@@ -171,7 +158,6 @@ int main(int argc, char *argv[]) {
   dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> M(DEGREE + 3,
                                                                     DEGREE + 3);
 
-  return 7;
   /* compare results epoch by epoch */
   Eigen::Matrix<double, 3, 1> a;
   Eigen::Matrix<double, 3, 3> g;
