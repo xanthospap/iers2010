@@ -40,7 +40,10 @@ public:
     double fac;
     int rows() const noexcept { return mat.rows(); }
     int cols() const noexcept { return mat.cols(); }
-    _ScaledProxy(const T1 &t1, double d) noexcept : mat(t1), fac(d){};
+    _ScaledProxy(const T1 &t1, double d) noexcept : mat(t1), fac(d) 
+    {
+      printf("[DEBUG] Called _ScaledProxy c'tor\n");
+    };
     double operator()(int i, int j) const noexcept { return mat(i, j) * fac; }
     double data(int i) const noexcept { return mat.data(i) * fac; }
     template <typename T2>
@@ -61,6 +64,7 @@ public:
     double data(int i) const noexcept { return lhs.data(i) + rhs.data(i); }
     _SumProxy(const T1 &t1, const T2 &t2) noexcept : lhs(t1), rhs(t2) {
       assert((lhs.rows() == rhs.rows()) && (lhs.cols() == rhs.cols()));
+      printf("[DEBUG] Called _SumProxy c'tor\n");
     }
     /** Allow for _SumProxy<T1,T2> + _ScaledProxy<U> */
     template <typename U>
@@ -206,6 +210,7 @@ public:
   CoeffMatrix2D(int rows, int cols) noexcept
       : m_storage(rows, cols), m_data(new double[m_storage.num_elements()]),
         _capacity(m_storage.num_elements()) {
+    printf("[DEBUG] CoeffMatrix2D c'tor; mem at: %p size=%ld\n", (void*)m_data, _capacity);
 #ifdef DEBUG
     assert(m_storage.num_elements() > 0);
 #endif
@@ -213,6 +218,7 @@ public:
 
   /** Destructor; free memmory */
   ~CoeffMatrix2D() noexcept {
+    printf("[DEBUG] CoeffMatrix2D destructor; mem at %p\n", (void*)m_data);
     if (m_data)
       delete[] m_data;
     _capacity = 0;
@@ -223,6 +229,7 @@ public:
       : m_storage(mat.m_storage), m_data(new double[mat.num_elements()]),
         _capacity(mat.num_elements()) {
     std::memcpy(m_data, mat.m_data, sizeof(double) * mat.num_elements());
+    printf("[DEBUG] CoeffMatrix2D copy c'tor; mem at: %p size=%ld\n", (void*)m_data, _capacity);
   }
 
   /** Move constructor */
@@ -231,6 +238,7 @@ public:
     mat.m_data = nullptr;
     mat.m_storage.__set_dimensions(0, 0);
     mat._capacity = 0;
+    printf("[DEBUG] CoeffMatrix2D move c'tor; mem at: %p size=%ld\n", (void*)m_data, _capacity);
   }
 
   template <typename T1, typename T2>
@@ -241,6 +249,7 @@ public:
     for (std::size_t i = 0; i < m_storage.num_elements(); i++) {
       m_data[i] = sum.data(i);
     }
+    printf("[DEBUG] Called CoeffMatrix2D(_SumProxy<T1, T2> &&sum)\n");
   }
   template <typename T1>
   CoeffMatrix2D(_ScaledProxy<T1> &&fac) noexcept
@@ -250,6 +259,7 @@ public:
     for (std::size_t i = 0; i < m_storage.num_elements(); i++) {
       m_data[i] = fac.data(i);
     }
+    printf("[DEBUG] Called CoeffMatrix2D(_ScaledProxy<T1> &&fac)\n");
   }
 
   /** (Copy) Assignment operator */
@@ -265,6 +275,7 @@ public:
       std::memcpy(m_data, mat.m_data, sizeof(double) * mat.num_elements());
       m_storage.__set_dimensions(mat.rows(), mat.cols());
     }
+    printf("[DEBUG] Called CoeffMatrix2D &operator=(const CoeffMatrix2D &mat)\n");
     return *this;
   }
 
@@ -276,6 +287,7 @@ public:
     mat.m_data = nullptr;
     mat.m_storage.__set_dimensions(0, 0);
     mat._capacity = 0;
+    printf("[DEBUG] Called CoeffMatrix2D &operator=(CoeffMatrix2D &&mat)\n");
     return *this;
   }
 

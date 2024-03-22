@@ -138,15 +138,32 @@ int main(int argc, char *argv[]) {
 
   /* read gravity model into a StokesCoeffs instance */
   dso::Icgem icgem(argv[2]);
-  dso::StokesCoeffs sc(DEGREE, ORDER, 0e0, 0e0);
+  dso::StokesCoeffs stokes;
   dso::Datetime<dso::nanoseconds> t(
       dso::from_mjdepoch<dso::nanoseconds>(orbvec[0].epoch));
-  if (icgem.parse_data(DEGREE, ORDER, t, sc)) {
+  if (icgem.parse_data(DEGREE, ORDER, t, stokes)) {
     fprintf(stderr, "ERROR Failed reading gravity model!\n");
     return 1;
   }
   // assert(-0.22147242139e-09 == sc.C(180, 180));
-  assert(std::abs(-0.69378736267e-09 - sc.C(150, 150))<1e-15);
+  if (std::abs(-0.69378736267e-09 - stokes.C(150, 150))>=1e-15) {
+    printf("Shit! Expected: %+.15e\n", -0.69378736267e-09);
+    printf("              : %+.15e\n", stokes.C(150, 150));
+  } else {
+    printf("Ok    Expected: %+.15e\n", -0.69378736267e-09);
+    printf("              : %+.15e\n", stokes.C(150, 150));
+  }
+  //for (int n = 0; n <= DEGREE; n++) {
+  //  for (int m = 0; m <= n; m++) {
+  //    if (std::isnan(stokes.C(n, m))) {
+  //      printf("NaN value for C(%d,%d)\n", n, m);
+  //    }
+  //  }
+  //}
+  assert(stokes.max_degree() == DEGREE);
+  assert(stokes.max_order() == ORDER);
+  assert(std::abs(-0.69378736267e-09 - stokes.C(150, 150))<1e-15);
+  return 6;
 
   /* allocate scratch space for computations */
   dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> W(DEGREE + 3,
@@ -154,13 +171,14 @@ int main(int argc, char *argv[]) {
   dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> M(DEGREE + 3,
                                                                     DEGREE + 3);
 
+  return 7;
   /* compare results epoch by epoch */
   Eigen::Matrix<double, 3, 1> a;
   Eigen::Matrix<double, 3, 3> g;
   auto acc = accvec.begin();
   for (const auto &in : orbvec) {
     /* compute acceleration for given epoch/position */
-    if (dso::sh2gradient_cunningham(sc, in.xyz, a, g, DEGREE, ORDER, -1, -1, &W,
+    if (dso::sh2gradient_cunningham(stokes, in.xyz, a, g, DEGREE, ORDER, -1, -1, &W,
                                     &M)) {
       fprintf(stderr, "ERROR Failed computing acceleration/gradient\n");
       return 1;

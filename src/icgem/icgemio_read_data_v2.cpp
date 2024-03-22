@@ -14,6 +14,8 @@ constexpr const int max_data_line = 256;
 int dso::Icgem::parse_data_v2(int l, int k, const Icgem::Datetime &t,
                               dso::StokesCoeffs &coeffs) noexcept {
 
+  printf("Reading Stokes at function %s\n", __func__);
+
   /* check degree & order parameters */
   int error = 0;
   if (l > max_degree() || k > l) {
@@ -64,30 +66,44 @@ int dso::Icgem::parse_data_v2(int l, int k, const Icgem::Datetime &t,
         /* compute C and S coefficients */
         const double dt =
             t.diff<DateTimeDifferenceType::FractionalYears>(entry.t0);
+        /* ------------------------------------------------------------------
+         * WARNING !!
+         * ------------------------------------------------------------------
+         *  It took me fucking hours to debug this! if entry.period is zero, 
+         *  the the computations below may result in a nan value, and cast the 
+         *  collected values to garbage.
+         *  Be extra careful to coorectly avoid this issue.
+         */
+        const double period = ((entry.key != DataEntryType::asin) && (entry.key != DataEntryType::acos)) ? 1e0 : entry.period;
         const double C = entry.C * (entry.key == DataEntryType::gfc) +
                          entry.C * (entry.key == DataEntryType::gfct) +
                          (entry.C * dt) * (entry.key == DataEntryType::trnd) +
-                         (entry.C * std::sin((D2PI / entry.period) * dt)) *
+                         (entry.C * std::sin((D2PI / period) * dt)) *
                              (entry.key == DataEntryType::asin) +
-                         (entry.C * std::cos((D2PI / entry.period) * dt)) *
+                         (entry.C * std::cos((D2PI / period) * dt)) *
                              (entry.key == DataEntryType::acos);
-        //if (entry.degree==3 && entry.order==2) {
-        //  printf("%+.15e %+.15e %+.15e * %.12e %+.15e * %.12e %+.15e * %.12e\n",
-        //         entry.C * (entry.key == DataEntryType::gfc),
-        //         (entry.C) * (entry.key == DataEntryType::gfct),
-        //         (entry.C ) * (entry.key == DataEntryType::trnd), dt,
-        //         (entry.C) * (entry.key == DataEntryType::asin), std::sin((D2PI / entry.period) * dt),
-        //         (entry.C) * (entry.key == DataEntryType::acos), std::cos((D2PI / entry.period) * dt));
-        //}
         const double S = entry.S * (entry.key == DataEntryType::gfc) +
                          entry.S * (entry.key == DataEntryType::gfct) +
                          (entry.S * dt) * (entry.key == DataEntryType::trnd) +
-                         (entry.S * std::sin((D2PI / entry.period) * dt)) *
+                         (entry.S * std::sin((D2PI / period) * dt)) *
                              (entry.key == DataEntryType::asin) +
-                         (entry.S * std::cos((D2PI / entry.period) * dt)) *
+                         (entry.S * std::cos((D2PI / period) * dt)) *
                              (entry.key == DataEntryType::acos);
         coeffs.C(entry.degree, entry.order) += C;
         coeffs.S(entry.degree, entry.order) += S;
+
+        if ((entry.degree == entry.order) && (entry.order == 150)) {
+          printf("C = %.15e * %d\n", entry.C, (entry.key == DataEntryType::gfc));
+          printf("\t+ %.15e * %d\n", entry.C, (entry.key == DataEntryType::gfct));
+          printf("\t+ %.15e * %d\n", (entry.C * dt), (entry.key == DataEntryType::trnd));
+          printf("\t+ %.15e * %d\n", entry.C * std::sin((D2PI / period) * dt), (entry.key == DataEntryType::asin));
+          printf("\t+ %.15e * %d\n", entry.C * std::cos((D2PI / period) * dt), (entry.key == DataEntryType::acos));
+          printf("\tnote: period=%.3f (%d) dt=%.3f\n", entry.period, entry.period == 0e0, dt);
+
+          printf("[%s] C(150,150) = %.15e\n", __func__, coeffs.C(150,150));
+          printf("[%s] S(150,150) = %.15e\n", __func__, coeffs.S(150,150));
+        }
+
       } else {
         ;
       }
