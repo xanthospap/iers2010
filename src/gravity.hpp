@@ -10,6 +10,59 @@
 
 namespace dso {
 
+/** Acceleration due to point mass at r_cb on a mass at r.
+ *
+ * Compute the aceleration induced on a body at the position vector r, caused
+ * by a point mass with gravitational constant GM at position rcb.
+ * This is normally used to compute third-body acceleration on a satellite, 
+ * induced by e.g. the Sun or Moon.
+ *
+ * @param[in] r Geocentric position of attracted mass, i.e. satellite in [m].
+ *              The vector holds Cartesian components, i.e. r=(x,y,z).
+ * @param[in] rcb Geocentric position vector of the attracting body, i.e. the 
+ *              'third body' (e.g. Sun or Moon) in [m].
+ * @param[in] GMcb gravitational constant of the 'third body', i.e. G * M_cb, 
+ *              in [m^3/ sec^2]
+ * @return Acceleration induced on the mass, in Cartesian components, in 
+ *         units of [m/s^2]. I.e. a = (a_x, a_y, a_z)
+ *
+ * @note Instead of using [m] as input units, [km] can also be used, as long
+ *       as it is used consistently for ALL inputs (r, rcb and GM). in this 
+ *       case, the resulting acceleration will be given in units of [km/s^2].
+ */
+Eigen::Matrix<double, 3, 1>
+point_mass_acceleration(const Eigen::Matrix<double, 3, 1> &r,
+                        const Eigen::Matrix<double, 3, 1> &rcb,
+                        double GMcb) noexcept;
+/** Acceleration due to point mass at r_cb on a mass at r.
+ *
+ * Same as above, only in this case we also compute and return the Jacobian 
+ * matrix da/dr, i.e.
+ *
+ *     | dax/dx dax/dy dax/dz |
+ * J = | day/dx day/dy day/dz |
+ *     | daz/dx daz/dy daz/dz |
+ *
+ * @param[in] r Geocentric position of attracted mass, i.e. satellite in [m].
+ *              The vector holds Cartesian components, i.e. r=(x,y,z).
+ * @param[in] rcb Geocentric position vector of the attracting body, i.e. the 
+ *              'third body' (e.g. Sun or Moon) in [m].
+ * @param[in] GMcb gravitational constant of the 'third body', i.e. G * M_cb, 
+ *              in [m^3/ sec^2]
+ * @param[out] jacobian The Jacobian 3x3 matrix da/dr
+ * @return Acceleration induced on the mass, in Cartesian components, in 
+ *         units of [m/s^2]. I.e. a = (a_x, a_y, a_z)
+ *
+ * @note Instead of using [m] as input units, [km] can also be used, as long
+ *       as it is used consistently for ALL inputs (r, rcb and GM). in this 
+ *       case, the resulting acceleration will be given in units of [km/s^2].
+ */
+Eigen::Matrix<double, 3, 1>
+point_mass_acceleration(const Eigen::Matrix<double, 3, 1> &r,
+                        const Eigen::Matrix<double, 3, 1> &rcb,
+                        double GMcb, 
+                        Eigen::Matrix<double,3,3> &jacobian) noexcept;
+
 /** Spherical harmonics of Earth's gravity potential to acceleration and
  *  gradient using the algorithm due to Cunningham. The acceleration and
  *  gradient are computed in Cartesian components, i.e.

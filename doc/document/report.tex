@@ -1,0 +1,195 @@
+\documentclass[12pt, a4paper, twoside]{article}
+
+\usepackage{graphicx}
+\usepackage{xargs} %% Use more than one optional parameter in a new command
+\usepackage{caption}
+\captionsetup[table]{position=bottom}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  filecolor=magenta,
+  urlcolor=cyan
+}
+\usepackage{soul}       %% allow wrapping of underlined text, via \ul{...}
+  % the following is for biblatex, see
+  % https://www.overleaf.com/learn/latex/Biblatex_bibliography_styles
+\usepackage[
+    backend=biber,
+    firstinits=true,
+    style=authoryear-ibid,
+    maxcitenames=2,
+    maxbibnames=25,
+    uniquelist=false
+]{biblatex}
+\usepackage[intoc]{nomencl}  %% for nomenclature
+\usepackage{etoolbox} %% for grouping nomenclature, see nomgroup
+\usepackage[acronym, toc, nonumberlist]{glossaries} %% for acronyms
+\usepackage{geometry}   %% somewhat wider text to allow code
+\usepackage[per-mode=symbol]{siunitx}    %% SI Units
+\usepackage{amsmath,amssymb,amsthm,bm} %% for math ...
+\usepackage{tabularx}
+\usepackage{multirow}  %% for tabular
+\usepackage{booktabs}  %% toprule, bottomrule
+\usepackage{enumitem} %% format description an lists
+
+%
+%  MACROS
+%  ------------------------------------------------------------------------
+%
+% a macro to write norms
+\newcommand\norm[1]{\lVert#1\rVert}
+% a macro to write derivative at:
+% examples: 1. $f'(x)\at{x=1}$
+%           2. $f'(x)\at[\big]{x=1}$
+\newcommand{\at}[2][]{#1|_{#2}}
+% Symbols for Love numbers, h, k, and l
+\newcommand{\lovek}{k}
+\newcommand{\loveh}{h}
+\newcommand{\lovel}{l}
+% Imaginary i
+\newcommand{\iim}{{i\mkern1mu}}
+% Quaternion
+\DeclareMathAlphabet{\quaternion}{T1}{calligra}{q}{n}
+
+%
+% ACRONYMS/GLOSSARY
+% ---------------------------------------------------------------------------
+%
+\makeglossaries
+\newacronym{ids}{IDS}{International DORIS Service}
+\newacronym{antex}{ANTEX}{Antenna Exchange Format}
+\newacronym{pcv}{PCV}{Phase Center Variations}
+\newacronym{pco}{PCO}{Phase Center Offset}
+\newacronym{iers}{IERS}{International Earth Rotation and Reference Systems Service}
+\newacronym{era}{ERA}{Earth Rotation Angle}
+\newacronym{gst}{GST}{Greenwich Sidereal Time}
+\newacronym{tio}{TIO}{Terrestrial Intermediate Origin}
+\newacronym{vlbi}{VLBI}{Very Long Baseline Interferometry}
+\newacronym{ode}{ODE}{Ordinary Differential Equation}
+\newacronym{rkn}{RKN}{Runge-Kutta-Nystr{\"o}m}
+\newacronym{snc}{SNC}{State Noise Compensation}
+\newacronym{dmc}{DMC}{Dynamic Model Compensation}
+\newacronym{icrf}{ICRF}{International Celestial Reference Frame}
+\newacronym{icrs}{ICRS}{International Celestial Reference System}
+\newacronym{crs}{CRS}{Celestial Reference System}
+\newacronym{gcrf}{GCRF}{Geocentric Celestial Reference Frame}
+\newacronym{gcrs}{GCRS}{Geocentric Celestial Reference System}
+\newacronym{bcrf}{BCRF}{Barycentric Celestial Reference Frame}
+\newacronym{bcrs}{BCRS}{Barycentric Celestial Reference System}
+\newacronym{cip}{CIP}{Celestial Intermediate Pole}
+\newacronym{cio}{CIO}{Celestial Intermediate Origin}
+\newacronym{iau}{IAU}{International Astronomical Union}
+\newacronym{cirs}{CIRS}{Celestial Intermediate Reference System}
+\newacronym{itrs}{ITRS}{International Terrestrial Reference System}
+\newacronym{tirs}{TIRS}{Terrestrial Intermediate Reference System}
+\newacronym{itrf}{ITRF}{International Terrestrial Reference Frame}
+\newacronym{irf}{IRF}{Inertial Reference Frame}
+\newacronym{trf}{TRF}{Terrestrial Reference Frame}
+\newacronym{tcb}{TCB}{Barycentric Coordinate Time}
+\newacronym{tdb}{TDB}{Barycentric Dynamical Time}
+\newacronym{tcg}{TCG}{Geocentric Coordinate Time}
+\newacronym{tt}{TT}{Terestrial Time}
+\newacronym{tai}{TAI}{International Atomic Time}
+\newacronym{eop}{EOP}{Earth Orientation Parameters}
+\newacronym{erp}{ERP}{Earth Rotation Parameters}
+\newacronym{leo}{LEO}{Low Earth Orbit}
+\newacronym{sinex}{SINEX}{Solution INdependent EXchange Format}
+\newacronym{cnes}{CNES}{Centre National d'Etudes Spatiales (National Centre for Space Studies)}
+\newacronym{catr}{CATR}{Compact Antenna Test Range}
+\newacronym{utc}{UTC}{Coordinated Universal Time}
+\newacronym{sofa}{SOFA}{Standards Of Fundamental Astronomy}
+\newacronym{fcn}{FCN}{Free Core Nutation}
+\newacronym{ut1}{UT1}{Universal Time}
+\newacronym{tgp}{TGP}{Tide Generating Potential}
+\newacronym{pod}{POD}{Precise Orbit Determination}
+\newacronym{gmst}{GMST}{Greenwich Mean Sidereal Time}
+\newacronym{icgem}{ICGEM}{International Centre for Global Earth Models}
+\newacronym{iag}{IAG}{International Association of Geodesy}
+\newacronym{igfs}{IGFS}{International Gravity Field Service}
+\newacronym{tvg}{TVG}{Time Variable Gravity}
+\newacronym{ecef}{ECEF}{Earth Centered Earth Fixed}
+\newacronym{grace}{GRACE}{Gravity Recovery and Climate Experiment}
+\newacronym{jpl}{JPL}{Jet Propulsion Laboratory}
+\newacronym{iugg}{IUGG}{International Union of Geodesy and Geophysics}
+\newacronym{jd}{JD}{Julian Date}
+\newacronym{mjd}{MJD}{Modified Julian Date}
+\newacronym{goce}{GOCE}{Gravity Field and Steady-State Ocean Circulation Explorer}
+\newacronym{pece}{PECE}{Predictor-Corrector}
+\newacronym{gps}{GPS}{Global Positioning System}
+\newacronym{arp}{ARP}{Antenna Reference Point}
+\newacronym{ign}{IGN}{Institut Géographique National}
+\newacronym{cls}{CLS}{Collecte Localisation Satellites}
+\newacronym{grgs}{GRGS}{Groupe de Recherche en Géodésie Spatiale}
+\newacronym{doris}{DORIS}{Détermination d'Orbite et Radiopositionnement Intégré par Satellite (Doppler Orbitography and Radiopositioning Integrated by Satellite)}
+\newacronym{ggos}{GGOS}{Global Geodetic Observation System}
+\newacronym{slr}{SLR}{Satellite Laser Ranging}
+\newacronym{gnss}{GNSS}{Global Navigation Satellite System}
+\newacronym{igs}{IGS}{International GNSS Service}
+\newacronym{ilrs}{ILRS}{International Laser Ranging Service}
+\newacronym{ivs}{IVS}{International VLBI Service for Geodesy and Astronomy}
+\newacronym{uso}{USO}{Ultra Stable Oscillator}
+\newacronym{gsfc}{GSFC}{Goddard Space Flight Center}
+\newacronym{nasa}{NASA}{National Aeronautics and Space Administration}
+\newacronym{jason}{JASON}{Joint Altimetry Satellite Oceanography Network}
+\newacronym{noaa}{NOAA}{National Oceanic and Atmospheric Administration}
+\newacronym{eumetsat}{EUMETSAT}{European Organisation for the Exploitation of Meteorological Satellites}
+\newacronym{saa}{SAA}{South Atlantic Anomaly}
+\newacronym{cddis}{CDDIS}{Crustal Dynamics Data Information System}
+
+%
+% Nomenclature
+% ---------------------------------------------------------------------------
+%
+% This code creates the groups, see
+% https://www.overleaf.com/learn/latex/Nomenclatures
+% -----------------------------------------
+\renewcommand\nomgroup[1]{%
+  \item[\bfseries
+  \ifstrequal{#1}{P}{Physics constants}{%
+  \ifstrequal{#1}{V}{Vectors and Matrices}{%
+  \ifstrequal{#1}{O}{Other symbols}{}}}%
+]}
+\nomenclature[P]{$c$}{Speed of light in a vacuum}
+\nomenclature[P]{$G$}{Gravitational constant}
+\nomenclature[P]{$M_{\Earth}$}{Earth's mass}
+\nomenclature[P]{$R_{\Earth}$}{Earth's equatorial radius}
+\nomenclature[P]{$\mu _{\Earth}$}{Gravitational constant times Earth's mass}
+\nomenclature[P]{$M_{\Sun}$}{Sun's mass}
+\nomenclature[P]{$R_{\Sun}$}{Sun's radius}
+\nomenclature[P]{$\mu _{\Sun}$}{Gravitational constant times Sun's mass}
+\nomenclature[P]{$M_{\Moon}$}{Moon's mass}
+\nomenclature[P]{$R_{\Moon}$}{Moon's radius}
+\nomenclature[P]{$\mu _{\Moon}$}{Gravitational constant times Moon's mass}
+
+\begin{document}
+
+\title{%
+  DSO Geodeticc Library \\
+  \large Models, Methods and Software Description}
+\author{X. Papanikolaou, D. Anastasiou, V. Zacharis}
+\date{\today}
+
+\maketitle
+\clearpage
+
+%\frontmatter
+\tableofcontents
+\listoffigures
+\listoftables
+
+%\chapter{Geopotential and Gravity}\label{ch:geopotential_and_gravity}
+\input{chapters/gravity/third_body_attraction}
+\input{chapters/planetary_ephemeris}
+
+% for this to work, the following command must be issued:
+% makeindex report.nlo -s nomencl.ist -o report.nls
+\printnomenclature
+\printglossary[type=\acronymtype,title=Acronyms]
+\clearpage
+\pagenumbering{arabic}
+
+% bibliography
+\printbibliography
+
+\end{document}

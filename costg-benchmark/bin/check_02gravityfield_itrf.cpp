@@ -2,123 +2,12 @@
 #include "eigen3/Eigen/Eigen"
 #include "gravity.hpp"
 #include "icgemio.hpp"
-#include <charconv>
-#include <cstdio>
-#include <fstream>
-#include <stdexcept>
-#include <vector>
-
-struct BmOrbit {
-  dso::MjdEpoch epoch;
-  Eigen::Matrix<double, 3, 1> xyz;
-  Eigen::Matrix<double, 3, 1> vxyz;
-  Eigen::Matrix<double, 3, 1> axyz;
-  BmOrbit(const dso::MjdEpoch &t, double *rva) : epoch(t) {
-    xyz << rva[0], rva[1], rva[2];
-    vxyz << rva[3], rva[4], rva[5];
-    axyz << rva[6], rva[7], rva[8];
-  }
-};
-
-struct BmAcceleration {
-  dso::MjdEpoch epoch;
-  Eigen::Matrix<double, 3, 1> axyz;
-  BmAcceleration(const dso::MjdEpoch &t, double ax, double ay, double az)
-      : epoch(t) {
-    axyz << ax, ay, az;
-  }
-};
-
-const char *skipws(const char *line) noexcept {
-  while (line && *line == ' ')
-    ++line;
-  return line;
-}
-
-std::vector<BmAcceleration> parse_acceleration(const char *fn) {
-  std::ifstream fin(fn);
-  if (!fin.is_open()) {
-    fprintf(stderr, "ERROR Failed opening file %s\n", fn);
-    throw std::runtime_error("Failed opening input file " + std::string(fn) +
-                             "\n");
-  }
-
-  char line[256];
-  for (int i = 0; i < 5; i++)
-    fin.getline(line, 256);
-  std::vector<BmAcceleration> vec;
-
-  int error = 0;
-  while (fin.getline(line, 256) && (!error)) {
-    double td[4];
-    int sz = std::strlen(line);
-    const char *str = line;
-    for (int i = 0; i < 4; i++) {
-      auto res = std::from_chars(skipws(str), line + sz, td[i]);
-      if (res.ec != std::errc{})
-        ++error;
-      str = res.ptr;
-    }
-    if (!error) {
-      int imjd = (int)td[0];
-      double fsec = (td[0] - imjd) * 86400e0;
-      const dso::MjdEpoch t(imjd, dso::FractionalSeconds{fsec});
-      vec.emplace_back(t, td[1], td[2], td[3]);
-    }
-  }
-
-  if (error || (!fin.eof())) {
-    fprintf(stderr, "ERROR Failed parsing input file %s\n", fn);
-    throw std::runtime_error("Failed parsing input file " + std::string(fn) +
-                             "\n");
-  }
-
-  return vec;
-}
-
-std::vector<BmOrbit> parse_orbit(const char *fn) {
-  std::ifstream fin(fn);
-  if (!fin.is_open()) {
-    fprintf(stderr, "ERROR Failed opening file %s\n", fn);
-    throw std::runtime_error("Failed opening input file " + std::string(fn) +
-                             "\n");
-  }
-
-  char line[512];
-  for (int i = 0; i < 5; i++)
-    fin.getline(line, 512);
-  std::vector<BmOrbit> vec;
-
-  int error = 0;
-  while (fin.getline(line, 512) && (!error)) {
-    double td[10];
-    int sz = std::strlen(line);
-    const char *str = line;
-    for (int i = 0; i < 10; i++) {
-      auto res = std::from_chars(skipws(str), line + sz, td[i]);
-      if (res.ec != std::errc{})
-        ++error;
-      str = res.ptr;
-    }
-    if (!error) {
-      int imjd = (int)td[0];
-      double fsec = (td[0] - imjd) * 86400e0;
-      const dso::MjdEpoch t(imjd, dso::FractionalSeconds{fsec});
-      vec.emplace_back(t, &td[1]);
-    }
-  }
-
-  if (error || (!fin.eof())) {
-    fprintf(stderr, "ERROR Failed parsing input file %s\n", fn);
-    throw std::runtime_error("Failed parsing input file " + std::string(fn) +
-                             "\n");
-  }
-
-  return vec;
-}
+#include "costg_utils.hpp"
 
 constexpr const int DEGREE = 180;
 constexpr const int ORDER = 180;
+
+using namespace costg;
 
 int main(int argc, char *argv[]) {
   if (argc != 4) {

@@ -54,9 +54,18 @@ The toolkit is a C library with a corresponding API.
 
 ## Installation
 
-* Download the C library from the [correponding site](https://naif.jpl.nasa.gov/naif/toolkit_C.html) and uncompress
+* Download the C library from the [correponding site](https://naif.jpl.nasa.gov/naif/toolkit_C.html) and uncompress.
 
-* Use the scripts [c2cpp_header.py](script/cppspice/c2cpp_header.py) and [install.sh](script/cppspice/install.sh) file to install the library:
+* Use the script [c2cpp_header.py](script/cppspice/c2cpp_header.py) to tranform 
+C header file. Run the script using the cspice `include' folder path as command 
+line argument. I.e. if the uncompressed cspice folder is at `/home/work/var/cspice'', 
+use `$> c2cpp_header.py /home/work/var/cspice'.
+
+* Run the `makeall.csh' script provided by the distribution (under `cspice' folder).
+
+* Copy the [install.sh](script/cppspice/install.sh) script under the `cspice' folder; 
+run it as root, to install the library. Header files will be available at 
+`/usr/local/include` and the library at `/usr/local/lib`.
 
 # Compilation / Installation <a name="compilation-installation"></a>
 

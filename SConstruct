@@ -54,6 +54,7 @@ lib_src_files += glob.glob(r"src/atmospheric_tides/*.cpp")
 lib_src_files += glob.glob(r"src/earth_rotation/*.cpp")
 lib_src_files += glob.glob(r"src/eop/*.cpp")
 lib_src_files += glob.glob(r"src/gravity/*.cpp")
+lib_src_files += glob.glob(r"src/planets/*.cpp")
 #lib_src_files += glob.glob(r"src/grid/*.cpp")
 #lib_src_files += glob.glob(r"src/trp/*.cpp")
 
@@ -109,7 +110,6 @@ if test:
   tests_sources += glob.glob(r"test/time/*.cpp")
   tenv.Append(RPATH=root_dir)
   for tsource in tests_sources:
-    #print('\t--> Compiling test {:} ...'.format(tsource))
     ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
     if 'mock' in os.path.basename(tsource):
       cerror_dct[os.path.basename(tsource)] = {
@@ -119,15 +119,8 @@ if test:
                 'flags': '{:}'.format(' '.join(['-o', tenv['CXXFLAGS']])), 
                 'exit': 1}
     else:
-      # print('adding target {:}'.format(ttarget))
       tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.')
     with open(cmp_error_fn, 'w') as fjson: print(json.dumps(cerror_dct, indent = 4), file=fjson)
-    #env.Program(target=ttarget, 
-    #    #source=[tsource, link_w], 
-    #    source=[tsource], 
-    #    CPPPATH='src/',
-    #    LIBS=vlib+['geodesy', 'datetime', 'sofa_c'], 
-    #    LIBPATH=root_dir, RPATH=["."])
 
 ## SOFA Tests ... 
 if sofa:
@@ -146,7 +139,8 @@ if costg:
     tenv = env.Clone()
     tenv['CXXFLAGS'] = ' '.join([ x for x in env['CXXFLAGS'].split() if 'inline' not in x])
     test_sources = glob.glob(r"costg-benchmark/bin/*.cpp")
+    test_sources = [ fn for fn in test_sources if 'costg_utils.cpp' not in fn ] 
     tenv.Append(RPATH=root_dir)
     for tsource in test_sources:
         ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
-        tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+[ 'geodesy', 'datetime'], LIBPATH='.')
+        tenv.Program(target=ttarget, source=[tsource,'costg-benchmark/bin/costg_utils.cpp'], CPPPATH='src/', LIBS=vlib+[ 'geodesy', 'datetime', 'cspice'], LIBPATH='.')

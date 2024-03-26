@@ -1,0 +1,102 @@
+\section{Third Body Attraction}\label{sec:third_body_attraction}
+
+The acceleration induced (on an orbiting satellite) by celestial bodies 
+(denoted by the subscript \texttt{tb}) other than the Earth, are computed 
+using a``point mass'' model, i.e.
+\begin{equation}\label{eq:thirdbodyacceleration}
+  \ddot{\bm{r}} = -GM_{tb} \cdot \left( \frac{\bm{r}-\bm{r}_{tb}}{\norm{\bm{r}-\bm{r}_{tb}}^3} 
+    + \frac{\bm{r}_{tb}}{r_{tb}^3} \right)
+\end{equation}
+
+where $\bm{r}$ and $\bm{r}_{tb}$ are the geocentric position vectors of the 
+satellite and the celestial body respectively, e.g. in \gls{icrf}. Retrieving 
+Moon and planetary positions can be perfomed as oulined in \autoref{sec:moonandplanetaryephemeris}.
+
+\subsection{Derivation of Partials and Jacobian}
+
+\textbf{TL;DR} The Jacobian $J=\frac{\partial \ddot{\bm{r}}}{\partial \bm{r}}$ as 
+given by \autoref{eq:thirdbodyaccelerationgrad}.
+
+For the Jacobian of \autoref{eq:thirdbodyacceleration}, i.e. 
+$\frac{\partial \ddot{\bm{r}}}{\partial\bm{r}}$, we procced for each component 
+(assuming $\bm{r}=\begin{pmatrix}x&y&z\end{pmatrix}^{T}$, 
+ $\bm{r}_{tb}=\begin{pmatrix}x_{tb}&y_{tb}&z_{tb}\end{pmatrix}^{T}$)
+
+\begin{equation}\label{eq:thirdbodyaccelerationgradx}
+  \begin{aligned}
+  \frac{\partial \ddot{r}_x}{\partial x} 
+    &= \frac{\partial}{\partial x}\left( -GM_{tb} \cdot \left( \frac{x - x_{tb}}{\norm{\bm{r}-\bm{r}_{tb}}^3} + \frac{x_{tb}}{r_{tb}^3} \right) \right) \\
+    &= -GM_{tb} \cdot \frac{\partial}{\partial x} \left( \frac{x - x_{tb}}{\norm{\bm{r}-\bm{r}_{tb}}^3} \right) \\
+    &= -GM_{tb} \cdot \frac{\partial}{\partial x} \left( \left(x - x_{tb}\right) \cdot \norm{\bm{r}-\bm{r}_{tb}}^{-3} \right) \\
+    &= -GM_{tb} \cdot \left[ \frac{\partial}{\partial x} \left(x - x_{tb}\right) \cdot \norm{\bm{r}-\bm{r}_{tb}}^{-3}
+     + \left(x - x_{tb}\right) \cdot \frac{\partial}{\partial x} \left( \norm{\bm{r}-\bm{r}_{tb}}^{-3} \right) \right] \\
+    &= -GM_{tb} \cdot \left[ \norm{\bm{r}-\bm{r}_{tb}}^{-3} + \left(x - x_{tb}\right) \cdot \frac{\partial}{\partial x} \left( \delta x^2 + \delta y^2 + \delta z^2 \right)^{-3/2} \right] \\
+    &= -GM_{tb} \cdot \left[ \norm{\bm{r}-\bm{r}_{tb}}^{-3} + \left(x - x_{tb}\right) \cdot (-3/2) \left( \delta x^2 + \delta y^2 + \delta z^2 \right)^{-5/2} 
+      \cdot \frac{\partial}{\partial x} \left( \delta x^2 + \delta y^2 + \delta z^2 \right) \right] \\
+    &= -GM_{tb} \cdot \left[ \norm{\bm{r}-\bm{r}_{tb}}^{-3} + \left(x - x_{tb}\right) \cdot \frac{-3}{2} \left( \delta x^2 + \delta y^2 + \delta z^2 \right)^{-5/2} \cdot 2 \delta x \frac{d}{dx} (\delta x) \right] \\
+    &= -GM_{tb} \cdot \left[ \frac{1}{\norm{\bm{r}-\bm{r}_{tb}}^{3}} - 3 \frac{\left(x - x_{tb}\right)}{\norm{\bm{r}-\bm{r}_{tb}}^{5}} \cdot \left(x - x_{tb}\right) \right] \\
+  \end{aligned}
+\end{equation}
+
+The derivatives $\frac{\partial \ddot{r}_y}{\partial y}$ and $\frac{\partial \ddot{r}_z}{\partial z}$ 
+can be found in a similar way to be:
+
+\begin{equation}\label{eq:thirdbodyaccelerationgrady}
+  \begin{aligned}
+  \frac{\partial \ddot{r}_y}{\partial y} &= \frac{\partial}{\partial y}\left( -GM_{tb} \cdot \left( \frac{y - y_{tb}}{\norm{\bm{r}-\bm{r}_{tb}}^3} + \frac{y_{tb}}{r_{tb}^3} \right) \right) \\
+    &= -GM_{tb} \cdot \left[ \frac{1}{\norm{\bm{r}-\bm{r}_{tb}}^{3}} - 3 \frac{\left(y - y_{tb}\right)}{\norm{\bm{r}-\bm{r}_{tb}}^{5}} \cdot \left(y - y_{tb}\right) \right]
+  \end{aligned}
+\end{equation}
+
+and
+
+\begin{equation}\label{eq:thirdbodyaccelerationgradz}
+  \begin{aligned}
+  \frac{\partial \ddot{r}_z}{\partial z} &= \frac{\partial}{\partial z}\left( -GM_{tb} \cdot \left( \frac{z - z_{tb}}{\norm{\bm{r}-\bm{r}_{tb}}^3} + \frac{z_{tb}}{r_{tb}^3} \right) \right) \\
+    &= -GM_{tb} \cdot \left[ \frac{1}{\norm{\bm{r}-\bm{r}_{tb}}^{3}} - 3 \frac{\left(z - z_{tb}\right)}{\norm{\bm{r}-\bm{r}_{tb}}^{5}} \cdot \left(z - z_{tb}\right) \right]
+  \end{aligned}
+\end{equation}
+
+For the non-diagonal elements of the Jacobian, we have:
+\begin{equation}\label{eq:thirdbodyaccelerationgradxy}
+  \begin{aligned}
+  \frac{\partial \ddot{r}_x}{\partial y}
+  &= \frac{\partial}{\partial y}\left( -GM_{tb} \cdot \left( \frac{x - x_{tb}}{\norm{\bm{r}-\bm{r}_{tb}}^3} + \frac{x_{tb}}{r_{tb}^3} \right) \right) \\
+  &= -GM_{tb} \cdot \frac{\partial}{\partial y} \left( \left(x - x_{tb}\right) \cdot \norm{\bm{r}-\bm{r}_{tb}}^{-3} \right) \\
+  &= -GM_{tb} \cdot \left[ \frac{\partial}{\partial y} \left(x - x_{tb}\right) \cdot \norm{\bm{r}-\bm{r}_{tb}}^{-3} 
+    + \left(x - x_{tb}\right) \cdot \frac{\partial}{\partial y} \left( \norm{\bm{r}-\bm{r}_{tb}}^{-3} \right) \right] \\
+  &= -GM_{tb} \cdot \left[ \left(x - x_{tb}\right) \cdot \frac{\partial}{\partial y} \left( \delta x^2 + \delta y^2 + \delta z^2 \right)^{-3/2} \right] \\
+  &= -GM_{tb} \cdot \left[ \left(x - x_{tb}\right) \cdot (-3/2) \left( \delta x^2 + \delta y^2 + \delta z^2 \right)^{-5/2}
+    \cdot \frac{\partial}{\partial y} \left( \delta x^2 + \delta y^2 + \delta z^2 \right) \right] \\
+  &= -GM_{tb} \cdot \left[ \left(x - x_{tb}\right) \cdot \frac{-3}{2} \left( \delta x^2 + \delta y^2 + \delta z^2 \right)^{-5/2} \cdot 2 \delta y \frac{d}{dy} (\delta y) \right] \\
+  &= -GM_{tb} \cdot \left[ - 3 \frac{\left(x - x_{tb}\right)}{\norm{\bm{r}-\bm{r}_{tb}}^{5}} \cdot \left(y - y_{tb}\right) \right] \\
+  \end{aligned}
+\end{equation}
+
+which is the same as $\frac{\partial \ddot{r}_y}{\partial x}$. Working in a similar 
+way, we can derive that:
+\begin{equation}\label{eq:thirdbodyaccelerationgradxz}
+  %\begin{aligned}
+  \frac{\partial \ddot{r}_x}{\partial z} = \frac{\partial \ddot{r}_z}{\partial x} = 
+   -GM_{tb} \cdot \left[ - 3 \frac{\left(x - x_{tb}\right)}{\norm{\bm{r}-\bm{r}_{tb}}^{5}} \cdot \left(z - z_{tb}\right) \right]
+  %\end{aligned}
+\end{equation}
+
+Putting it all together, we can derive the Jacobian of \autoref{eq:thirdbodyacceleration} 
+i.e $J=\frac{\partial \ddot{\bm{r}}}{\partial \bm{r}}$ as: 
+
+\begin{equation}\label{eq:thirdbodyaccelerationgrad}
+  \begin{aligned}
+  \begin{pmatrix} \frac{\partial \ddot{r}_x}{\partial x} & \frac{\partial \ddot{r}_x}{\partial y} & \frac{\partial \ddot{r}_x}{\partial z} \\
+                                                         & \frac{\partial \ddot{r}_y}{\partial y} & \frac{\partial \ddot{r}_y}{\partial z} \\
+                                                         &                                        & \frac{\partial \ddot{r}_z}{\partial z} \\
+  \end{pmatrix}
+  & = -GM_{tb} \cdot [ \bm{I}_{(3\times 3)} \cdot \left( \frac{1}{\norm{\bm{r}-\bm{r}_{tb}}^{3}} \right) \\
+  & -\frac{3}{\norm{\bm{r}-\bm{r}_{tb}}^{5}} 
+  \begin{pmatrix} \left(x - x_{tb}\right)^2 & \left(x - x_{tb}\right)\left(y - y_{tb}\right) & \left(x - x_{tb}\right)\left(z - z_{tb}\right) \\
+                                            & \left(y - y_{tb}\right)^2 & \left(y - y_{tb}\right)\left(z - z_{tb}\right) \\
+                                            &                           & \left(z - z_{tb}\right)^2 \\
+  \end{pmatrix} ] \\
+  &= -GM_{tb} \cdot \left[ \frac{\bm{I}_{(3\times 3)}}{\norm{\bm{r}-\bm{r}_{tb}}^{3}} - 3\frac{\left(\bm{r}-\bm{r}_{tb}\right)\left(\bm{r}-\bm{r}_{tb}\right)^T}{\norm{\bm{r}-\bm{r}_{tb}}^{5}} \right] \\
+  \end{aligned}
+\end{equation}

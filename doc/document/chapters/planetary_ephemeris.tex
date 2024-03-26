@@ -1,0 +1,14 @@
+\section{Moon and Planetary Ephemeris}\label{sec:moonandplanetaryephemeris}
+
+To retrieve the position at some epoch of the Moon and various planets of the 
+solar system, the \href{https://ssd.jpl.nasa.gov/planets/eph\_export.html}{JPL Planetary and Lunar Ephemeris} 
+data files are used (so called ``DEXXX''). Additionally, the JPL-provided 
+\href{https://naif.jpl.nasa.gov/naif/toolkit.html}{SPICE} software is responsible 
+for loading and computing ephemeris.
+
+The SPICE software reads JPL planetary ephemerides in a machine-independent 
+binary format (kernels) which are available from the SPICE \href{ftp://ssd.jpl.nasa.gov/pub/eph/planets/bsp}{web site}.
+In addition to the ephemeris kernel, one needs to load a ``leapseconds kernel'' 
+file, available at \href{https://naif.jpl.nasa.gov/pub/naif/generic\_kernels/lsk/}{https://naif.jpl.nasa.gov/pub/naif/generic\_kernels/lsk/}.
+Once both kernels are loaded, then one can compute (interpolate) the positions 
+of the Moon or planets at the requested epoch(s).

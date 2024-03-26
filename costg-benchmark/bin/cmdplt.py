@@ -33,7 +33,7 @@ if __name__ == "__main__":
     sz = stats.describe(ar)
     zstr = r'Z: max={:.2e} mean={:+.2e}$\pm${:.3e}'.format(max(abs(x) for x in sz.minmax), sz.mean, math.sqrt(sz.variance))
 
-## Plot differences (this-COST-G)
+## Plot differences (this-COST-G) per component
     plt.rcParams["font.family"] = "monospace"
 
     ax1 = plt.subplot(311)
@@ -54,4 +54,15 @@ if __name__ == "__main__":
     plt.tick_params('x', labelsize=6)
     plt.xlabel('Seconds of Day')
     
+    plt.show()
+
+## Plot norm differences
+    def norm(x,y,z): return math.sqrt(x*x+y*y+z*z)
+    nd = [ norm(a1x[i], a1y[i], a1z[i]) - norm(a2x[i], a2y[i], a2z[i]) for i in range(len(a1x)) ]
+    sz = stats.describe(nd)
+    nstr = r'$\delta a$: max={:.2e} mean={:+.2e}$\pm${:.3e}'.format(max(abs(x) for x in sz.minmax), sz.mean, math.sqrt(sz.variance))
+    fig, ax = plt.subplots()
+    ax.plot(t, nd, linewidth=2.0)
+    ax.set_xlabel('Seconds of Day')
+    ax.set_ylabel('Gravitational acceleration discrepancies $[m/s^2]$')
     plt.show()
