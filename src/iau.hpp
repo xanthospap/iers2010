@@ -5,7 +5,7 @@
 #include "geodesy/units.hpp"
 #include "eigen3/Eigen/Eigen"
 #include "eigen3/Eigen/src/Geometry/Quaternion.h"
-#include <geodesy/geoconst.hpp>
+#include "geodesy/geoconst.hpp"
 
 namespace dso {
 /* @brief Compute ERA, i.e. Earth rotation angle (IAU 2000 model).
@@ -20,7 +20,7 @@ double era00(const MjdEpoch &ut1) noexcept;
 /** @brief Greenwich mean sidereal time (consistent with IAU 2006 precession).
  *
  * Both UT1 and TT are required, UT1 to predict the Earth rotation and TT to 
- * predict the effects of precession.  If UT1 is used for both purposes, 
+ * predict the effects of precession. If UT1 is used for both purposes, 
  * errors of order 100 microarcseconds result.
  * This GMST is compatible with the IAU 2006 precession and must not be used 
  * with other precession models.

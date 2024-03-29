@@ -11,9 +11,9 @@
   filecolor=magenta,
   urlcolor=cyan
 }
-\usepackage{soul}       %% allow wrapping of underlined text, via \ul{...}
-  % the following is for biblatex, see
-  % https://www.overleaf.com/learn/latex/Biblatex_bibliography_styles
+\usepackage{soul} %% allow wrapping of underlined text, via \ul{...}
+%% the following is for biblatex, see
+%% https://www.overleaf.com/learn/latex/Biblatex_bibliography_styles
 \usepackage[
     backend=biber,
     firstinits=true,
@@ -22,16 +22,18 @@
     maxbibnames=25,
     uniquelist=false
 ]{biblatex}
-\usepackage[intoc]{nomencl}  %% for nomenclature
+\addbibresource{doris.bib}
+\usepackage[intoc]{nomencl} %% for nomenclature
 \usepackage{etoolbox} %% for grouping nomenclature, see nomgroup
 \usepackage[acronym, toc, nonumberlist]{glossaries} %% for acronyms
-\usepackage{geometry}   %% somewhat wider text to allow code
+\usepackage{geometry} %% somewhat wider text to allow code
 \usepackage[per-mode=symbol]{siunitx}    %% SI Units
 \usepackage{amsmath,amssymb,amsthm,bm} %% for math ...
 \usepackage{tabularx}
-\usepackage{multirow}  %% for tabular
-\usepackage{booktabs}  %% toprule, bottomrule
+\usepackage{multirow} %% for tabular
+\usepackage{booktabs} %% toprule, bottomrule
 \usepackage{enumitem} %% format description an lists
+\usepackage{pifont,mdframed} %% for warning boxes
 
 %
 %  MACROS
@@ -51,6 +53,11 @@
 \newcommand{\iim}{{i\mkern1mu}}
 % Quaternion
 \DeclareMathAlphabet{\quaternion}{T1}{calligra}{q}{n}
+\newenvironment{warning}
+  {\par\begin{mdframed}[linewidth=2pt,linecolor=red]%
+    \begin{list}{}{\leftmargin=1cm
+                   \labelwidth=\leftmargin}\item[\Large\ding{43}]}
+  {\end{list}\end{mdframed}\par}
 
 %
 % ACRONYMS/GLOSSARY
@@ -179,6 +186,7 @@
 \listoftables
 
 %\chapter{Geopotential and Gravity}\label{ch:geopotential_and_gravity}
+\input{chapters/eop/eop}
 \input{chapters/gravity/third_body_attraction}
 \input{chapters/planetary_ephemeris}
 

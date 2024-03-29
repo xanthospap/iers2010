@@ -1,0 +1,47 @@
+\section{\gls{eop}}\label{sec:eop}
+
+\glspl{eop} are needed in a number of places within an orbit determination or 
+satellite data analysis proccess. We need efficient ways to:
+\begin{enumerate}
+  \item retrieve \gls{eop} data files, 
+  \item parse and store information, and 
+  \item get/interpolate \gls{eop} values for epochs of interest
+\end{enumerate}
+
+\subsection{\gls{eop} Products}\label{ssec:eop-products}
+
+Various \gls{eop} product files are made available by a number of different 
+sources. Here, we focus on products made available by the \gls{iers}. 
+
+Historically, \gls{iers} provides ``series'' of \gls{eop} products, combining 
+different data sets and consistent with different frames. The reference time 
+series of \glspl{eop} is called \emph{EOP C04}. This is further categorized in 
+\emph{EOP 14C04} aligned with ITRF2014 and ICRF2 (\cite{Bizouard2019}) and 
+\emph{EOP 20C04} aligned with ITRF2020 (\cite{iersmail471}). Note that the latter 
+follows a slightly different format from the former.
+
+More information can be found on the \gls{iers} website, e.g. 
+\href{https://hpiers.obspm.fr/iers/eop/eopc04_14/updateC04.txt}{updateC04.txt} 
+and \href{https://hpiers.obspm.fr/iers/eop/eopc04/eopc04.txt}{eopc04.txt}. 
+Relevant files can be retrieved from the \gls{iers} website, e.g. 
+\href{https://hpiers.obspm.fr/iers/eop/eopc04/eopc04.1962-now}{eopc04.1962-now} for 
+\emph{EOP 20C04} and \href{https://hpiers.obspm.fr/iers/eop/eopc04_14/eopc04_IAU2000.62-now}{eopc04\_IAU2000.62-now}.
+
+\subsection{Parsing \gls{eop} Products and Data Structures}\label{ssec:parsing-eop-products-and-data-structures}
+
+At the time of writting, we can parse both \emph{EOP 14C04} and \emph{EOP 20C04} data files. 
+The relevant function call, will automatically choose the right format and parse 
+\gls{eop} values for a given time range. The values will be stored in a so-called 
+\texttt{EopSeries} data structure for further use.
+
+\begin{warning}
+\gls{iers}-published \gls{eop} product files contain tabulated values, ``time-stamped'' 
+in \gls{utc}. When parsing the files however, the time scale is changed to \gls{tt}.
+\end{warning}
+
+Once parsed and stored, one can interpolate \gls{eop} values to any given epoch. 
+Interpolation is perfomed using polynomials, via the \emph{Lagrange} methodology. 
+There are a couple of things going on, to effectively and accuratelly interpolate 
+series of \glspl{eop}:
+\begin{itemize}
+  \item 

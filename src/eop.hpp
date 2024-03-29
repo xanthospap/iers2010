@@ -1,5 +1,6 @@
 /** @file
- * Utilities and parses to handle Earth Orientation Parameters (EOP).
+ * Utilities and parsers to handle Earth Orientation Parameters (EOP) and 
+ * (time)series of such values.
  */
 #ifndef __DSO_IERS_PRODUCTS_EOP_HPP__
 #define __DSO_IERS_PRODUCTS_EOP_HPP__
@@ -11,6 +12,26 @@
 #include <utility>
 
 namespace dso {
+
+/** Compute libration effect, i.e. the diurnal lunisolar effect on polar 
+ *  motion.
+ *
+ * The libration effect is described in IERS 2010, Ch. 5.5.1.3 "Variations 
+ * (∆x, ∆y)libration in polar motion". 
+ * This functions performs the computations published in the PMSDNUT2 
+ * subroutine available via the IERS 
+ * https://iers-conventions.obspm.fr/content/chapter5/software/PMSDNUT2.F
+ *
+ * @param[in] fargs The fundamental arguments
+ * @param[in] gmst  The GMST
+ * @param[out] xp   Δx due to libration in x-pole [microarcseconds]
+ * @param[out] yp   Δy due to libration in y-pole [microarcseconds]
+ * @return Always 0
+ */
+int xy_libration(const double *const fargs, double gmst, double &xp,
+                 double &yp) noexcept;
+int ut_libration(const double *const fargs, double gmst, double &dut1,
+                     double &dlod) noexcept;
 
 /** @brief A structure to hold EOP records for a single epoch */
 class EopRecord {
@@ -184,7 +205,7 @@ public:
    * the left and right-hand side to perform interpolation. E.g., in case 
    * degree=5, three data points prior to \p t and three later than \p t.
    *
-   * Interpolation for the ΔUT1 EOP parameter, si performed as descibed in:
+   * Interpolation for the ΔUT1 EOP parameter, is performed as descibed in:
    * Ben K. Bradley, Aurore Sibois, Penina Axelrad, Influence of ITRS/GCRS 
    * implementation for astrodynamics: Coordinate transformations, Advances in 
    * Space Research, Volume 57, Issue 3, 2016, Pages 850-866, ISSN 0273-1177,

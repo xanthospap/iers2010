@@ -40,7 +40,6 @@ constexpr const double AU = 1.49597870700e11;
  */
 constexpr const double OmegaEarth = 7.2921151467064e-5;
 
-
 /** @brief Solar radius [m]
  * @see IAU, Resolution B3 on recommended nominal conversion constants for 
  *      selected solar and planetary properties, August 13, 2015
@@ -59,10 +58,10 @@ constexpr const double LG = 6.9692901341e-10;
  */
 constexpr const double C = 299792458e0;
 
-/** @brief Heliocentric gravitational constant in [m^2/s^2]
+/** @brief Heliocentric gravitational constant in [m^3/s^2]
  *  @see Table 1.1: IERS numerical standards, IERS 2010
  */
-constexpr const double GMSun = 1.32712442099e20;
+constexpr const double GMs = 1.32712442099e20;
 
 /* @brief Mean equatorial gravity in [m/sec^2], see
  * Table 1.1: IERS numerical standards, IERS 2010
@@ -80,6 +79,12 @@ namespace dso {
 constexpr const double MoonEarthMassRatio = 0.0123000371e0;
 /** Earth–Moon mass ratio according to [1] */
 constexpr const double EarthMoonMassRatio = 81.300568e0;
+/** Sun-Earth Mass Ratio according to [1] */
+constexpr const double SunEarthMassRatio = 332946.0487e0;
+/** Mass of the Sun according to [1] in [kg] */
+constexpr const double SunMass =  1.9884e30;
+/** Mass of the Earth according to [1] in [kg] */
+constexpr const double SunEarth =  5.9722e24;
 } /* namespace dso */
 
 #endif

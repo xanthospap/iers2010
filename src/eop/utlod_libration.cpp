@@ -1,4 +1,5 @@
 #include "doodson.hpp"
+#include "eop.hpp"
 #include <array>
 #include <cmath>
 
@@ -70,8 +71,8 @@ constexpr const std::array<Table51aData, 11> Table = {{
 }};
 } /* unnamed namespace */
 
-int utlibration(double t, const double *const fargs, double gmst, double &dut1,
-                double &dlod) noexcept {
+int dso::ut_libration(const double *const fargs, double gmst, double &dut1,
+                     double &dlod) noexcept {
   /* get Doodson arguments from Delaunay arguments and GMST */
   double dargs[6];
   dso::delaunay2doodson(fargs, gmst, dargs);

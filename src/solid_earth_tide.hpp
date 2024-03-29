@@ -9,6 +9,7 @@
 #ifndef __DSO_SOLID_EARTH_TIDE_HPP__
 #define __DSO_SOLID_EARTH_TIDE_HPP__
 
+#include "iersconst.hpp"
 #include "stokes_coefficients.hpp"
 #include "datetime/calendar.hpp"
 #include "geodesy/geodesy.hpp"
@@ -50,8 +51,8 @@ private:
   double mGMMoon;
   /* Mass of Moon / Mass of Earth */
   double mmeratio{dso::MoonEarthMassRatio};
-  /* Mass of Moon / Mass of Earth */
-  double mseratio{332946.0482e0};
+  /* Mass of Sun / Mass of Earth */
+  double mseratio{dso::SunEarthMassRatio};
   /* Stokes coefficients of (n,m) = (4,4) */
   StokesCoeffs mcs;
 
@@ -186,12 +187,13 @@ private:
                      const double *const fargs) noexcept;
 
 public:
-  /// @brief Constructor
-  /// @param GMearth Standard gravitational parameter μ=GM for the Earth
-  /// [m^2/s^2]
-  /// @param Rearth Equatorial radius of Earth [m]
-  /// @param GMmoon Standard gravitational parameter μ=GM for the Moon [m^2/s^2]
-  /// @param GMsun Standard gravitational parameter μ=GM for the Moon [m^2/s^2]
+  /** @brief Constructor
+   * @param GMearth Standard gravitational parameter μ=GM for the Earth
+   * [m^2/s^2]
+   * @param Rearth Equatorial radius of Earth [m]
+   * @param GMmoon Standard gravitational parameter μ=GM for the Moon [m^2/s^2]
+   * @param GMsun Standard gravitational parameter μ=GM for the Moon [m^2/s^2]
+   */
   SolidEarthTide(double GMearth, double Rearth, double GMmoon,
                  double GMsun) noexcept
       : mGMSun(GMsun), mGMMoon(GMmoon), mcs(degree, degree, GMearth, Rearth){};
