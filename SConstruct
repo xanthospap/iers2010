@@ -55,6 +55,7 @@ lib_src_files += glob.glob(r"src/earth_rotation/*.cpp")
 lib_src_files += glob.glob(r"src/eop/*.cpp")
 lib_src_files += glob.glob(r"src/gravity/*.cpp")
 lib_src_files += glob.glob(r"src/planets/*.cpp")
+lib_src_files += glob.glob(r"src/fundarg/*.cpp")
 #lib_src_files += glob.glob(r"src/grid/*.cpp")
 #lib_src_files += glob.glob(r"src/trp/*.cpp")
 
@@ -119,7 +120,7 @@ if test:
                 'flags': '{:}'.format(' '.join(['-o', tenv['CXXFLAGS']])), 
                 'exit': 1}
     else:
-      tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.')
+      tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['geodesy', 'datetime', 'cspice'], LIBPATH='.')
     with open(cmp_error_fn, 'w') as fjson: print(json.dumps(cerror_dct, indent = 4), file=fjson)
 
 ## SOFA Tests ... 
