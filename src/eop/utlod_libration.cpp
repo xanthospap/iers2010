@@ -71,7 +71,7 @@ constexpr const std::array<Table51aData, 11> Table = {{
 }};
 } /* unnamed namespace */
 
-int dso::ut_libration(const double *const fargs, double gmst, double &dut1,
+int dso::utlod_libration(const double *const fargs, double gmst, double &dut1,
                      double &dlod) noexcept {
   /* get Doodson arguments from Delaunay arguments and GMST */
   double dargs[6];

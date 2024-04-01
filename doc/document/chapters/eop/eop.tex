@@ -39,9 +39,35 @@ The relevant function call, will automatically choose the right format and parse
 in \gls{utc}. When parsing the files however, the time scale is changed to \gls{tt}.
 \end{warning}
 
+\subsection{\gls{eop} Interpolation}\label{ssec:eop-interpolation}
+
 Once parsed and stored, one can interpolate \gls{eop} values to any given epoch. 
-Interpolation is perfomed using polynomials, via the \emph{Lagrange} methodology. 
+Interpolation is perfomed using polynomial interpolation, via the \emph{Lagrange} method. 
 There are a couple of things going on, to effectively and accuratelly interpolate 
 series of \glspl{eop}:
 \begin{itemize}
-  \item 
+  \item \gls{eop} data should be stored in an \texttt{EopSeries} data structure. 
+    Any given instance of this data structure, holds \gls{eop} time series for 
+    a given date range.
+  \item High frequency effects (i.e. with periods less than one day) have to be 
+    taken into consideration when interpolating. These are described in Chapters 
+    5.5.1 and 5.5.3 of \cite{iers2010} and \cite{Bradley2016}. These include:
+    
+    \begin{itemize}
+      \item Variations $(\Delta x, \Delta y)_{libration}$ in polar motion; these are 
+        mainly diurnal nutations in polar motion that originate from the direct 
+        effect of the external (mainly luni-solar) torque on the non-axisymmetric 
+        part of the Earth. \gls{iers} publishes the 
+        \href{https://iers-conventions.obspm.fr/content/chapter5/software/PMSDNUT2.F}{PMSDNUT2} 
+        software to model these effects. Within this library, the computations are 
+        performed by the function \lstinline{dso::xypole_libration}.
+
+        Apart from the aforementioned libration effect which causes small variations 
+        in the pole coordinates $(x_p , y_p)$, the \gls{eop} parameters 
+        $\Delta UT1$ and $\Delta LOD$ are also affected. The values of these 
+        variations can be computed with the \gls{iers} published software 
+        \href{https://iers-conventions.obspm.fr/content/chapter5/software/UTLIBR.F}{UTLIBR.F}; 
+        in this library, these computations are performed by the \lstinline{dso::utlod_libration}.
+    \end{itemize}
+
+\end{itemize}

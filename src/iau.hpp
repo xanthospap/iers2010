@@ -39,6 +39,9 @@ double gmst(const MjdEpoch &tt, const MjdEpoch &ut1) noexcept;
  */
 double dgmst(const MjdEpoch &tt) noexcept;
 
+/**  Universal Time to Greenwich mean sidereal time (IAU 1982 model). */
+double gmst82(const dso::MjdEpoch &ut1) noexcept;
+
 /* @brief Compute TIO locator s'
  *
  * The TIO locator s', positioning the Terrestrial Intermediate Origin

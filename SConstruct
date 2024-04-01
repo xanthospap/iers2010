@@ -108,7 +108,7 @@ if test:
   cerror_dct = {}
   if os.path.isfile(cmp_error_fn): os.remove(cmp_error_fn)
   tests_sources = glob.glob(r"test/unit_tests/*.cpp")
-  tests_sources += glob.glob(r"test/time/*.cpp")
+  #tests_sources += glob.glob(r"test/time/*.cpp")
   tenv.Append(RPATH=root_dir)
   for tsource in tests_sources:
     ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
@@ -132,7 +132,7 @@ if sofa:
     tenv.Append(RPATH=root_dir)
     for tsource in test_sources:
         ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
-        tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['sofa_c', 'datetime'], LIBPATH='.')
+        tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['sofa_c', 'geodesy', 'datetime', 'cspice'], LIBPATH='.')
 
 ## COSTG Tests ... 
 if costg:

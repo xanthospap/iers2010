@@ -4,6 +4,7 @@
 \usepackage{xargs} %% Use more than one optional parameter in a new command
 \usepackage{caption}
 \captionsetup[table]{position=bottom}
+\usepackage{url}
 \usepackage{hyperref}
 \hypersetup{
   colorlinks=true,
@@ -34,6 +35,24 @@
 \usepackage{booktabs} %% toprule, bottomrule
 \usepackage{enumitem} %% format description an lists
 \usepackage{pifont,mdframed} %% for warning boxes
+
+%% code snippets for var languages
+%% Usage:
+%% \begin{CPP}
+%% main() {
+%%  return 0;
+%% }
+%% \end{CPP}
+\usepackage{listings} 
+\lstnewenvironment{Bash}
+  {\lstset{language=Bash,frame=lines}}
+  {}
+\lstnewenvironment{CPP}
+  {\lstset{language=C++,basicstyle=\ttfamily\small,frame=none}}
+  {}
+
+% augment the paragraph skip ... a bit more clear text
+\setlength{\parskip}{1em}
 
 %
 %  MACROS
@@ -182,22 +201,30 @@
 
 %\frontmatter
 \tableofcontents
+\clearpage
 \listoffigures
+\clearpage
 \listoftables
+\clearpage
 
 %\chapter{Geopotential and Gravity}\label{ch:geopotential_and_gravity}
+\input{chapters/prerequisite.tex}
 \input{chapters/eop/eop}
 \input{chapters/gravity/third_body_attraction}
 \input{chapters/planetary_ephemeris}
+\input{chapters/known_issues}
 
 % for this to work, the following command must be issued:
 % makeindex report.nlo -s nomencl.ist -o report.nls
+\clearpage
 \printnomenclature
+\clearpage
 \printglossary[type=\acronymtype,title=Acronyms]
 \clearpage
 \pagenumbering{arabic}
 
 % bibliography
+\clearpage
 \printbibliography
 
 \end{document}

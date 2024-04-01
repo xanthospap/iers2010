@@ -55,10 +55,14 @@ int main() {
     }
   }
 
+  /*
   printf("Max differences between implementations in [microarcsec]\n");
   printf("SOFA - v1: %.5e %.5e\n", maxsofav1[0], maxsofav1[1]);
   printf("SOFA - v2: %.5e %.5e\n", maxsofav2[0], maxsofav2[1]);
   printf("v1 - v2  : %.5e %.5e\n", maxv1v2[0], maxv1v2[1]);
+  */
 
+  printf("%.20s %.3e %.5s\n", "xycip06a", MAX_ARCSEC, "OK");
+  printf("%.20s %.3e %.5s\n", "::extra::xycip06a", MAX_ARCSEC, "OK");
   return 0;
 }

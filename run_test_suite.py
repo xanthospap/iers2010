@@ -82,7 +82,7 @@ def check_w_precision(fn1, fn2str, cols, precision):
 def run_progs_with_args(special_progs_dct):
     for d in special_progs_dct:
         if not os.path.isfile(os.path.join(d['path'],d['prog'])):
-            print('ERROR Failed to find executable {:}'.format(d['prog']), file=sys.stderr)
+            print('ERROR Failed to find executable {:}@{:}'.format(d['prog'], d['path']), file=sys.stderr)
             sys.exit(1)
         exe = '{:}'.format(os.path.join(d['path'],d['prog'])) 
         cmdargs = ['{:}'.format(x) for x in d['args']]

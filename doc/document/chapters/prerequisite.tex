@@ -1,0 +1,32 @@
+\section{Installation and Prerequisites}\label{sec:installation-and-prerequisites}
+
+\subsection{Third Party Libraries}
+\begin{description}
+  \item [\href{https://eigen.tuxfamily.org/index.php?title=Main_Page}{Eigen}]; 
+  used for Vector/Matrix operations.
+  \item [\href{https://naif.jpl.nasa.gov/naif/toolkit.html}{SPICE Toolkit}]; 
+  used for extracting planet positions off from. 
+  \href{https://ssd.jpl.nasa.gov/planets/eph_export.html}{JPL Planetary Ephemerides} files 
+  (see \autoref{sec:moonandplanetaryephemeris}).
+\end{description}
+
+Installation of \href{https://eigen.tuxfamily.org/index.php?title=Main_Page}{Eigen} is 
+pretty trivial (it is actually a header-only file). Download the source code and follow 
+the instructions in \href{https://gitlab.com/libeigen/eigen/-/blob/master/INSTALL?ref_type=heads}{INSTALL}.
+
+\href{https://naif.jpl.nasa.gov/naif/toolkit.html}{SPICE Toolkit} is a C-library. 
+To install it (system-wide)
+\begin{enumerate}
+  \item Download the C library from the \href{https://naif.jpl.nasa.gov/naif/toolkit_C.html}{official repository} 
+    and uncompress.
+  \item Use the script \path{script/cppspice/c2cpp_header.py} to tranform 
+    C header file Run the script using the cspice \path{include} folder path 
+    as command line argument. I.e. if the uncompressed cspice folder is at \path{/home/work/var/cspice}, 
+    use \texttt{c2cpp\_header.py /home/work/var/cspice}.
+  \item Run the \path{makeall.csh} script provided by the distribution (under 
+    \path{cspice} folder). Note that the script is in the cshell, hence you 
+    might need to \texttt{csh makeall.csh}.
+  \item Copy the \path{script/cppspice/install.sh} script under the \path{cspicer} 
+    folder; run it as root, to install the library. Header files will be available at 
+    \path{/usr/local/include} and the library at \path{/usr/local/lib}.
+\end{enumerate}

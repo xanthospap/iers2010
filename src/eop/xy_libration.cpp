@@ -145,7 +145,7 @@ namespace {
   [[maybe_unused]]constexpr const double yrate = -4.3e0;
 } /* unnamed namespace */
 
-int dso::xy_libration(const double *const fargs, double gmst, double &xp,
+int dso::xypole_libration(const double *const fargs, double gmst, double &xp,
                       double &yp) noexcept {
   /* get Doodson arguments from Delaunay arguments and GMST */
   double dargs[6];

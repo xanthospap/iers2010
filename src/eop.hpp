@@ -17,7 +17,7 @@ namespace dso {
  *  motion.
  *
  * The libration effect is described in IERS 2010, Ch. 5.5.1.3 "Variations 
- * (∆x, ∆y)libration in polar motion". 
+ * (∆x, ∆y)_libration in polar motion". 
  * This functions performs the computations published in the PMSDNUT2 
  * subroutine available via the IERS 
  * https://iers-conventions.obspm.fr/content/chapter5/software/PMSDNUT2.F
@@ -28,9 +28,25 @@ namespace dso {
  * @param[out] yp   Δy due to libration in y-pole [microarcseconds]
  * @return Always 0
  */
-int xy_libration(const double *const fargs, double gmst, double &xp,
+int xypole_libration(const double *const fargs, double gmst, double &xp,
                  double &yp) noexcept;
-int ut_libration(const double *const fargs, double gmst, double &dut1,
+
+/** Compute libration effect, i.e. the diurnal lunisolar effect on ΔUT1
+ *  and LOD.
+ *
+ * The libration effect is described in IERS 2010, Ch. 5.5.3.3 "Variations 
+ * ∆UT1_libration and ∆LOD_libration in UT1 and LOD"
+ * This functions performs the computations published in the UTLIBR
+ * subroutine available via the IERS 
+ * https://iers-conventions.obspm.fr/content/chapter5/software/UTLIBR.F
+ *
+ * @param[in] fargs The fundamental arguments
+ * @param[in] gmst  The GMST
+ * @param[out] dut1 Variation due to libration in UT1 [microseconds]
+ * @param[out] dlod Variation due to libration in LOD [microseconds/day]
+ * @return Always 0
+ */
+int utlod_libration(const double *const fargs, double gmst, double &dut1,
                      double &dlod) noexcept;
 
 /** @brief A structure to hold EOP records for a single epoch */

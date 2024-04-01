@@ -1,0 +1,15 @@
+\section{Known Issues}\label{sec:known-issues}
+
+\subsection{\gls{gmst} and Doodson Arguments}\label{ssec:gmst-and-soodson-arguemnts}
+
+In order to compute the argument of tidal constituents ($\theta$), we need the 
+value of \gls{gmst}. In IAU 20006/2000 models, the computation of this angle 
+has changed and this can lead to slight discrepancies between results obtained 
+from software distributed by the \gls{iers} with the results obtained from this 
+library (a number of such software routines uses older computation formulas for 
+\gls{gmst}, based only on \gls{ut1}).
+
+An example of the above, is given in the file \path{test/experimental/xy_libration.cpp}; 
+the source code of this file implements computations performed in the 
+\gls{iers}-distributed \href{https://iers-conventions.obspm.fr/content/chapter5/software/PMSDNUT2.F}{PMSDNUT2} 
+which computes the diurnal lunisolar effect on polar motion.

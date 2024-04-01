@@ -5,20 +5,20 @@
 #include <charconv>
 
 /* Input data for the tests are produced by the source file 
- * fortran/pmsdnut2.cpp
+ * fortran/utlibr.cpp
  */
 
-constexpr const double MAX_MICROARCSEC = 1e-6;
+constexpr const double MAX_MICROSEC = 1e-3;
 
 int main(int argc, char *argv[]) {
   if (argc != 2) {
-    fprintf(stderr, "USAGE: %s [PMSDNUT2 DATA]\n", argv[0]);
+    fprintf(stderr, "USAGE: %s [UTLIBR DATA]\n", argv[0]);
     return 1;
   }
 
   std::ifstream fin(argv[1]);
   if (!fin.is_open()) {
-    fprintf(stderr, "ERROR Failed opening PMSDNUT2 data file %s\n", argv[1]);
+    fprintf(stderr, "ERROR Failed opening UTLIBR data file %s\n", argv[1]);
     return 2;
   }
 
@@ -48,14 +48,14 @@ int main(int argc, char *argv[]) {
     /* compute approximate gmst */
     const double gmst = dso::gmst82(t);
 
-    /* compute libration on pole */
-    double xp, yp;
-    dso::xypole_libration(fargs, gmst, xp, yp);
+    /* compute libration on ut1 and lod */
+    double dut1, dlod;
+    dso::utlod_libration(fargs, gmst, dut1, dlod);
 
-    assert(std::abs(d[1] - xp) < MAX_MICROARCSEC);
-    assert(std::abs(d[2] - yp) < MAX_MICROARCSEC);
-    //printf("delta xp %+.6f diff %+.6f\n", d[1], d[1] - xp);
-    //printf("delta yp %+.6f diff %+.6f\n", d[2], d[2] - yp);
+    printf("delta dut1 %+.6f diff %+.6f\n", d[1], d[1] - dut1);
+    printf("delta dlod %+.6f diff %+.6f\n", d[2], d[2] - dlod);
+    assert(std::abs(d[1] - dut1) < MAX_MICROSEC);
+    assert(std::abs(d[2] - dlod) < MAX_MICROSEC);
   }
 
   return 0;
