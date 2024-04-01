@@ -1,0 +1,18 @@
+      PROGRAM MAIN
+
+      DOUBLE PRECISION T, MJD, MIN_MJD, MAX_MJD, PM(2)
+      INTEGER NUM_TESTS, I,J
+
+      NUM_TESTS = 100
+      MIN_MJD = 45700D0
+      MAX_MJD = 62502D0
+
+      DO I=1,NUM_TESTS-1
+        CALL RANDOM_NUMBER(T)
+        MJD = (MAX_MJD-MIN_MJD)*T + MIN_MJD
+        CALL PMSDNUT2(MJD, PM)
+        WRITE(*,'(E30.22,X,E25.17,X,E25.17)') 
+     .  MJD, PM(1), PM(2)
+      END DO
+
+      END

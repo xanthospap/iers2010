@@ -68,6 +68,14 @@ series of \glspl{eop}:
         variations can be computed with the \gls{iers} published software 
         \href{https://iers-conventions.obspm.fr/content/chapter5/software/UTLIBR.F}{UTLIBR.F}; 
         in this library, these computations are performed by the \lstinline{dso::utlod_libration}.
+
+      \item Variations $(\Delta x, \Delta y)_{ocean tides}$ in polar motion; these 
+        are tidal variations in Earth orientation, including diurnal and semi-diurnal 
+        variations in pole coordinates caused by ocean tides. \gls{iers} publishes the 
+        \href{https://iers-conventions.obspm.fr/content/chapter8/software/ORTHO_EOP.F}{ORTHO_EOP.F} 
+        software to model these effects. Within this library, the computations are 
+        performed by the function \lstinline{dso::xypole_oceantide}.
+
     \end{itemize}
 
 \end{itemize}

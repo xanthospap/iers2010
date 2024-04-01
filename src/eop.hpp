@@ -49,6 +49,43 @@ int xypole_libration(const double *const fargs, double gmst, double &xp,
 int utlod_libration(const double *const fargs, double gmst, double &dut1,
                      double &dlod) noexcept;
 
+/** Compute ocean tide effect in polar motion.
+ *
+ * Variations in polar motion are tidal variations in Earth orientation, 
+ * including diurnal and semi-diurnal variations in pole coordinates caused by 
+ * ocean tides. 
+ * They are described in IERS 2010, Ch. 5.5.1.2, "ariations (∆x, ∆y)_oceantides 
+ * in polar motion".
+ * his functions performs the computations published in the ORTHO_EOP 
+ * subroutine available via the IERS
+ * https://iers-conventions.obspm.fr/content/chapter8/software/ORTHO_EOP.F
+ *
+ * @param[in] fargs The fundamental arguments
+ * @param[in] gmst  The GMST
+ * @param[out] xp   Δx due to ocean tide in x-pole [microarcseconds]
+ * @param[out] yp   Δy due to ocean tide in y-pole [microarcseconds]
+ * @return Always 0
+ */
+int xypole_oceantide(const double *const fargs, double gmst, double &xp,
+                      double &yp) noexcept;
+
+/** Compute ocean tide effect in ΔUT1 and LOD.
+ *
+ * Variations computed here are described in IERS 2010, Ch. 5.5.3.2, 
+ * "Variations ∆UT1 ocean tides and ∆LOD ocean tides in UT1 and LOD"
+ * his functions performs the computations published in the ORTHO_EOP 
+ * subroutine available via the IERS
+ * https://iers-conventions.obspm.fr/content/chapter8/software/ORTHO_EOP.F
+ *
+ * @param[in] fargs The fundamental arguments
+ * @param[in] gmst  The GMST
+ * @param[out] dut1 Variation due to libration in UT1 [microseconds]
+ * @param[out] dlod Variation due to libration in LOD [microseconds/day]
+ * @return Always 0
+ */
+int utlod_oceantide(const double *const fargs, double gmst, double &dut1,
+                      double &dlod) noexcept;
+
 /** @brief A structure to hold EOP records for a single epoch */
 class EopRecord {
   /** Record epoch in TT */
