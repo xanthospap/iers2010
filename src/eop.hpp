@@ -13,6 +13,63 @@
 
 namespace dso {
 
+/** Compute ocean tide effect on polar motion, UT1 and LOD.
+ *
+ * Variations in polar motion are tidal variations in Earth orientation, 
+ * including diurnal and semi-diurnal variations in pole coordinates caused by 
+ * ocean tides. 
+ * They are described in IERS 2010, Ch. 5.5.1.2, "ariations (∆x, ∆y)_oceantides 
+ * in polar motion".
+ * Variations in UT1 and LOD computed here are described in IERS 2010, 
+ * Ch. 5.5.3.2, "Variations ∆UT1 ocean tides and ∆LOD ocean tides in UT1 and 
+ * LOD".
+ *
+ * This functions performs the computations published in the ORTHO_EOP 
+ * subroutine available via the IERS
+ * https://iers-conventions.obspm.fr/content/chapter8/software/ORTHO_EOP.F
+ * See also the interp.f routine by IERS (https://hpiers.obspm.fr/iers/models/interp.f) 
+ * and the subroutines PMUT1_OCEANS therein.
+ *
+ * @param[in] fargs The fundamental arguments
+ * @param[in] gmst  The GMST
+ * @param[out] xp   Δx due to ocean tide in x-pole [microarcseconds]
+ * @param[out] yp   Δy due to ocean tide in y-pole [microarcseconds]
+ * @param[out] dut1 Variation due to libration in UT1 [microseconds]
+ * @param[out] dlod Variation due to libration in LOD [microseconds/day]
+ * @return Always 0
+ */
+int deop_ocean_tide(const double *const fargs, double gmst, double &dxp,
+                    double &dyp, double &dut1, double &dlod) noexcept;
+
+/** Compute libration effect, i.e. the diurnal lunisolar effect on polar 
+ *  motion, UT1 and LOD
+ *
+ * The libration effect is described in IERS 2010, Ch. 5.5.1.3 "Variations 
+ * (∆x, ∆y)_libration in polar motion". 
+ * This functions performs the computations published in the PMSDNUT2 
+ * subroutine available via the IERS 
+ * https://iers-conventions.obspm.fr/content/chapter5/software/PMSDNUT2.F
+ *
+ * The libration effect is described in IERS 2010, Ch. 5.5.3.3 "Variations 
+ * ∆UT1_libration and ∆LOD_libration in UT1 and LOD"
+ * This functions performs the computations published in the UTLIBR
+ * subroutine available via the IERS 
+ * https://iers-conventions.obspm.fr/content/chapter5/software/UTLIBR.F
+ *
+ * See also the interp.f routine by IERS (https://hpiers.obspm.fr/iers/models/interp.f) 
+ * and the subroutines PM_GRAVI therein.
+ *
+ * @param[in] fargs The fundamental arguments
+ * @param[in] gmst  The GMST
+ * @param[out] xp   Δx due to ocean tide in x-pole [microarcseconds]
+ * @param[out] yp   Δy due to ocean tide in y-pole [microarcseconds]
+ * @param[out] dut1 Variation due to libration in UT1 [microseconds]
+ * @param[out] dlod Variation due to libration in LOD [microseconds/day]
+ * @return Always 0
+ */
+int deop_libration(const double *const fargs, double gmst, double &dxp,
+                    double &dyp, double &dut1, double &dlod) noexcept;
+
 /** Compute libration effect, i.e. the diurnal lunisolar effect on polar 
  *  motion.
  *
