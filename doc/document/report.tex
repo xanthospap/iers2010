@@ -35,6 +35,7 @@
 \usepackage{booktabs} %% toprule, bottomrule
 \usepackage{enumitem} %% format description an lists
 \usepackage{pifont,mdframed} %% for warning boxes
+\usepackage{pgf}
 
 %% code snippets for var languages
 %% Usage:
@@ -188,7 +189,11 @@
 \nomenclature[P]{$R_{\Moon}$}{Moon's radius}
 \nomenclature[P]{$\mu _{\Moon}$}{Gravitational constant times Moon's mass}
 
+\newcommand{\mathdefault}[1][]{}
 \begin{document}
+
+% gives the width of the current document in pts
+\showthe\textwidth
 
 \title{%
   DSO Geodeticc Library \\

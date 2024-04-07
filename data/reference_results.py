@@ -699,9 +699,6 @@ special_progs = [
     {"prog":"coeff-matrix-2d-tricolwise23-error.out", 
      "path": "test/unit_tests",
     "args": [], "exit": -6},
-    {"prog":"xy-libration.out", 
-     "path": "test/unit_tests",
-    "args": ["test/fortran/xy_libration.dat"], "exit": 0},
     {"prog":"coeff-matrix-2d-tricolwise2.out", 
      "path": "test/unit_tests",
     "args": [], "exit": 0},
@@ -746,5 +743,13 @@ special_progs = [
      "path": "test/unit_tests",
     "args": ["data/AOD1B_2023-11-09_X_06.asc"],
     "testwp": {"cols": [2,3], "precision": [1e-15, 1e-15]},
-    "results": str8, "exit": 0}
+    "results": str8, "exit": 0},
+    {"prog":"eop-oceantide.out", 
+     "path": "test/unit_tests",
+    "args": ["data/interp_oceans.dat"], 
+    "exit": 0},
+    {"prog":"rgzont2.out", 
+     "path": "test/unit_tests",
+    "args": ["data/rg_zont2.dat"], 
+    "exit": 0}
 ]
