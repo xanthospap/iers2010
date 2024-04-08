@@ -73,6 +73,7 @@ debug = ARGUMENTS.get('debug', 0)
 test = ARGUMENTS.get('test', 0)
 sofa = ARGUMENTS.get('test-vs-sofa', 0)
 costg = ARGUMENTS.get('test-vs-costg', 0)
+examples = ARGUMENTS.get('make-examples', 0)
 
 ## Construct the build enviroment
 env = denv.Clone() if int(debug) else penv.Clone()
@@ -133,6 +134,17 @@ if sofa:
     for tsource in test_sources:
         ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
         tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['sofa_c', 'geodesy', 'datetime', 'cspice'], LIBPATH='.')
+
+## Compile examples
+if examples:
+    print('Compiling examples ...')
+    tenv = env.Clone()
+    tenv['CXXFLAGS'] = ' '.join([ x for x in env['CXXFLAGS'].split() if 'inline' not in x])
+    test_sources = glob.glob(r"examples/*.cpp")
+    tenv.Append(RPATH=root_dir)
+    for tsource in test_sources:
+        ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
+        tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+[ 'geodesy', 'datetime', 'cspice'], LIBPATH='.')
 
 ## COSTG Tests ... 
 if costg:

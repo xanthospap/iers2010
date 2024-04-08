@@ -115,37 +115,37 @@ public:
   /* ΔAT at time mt */
   double dat() const noexcept {return mdat;}
   double &dat() noexcept {return mdat;}
-  /** Pole coordinate xp in [sec] */
+  /** Pole coordinate xp in [arcsec] */
   double xp() const noexcept {return mxp;}
-  /** Pole coordinate yp in [sec] */
+  /** Pole coordinate yp in [arcsec] */
   double yp() const noexcept {return myp;}
   /** UT1 - UTC in [sec] */
   double dut() const noexcept {return mdut;}
   /** Lenght of day offset LOD [sec] */
   double lod() const noexcept {return mlod;}
-  /** Celestial pole offsets δX in [sec] */
+  /** Celestial pole offsets δX in [arcsec] */
   double dX() const noexcept {return mdx;}
-  /** Celestial pole offsets δY in [sec] */
+  /** Celestial pole offsets δY in [arcsec] */
   double dY() const noexcept {return mdy;}
-  /** Pole rate in X, in [sec/day] */
+  /** Pole rate in X, in [arcsec/day] */
   double xp_rate() const noexcept {return mxrt;}
-  /** Pole rate in Y, in [sec/day] */
+  /** Pole rate in Y, in [arcsec/day] */
   double yp_rate() const noexcept {return myrt;}
-  /** Pole coordinate xp in [sec] */
+  /** Pole coordinate xp in [arcsec] */
   double &xp() noexcept {return mxp;}
-  /** Pole coordinate yp in [sec] */
+  /** Pole coordinate yp in [arcsec] */
   double &yp() noexcept {return myp;}
   /** UT1 - UTC in [sec] */
   double &dut() noexcept {return mdut;}
   /** Lenght of day offset LOD [sec] */
   double &lod() noexcept {return mlod;}
-  /** Celestial pole offsets δX in [sec] */
+  /** Celestial pole offsets δX in [arcsec] */
   double &dX() noexcept {return mdx;}
-  /** Celestial pole offsets δY in [sec] */
+  /** Celestial pole offsets δY in [arcsec] */
   double &dY() noexcept {return mdy;}
-  /** Pole rate in X, in [sec/day] */
+  /** Pole rate in X, in [arcsec/day] */
   double &xp_rate() noexcept {return mxrt;}
-  /** Pole rate in Y, in [sec/day] */
+  /** Pole rate in Y, in [arcsec/day] */
   double &yp_rate() noexcept {return myrt;}
 
   /* @brief Angular velocity of Earth in [rad/sec], including LOD variation
@@ -178,6 +178,38 @@ class EopSeries {
    * instance.
    */
   mutable std::array<double, (MAX_POLY_INTERPOLATION_DEGREE+1)*2> work;
+  
+  /** Compute and add or remove zonal tidal variations (for UT1 and LOD).
+   *
+   * Compute and either remove or add zonal tidal variations with frequencies 
+   * ranging from 5 days to 18.6 years from UT1 and LOD values.
+   * When 'adding' this contribution, we derive the so-called 'regularized' 
+   * UT1/LOD values (typically denoted UT1R). 
+   * If we have 'regularized' values of UT1 and LOD, we can 'remove' this 
+   * contribution to derive the 'normal' UT1/LOD values. De-regularization 
+   * only makes sense for series that have already been 'regularized'.
+   * E.g.:
+   *  a. parse EOP values to an EopSeries
+   *  b. regularize the series
+   *  c. interpolate
+   *  d. de-regularize to get back the values of the instance (i.e. revert to 
+   *     step a. values)
+   *
+   * The model is described in Chapter 8.1 of IERS 2010 ("Effect of the tidal 
+   * deformation (zonal tides) on Earth’s rotation").
+   *
+   * On return, the UT1 and LOD values of the instance will have been 
+   * regularized or de-regularized by removing/applying corrections for tidal 
+   * deformation (zonal tides).
+   *
+   * @param[in] scale If scale>0, then the tidal corrections are added to the 
+   *                  current UT1 and LOD values, thus we 'de-regularize' the 
+   *                  values.
+   *                  If scale<0, then the tidal corrections are removed from 
+   *                  current UT1 and LOD values, thus we 'regularize' the 
+   *                  respective values.
+   */
+  void regularize_impl(int scale) noexcept;
 
 public:
 
@@ -189,6 +221,12 @@ public:
     PolyDegreeDescreased,
     PolyDegreeRequested
   }; /* EopInterpolationResult */
+  
+  /** Check if an EopInterpolationResult signals out of bounds */
+  static bool out_of_bounds(EopInterpolationResult res) noexcept {
+    return ((res == EopInterpolationResult::OutOfBoundsPrior) ||
+            (res == EopInterpolationResult::OutOfBoundsLater));
+  }
 
   const auto &give_me_the_vector() const noexcept {
     return mvec;
@@ -200,13 +238,19 @@ public:
   /** Get number of epochs/entries in Series */
   int num_entries() const noexcept {return mvec.size();}
 
+  /** Get the first epoch in the EOP series */
+  auto first_epoch() const noexcept { return mvec[0].t(); }
+  
+  /** Get the last epoch in the EOP series */
+  auto last_epoch() const noexcept { return mvec[num_entries()-1].t(); }
+
   /** Reserve capacity (not actual size!) 
    *
    * @param[in] capacity Number of EopRecord to reserve capacity for.
    */
   void reserve(int capacity) noexcept {mvec.reserve(capacity);}
 
-  /** Remove zonal tidal variations. 
+  /** Remove zonal tidal variations (regularize UT1 & LOD values). 
    *
    * Remove zonal tidal variations with frequencies ranging from 5 days to 
    * 18.6 years from UT1 values (result typically denoted UT1R) and LOD.
@@ -216,7 +260,11 @@ public:
    * On return, the UT1 and LOD values of the instance will have been 
    * 'corrected' for tidal deformation (zonal tides).
    */
-  void regularize() noexcept;
+  void regularize() noexcept { return regularize_impl(-1); }
+  
+  /** Add zonal tidal variations (de-regularize UT1 & LOD values). 
+   */
+  void deregularize() noexcept { return regularize_impl(1); }
 
   /** Push back an EopRecord entry.
    *
@@ -297,6 +345,20 @@ public:
    */
   EopInterpolationResult interpolate(const MjdEpoch &t, EopRecord &eop,
                                     int degree = 5) const noexcept;
+
+  /** Simple, (two-point) linear interpolation for ΔUT1 at given epoch.
+   *
+   * The value obtained from this function is not optimal, since we only 
+   * use a linear interpolation algorithm. However, it could be precise 
+   * enough for various applications.
+   *
+   * @param[in] t Epoch at which the interpolation is requested, in TT.
+   * @param[out] dut1 The value of DUΤ1 from linear interpolation. If the 
+   *              epoch is out of bounds, the value of dut1 will be filled 
+   *              with the nearest value in the series (i.e. first or last).
+   */
+  EopInterpolationResult approx_dut1(const MjdEpoch &t,
+                                     double &dut1) const noexcept;
 
   /** @brief Return an iterator to the first Eop record in mvec, such that 
    * t < record.t

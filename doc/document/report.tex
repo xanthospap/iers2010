@@ -36,6 +36,7 @@
 \usepackage{enumitem} %% format description an lists
 \usepackage{pifont,mdframed} %% for warning boxes
 \usepackage{pgf}
+\usepackage{xcolor}
 
 %% TikZ stuff %%
 \usepackage{tikz} % add a few drawings ...
@@ -53,9 +54,29 @@
 \lstnewenvironment{Bash}
   {\lstset{language=Bash,frame=lines}}
   {}
-\lstnewenvironment{CPP}
-  {\lstset{language=C++,basicstyle=\ttfamily\small,frame=none}}
-  {}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\tiny,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
 
 % augment the paragraph skip ... a bit more clear text
 \setlength{\parskip}{1em}
@@ -203,7 +224,7 @@
 \showthe\textwidth
 
 \title{%
-  DSO Geodeticc Library \\
+  DSO Geodetic Library \\
   \large Models, Methods and Software Description}
 \author{X. Papanikolaou, D. Anastasiou, V. Zacharis}
 \date{\today}
@@ -221,14 +242,18 @@
 
 %\chapter{Geopotential and Gravity}\label{ch:geopotential_and_gravity}
 \input{chapters/prerequisite.tex}
+\clearpage
 \input{chapters/eop/eop}
+\clearpage
 \input{chapters/gravity/third_body_attraction}
+\clearpage
 \input{chapters/planetary_ephemeris}
+\clearpage
 \input{chapters/known_issues}
+\clearpage
 
 % for this to work, the following command must be issued:
 % makeindex report.nlo -s nomencl.ist -o report.nls
-\clearpage
 \printnomenclature
 \clearpage
 \printglossary[type=\acronymtype,title=Acronyms]

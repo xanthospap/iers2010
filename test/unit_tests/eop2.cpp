@@ -18,11 +18,6 @@ int main(int argc, char *argv[]) {
   }
   assert(eop.num_entries() == 9);
 
-  //for (const auto &e : eop.give_me_the_vector()) {
-  //  printf("TT %.12f %.12e %.12e %.12e %.12e %.12e %.12e\n", e.t().as_mjd(),
-  //         e.xp(), e.yp(), e.dut(), e.lod(), e.dX(), e.dY());
-  //}
-
   dso::MjdEpoch t(57750);
   dso::EopRecord ie;
   const auto &veop = eop.give_me_the_vector();
