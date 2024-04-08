@@ -37,6 +37,11 @@
 \usepackage{pifont,mdframed} %% for warning boxes
 \usepackage{pgf}
 
+%% TikZ stuff %%
+\usepackage{tikz} % add a few drawings ...
+\usepackage{tkz-euclide}
+\usetikzlibrary{arrows.meta,shapes,shadows,backgrounds}
+
 %% code snippets for var languages
 %% Usage:
 %% \begin{CPP}
@@ -189,7 +194,9 @@
 \nomenclature[P]{$R_{\Moon}$}{Moon's radius}
 \nomenclature[P]{$\mu _{\Moon}$}{Gravitational constant times Moon's mass}
 
+%% not sure why, but this is needed for inputing pgf plots
 \newcommand{\mathdefault}[1][]{}
+
 \begin{document}
 
 % gives the width of the current document in pts

@@ -41,6 +41,13 @@ in \gls{utc}. When parsing the files however, the time scale is changed to \gls{
 
 \subsection{\gls{eop} Interpolation}\label{ssec:eop-interpolation}
 
+\begin{figure}
+  \centering
+  \input{handling_eop.tex}
+  \caption{Extracting \gls{eop} information from \gls{iers} \texttt{C04} data files.}
+  \label{fig:handling-eop}
+\end{figure}
+
 Once parsed and stored, one can interpolate \gls{eop} values to any given epoch. 
 Interpolation is perfomed using polynomial interpolation, via the \emph{Lagrange} method. 
 There are a couple of things going on, to effectively and accuratelly interpolate 
@@ -54,29 +61,36 @@ series of \glspl{eop}:
     5.5.1 and 5.5.3 of \cite{iers2010} and \cite{Bradley2016}. These include:
     
     \begin{itemize}
-      \item Variations $(\Delta x, \Delta y)_{libration}$ in polar motion; these are 
-        mainly diurnal nutations in polar motion that originate from the direct 
+      \item Variations $\Delta _{libration}$, mainly diurnal nutations in 
+        polar motion $(x_p, y_p)$, $UT1$ and $LOD$ that originate from the direct 
         effect of the external (mainly luni-solar) torque on the non-axisymmetric 
         part of the Earth. \gls{iers} publishes the 
         \href{https://iers-conventions.obspm.fr/content/chapter5/software/PMSDNUT2.F}{PMSDNUT2} 
-        software to model these effects. Within this library, the computations are 
-        performed by the function \lstinline{dso::xypole_libration}.
+        and \href{https://iers-conventions.obspm.fr/content/chapter5/software/UTLIBR.F}{UTLIBR.F} 
+        software to model these effects, for polar motion and $UT1$, $LOD$ respectively. 
+        %in this library, these computations are performed by the \lstinline{dso::utlod_libration}.
 
-        Apart from the aforementioned libration effect which causes small variations 
-        in the pole coordinates $(x_p , y_p)$, the \gls{eop} parameters 
-        $\Delta UT1$ and $\Delta LOD$ are also affected. The values of these 
-        variations can be computed with the \gls{iers} published software 
-        \href{https://iers-conventions.obspm.fr/content/chapter5/software/UTLIBR.F}{UTLIBR.F}; 
-        in this library, these computations are performed by the \lstinline{dso::utlod_libration}.
-
-      \item Variations $(\Delta x, \Delta y)_{ocean tides}$ in polar motion; these 
-        are tidal variations in Earth orientation, including diurnal and semi-diurnal 
+      \item Variations $\Delta _{ocean tides}$ in polar motion $(x_p, y_p)$, $UT1$ and $LOD$; 
+        these are tidal variations in Earth orientation, including diurnal and semi-diurnal 
         variations in pole coordinates caused by ocean tides. \gls{iers} publishes the 
         \href{https://iers-conventions.obspm.fr/content/chapter8/software/ORTHO_EOP.F}{ORTHO\_EOP.F} 
-        software to model these effects. Within this library, the computations are 
-        performed by the function \lstinline{dso::xypole_oceantide}.
+        software to model these effects for polar motion.
+        %Within this library, the computations are performed by the function \lstinline{dso::xypole_oceantide}.
+        
+      \item \gls{iers} also publishes the software 
+       \href{https://hpiers.obspm.fr/iers/models/interp.f}{interp.f} 
+        which is used to interpolate \gls{eop} series. The routine \texttt{pmut1\_oceans} 
+        within this software is used to compute the ocean tidal effects while 
+        \texttt{pm\_gravi} is used to compute libration effects.
 
     \end{itemize}
+
+    \item Effects of the tidal deformation (zonal tides) on Earth’s rotation with 
+      periods from 5 days to 18.6 years (long-period tides). These affect 
+      $\Delta UT1$, $LOD$ and Earth's rotation velocity $\omega$ and are 
+      described in Chapter 8.1 of \cite{iers2010}. To model these effects, \gls{iers} 
+      publishes the \href{https://iers-conventions.obspm.fr/content/chapter8/software/RG_ZONT2.F}{RG\_ZONT2.F} 
+      software.
 
 \end{itemize}
 

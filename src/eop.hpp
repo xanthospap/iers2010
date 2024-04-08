@@ -206,6 +206,18 @@ public:
    */
   void reserve(int capacity) noexcept {mvec.reserve(capacity);}
 
+  /** Remove zonal tidal variations. 
+   *
+   * Remove zonal tidal variations with frequencies ranging from 5 days to 
+   * 18.6 years from UT1 values (result typically denoted UT1R) and LOD.
+   * This is described in Chapter 8.1 of IERS 2010 ("Effect of the tidal 
+   * deformation (zonal tides) on Earth’s rotation").
+   *
+   * On return, the UT1 and LOD values of the instance will have been 
+   * 'corrected' for tidal deformation (zonal tides).
+   */
+  void regularize() noexcept;
+
   /** Push back an EopRecord entry.
    *
    * Warning! The vector of EopRecord should always be chronologically ordered. 
