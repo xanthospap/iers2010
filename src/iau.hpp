@@ -223,40 +223,6 @@ int xycip06a(const double *const fargs, double t, double &xcip,
  */
 double s06(const double *const fargs, double t, double xcip,
            double ycip) noexcept;
-
-/** @brief Compute the quaternion to describe the GCRS to ITRS transformation.
- *
- * This implementation is based on the Bizouard and Cheng (2023) model. It 
- * uses analytical expressions to compute all entries of a quaternion that 
- * describes the rotation (transformation) between the ITRS and the GCRS, 
- * given a series of input parameters.
- * See the formulae (13) and (14) in the provided reference.
- *
- * @param[in] era  Earth Rotation Angle [rad]
- * @param[in] s    The CIO locator [rad]
- * @param[in] sp   The TIO locator [rad] (i.e. s')
- * @param[in] Xcip X-component of the CIP in the GCRS, [rad]. For precise 
- *                 applications, this value should be the one computed by the 
- *                 IAU 2006/2000A model and corrected via the IERS published 
- *                 values (i.e. EOP data). That is:
- *                 Xcip = X(IAU 2006/2000A) + δX
- * @param[in] Ycip Y-component of the CIP in the GCRS, [rad]. For precise 
- *                 applications, this value should be the one computed by the 
- *                 IAU 2006/2000A model and corrected via the IERS published 
- *                 values (i.e. EOP data). That is:
- *                 Ycip = Y(IAU 2006/2000A) + δY
- * @param[in] xp   X-coordinate of the "polar coordinates", i.e. of the 
- *                 Celestial Intermediate Pole (CIP) in the ITRS, [rad]
- * @param[in] yp   Y-coordinate of the "polar coordinates", i.e. of the 
- *                 Celestial Intermediate Pole (CIP) in the ITRS, [rad]
- *
- * Bizouard, C., Cheng, Y. The use of the quaternions for describing the 
- * Earth’s rotation. J Geod 97, 53 (2023). 
- * https://doi.org/10.1007/s00190-023-01735-z
- */
-Eigen::Quaterniond itrs2gcrs_quaternion(double era, double s, double sp,
-                                        double Xcip, double Ycip, double xp,
-                                        double yp) noexcept;
 } /* namespace detail */
 
 } /* namespace dso */

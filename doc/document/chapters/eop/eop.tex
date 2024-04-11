@@ -94,7 +94,7 @@ series of \glspl{eop}:
 
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \input{eop_variations.pgf}
   \caption{Ocean tide and libration effects on \glspl{eop} computed as descibed in \cite{iers2010}. 
@@ -105,11 +105,20 @@ series of \glspl{eop}:
   \label{fig:eop-variations}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \input{eop_interpolation.pgf}
-  \caption{\gls{eop} interpolation with and without corrections for libration and ocean todal effects.}
+  \caption{\gls{eop} interpolation with and without corrections for libration and ocean todal effects. Note that the 31$st$ December 2016 is a leap second insertion date.}
   \label{fig:eop-interpolation}
 \end{figure}
 
-\lstinputlisting[language=C++, caption=eop interpolation example]{../../examples/eop_interpolation.cpp}
+\begin{figure}[h]
+  \centering
+  \input{eop_interpolation_dut1.pgf}
+  \caption{$\Delta UT1$ interpolation with and without corrections for libration and ocean todal effects (subset of \autoref{fig:eop-interpolation}, past leap second day).}
+  \label{fig:eop-interpolation-dut1}
+\end{figure}
+
+\begin{minipage}{\linewidth}
+  \lstinputlisting[language=C++, caption={\gls{eop} interpolation example}, label={lst:eop-interpolation}]{../../examples/eop_interpolation.cpp}
+\end{minipage}
