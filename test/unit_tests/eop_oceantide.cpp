@@ -10,6 +10,7 @@ constexpr const double MAX_MICROSEC = 1e-0;
 int main(int argc, char *argv[]) {
   if (argc != 2) {
     fprintf(stderr, "USAGE: %s [DATA]\n", argv[0]);
+    fprintf(stderr, "Note that reference results for this program can be produced via the test/fortran/eop_ocean_tide.out program\n");
     return 1;
   }
 

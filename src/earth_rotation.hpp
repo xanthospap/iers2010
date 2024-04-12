@@ -7,6 +7,7 @@
 #define __DSO_EARTH_ROTATION_API_HPP__
 
 #include "eop.hpp"
+#include "iersconst.hpp"
 #include "eigen3/Eigen/Eigen"
 #include "eigen3/Eigen/src/Geometry/Quaternion.h"
 
@@ -41,6 +42,15 @@ public:
                                           double *fargs14=nullptr);
 }; /* class EarthRotation */
 
+/** Earth's roatation rate (omega, ω) in [rad/sec]
+ *
+ * @param[in] dlod Delta LOD (e.g. interpolated from an EOP series) in [sec]
+ * @return Instantaneous Earth's roatation rate in [rad/sec]
+ */
+inline double earth_rotation_rate(double dlod) noexcept {
+  return iers2010::OmegaEarth * (1e0 - dlod / 86400e0);
+}
+
 namespace detail {
 
 /** @brief Compute the quaternion to describe the GCRS to ITRS transformation.
@@ -73,7 +83,7 @@ namespace detail {
  * Earth’s rotation. J Geod 97, 53 (2023). 
  * https://doi.org/10.1007/s00190-023-01735-z
  */
-Eigen::Quaterniond itrs2gcrs_quaternion(double era, double s, double sp,
+Eigen::Quaterniond gcrs2itrs_quaternion(double era, double s, double sp,
                                         double Xcip, double Ycip, double xp,
                                         double yp) noexcept;
 

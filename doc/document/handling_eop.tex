@@ -3,34 +3,37 @@
 		[draw=black, minimum height=2.5em, minimum width=10em, fill=gray!10,rounded corners, drop shadow] 
 		{EOP C04 (published by \gls{iers})};
 	
-	\node (AtB) at (0,-3) 
+	\node (AtB) at (0,-2) 
 		[draw=black, minimum height=2.5em, minimum width=10em, fill=red!10,rounded corners, drop shadow]
-		{\begin{minipage}{.5\textwidth}\begin{itemize}
-		\item ``regularize''\footnote{(remove zonal Earth tide effect in $\Delta UT$ and LOD via \texttt{RG\_ZONT2})}
-		\item \gls{utc} to \gls{tt}
-		\end{itemize}\end{minipage}};
+                {transform tabulated \gls{utc} values to \gls{tt}};
 		
-	\node (B) at (0,-6.0) 
+	\node (B) at (0,-4.0) 
 		[draw=black, minimum height=2.5em, minimum width=10em, fill=gray!10,rounded corners, drop shadow] 
-		{\texttt{EopLookUpTable}};
+		{\texttt{EopSeries}};
 
-	\node (BtI) at (0,-10) 
-		[draw=black, minimum height=2.5em, minimum width=10em, fill=red!10,rounded corners, drop shadow]
+        \node (O) at (0,-6.0)
+		[draw=black, minimum height=2.5em, minimum width=6em, fill=green!5,rounded corners, drop shadow] 
+		{``Regularize'' $\Delta UT1$ and $LOD$};
+
+	\node (BtI) at (0,-8.5) 
+		[draw=black, minimum height=2.5em, minimum width=6em, fill=red!10,rounded corners, drop shadow]
 		{\begin{minipage}{.6\textwidth}\begin{itemize}
-		\item Lagrangian inmterpolation (5\textsuperscript{th} order)
-		\item compute effects of zonal Earth tides \& add to $\Delta UT$ and LOD (via \texttt{RG\_ZONT2})
-		\item add effect of ocean tides to $x_p, y_p, \Delta UT, LOD$
-		\item add libration effects to $x_p, y_p$
+                \item $\Delta UT1$ to $UT1 - TAI$
+		\item Lagrangian interpolation %(5\textsuperscript{th} order)
+                \item $UT1 - TAI$ to $\Delta UT1$
+                \end{itemize}\end{minipage}};
+
+        \node (F) at (0,-12)
+		[draw=black, minimum height=2.5em, minimum width=6em, fill=green!5,rounded corners, drop shadow]
+                {\begin{minipage}{.6\textwidth}\begin{itemize}
+		\item ``De-regularize'' $\Delta UT1 _{t_i}$ and $LOD_{t_i}$ if needed
+		\item add effect of ocean tides 
+		\item add libration effect 
 		\end{itemize}\end{minipage}};
 	
-	\node (I) at (-8,-8)
-		[draw=black, minimum height=2.5em, minimum width=10em, fill=gray!10,rounded corners, drop shadow]
-		{Interpolate};
-
 	\draw[-Latex,thick] (A.south) -- (AtB.north);
 	\draw[-Latex,thick] (AtB.south) -- (B.north);
-	\draw[-Latex,thick] (I.north) |- (B.west);
-	\draw[-Latex,red,thick] (B.south) -| (BtI.north);
-	\draw[-Latex,red,thick] (BtI.west) -| (I.south);
-	%\draw[->] (A)--(B) node[midway]{Remove effects of zonal Earth tides on $\Delta$UT and LOD (\texttt{rg\_zont2})}; 
+	\draw[-Latex,thick] (B.south) -- (O.north);
+	\draw[-Latex,thick] (O.south) -- (BtI.north);
+	\draw[-Latex,thick] (BtI.south) -- (F.north);
 \end{tikzpicture}

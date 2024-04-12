@@ -17,6 +17,7 @@ gfortran -o eop_ocean_tide.out eop_ocean_tide.f interp_pmut1_oceans.o
 gfortran -o eop_pmgravi.out eop_libration.f interp_pm_gravi.o
 gfortran -o pmsdnut2.out test_pmsdnut2.f PMSDNUT2.o FUNDARG.o 
 gfortran -o utlibr.out test_utlibr.f UTLIBR.o FUNDARG.o 
+gfortran -o eop_libration.out eop_libration.f interp_pm_gravi.o UTLIBR.o FUNDARG.o
 
 ## EOP variations for plotting
 gfortran -o eop_variations.out eop_variations.f interp_pm_gravi.o interp_pmut1_oceans.o UTLIBR.o FUNDARG.o

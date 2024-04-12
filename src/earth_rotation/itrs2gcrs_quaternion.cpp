@@ -1,7 +1,7 @@
 #include "iau.hpp"
 #include "earth_rotation.hpp"
 
-Eigen::Quaterniond dso::detail::itrs2gcrs_quaternion(double era, double s,
+Eigen::Quaterniond dso::detail::gcrs2itrs_quaternion(double era, double s,
                                                      double sp, double Xcip,
                                                      double Ycip, double xp,
                                                      double yp) noexcept {

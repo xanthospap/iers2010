@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
   std::ifstream fin(argv[1]);
   if (!fin.is_open()) {
     fprintf(stderr, "ERROR Failed opening data file %s\n", argv[1]);
+    fprintf(stderr, "Note that reference results for this program can be produced via the test/fortran/test-rgzont2.out program\n");
     return 2;
   }
 

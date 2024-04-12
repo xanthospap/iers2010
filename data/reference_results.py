@@ -754,5 +754,13 @@ special_progs = [
     {"prog":"rgzont2.out", 
      "path": "test/unit_tests",
     "args": ["data/rg_zont2.dat"], 
+    "exit": 0},
+    {"prog":"eop-libration.out", 
+     "path": "test/unit_tests",
+    "args": ["data/eop_libration.dat"], 
+    "exit": 0},
+    {"prog":"eop-oceantide-orthoeop.out", 
+     "path": "test/unit_tests",
+    "args": ["data/ortho_eop.dat"], 
     "exit": 0}
 ]

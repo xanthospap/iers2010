@@ -44,7 +44,9 @@ in \gls{utc}. When parsing the files however, the time scale is changed to \gls{
 \begin{figure}
   \centering
   \input{handling_eop.tex}
-  \caption{Extracting \gls{eop} information from \gls{iers} \texttt{C04} data files.}
+  \caption{Extracting and interpolating \gls{eop} information from \gls{iers} 
+    \texttt{C04} data files. Red nodes are seamless implicit activities, while 
+    green ones are optional, performed on user request.}
   \label{fig:handling-eop}
 \end{figure}
 
@@ -92,7 +94,20 @@ series of \glspl{eop}:
       publishes the \href{https://iers-conventions.obspm.fr/content/chapter8/software/RG_ZONT2.F}{RG\_ZONT2.F} 
       software.
 
+    \item $\Delta UT1$ has the largest impact on the \gls{itrs}/\gls{gcrs} frame 
+      transformation compared to all other \glspl{eop} (\cite{Bradley2016}).  The 
+      time difference $\Delta UT1 = UT1-UTC$ contains leap seconds within the data 
+      series. This $\pm 1$second jump impacts how the data set should be 
+      interpolated and can lead to large errors if done incorrectly (see \autoref{fig:eop-variations}). 
+      To overcome this, tabulated $\Delta UT1$ are first transformed to $UT1-TAI$ 
+      values via $UT1 - TAI = \Delta UT1 - \Delta AT$, interpolated, and then 
+      transformed back to $\Delta UT1$. The procedure is outlined in Section 3.3 of 
+      \cite{Bradley2016}.
+
 \end{itemize}
+
+\autoref{lst:eop-interpolation} presents source code to parse, store and 
+interpolate \glspl{eop} following the above.
 
 \begin{figure}[h]
   \centering
