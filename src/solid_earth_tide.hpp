@@ -198,7 +198,10 @@ public:
                  double GMsun) noexcept
       : mGMSun(GMsun), mGMMoon(GMmoon), mcs(degree, degree, GMearth, Rearth){};
 
-  /** Compute corrections to geopotemtial coefficients (ΔC, ΔS) due to Solid 
+  /** Get the stokes coefficients of the intsance */
+  const StokesCoeffs &stokes_coeffs() const noexcept { return mcs; }
+
+  /** Compute corrections to geopotential coefficients (ΔC, ΔS) due to Solid 
    * Earth tide according to IERS 2010.
    *
    * This function follows the IERS 2010 model, using a two-step approach.

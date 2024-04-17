@@ -19,7 +19,7 @@ int dso::SolidEarthTide::stokes_coeffs(
 
   /* assign corrections to the isntance's Stokes coefficients */
   mcs.clear();
-  /* C coeefs */
+  /* C coeffs */
   mcs.C(2, 0) = dC[0] + dC20;
   mcs.C(3, 0) = dC[3];
   mcs.C(4, 0) = dC[7];
@@ -33,7 +33,7 @@ int dso::SolidEarthTide::stokes_coeffs(
   mcs.C(4, 3) = dC[10];
   mcs.C(4, 4) = dC[11];
 
-  /* S coeefs */
+  /* S coeffs */
   mcs.S(2, 1) = dS[1] + dS21;
   mcs.S(3, 1) = dS[4];
   mcs.S(4, 1) = dS[8];

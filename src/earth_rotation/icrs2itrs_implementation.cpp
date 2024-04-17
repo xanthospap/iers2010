@@ -43,19 +43,19 @@ Eigen::Matrix<double, 3, 3> dso::detail::gcrs2itrs(double era, double s,
   return Rm.toRotationMatrix();
 }
 
-Eigen::Matrix<double, 3, 3> dso::detail::gcrs2itrs(double era, double s,
-                                                   double sp, double Xcip,
-                                                   double Ycip, double xp,
-                                                   double yp, Eigen::Matrix<double, 3, 3> &Rv) noexcept {
-  /* compute full rotation matrix: [C x R x W] */
-  auto Rm =  W(xp, yp, sp) * R(era) * C(Xcip, Ycip, s);
-
-  /* */
-  Eigen::Matrix<double,3,3> dR = Eigen::Matrix<double,3,3>::Zeros();
-  dR(0,1) = earth_rotation_rate(dlod);
-  dR(1,0) = -earth_rotation_rate(dlod);
-
-  auto Rv = W(xp, yp, sp) * dR * R(era) * C(Xcip, Ycip, s);
-
-  return Rm.toRotationMatrix();
-}
+//Eigen::Matrix<double, 3, 3> dso::detail::gcrs2itrs(double era, double s,
+//                                                   double sp, double Xcip,
+//                                                   double Ycip, double xp,
+//                                                   double yp, Eigen::Matrix<double, 3, 3> &Rv) noexcept {
+//  /* compute full rotation matrix: [C x R x W] */
+//  auto Rm =  W(xp, yp, sp) * R(era) * C(Xcip, Ycip, s);
+//
+//  /* */
+//  Eigen::Matrix<double,3,3> dR = Eigen::Matrix<double,3,3>::Zeros();
+//  dR(0,1) = earth_rotation_rate(dlod);
+//  dR(1,0) = -earth_rotation_rate(dlod);
+//
+//  auto Rv = W(xp, yp, sp) * dR * R(era) * C(Xcip, Ycip, s);
+//
+//  return Rm.toRotationMatrix();
+//}

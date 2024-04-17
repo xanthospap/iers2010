@@ -12,7 +12,7 @@ struct BmOrbit {
   Eigen::Matrix<double, 3, 1> xyz;
   Eigen::Matrix<double, 3, 1> vxyz;
   Eigen::Matrix<double, 3, 1> axyz;
-  BmOrbit(const dso::MjdEpoch &t, double *rva) : epoch(t) {
+  BmOrbit(const dso::MjdEpoch &t, const double *rva) : epoch(t) {
     xyz << rva[0], rva[1], rva[2];
     vxyz << rva[3], rva[4], rva[5];
     axyz << rva[6], rva[7], rva[8];
@@ -28,11 +28,22 @@ struct BmAcceleration {
   }
 };
 
+struct BmRotaryMatrix {
+  dso::MjdEpoch epoch;
+  Eigen::Matrix<double, 3, 3> R;
+  BmRotaryMatrix(const dso::MjdEpoch &t, const double *data)
+      : epoch(t) {
+    R << data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8];
+  }
+};
+
 const char *skipws(const char *line) noexcept;
 
 std::vector<BmAcceleration> parse_acceleration(const char *fn);
 
 std::vector<BmOrbit> parse_orbit(const char *fn);
+
+std::vector<BmRotaryMatrix> parse_rotary(const char *fn);
 
 } /* namespace costg */
 

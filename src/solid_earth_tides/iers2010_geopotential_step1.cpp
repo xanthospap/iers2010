@@ -6,7 +6,8 @@
 #include <geodesy/crdtype_warppers.hpp>
 
 namespace {
-/* @brief Third body (Sun or Moon) Solid earth tide geopotential coefficient
+
+/** @brief Third body (Sun or Moon) Solid earth tide geopotential coefficient
  *        corrections, based on IERS 2010, Anelastic Earth.
  * 
  * Note that the geopotential coefficient corrections computed here (i.e. ΔC 
@@ -28,6 +29,7 @@ namespace {
  *            dS = S20,S21,S22,0,S31,S32,S33,0,S41,S42,S43,S44
  * @return Always 0
  */
+[[maybe_unused]]
 int iers2010_solid_earth_tide_anelastic_tb(
     double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb, double GMtb,
     std::array<double, 12> &dC, std::array<double, 12> &dS) noexcept {
@@ -35,23 +37,22 @@ int iers2010_solid_earth_tide_anelastic_tb(
   /* get spherical coordinates of third body */
   const auto rtb_spherical =
       dso::cartesian2spherical(dso::CartesianCrdConstView(rtb));
+  
   /* trigonometric numbers (of third body) */
-  const double __sf = std::sin(rtb_spherical.lat());
-  const double __sfsq = __sf * __sf;
-  const double __cf = std::cos(rtb_spherical.lat());
+  const double u = std::sin(rtb_spherical.lat());
+  const double t = std::cos(rtb_spherical.lat());
+  const double u2 = u * u;
+  const double t2 = t * t;
 
   /* compute normalized associated Lagrange polynomials for n=2,3 */
-  const double Pnm20 = std::sqrt(5e0) * 0.5e0 * (3e0 * __sfsq - 1e0); // P20
-  const double Pnm21 =
-      std::sqrt(5.e0 / 3.e0) * 3.e0 * __sf * std::sqrt(1.e0 - __sfsq);   // P21
-  const double Pnm22 = std::sqrt(5.e0 / 12.e0) * 3.e0 * (1.e0 - __sfsq); // P22
-  const double Pnm30 =
-      std::sqrt(7.e0) * 0.5e0 * (5.e0 * __sfsq * __sf - 3.e0 * __sf); // P30
+  const double Pnm20 = std::sqrt(5e0) * 0.5e0 * (3e0 * t2 - 1e0);      // P20
+  const double Pnm21 = std::sqrt(5.e0 / 3.e0) * 3.e0 * t * u;          // P21
+  const double Pnm22 = std::sqrt(5.e0 / 12.e0) * 3.e0 * u2;            // P22
+  const double Pnm30 = (.5e0 * t * std::sqrt(7e0)) * (5e0 * t2 - 3e0); // P30
   const double Pnm31 =
-      std::sqrt(7.e0 / 6.e0) * 1.5e0 * (5.e0 * __sfsq - 1.e0) * __cf; // P31
-  const double Pnm32 =
-      std::sqrt(7.e0 / 60.e0) * 15.e0 * __sf * __cf * __cf; // P32
-  const double Pnm33 = std::sqrt(7.e0 / 360.e0) * 15.e0 * std::pow(__cf, 3);
+      (3e0 / 2e0) * (5e0 * t2 - 1e0) * u * std::sqrt((7e0) / 6e0); // P31
+  const double Pnm32 = 15e0 * std::sqrt(7e0 / 60e0) * t * u2;      // P32
+  const double Pnm33 = 15e0 * u2 * u * std::sqrt(14e0 / 720e0); // P33
 
   /* IERS 2010, Table 6.3: Nominal values of solid Earth
    * tide external potential Love numbers. Anelastic
@@ -119,6 +120,107 @@ int iers2010_solid_earth_tide_anelastic_tb(
 
   return 0;
 }
+
+/** @brief Third body (Sun or Moon) Solid earth tide geopotential coefficient
+ *        corrections, based on IERS 2010, elastic Earth.
+ *
+ *  For more information, see the function iers2010_solid_earth_tide_elastic_tb 
+ *  These two functions are practically the same, except for the part of 
+ *  computing ΔC(n,m) and ΔS(n,m) for n=2.
+ *  See also the table 6.3 in IERS 2010. 
+ */
+[[maybe_unused]]
+int iers2010_solid_earth_tide_elastic_tb(
+    double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb, double GMtb,
+    std::array<double, 12> &dC, std::array<double, 12> &dS) noexcept {
+
+  /* get spherical coordinates of third body */
+  const auto rtb_spherical =
+      dso::cartesian2spherical(dso::CartesianCrdConstView(rtb));
+  
+  /* trigonometric numbers (of third body) */
+  const double u = std::sin(rtb_spherical.lat());
+  const double t = std::cos(rtb_spherical.lat());
+  const double u2 = u * u;
+  const double t2 = t * t;
+
+  /* compute normalized associated Lagrange polynomials for n=2,3 */
+  const double Pnm20 = std::sqrt(5e0) * 0.5e0 * (3e0 * t2 - 1e0);      // P20
+  const double Pnm21 = std::sqrt(5.e0 / 3.e0) * 3.e0 * t * u;          // P21
+  const double Pnm22 = std::sqrt(5.e0 / 12.e0) * 3.e0 * u2;            // P22
+  const double Pnm30 = (.5e0 * t * std::sqrt(7e0)) * (5e0 * t2 - 3e0); // P30
+  const double Pnm31 =
+      (3e0 / 2e0) * (5e0 * t2 - 1e0) * u * std::sqrt((7e0) / 6e0); // P31
+  const double Pnm32 = 15e0 * std::sqrt(7e0 / 60e0) * t * u2;      // P32
+  const double Pnm33 = 15e0 * u2 * u * std::sqrt(14e0 / 720e0); // P33
+
+  /* IERS 2010, Table 6.3: Nominal values of solid Earth
+   * tide external potential Love numbers. Elastic Earth 
+   *       n  m  k_nm
+   * ----------------------------------
+   *       2  0  0.29525
+   *       2  1  0.29470
+   *       2  2  0.29801
+   *       3  0  0.09300
+   *       3  1  0.09300
+   *       3  2  0.09300
+   *       3  3  0.09400
+   */
+  const double __cl = std::cos(rtb_spherical.lon());
+  const double __sl = std::sin(rtb_spherical.lon());
+  const double __c2l = __cl * __cl - __sl *__sl;
+  const double __s2l = 2e0 * __cl * __sl;
+  const double __c3l = 4e0 * __cl * __cl * __cl - 3e0 * __cl;
+  const double __s3l = -4e0 * __sl * __sl * __sl + 3e0 * __sl;
+
+  /* temporary storage; latter on dCt and dSt will be added to dC and dS. */
+  std::array<double, 12> dCt = {0e0}, dSt = {0e0};
+
+  /* order n=2, Eq. (6.6) from IERS 2010, ommiting GMj/GM and (Re/r)^3 */
+  constexpr const double fac2 = 1e0 / 5e0;
+  /* ΔC20 */ dCt[0] = fac2 * Pnm20 * 0.29525e0;
+  /* ΔS20 */ dSt[0] = 0e0;
+  /* ΔC21 */ dCt[1] = fac2 * Pnm21 *  0.29470e0 * __cl;
+  /* ΔC21 */ dSt[1] = fac2 * Pnm21 *  0.29470e0 * __sl;
+  /* ΔC22 */ dCt[2] = fac2 * Pnm22 *  0.29801e0 * __c2l;
+  /* ΔC22 */ dSt[2] = fac2 * Pnm22 *  0.29801e0 * __s2l;
+
+  /* order n = 3 Eq. (6.6) from IERS 2010, ommiting GMj/GM and (Re/r)^3.
+   * Note that there is no imaginary part of knm for n = 3
+   */
+  const double fac3 = Re / rtb_spherical.r() / 7e0;
+  /* ΔC30 */ dCt[3] = fac3 * Pnm30 * 0.093e0;
+  /* ΔS30 */ dSt[3] = 0e0;
+  /* ΔC31 */ dCt[4] = fac3 * Pnm31 * 0.093e0 * __cl;
+  /* ΔS31 */ dSt[4] = fac3 * Pnm31 * 0.093e0 * __sl;
+  /* ΔC32 */ dCt[5] = fac3 * Pnm32 * 0.093e0 * __c2l;
+  /* ΔS32 */ dSt[5] = fac3 * Pnm32 * 0.093e0 * __s2l;
+  /* ΔC33 */ dCt[6] = fac3 * Pnm33 * 0.094e0 * __c3l;
+  /* ΔS33 */ dSt[6] = fac3 * Pnm33 * 0.094e0 * __s3l;
+
+  /* order n = 4 Eq. (6.7) from IERS 2010, ommiting GMj/GM and (Re/r)^3.
+   * Coefficients knm(+) are taken from Table 6.3, and are the same for
+   * elastic and anelastic case.
+   * Note that coefficients knm(+) do not have an imaginary part.
+   */
+  /* ΔC40 */ dCt[7] = fac2 * Pnm20 * (-0.00087e0) * __cl;
+  /* ΔS40 */ dSt[7] = 0e0;
+  /* ΔC41 */ dCt[8] = fac2 * Pnm21 * (-0.00079e0) * __cl;
+  /* ΔC41 */ dSt[8] = fac2 * Pnm21 * (-0.00079e0) * __sl;
+  /* ΔC42 */ dCt[9] = fac2 * Pnm22 * (-0.00057e0) * __c2l;
+  /* ΔC42 */ dSt[9] = fac2 * Pnm22 * (-0.00057e0) * __s2l;
+
+  /* scale and add to output arrays */
+  const double fac = (GMtb / GM) * std::pow(Re / rtb_spherical.r(), 3e0);
+  //std::transform(dCt.cbegin(), dCt.cend(), dC.cbegin(), dC.begin(),
+  //               [fac](double dct, double dc) { return dc + dct * fac; });
+  for (int i=0; i<12; i++) dC[i] += dCt[i] * fac;
+  //std::transform(dSt.cbegin(), dSt.cend(), dS.cbegin(), dS.begin(),
+  //               [fac](double dst, double ds) { return ds + dst * fac; });
+  for (int i=0; i<12; i++) dS[i] += dSt[i] * fac;
+
+  return 0;
+}
 } /* unnamed namespace */
 
 int dso::SolidEarthTide::potential_step1(
@@ -130,12 +232,27 @@ int dso::SolidEarthTide::potential_step1(
   std::fill(dC.begin(), dC.end(), 0e0);
   std::fill(dS.begin(), dS.end(), 0e0);
 
+  // Compute using AnElastic Love numbers:
+  // ------------------------------------------------------------------------
   /* start with Sun geopotential corrections */
   iers2010_solid_earth_tide_anelastic_tb(mcs.Re(), mcs.GM(), rSun, mGMSun, dC,
                                          dS);
   /* add Moon */
   iers2010_solid_earth_tide_anelastic_tb(mcs.Re(), mcs.GM(), rMoon, mGMMoon, dC,
                                          dS);
+  std::fill(dC.begin(), dC.end(), 0e0);
+  std::fill(dS.begin(), dS.end(), 0e0);
+  
+  // Compute using Elastic Love numbers:
+  // ------------------------------------------------------------------------
+  /* start with Sun geopotential corrections */
+  iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mcs.GM(), rSun, mGMSun, dC,
+                                         dS);
+  /* add Moon */
+  iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mcs.GM(), rMoon, mGMMoon, dC,
+                                         dS);
+  
+  
   /* all done for step 1 */
   return 0;
 }
