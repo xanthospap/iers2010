@@ -34,13 +34,15 @@ int iers2010_solid_earth_tide_anelastic_tb(
     double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb, double GMtb,
     std::array<double, 12> &dC, std::array<double, 12> &dS) noexcept {
 
+  // printf("Computing Step1 with GM=%.3f and r=(%+.3f, %+.3f, %+.3f)\n", GMtb, rtb.x(), rtb.y(), rtb.z());
+
   /* get spherical coordinates of third body */
   const auto rtb_spherical =
       dso::cartesian2spherical(dso::CartesianCrdConstView(rtb));
   
   /* trigonometric numbers (of third body) */
-  const double u = std::sin(rtb_spherical.lat());
-  const double t = std::cos(rtb_spherical.lat());
+  const double t = std::sin(rtb_spherical.lat());
+  const double u = std::cos(rtb_spherical.lat());
   const double u2 = u * u;
   const double t2 = t * t;
 
@@ -84,6 +86,14 @@ int iers2010_solid_earth_tide_anelastic_tb(
   /* ΔC21 */ dSt[1] = fac2 * Pnm21 * (0.29830e0 * __sl - (-0.00144e0) * __cl);
   /* ΔC22 */ dCt[2] = fac2 * Pnm22 * (0.30102e0 * __c2l + (-0.00130e0) * __s2l);
   /* ΔC22 */ dSt[2] = fac2 * Pnm22 * (0.30102e0 * __s2l - (-0.00130e0) * __c2l);
+  //{
+  //const double fac =
+  //    (GMtb / std::pow(rtb_spherical.r(), 3)) * (std::pow(Re, 3) / GM);
+  //printf("\t[2,%d] %.6e * (%.6e * %.6e + %.6e * %.6e)\n", 0, fac2 * fac, 0.30190e0, Pnm20, 0e0, 0e0);
+  //printf("\t[2,%d] %.6e * (%.6e * %.6e + %.6e * %.6e)\n", 1, fac2 * fac, 0.29830e0, Pnm21*__cl, -0.00144e0, Pnm21*__sl);
+  //printf("\t[2,%d] %.6e * (%.6e * %.6e + %.6e * %.6e)\n", 2, fac2 * fac, 0.30102e0, Pnm22*__c2l, -0.00130e0, Pnm22*__s2l);
+  //printf("\tC(2,0)=%.3e C(2,1)=%.3e C(2,2)=%.3e\n", dCt[0]*fac, dCt[1]*fac, dCt[2]*fac);
+  //}
 
   /* order n = 3 Eq. (6.6) from IERS 2010, ommiting GMj/GM and (Re/r)^3.
    * Note that there is no imaginary part of knm for n = 3
@@ -103,7 +113,7 @@ int iers2010_solid_earth_tide_anelastic_tb(
    * elastic and anelastic case.
    * Note that coefficients knm(+) do not have an imaginary part.
    */
-  /* ΔC40 */ dCt[7] = fac2 * Pnm20 * (-0.00089e0) * __cl;
+  /* ΔC40 */ dCt[7] = fac2 * Pnm20 * (-0.00089e0);
   /* ΔS40 */ dSt[7] = 0e0;
   /* ΔC41 */ dCt[8] = fac2 * Pnm21 * (-0.00080e0) * __cl;
   /* ΔC41 */ dSt[8] = fac2 * Pnm21 * (-0.00080e0) * __sl;
@@ -118,6 +128,8 @@ int iers2010_solid_earth_tide_anelastic_tb(
   std::transform(dSt.cbegin(), dSt.cend(), dS.cbegin(), dS.begin(),
                  [fac](double dst, double ds) { return ds + dst * fac; });
 
+  //printf("\tC(2,0)=%.9e C(2,1)=%.9e C(2,2)=%.9e\n", dC[0], dC[1], dC[2]);
+  //printf("\tS(2,0)=%.9e S(2,1)=%.9e S(2,2)=%.9e\n", dS[0], dS[1], dS[2]);
   return 0;
 }
 
@@ -139,8 +151,8 @@ int iers2010_solid_earth_tide_elastic_tb(
       dso::cartesian2spherical(dso::CartesianCrdConstView(rtb));
   
   /* trigonometric numbers (of third body) */
-  const double u = std::sin(rtb_spherical.lat());
-  const double t = std::cos(rtb_spherical.lat());
+  const double t = std::sin(rtb_spherical.lat());
+  const double u = std::cos(rtb_spherical.lat());
   const double u2 = u * u;
   const double t2 = t * t;
 
@@ -203,7 +215,7 @@ int iers2010_solid_earth_tide_elastic_tb(
    * elastic and anelastic case.
    * Note that coefficients knm(+) do not have an imaginary part.
    */
-  /* ΔC40 */ dCt[7] = fac2 * Pnm20 * (-0.00087e0) * __cl;
+  /* ΔC40 */ dCt[7] = fac2 * Pnm20 * (-0.00087e0);
   /* ΔS40 */ dSt[7] = 0e0;
   /* ΔC41 */ dCt[8] = fac2 * Pnm21 * (-0.00079e0) * __cl;
   /* ΔC41 */ dSt[8] = fac2 * Pnm21 * (-0.00079e0) * __sl;
@@ -240,17 +252,15 @@ int dso::SolidEarthTide::potential_step1(
   /* add Moon */
   iers2010_solid_earth_tide_anelastic_tb(mcs.Re(), mcs.GM(), rMoon, mGMMoon, dC,
                                          dS);
-  std::fill(dC.begin(), dC.end(), 0e0);
-  std::fill(dS.begin(), dS.end(), 0e0);
   
   // Compute using Elastic Love numbers:
   // ------------------------------------------------------------------------
   /* start with Sun geopotential corrections */
-  iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mcs.GM(), rSun, mGMSun, dC,
-                                         dS);
+  //iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mcs.GM(), rSun, mGMSun, dC,
+  //                                       dS);
   /* add Moon */
-  iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mcs.GM(), rMoon, mGMMoon, dC,
-                                         dS);
+  //iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mcs.GM(), rMoon, mGMMoon, dC,
+  //                                       dS);
   
   
   /* all done for step 1 */

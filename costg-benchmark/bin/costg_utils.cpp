@@ -19,7 +19,7 @@ std::vector<costg::BmAcceleration> costg::parse_acceleration(const char *fn) {
   }
 
   char line[256];
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 6; i++)
     fin.getline(line, 256);
   std::vector<costg::BmAcceleration> vec;
 
@@ -60,7 +60,7 @@ std::vector<costg::BmOrbit> costg::parse_orbit(const char *fn) {
   }
 
   char line[512];
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 6; i++)
     fin.getline(line, 512);
   std::vector<costg::BmOrbit> vec;
 
@@ -101,7 +101,7 @@ std::vector<costg::BmRotaryMatrix> costg::parse_rotary(const char *fn) {
   }
 
   char line[1024];
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 6; i++)
     fin.getline(line, 1024);
   std::vector<costg::BmRotaryMatrix> vec;
 

@@ -122,6 +122,7 @@ int dso::SolidEarthTide::potential_step2(const dso::MjdEpoch &mjdtt,
     } else if (c.mdn.operator()(0) == 0) {
       /* terms for (n,m)=(2,0) Eq. 6.8a from IERS 2010 */
       dC20 += (c.ampInPhase * carg - c.ampOutOfPhase * sarg);
+      //printf("\t[Step2] C(2,0) += %.6e * %.6e - %.6e * %.6e\n", c.ampInPhase, carg, c.ampOutOfPhase, sarg);
     } else if (c.mdn.operator()(0) == 2) {
       /* terms for (n,m)=(2,2) Eq. 6.8b from IERS 2010 */
       dC22 += (c.ampInPhase * carg - c.ampOutOfPhase * sarg);
