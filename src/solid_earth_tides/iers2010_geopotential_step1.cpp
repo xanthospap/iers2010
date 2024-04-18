@@ -128,8 +128,15 @@ int iers2010_solid_earth_tide_anelastic_tb(
   std::transform(dSt.cbegin(), dSt.cend(), dS.cbegin(), dS.begin(),
                  [fac](double dst, double ds) { return ds + dst * fac; });
 
-  //printf("\tC(2,0)=%.9e C(2,1)=%.9e C(2,2)=%.9e\n", dC[0], dC[1], dC[2]);
-  //printf("\tS(2,0)=%.9e S(2,1)=%.9e S(2,2)=%.9e\n", dS[0], dS[1], dS[2]);
+  //printf("\tC(%d,%d) = %+.15f\n", 2, 0, dCt[0]*fac);
+  //printf("\tC(%d,%d) = %+.15f\n", 2, 1, dCt[1]*fac);
+  //printf("\tC(%d,%d) = %+.15f\n", 2, 2, dCt[2]*fac);
+  //printf("\tC(%d,%d) = %+.15f\n", 3, 0, dCt[3]*fac);
+  //printf("\tC(%d,%d) = %+.15f\n", 3, 1, dCt[4]*fac);
+  //printf("\tC(%d,%d) = %+.15f\n", 3, 2, dCt[5]*fac);
+  //printf("\tC(%d,%d) = %+.15f\n", 3, 3, dCt[6]*fac);
+  //printf("\tC(%d,%d) = %+.15f\n", 4, 0, dCt[7]*fac);
+  //printf("\tC(%d,%d) = %+.15f\n", 4, 1, dCt[8]*fac);
   return 0;
 }
 

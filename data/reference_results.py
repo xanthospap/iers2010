@@ -9,7 +9,9 @@ data_files = [
     {"url": "http://ivsopar.obspm.fr/fcn/table-asc-c04.txt", "local": "data/table-asc-c04.txt"},
     {"url": "https://hpiers.obspm.fr/iers/eop/eopc04_14/eopc04_IAU2000.62-now", "local": "data/eopc04_IAU2000.62-now"},
     {"url": "https://hpiers.obspm.fr/iers/eop/eopc04/eopc04.1962-now", "local": "data/eopc04.1962-now"},
-    {"url": "ftp://isdcftp.gfz-potsdam.de/grace/Level-1B/GFZ/AOD/RL06/2023/AOD1B_2023-11-09_X_06.asc.gz", "local": "data/AOD1B_2023-11-09_X_06.asc.gz", "actions":["decompress"]}
+    {"url": "ftp://isdcftp.gfz-potsdam.de/grace/Level-1B/GFZ/AOD/RL06/2023/AOD1B_2023-11-09_X_06.asc.gz", "local": "data/AOD1B_2023-11-09_X_06.asc.gz", "actions":["decompress"]},
+    {"url": "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de432s.bsp", "local": "data/de432s.bsp"},
+    {"url": "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/latest_leapseconds.tls", "local": "data/latest_leapseconds.tls"},
 ]
 
 str1 = """Icgem filename: data/EIGEN-6S4v2.gfc
@@ -762,5 +764,9 @@ special_progs = [
     {"prog":"eop-oceantide-orthoeop.out", 
      "path": "test/unit_tests",
     "args": ["data/ortho_eop.dat"], 
+    "exit": 0},
+    {"prog":"planet-state.out", 
+     "path": "test/unit_tests",
+    "args": ["data/de432s.bsk", "data/latest_leapseconds.tls"], 
     "exit": 0}
 ]

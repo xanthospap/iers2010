@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <array>
 #include <limits>
+#include <charconv>
+#include <cstring>
 
 namespace {
 /* Match Planet enums to CSPICE IDs, see
@@ -28,4 +30,19 @@ int dso::cspice::planet_to_naif_id(dso::Planet p, int &id) noexcept {
   id = (it != PlanetId.end()) ? it->spiceId : std::numeric_limits<int>::max();
 
   return (id == std::numeric_limits<int>::max()) ? 1 : 0;
+}
+
+int dso::cspice::planet_to_naif_idstr(dso::Planet p, char *buf,
+                                    int bufsz) noexcept {
+  /* string to null */
+  std::memset(buf, '\0', bufsz);
+  /* get the planet's id */
+  int id;
+  if (dso::cspice::planet_to_naif_id(p, id))
+    return 1;
+  /* transform the integer value to a string and write it out to buf */
+  if (auto [ptr, ec] = std::to_chars(buf, buf + bufsz, id); ec != std::errc())
+    return 2;
+
+  return 0;
 }

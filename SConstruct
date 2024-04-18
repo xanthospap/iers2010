@@ -56,6 +56,7 @@ lib_src_files += glob.glob(r"src/eop/*.cpp")
 lib_src_files += glob.glob(r"src/gravity/*.cpp")
 lib_src_files += glob.glob(r"src/planets/*.cpp")
 lib_src_files += glob.glob(r"src/fundarg/*.cpp")
+lib_src_files += glob.glob(r"src/relativity/*.cpp")
 #lib_src_files += glob.glob(r"src/grid/*.cpp")
 #lib_src_files += glob.glob(r"src/trp/*.cpp")
 

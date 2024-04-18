@@ -68,6 +68,11 @@ constexpr const double GMs = 1.32712442099e20;
  */
 constexpr const double ge = 9.7803278e0;
 
+/** @brief Earth's angular momentum per unit mass in [m^2/s]. See IERS 2010, 
+ * Section 10.3 Equations of motion for an artiﬁcial Earth satellite.
+ */
+constexpr const double Je = 9.8e8;
+
 } /* iers2010 */
 
 namespace dso {
