@@ -47,24 +47,24 @@ geodesic(const Eigen::Matrix<double, 6, 1> &rsat,
 } /* unnamed namespace */
 
 Eigen::Matrix<double, 3, 1> dso::iers2010_relativistic_acceleration(
-    const Eigen::Matrix<double, 6, 1> &rsat,
-    const Eigen::Matrix<double, 6, 1> &rsun, double GMe, double GMs, double J,
+    const Eigen::Matrix<double, 6, 1> &rsatin,
+    const Eigen::Matrix<double, 6, 1> &rsunin, double GMe, double GMs, double J,
     double c, double beta, double gamma) noexcept {
+
+  /* scale: [m] to [km] to avoid too largr/small numbres */
+  const auto rsat = rsatin * 1e-3;
+  const auto rsun = rsunin * 1e-3;
+  GMe *= 1e-9;
+  GMs *= 1e-9;
+  J *= 1e-6;
+  c *= 1e-3;
 
   /* GMe / (c^2*r^3) */
   const double s = rsat.head<3>().norm();
-  // const double f = GMe / c / c / s / s / s;
   const double f = GMe / (c * c * s * s * s);
-  
-  {
-    auto a1 = schwarzschild(rsat, GMe, beta, gamma);
-    auto a2 = lens_thirring(rsat, GMe, J, gamma);
-    auto a3 = geodesic(rsat, -1e0 * rsun, GMe, GMs, gamma);
-  printf("%+.3e %+.3e %+.3e\n%+.3e %+.3e %+.3e\n%+.3e %+.3e %+.3e\n%.3e\n", a1(0),a1(1),a1(2),a2(0),a2(1),a2(2),a3(0),a3(1),a3(2),f);
-  }
 
   return (schwarzschild(rsat, GMe, beta, gamma) +
           lens_thirring(rsat, GMe, J, gamma) -
           geodesic(rsat, -1e0 * rsun, GMe, GMs, gamma)) *
-         f;
+         f * 1e3;
 }

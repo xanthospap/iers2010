@@ -11,7 +11,14 @@
 
 namespace dso {
 
-/**
+/** Relativistic correction to the acceleration of a satellite, IERS 2010.
+ *
+ * The computation here follows the IERS 2010 standards, see Chapter 10.3 
+ * Equations of motion for an artiﬁcial Earth satellite.
+ * The acceleration returned is the sum of the terms:
+ * 1. The Schwarzschild terms, 
+ * 2. the eﬀects of Lense-Thirring precession (frame-dragging), and
+ * 3. the geodesic (de Sitter) precession
  *
  * @param[in] rsat GCRF state vector (position+velocity) of satellite in 
  *                 [m] and [m/sec] respectively.
