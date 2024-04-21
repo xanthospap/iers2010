@@ -1,0 +1,101 @@
+#include "datetime/calendar.hpp"
+#include "eigen3/Eigen/Eigen"
+#include "gravity.hpp"
+#include "icgemio.hpp"
+#include "costg_utils.hpp"
+#include "aod1b_data_stream.hpp"
+#include <datetime/tpdate.hpp>
+
+constexpr const int DEGREE = 180;
+constexpr const int ORDER = 180;
+
+using namespace costg;
+
+int main(int argc, char *argv[]) {
+  if (argc != 4 && argc != 5) {
+    fprintf(stderr,
+            "Usage: %s [00orbit_icrf.txt] [AOD1B_2008-07-03_X_06.asc] "
+            "[08aod1b_RL06_icrf.txt], or\nUsage: %s [00orbit_itrf.txt] "
+            "[AOD1B_2008-07-03_X_06.asc] [08aod1b_RL06_icrf.txt] "
+            "[01earthRotation_rotaryMatrix.txt]\n",
+            argv[0], argv[0]);
+    return 1;
+  }
+  
+  /* allocate scratch space for computations */
+  dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> W(DEGREE + 3,
+                                                                    DEGREE + 3);
+  dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> M(DEGREE + 3,
+                                                                    DEGREE + 3);
+
+  /* read orbit from input file */
+  const auto orbvec = parse_orbit(argv[1]);
+
+  /* read accleration from input file */
+  const auto accvec = parse_acceleration(argv[3]);
+
+  std::vector<BmRotaryMatrix> rotvec;
+  if (argc == 5) {
+    /* read rotary matrix (GCRS to ITRS) from input file */
+    rotvec = parse_rotary(argv[4]);
+  }
+
+  dso::Aod1bIn aod1b(argv[2]);
+  dso::StokesCoeffs stokes(DEGREE, ORDER, aod1b.GM(), aod1b.Re());
+  
+  dso::Aod1bDataStream<dso::AOD1BCoefficientType::GLO> aodin(aod1b);
+  aodin.initialize();
+
+  /* compare results epoch by epoch */
+  Eigen::Matrix<double, 3, 1> a;
+  Eigen::Matrix<double, 3, 3> g;
+  auto acc = accvec.begin();
+  auto rot = rotvec.begin();
+  for (const auto &in : orbvec) {
+    /* GPSTime to TT */
+    const auto tt = in.epoch.gps2tai().tai2tt();
+    const auto t(dso::from_mjdepoch<dso::nanoseconds>(tt));
+
+    /* get Stokes coefficients for this epoch from the AOD1B file */
+    if (aodin.coefficients_at(t, stokes)) {
+      fprintf(stderr, "Failed interpolating coefficients\n");
+      // TODO
+      //fprintf(stderr,
+      //        "ERROR. Failed interpolating coefficients for epoch: "
+      //        "%.3f[MJD]\n",
+      //        t.fmjd());
+      return 1;
+    }
+
+    /* for the test, degree one coefficients are not taken into account */
+    // stokes.C(0,0) = stokes.C(1,0) = stokes.C(1,1) = 0e0;
+    // stokes.S(1,1) = 0e0;
+
+    /* compute acceleration for given epoch/position */
+    if (dso::sh2gradient_cunningham(stokes, in.xyz, a, g, DEGREE, ORDER, -1, -1, &W,
+                                    &M)) {
+      fprintf(stderr, "ERROR Failed computing acceleration/gradient\n");
+      return 1;
+    }
+
+    /* if needed, transform acceleration from ITRF to GCRF */
+    if (argc == 5) {
+      const Eigen::Matrix<double,3,3> R = rot->R.transpose();
+      assert(rot->epoch == in.epoch);
+      a = R * a;
+    }
+
+    /* get COSTG result */
+    if (acc->epoch != in.epoch) {
+      fprintf(stderr, "ERROR Faile to match epochs in input files\n");
+      return 1;
+    }
+    printf("%d %.9f %.15e %.15e %.15e %.15e %.15e %.15e\n", in.epoch.imjd(),
+           in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
+           a(1), a(2));
+    ++acc;
+    if (argc == 5) ++rot;
+  }
+
+  return 0;
+}

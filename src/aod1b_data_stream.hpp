@@ -222,6 +222,7 @@ public:
    * the given epoch \p t.
    * On success, 0 is returned; in any other case, the result should not be 
    * used.
+   * Time scale is TT.
    */
   int coefficients_at(const Datetime<nanoseconds> &t,
                       StokesCoeffs &cs) noexcept {

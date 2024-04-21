@@ -125,16 +125,18 @@ private:
    */
   int skip_lines(std::ifstream &fin, int num_lines) const noexcept;
 
-  /** Collect Stokes coefficients.
+  /** @brief Collect Stokes coefficients.
+   *
    * The function assumes that the stream passed in is placed just before 
    * the start of a (new) data block, i.e. the previous line read was the 
    * data block header.
    * It will continue reading lines and store coefficients for all 
-   * (n,m)<=(max_degree,max_order). We do not assume that the the (n,m) 
-   * coefficients are stored in some ordelry fashion, hence we must have an 
-   * end condition, i.e. "when do we stop reading more lines ?". The 
-   * criterion is given by the \p max_lines parameter. Hence, the function 
-   * will continue to consume lines untill we reach max_lines.
+   * (n,m)<=(max_degree,max_order). 
+   * We do not assume that the the (n,m) coefficients are stored in some 
+   * ordelry fashion, hence we must have an end condition, i.e. "when do we 
+   * stop reading more lines ?". The criterion is given by the \p max_lines 
+   * parameter. Hence, the function will continue to consume lines untill we 
+   * reach max_lines.
    */
   int collect_coeffs(std::ifstream &fin, int max_degree, int max_order,
                      int max_lines, StokesCoeffs &cs) const noexcept;
