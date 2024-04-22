@@ -141,10 +141,21 @@ public:
       : _GM(::iers2010::GMe), _Re(::iers2010::Re), _cnormalized(true), m_degree(n),
         m_order((m > 0) ? m : n), _Cnm(n + 1, n + 1), _Snm(n + 1, n + 1) {}
 
-  /* @brief Resize; check current capacity and only re-allocated data if
-   *      needed. m_degree set to new value.
+  /* @brief Resize to new degree/order, deleting currrent data.
+   *
+   * Check current capacity and only re-allocated data if needed. 
+   * 
+   * @warning Note that data stored in the instance will be lost! If you need 
+   *          to resize the instance, but keep the data already stored in it, 
+   *          use the cresize function.
    */
   void resize(int degree, int order) noexcept;
+  
+  /* @brief Resize to new degree/order, keeping current data.
+   *
+   * Check current capacity and only re-allocated data if needed. 
+   */
+  void cresize(int degree, int order) noexcept;
 
   /** shrink dimensions (i.e. degree and order) without touching capacity */
   int shrink_dimensions(int new_degree, int new_order) noexcept {

@@ -28,6 +28,32 @@ private:
 
   /** Access an element from the underlying data; use with care IF needed */
   double data(int i) const noexcept { return m_data[i]; }
+  
+  /** @brief Row/Column indexing (rows and columns start from 0 --not 1--)
+   *
+   * If the data is stored in a Row-Wise manner, this function will return
+   * the offset of the ith row; if data is stored in a column-wise manner,
+   * it will return the index of the first elelement of the ith column.
+   *
+   * The parameter \p num_elements will hold the number of elements stored 
+   * in this row/col.
+   */
+  const double *slice(int i, int &num_elements) const noexcept {
+    return m_data + m_storage.slice(i, num_elements);
+  }
+
+  /** @brief Row/Column indexing (rows and columns start from 0 --not 1--)
+   *
+   * If the data is stored in a Row-Wise manner, this function will return
+   * the offset of the ith row; if data is stored in a column-wise manner,
+   * it will return the index of the first elelement of the ith column.
+   * 
+   * The parameter \p num_elements will hold the number of elements stored 
+   * in this row/col.
+   */
+  double *slice(int i, int &num_elements) noexcept { 
+    return m_data + m_storage.slice(i, num_elements); 
+  }
 
 public:
   template <typename T1, typename T2> struct _SumProxy;
@@ -206,10 +232,13 @@ public:
    * MatrixStorageType's, the number of columns may not be needed.
    */
   CoeffMatrix2D(int rows, int cols) noexcept
-      : m_storage(rows, cols), m_data(new double[m_storage.num_elements()]),
+      : m_storage(rows, cols),
+        m_data((m_storage.num_elements() > 0)
+                   ? (new double[m_storage.num_elements()])
+                   : (nullptr)),
         _capacity(m_storage.num_elements()) {
 #ifdef DEBUG
-    assert(m_storage.num_elements() > 0);
+    assert(m_storage.num_elements() >= 0);
 #endif
   };
 
@@ -281,7 +310,14 @@ public:
     return *this;
   }
 
-  /** Resize (keeping the MatrixStorageType the same) */
+  /** @brief Resize (keeping the MatrixStorageType the same).
+   *
+   * Note that calling this function may incur data loss, since we are 
+   * resizing (re-allocating) but not copying the data already stored within 
+   * the data structure.
+   * If you need to resize but also keep the values already stored in the 
+   * instance, then you should better call the cresize (member) function.
+   */
   void resize(int rows, int cols) {
     /* do we need to re-allocate ? */
     if (StorageImplementation<S>(rows, cols).num_elements() > _capacity) {
@@ -293,6 +329,39 @@ public:
       ;
     }
     m_storage = StorageImplementation<S>(rows, cols);
+  }
+  
+  /** @brief Copy and resize (keeping the MatrixStorageType the same)
+   *
+   * Note that calling this function will not incurr data loss (compare with 
+   * the resize function), since we are resizing (re-allocating) AND copying 
+   * the data already stored within the data structure.
+   */
+  void cresize(int rows, int cols) {
+    if (rows != this->rows() || cols != this->cols()) {
+      /* do we need to re-allocate ? */
+      if (StorageImplementation<S>(rows, cols).num_elements() > _capacity) {
+        double *ptr = new double[StorageImplementation<S>(rows, cols).num_elements()];
+        if (m_data) {
+          auto pstorage = StorageImplementation<S>(rows, cols);
+          int num_doubles;
+          /* copy data (from m_data to ptr) */
+          for (int s=0; s<pstorage.num_slices() && s<m_storage.num_slices(); s++) {
+            const double *__restrict__ psrc = this->slice(s);
+            double *__restrict__ ptrg = ptr+pstorage.slice(s, num_doubles);
+            printf("\tcol=%d, copying %d elements\n",s, num_doubles); 
+            std::memcpy(ptrg, psrc, sizeof(double) * num_doubles);
+          }
+          delete[] m_data;
+        }
+        _capacity = StorageImplementation<S>(rows, cols).num_elements();
+        m_data = ptr;
+      } else {
+        ;
+      }
+      m_storage = StorageImplementation<S>(rows, cols);
+    }
+    /* no-op if size given is the same as the one we have */
   }
 
   /** Sum of two CoeffMatrix2D instances create a proxy instance _SumProxy */

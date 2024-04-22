@@ -89,6 +89,21 @@ public:
    * will point to the first (0) element of the third row.
    */
   constexpr int slice(int row) const noexcept { return _size(row); }
+  
+  /** @brief Index of (beggining of) row and number of elements in row.
+   *
+   * Return the offset from the begining of the data array, given a row
+   * number. First row is row 0 (NOT row 1).
+   * The input parameter \p num_elements will be set to the nu,ber of elements 
+   * stored in the row requested.
+   */
+  constexpr int slice(int row, int &num_elements) const noexcept {
+    num_elements = row + 1;
+    return _size(row); 
+  }
+
+  /** @brief Number of slices, i.e. number of rows */
+  constexpr int num_slices() const noexcept { return rows; }
 
   /** @brief Index of element (row, column) in the data array.
    *  E.g. data[element_offset(1,2)] will return the element in the second
@@ -159,6 +174,14 @@ public:
   constexpr int slice(int col) const noexcept {
     return col * rows - col * (col - 1) / 2;
   }
+  
+  constexpr int slice(int col, int &num_elements) const noexcept {
+    num_elements = col + 1;
+    return slice(col);
+  }
+  
+  /** @brief Number of slices, i.e. number of cols */
+  constexpr int num_slices() const noexcept { return rows; }
 
   /** @brief Index of element (row, column) in the data array.
    *  E.g. data[element_offset(1,2)] will return the element in the second
@@ -232,6 +255,14 @@ public:
       offset += pts_in_row(i);
     return offset;
   }
+  
+  constexpr int slice(int row, int &num_elements) const noexcept {
+    num_elements = pts_in_row(row);
+    return slice(row);
+  }
+  
+  /** @brief Number of slices, i.e. number of rows */
+  constexpr int num_slices() const noexcept { return rows; }
 
   /** @brief Index of element (row, column) in the data array.
    * E.g. data[element_offset(1,2)] will return the element in the second row,
@@ -297,6 +328,14 @@ public:
    * will point to the first (0) element of the third row.
    */
   constexpr int slice(int row) const noexcept { return row * cols; }
+  
+  constexpr int slice(int row, int &num_elements) const noexcept {
+    num_elements = row + 1;
+    return slice(row); 
+  }
+  
+  /** @brief Number of slices, i.e. number of rows */
+  constexpr int num_slices() const noexcept { return rows; }
 }; /* StorageImplementation<MatrixStorageType::RowWise> */
 
 /** @brief Implementation details for a 2-d dense matrix, holding data in
@@ -353,6 +392,13 @@ public:
    * will point to the first (0) element of the third column.
    */
   constexpr int slice(int col) const noexcept { return col * rows; }
+  
+  constexpr int slice(int col, int &num_elements) const noexcept {
+    num_elements = ncols();
+    return slice(col); 
+  }
+
+  constexpr int num_slices() const noexcept { return ncols(); }
 
 }; /* StorageImplementation<MatrixStorageType::ColumnWise> */
 

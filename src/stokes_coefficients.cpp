@@ -8,6 +8,14 @@ void dso::StokesCoeffs::resize(int degree, int order) noexcept {
   m_order = order;
 }
 
+void dso::StokesCoeffs::cresize(int degree, int order) noexcept {
+  /* first copy the data to a new instance */
+  _Cnm.cresize(degree + 1, order + 1);
+  _Snm.cresize(degree + 1, order + 1);
+  m_degree = degree;
+  m_order = order;
+}
+
 dso::StokesCoeffs &dso::StokesCoeffs::operator+=(const dso::StokesCoeffs &sc) {
   if (m_degree < sc.max_degree() || m_order < sc.max_order()) {
     throw std::runtime_error("[ERROR] Failed to add Stokes coefficients\n");
