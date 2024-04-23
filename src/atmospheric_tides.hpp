@@ -37,6 +37,7 @@ public:
 
   int stokes_coeffs(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
                     const double *const delaunay_args) noexcept;
+
   const StokesCoeffs &stokes_coeffs() const noexcept { return mcs; }
 }; /* AtmosphericTides */
 

@@ -10,8 +10,8 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdio>
-#ifdef DEBUG
 #include <cassert>
+#ifdef DEBUG
 #include <cstdio>
 #endif
 
@@ -52,22 +52,23 @@ public:
   /** Basic stride/dimension */
   static constexpr const bool isRowMajor = true;
   static constexpr const bool isColMajor = false;
+  static constexpr const bool isRectangular = true;
 
   /** Constructor; not interested in number of cols */
   constexpr StorageImplementation(int r, [[maybe_unused]] int c) noexcept
       : rows(r)
   {
-#ifdef DEBUG
+//#ifdef DEBUG
     assert(r==c);
-#endif
+//#endif
   };
 
   /** (Re-) set dimensions */
   void __set_dimensions(int _rows, [[maybe_unused]] int _cols) noexcept {
     rows = _rows;
-#ifdef DEBUG
+//#ifdef DEBUG
     assert(_rows==_cols);
-#endif
+//#endif
   }
 
   /** @brief Compute number of elements stored */
@@ -98,8 +99,8 @@ public:
    * stored in the row requested.
    */
   constexpr int slice(int row, int &num_elements) const noexcept {
-    num_elements = row + 1;
-    return _size(row); 
+    num_elements = ncols() - row;
+    return slice(row); 
   }
 
   /** @brief Number of slices, i.e. number of rows */
@@ -132,14 +133,15 @@ public:
   /** Basic stride/dimension */
   static constexpr const bool isRowMajor = false;
   static constexpr const bool isColMajor = true;
+  static constexpr const bool isRectangular = true;
 
   /** Constructor; not interested in number of cols */
   constexpr StorageImplementation(int r, [[maybe_unused]] int c) noexcept
       : rows(r)
       {
-#ifdef DEBUG
+//#ifdef DEBUG
     assert(r==c);
-#endif
+//#endif
       }
 
   /** @brief Compute number of elements stored */
@@ -150,9 +152,9 @@ public:
   /** (Re-) set dimensions */
   void __set_dimensions(int _rows, [[maybe_unused]] int _cols) noexcept {
     rows = _rows;
-#ifdef DEBUG
+//#ifdef DEBUG
     assert(_rows==_cols);
-#endif
+//#endif
   }
 
   /** number of rows */
@@ -176,7 +178,7 @@ public:
   }
   
   constexpr int slice(int col, int &num_elements) const noexcept {
-    num_elements = col + 1;
+    num_elements = nrows() - col;
     return slice(col);
   }
   
@@ -207,6 +209,11 @@ private:
   int cols;
 
 public:
+  /** Basic stride/dimension */
+  static constexpr const bool isRowMajor = true;
+  static constexpr const bool isColMajor = false;
+  static constexpr const bool isRectangular = false;
+  
   /** Constructor given number of rows and num of columns */
   constexpr StorageImplementation(int r, int c) noexcept : rows(r), cols(c){};
 
@@ -290,6 +297,7 @@ public:
   /** Basic stride/dimension */
   static constexpr const bool isRowMajor = true;
   static constexpr const bool isColMajor = false;
+  static constexpr const bool isRectangular = false;
 
   /** Constructor given number of rows and number of columns */
   constexpr StorageImplementation(int r, int c) noexcept : rows(r), cols(c){};
@@ -330,7 +338,7 @@ public:
   constexpr int slice(int row) const noexcept { return row * cols; }
   
   constexpr int slice(int row, int &num_elements) const noexcept {
-    num_elements = row + 1;
+    num_elements = ncols();
     return slice(row); 
   }
   
@@ -354,6 +362,7 @@ public:
   /** Basic stride/dimension */
   static constexpr const bool isRowMajor = false;
   static constexpr const bool isColMajor = true;
+  static constexpr const bool isRectangular = false;
 
   /** Constructor given number of rows and number of columns */
   constexpr StorageImplementation(int r, int c) noexcept : rows(r), cols(c){};
@@ -374,6 +383,7 @@ public:
   constexpr std::size_t num_elements() const noexcept { return rows * cols; }
 
   /** @brief Index of element (row, column) in the data array.
+   *
    *  E.g. data[element_offset(1,2)] will return the element in the second
    *  row, and third column.
    */
@@ -394,7 +404,7 @@ public:
   constexpr int slice(int col) const noexcept { return col * rows; }
   
   constexpr int slice(int col, int &num_elements) const noexcept {
-    num_elements = ncols();
+    num_elements = nrows();
     return slice(col); 
   }
 

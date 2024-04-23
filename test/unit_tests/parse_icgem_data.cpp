@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     /* set request date */
     const datetime<nanoseconds> t(year(iy), month(1), day_of_month(1),
                                   nanoseconds(0));
-    /* parse data for the give date and degree/order */
+    /* parse data for the given date and degree/order */
     if (gfc.parse_data(size, size - 1, t, stokes)) {
       fprintf(stderr, "TEST failed!\n");
       return 1;

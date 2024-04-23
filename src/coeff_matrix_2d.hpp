@@ -314,7 +314,10 @@ public:
    *
    * Note that calling this function may incur data loss, since we are 
    * resizing (re-allocating) but not copying the data already stored within 
-   * the data structure.
+   * the data structure. That is any element A(i,j) of the matrix after 
+   * calling this function, is not guranted to have the same value as the one 
+   * it had before calling the function.
+   * 
    * If you need to resize but also keep the values already stored in the 
    * instance, then you should better call the cresize (member) function.
    */
@@ -336,29 +339,59 @@ public:
    * Note that calling this function will not incurr data loss (compare with 
    * the resize function), since we are resizing (re-allocating) AND copying 
    * the data already stored within the data structure.
+   *
+   * Examples:
+   * A =  +1.00  +2.00  +3.00  +4.00 
+   *      +5.00  +6.00  +7.00  +8.00 
+   *      +9.00 +10.00 +11.00 +12.00 
+   *     +13.00 +14.00 +15.00 +16.00 
+   *     +17.00 +18.00 +19.00 +20.00 
+   *
+   *  A.cresize(10,5) = 
+   *      +1.00  +2.00  +3.00  +4.00  +0.00 
+   *      +5.00  +6.00  +7.00  +8.00  +0.00 
+   *      +9.00 +10.00 +11.00 +12.00  +0.00 
+   *     +13.00 +14.00 +15.00 +16.00  +0.00 
+   *     +17.00 +18.00 +19.00 +20.00  +0.00 
+   *      +0.00  +0.00  +0.00  +0.00  +0.00 
+   *      +0.00  +0.00  +0.00  +0.00  +0.00 
+   *      +0.00  +0.00  +0.00  +0.00  +0.00 
+   *      +0.00  +0.00  +0.00  +0.00  +0.00 
+   *      +0.00  +0.00  +0.00  +0.00  +0.00 
+   *
+   * A.cresize(3,4) = 
+   *      +1.00  +2.00  +3.00  +4.00 
+   *      +5.00  +6.00  +7.00  +8.00 
+   *      +9.00 +10.00 +11.00 +12.00 
+   *
+   * A.cresize(2,2) =
+   *      +1.00  +2.00 
+   *      +5.00  +6.00
+   *
+   * Note that there is no garantee that the excess elements will be zero; 
+   * they can (and sometimes will) hold random values.
    */
   void cresize(int rows, int cols) {
     if (rows != this->rows() || cols != this->cols()) {
-      /* do we need to re-allocate ? */
-      if (StorageImplementation<S>(rows, cols).num_elements() > _capacity) {
-        double *ptr = new double[StorageImplementation<S>(rows, cols).num_elements()];
-        if (m_data) {
-          auto pstorage = StorageImplementation<S>(rows, cols);
-          int num_doubles;
-          /* copy data (from m_data to ptr) */
-          for (int s=0; s<pstorage.num_slices() && s<m_storage.num_slices(); s++) {
-            const double *__restrict__ psrc = this->slice(s);
-            double *__restrict__ ptrg = ptr+pstorage.slice(s, num_doubles);
-            printf("\tcol=%d, copying %d elements\n",s, num_doubles); 
-            std::memcpy(ptrg, psrc, sizeof(double) * num_doubles);
-          }
-          delete[] m_data;
+      double *ptr =
+          new double[StorageImplementation<S>(rows, cols).num_elements()];
+      if (m_data) {
+        auto pstorage = StorageImplementation<S>(rows, cols);
+        int num_doubles_src;
+        int num_doubles_trg;
+        /* copy data (from m_data to ptr) */
+        for (int s = 0;
+             s < std::min(pstorage.num_slices(), m_storage.num_slices()); s++) {
+          const double *__restrict__ psrc = this->slice(s, num_doubles_src);
+          double *__restrict__ ptrg = ptr + pstorage.slice(s, num_doubles_trg);
+          std::memcpy(ptrg, psrc,
+                      sizeof(double) *
+                          std::min(num_doubles_src, num_doubles_trg));
         }
-        _capacity = StorageImplementation<S>(rows, cols).num_elements();
-        m_data = ptr;
-      } else {
-        ;
+        delete[] m_data;
       }
+      _capacity = StorageImplementation<S>(rows, cols).num_elements();
+      m_data = ptr;
       m_storage = StorageImplementation<S>(rows, cols);
     }
     /* no-op if size given is the same as the one we have */

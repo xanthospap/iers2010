@@ -2,16 +2,16 @@
 #include <stdexcept>
 
 void dso::StokesCoeffs::resize(int degree, int order) noexcept {
-  _Cnm.resize(degree + 1, order + 1);
-  _Snm.resize(degree + 1, order + 1);
+  _Cnm.resize(degree + 1, degree + 1);
+  _Snm.resize(degree + 1, degree + 1);
   m_degree = degree;
   m_order = order;
 }
 
 void dso::StokesCoeffs::cresize(int degree, int order) noexcept {
   /* first copy the data to a new instance */
-  _Cnm.cresize(degree + 1, order + 1);
-  _Snm.cresize(degree + 1, order + 1);
+  _Cnm.cresize(degree + 1, degree + 1);
+  _Snm.cresize(degree + 1, degree + 1);
   m_degree = degree;
   m_order = order;
 }
