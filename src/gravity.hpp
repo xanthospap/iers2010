@@ -86,6 +86,30 @@ int normalised_associated_legendre_functions(
     double theta, int max_degree, int max_order,
     CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &Pnm) noexcept;
 
+/** @brief Compute normalised associated Legendre functions Pnm and its 
+ *         first derivative.
+ *
+ * The algorithm employed here to perform the computations is the 
+ * "forward recursions" method, see Holmes et al, 2002.
+ *
+ * @param[in] theta Geocentric latitude for expansion in [rad].
+ * @param[in] max_degree Max degree for expansion. i.e. n in Pnm, inclusive
+ * @param[in] max_order  Max order for expansion, i.e. m in Pnm, inclusive
+ * @param[out] Pnm       Matrix to store the computed Pnm values; must be 
+ *                       at least large enough to hold Pnm's for 
+ *                       n=[0,max_degree] and m=[0,max_order].
+ * @return Always zero.
+ *
+ * Holmes, S., Featherstone, W. A unified approach to the Clenshaw summation 
+ * and the recursive computation of very high degree and order normalised 
+ * associated Legendre functions. Journal of Geodesy 76, 279–299 (2002). 
+ * https://doi.org/10.1007/s00190-002-0216-2
+ */
+int normalised_associated_legendre_functions(
+    double theta, int max_degree, int max_order,
+    CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &Pnm,
+    CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &dPnm) noexcept;
+
 /** Spherical harmonics of Earth's gravity potential to acceleration and
  *  gradient using the algorithm due to Cunningham. The acceleration and
  *  gradient are computed in Cartesian components, i.e.

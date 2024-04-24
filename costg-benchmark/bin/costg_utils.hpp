@@ -45,6 +45,8 @@ std::vector<BmOrbit> parse_orbit(const char *fn);
 
 std::vector<BmRotaryMatrix> parse_rotary(const char *fn);
 
+const char *basename(const char *fn);
+
 } /* namespace costg */
 
 #endif
