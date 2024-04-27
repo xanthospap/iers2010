@@ -6,15 +6,14 @@
 
 constexpr const int DEGREE = 180;
 constexpr const int ORDER = 180;
-constexpr const int formatD3Plot = 1;
 
 using namespace costg;
 
 int main(int argc, char *argv[]) {
-  if (argc != 4) {
+  if (argc != 5) {
     fprintf(
         stderr,
-        "Usage: %s [00orbit_itrf.txt] [GEOPOTENTIAL] [02gravityfield_itrf]\n",
+        "Usage: %s [00orbit_itrf.txt] [01earthRotation_rotaryMatrix.txt] [GEOPOTENTIAL] [02gravityfield_icrf]\n",
         argv[0]);
     return 1;
   }
@@ -22,11 +21,14 @@ int main(int argc, char *argv[]) {
   /* read orbit from input file */
   const auto orbvec = parse_orbit(argv[1]);
 
+  /* read rotary matrix (GCRS to ITRS) from input file */
+  const auto rotvec = parse_rotary(argv[2]);
+
   /* read accleration from input file */
-  const auto accvec = parse_acceleration(argv[3]);
+  const auto accvec = parse_acceleration(argv[4]);
 
   /* read gravity model into a StokesCoeffs instance */
-  dso::Icgem icgem(argv[2]);
+  dso::Icgem icgem(argv[3]);
   dso::StokesCoeffs stokes;
   dso::Datetime<dso::nanoseconds> t(
       dso::from_mjdepoch<dso::nanoseconds>(orbvec[0].epoch));
@@ -46,16 +48,13 @@ int main(int argc, char *argv[]) {
                                                                     DEGREE + 3);
 
   /* spit out a title for plotting */
-  if (formatD3Plot) {
-    printf("mjd,sec,refval,val,component\n");
-  } else {
-    printf("#title Gravity Field %s Diffs (ITRF)\n", basename(argv[2]));
-  }
+  printf("#title Gravity Field %s Diffs (ICRF)\n", basename(argv[3]));
 
   /* compare results epoch by epoch */
   Eigen::Matrix<double, 3, 1> a;
   Eigen::Matrix<double, 3, 3> g;
   auto acc = accvec.begin();
+  auto rot = rotvec.begin();
   for (const auto &in : orbvec) {
     /* compute acceleration for given epoch/position */
     if (dso::sh2gradient_cunningham(stokes, in.xyz, a, g, DEGREE, ORDER, -1, -1,
@@ -63,23 +62,21 @@ int main(int argc, char *argv[]) {
       fprintf(stderr, "ERROR Failed computing acceleration/gradient\n");
       return 1;
     }
+    /* transform accleration vector (ITRF to GCRF) */
+    const Eigen::Matrix<double,3,3> R = rot->R.transpose();
+    assert(rot->epoch == in.epoch);
+    a = R * a;
+
     /* get COSTG result */
     if (acc->epoch != in.epoch) {
       fprintf(stderr, "ERROR Faile to match epochs in input files\n");
       return 1;
     }
-
-    if (formatD3Plot) {
-      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(), in.epoch.seconds(), acc->axyz(0), a(0));
-      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(), in.epoch.seconds(), acc->axyz(1), a(1));
-      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(), in.epoch.seconds(), acc->axyz(2), a(2));
-    } else {
-      printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n",
+    printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n",
            in.epoch.imjd(), in.epoch.seconds(), acc->axyz(0), acc->axyz(1),
            acc->axyz(2), a(0), a(1), a(2));
-    }
-
     ++acc;
+    ++rot;
   }
 
   return 0;

@@ -136,6 +136,6 @@ std::vector<costg::BmRotaryMatrix> costg::parse_rotary(const char *fn) {
 const char *basename(const char *fn) {
   const char *last_split = fn;
   const char *c = fn;
-  while (*c) if (*c=='/') last_split = c;
+  while (*++c) if (*c=='/') last_split = c;
   return last_split + 1;
 }

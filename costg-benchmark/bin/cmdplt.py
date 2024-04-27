@@ -1,6 +1,5 @@
 #! /usr/bin/python
 
-
 ## high quality plots e.g. for LaTeX
 EXPORT_PGF = False
 if EXPORT_PGF:
@@ -15,6 +14,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 import argparse
+
+def set_size(width_pt, fraction=1, subplots=(1, 1)):
+    fig_width_pt = width_pt * fraction
+    inches_per_pt = 1 / 72.27
+    golden_ratio = (5**.5 - 1) / 2
+    fig_width_in = fig_width_pt * inches_per_pt
+    fig_height_in = fig_width_in * golden_ratio * (subplots[0] / subplots[1])
+    return (fig_width_in, fig_height_in)
 
 parser = argparse.ArgumentParser(
     description=
@@ -35,6 +42,15 @@ parser.add_argument(
     help='Save the file using this file(name)')
 
 parser.add_argument(
+    '--scale',
+    metavar='SCALE',
+    dest='scale',
+    default=1e0,
+    required=False,
+    type=float,
+    help='Scale plot')
+
+parser.add_argument(
     '--quite',
     action='store_true',
     dest='quiet',
@@ -45,20 +61,21 @@ if EXPORT_PGF:
     matplotlib.rcParams.update({
         "pgf.texsystem": "pdflatex",
         'font.family': 'serif',
-        'font.size': 6,
+        'font.size': 10,
         'text.usetex': True,
         'pgf.rcfonts': False,
-        'axes.titlesize': 10,
-        'axes.labelsize': 8,
+        'axes.titlesize': 12,
+        'axes.labelsize': 10,
         'lines.linewidth': 1,
         'lines.markersize' : 5,
-        'xtick.labelsize' : 5,
-        'ytick.labelsize' : 5
+        'xtick.labelsize' : 6,
+        'ytick.labelsize' : 6
     })
 
 if __name__ == "__main__":
     ## parse cmd
     args = parser.parse_args()
+    scale = args.scale
 
     t = []
     a1x = []; a1y=[]; a1z=[];
@@ -82,34 +99,36 @@ if __name__ == "__main__":
 ## Get statistics of differences
     ar = [z[0]-z[1] for z in zip(a1x,a2x)]
     sx = stats.describe(ar)
-    xstr = r'X: max={:.2e} mean={:+.2e}$\pm${:.3e}'.format(max(abs(x) for x in sx.minmax), sx.mean, math.sqrt(sx.variance))
+    xstr = r"$\delta \ddot{{r}}_x$: max={:.1e} mean={:+.1e}$\pm${:.2e}".format(max(abs(x) for x in sx.minmax), sx.mean, math.sqrt(sx.variance))
     ar = [z[0]-z[1] for z in zip(a1y,a2y)]
     sy = stats.describe(ar)
-    ystr = r'Y: max={:.2e} mean={:+.2e}$\pm${:.3e}'.format(max(abs(x) for x in sy.minmax), sy.mean, math.sqrt(sy.variance))
+    ystr = r'$\delta \ddot{{r}}_y$: max={:.1e} mean={:+.1e}$\pm${:.2e}'.format(max(abs(x) for x in sy.minmax), sy.mean, math.sqrt(sy.variance))
     ar = [z[0]-z[1] for z in zip(a1z,a2z)]
     sz = stats.describe(ar)
-    zstr = r'Z: max={:.2e} mean={:+.2e}$\pm${:.3e}'.format(max(abs(x) for x in sz.minmax), sz.mean, math.sqrt(sz.variance))
+    zstr = r'$\delta \ddot{{r}}_z$: max={:.1e} mean={:+.1e}$\pm${:.2e}'.format(max(abs(x) for x in sz.minmax), sz.mean, math.sqrt(sz.variance))
 
 ## Plot differences (this-COST-G) per component
-    plt.rcParams["font.family"] = "monospace"
+    #plt.rcParams["font.family"] = "monospace"
 
-    fig, axs = plt.subplots(3, 1, sharex=True)
+    inches_per_pt = 1 / 72.27
+    #fig, axs = plt.subplots(3, 1, figsize=set_size(418,3/5.,(3,1)), sharex=True)
+    fig, axs = plt.subplots(3, 1, figsize=(418*inches_per_pt,418*inches_per_pt*2/3), sharex=True)
     fig.subplots_adjust(hspace=0)
     
-    axs[0].plot(t, [z[0]-z[1] for z in zip(a1x,a2x)])
-    axs[0].text(t[0], sx.minmax[0], xstr)
+    axs[0].plot(t, [scale*(z[0]-z[1]) for z in zip(a1x,a2x)])
+    axs[0].text(t[0], sx.minmax[0]*scale, xstr)
     
-    axs[1].plot(t, [z[0]-z[1] for z in zip(a1y,a2y)])
-    axs[1].text(t[0], sy.minmax[0], ystr)
+    axs[1].plot(t, [scale*(z[0]-z[1]) for z in zip(a1y,a2y)])
+    axs[1].text(t[0], sy.minmax[0]*scale, ystr)
     
     axs[2].xaxis.set_major_locator(MultipleLocator(3600*3))
     axs[2].xaxis.set_major_formatter(lambda x, pos: str(int(x/3600e0))+'h')
     axs[2].xaxis.set_minor_locator(MultipleLocator(3600))
-    axs[2].plot(t, [z[0]-z[1] for z in zip(a1z,a2z)])
-    axs[2].text(t[0], sz.minmax[0], zstr)
+    axs[2].plot(t, [scale*(z[0]-z[1]) for z in zip(a1z,a2z)])
+    axs[2].text(t[0], sz.minmax[0]*scale, zstr)
     
     plt.xlabel('Hours of Day')
-    fig.text(0.0, 0.5, r'$\delta \ddot{r}_x$, $\delta \ddot{r}_y$ and $\delta \ddot{r}_z$ in $[m/sec^2]$', va='center', rotation='vertical')
+    fig.text(0.0, 0.5, r'$\delta \ddot{r}_x$, $\delta \ddot{r}_y$ and $\delta \ddot{r}_z$ in $[m/sec^2]\times$'+'{:.1e}'.format(1/scale), va='center', rotation='vertical')
 
 ##  x-grids on
     axs[0].xaxis.grid(True, which='major')
@@ -148,6 +167,10 @@ if __name__ == "__main__":
     sz = stats.describe(nd)
     axs[1].plot(t, nd, linewidth=2.0)
     axs[1].set_ylabel(r'$|\ddot{\delta r}|$ $[m/s^2]$')
+    
+    axs[1].xaxis.set_major_locator(MultipleLocator(3600*3))
+    axs[1].xaxis.set_major_formatter(lambda x, pos: str(int(x/3600e0))+'h')
+    axs[1].xaxis.set_minor_locator(MultipleLocator(3600))
     
     axs[0].xaxis.grid(True, which='major')
     axs[1].xaxis.grid(True, which='major')
