@@ -59,10 +59,10 @@ Once the csv file is created, reload the page!.
 <!-- Radio button: one item selected only -->
 <br><br><br>
 <div>
-  <input type="radio" name="acccmp" value="daccx" onclick="highlight02Itrf('X');"> X<br>
-  <input type="radio" name="acccmp" value="daccy" onclick="highlight02Itrf('Y');"> Y<br>
-  <input type="radio" name="acccmp" value="daccz" onclick="highlight02Itrf('Z');"> Z<br>
-  <input type="radio" name="acccmp" value="daccz" onclick="highlight02Itrf('XYZ');"> All<br>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X', 'dv02gravityitrf');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y', 'dv02gravityitrf');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z', 'dv02gravityitrf');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv02gravityitrf');"> All<br>
 </div>
 <!-- Create a div where the graph will take place -->
 <p>Earth's Gravity field (EIGEN-6C4) in ITRF</p>
@@ -84,16 +84,27 @@ $> costg-benchmark/bin/check-02gravityfield-icrf.out \
 
 <br><br><br>
 <div>
-  <input type="radio" name="acccmp" value="daccx" onclick="highlight02Icrf('X');"> X<br>
-  <input type="radio" name="acccmp" value="daccy" onclick="highlight02Icrf('Y');"> Y<br>
-  <input type="radio" name="acccmp" value="daccz" onclick="highlight02Icrf('Z');"> Z<br>
-  <input type="radio" name="acccmp" value="daccz" onclick="highlight02Icrf('XYZ');"> All<br>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X'  , 'dv02gravityicrf');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y'  , 'dv02gravityicrf');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z'  , 'dv02gravityicrf');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv02gravityicrf');"> All<br>
 </div>
 <!-- Create a div where the graph will take place -->
 <p>Earth's Gravity field (EIGEN-6C4) in ICRF</p>
 <div id="dv02gravityicrf"></div>
 
 <h3>Third Body Attractions</h3>
+
+<br><br><br>
+<div>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X'  , 'dv03directTideMoon');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y'  , 'dv03directTideMoon');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z'  , 'dv03directTideMoon');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv03directTideMoon');"> All<br>
+</div>
+<!-- Create a div where the graph will take place -->
+<p>Third Body Acceleration - Moon ICRF</p>
+<div id="dv03directTideMoon"></div>
 
 <h2>Bibliography</h2>
 <p>
@@ -123,6 +134,13 @@ var svg02icrf = d3.select("#dv02gravityicrf")
   .append("g")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
+var svg03directTideMoon = d3.select("#dv03directTideMoon")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
   
 // Color scale: give me a specie name, I return a color
 var color = d3.scaleOrdinal()
@@ -131,14 +149,165 @@ var color = d3.scaleOrdinal()
 
 var scale = 1e+10;
 
+////Read the data
+//d3.csv("/02gravityfield_itrf.csv").then( function(data) {
+//
+//  // add X-axis
+//  var x = d3.scaleLinear()
+//    .domain([0e0, 86400e0])
+//    .range([0, width]);
+//  svg02itrf.append("g")
+//    .attr("transform", `translate(0, ${height})`)
+//    .call(d3.axisBottom(x));
+//
+//  // Add Y-axis
+//  var y = d3.scaleLinear()
+//    .domain(d3.extent(data, (d) => (scale*(parseFloat(d.refval)-parseFloat(d.val)))))
+//    .range([height, 0]);
+//  svg02itrf.append("g")
+//    .call(d3.axisLeft(y)
+//      .tickFormat(function(d){return d3.format('.1e')(d);}));
+//
+//  // Add X axis label:
+//  svg02itrf.append("text")
+//    .attr("text-anchor", "end")
+//    .attr("x", width)
+//    .attr("y", height + margin.top + 20)
+//    .text("Hours");
+//
+//// Y axis label:
+//svg02itrf.append("text")
+//    .attr("text-anchor", "end")
+//    .attr("transform", "rotate(-90)")
+//    .attr("y", -margin.left+20)
+//    .attr("x", -margin.top)
+//    .text("Acceleration in [m/s^2]"+d3.format("1.0e")(1/scale));
+//
+//  // Add dots
+//  svg02itrf.append('g')
+//    .selectAll("dot")
+//    .data(data)
+//    .enter()
+//    .append("circle")
+//      .attr("class", function (d) { return "dot " + d.component} )
+//      .attr("cx", function (d) { return x(d.sec); } )
+//      .attr("cy", function (d) { return y(scale*(parseFloat(d.refval-d.val))); } )
+//      .attr("r", .9)
+//      .style("fill", function (d) { return color(d.component) } )
+//
+//});
+//
+//function highlight02Itrf(component) {
+//  if (component == "XYZ") {
+//    ['X', 'Y', 'Z'].forEach((cmp) => {
+//    // d3.selectAll("." + cmp)
+//    svg02itrf.selectAll("." + cmp)
+//      .transition()
+//      .duration(200)
+//      .style("fill", color(cmp))
+//      .attr("r", 2)
+//    });
+//    return;
+//  }
+//
+//    //d3.selectAll(".dot")
+//    svg02itrf.selectAll(".dot")
+//      .transition()
+//      .duration(200)
+//      .style("fill", "lightgrey")
+//      .attr("r", .9)
+//    //d3.selectAll("." + component)
+//    svg02itrf.selectAll("." + component)
+//      .transition()
+//      .duration(200)
+//      .style("fill", color(component))
+//      .attr("r", 2)
+//}
+//
+////Read the data
+//d3.csv("/02gravityfield_icrf.csv").then( function(data) {
+//
+//  // add X-axis
+//  var x = d3.scaleLinear()
+//    .domain([0e0, 86400e0])
+//    .range([0, width]);
+//  svg02icrf.append("g")
+//    .attr("transform", `translate(0, ${height})`)
+//    .call(d3.axisBottom(x));
+//
+//  // Add Y-axis
+//  var y = d3.scaleLinear()
+//    .domain(d3.extent(data, (d) => (scale*(parseFloat(d.refval)-parseFloat(d.val)))))
+//    .range([height, 0]);
+//  svg02icrf.append("g")
+//    .call(d3.axisLeft(y)
+//      .tickFormat(function(d){return d3.format('.1e')(d);}));
+//
+//  // Add X axis label:
+//  svg02icrf.append("text")
+//    .attr("text-anchor", "end")
+//    .attr("x", width)
+//    .attr("y", height + margin.top + 20)
+//    .text("Hours");
+//
+//// Y axis label:
+//svg02icrf.append("text")
+//    .attr("text-anchor", "end")
+//    .attr("transform", "rotate(-90)")
+//    .attr("y", -margin.left+20)
+//    .attr("x", -margin.top)
+//    .text("Acceleration in [m/s^2]"+d3.format("1.0e")(1/scale));
+//
+//  // Add dots
+//  svg02icrf.append('g')
+//    .selectAll("dot")
+//    .data(data)
+//    .enter()
+//    .append("circle")
+//      .attr("class", function (d) { return "dot " + d.component} )
+//      .attr("cx", function (d) { return x(d.sec); } )
+//      .attr("cy", function (d) { return y(scale*(parseFloat(d.refval-d.val))); } )
+//      .attr("r", .9)
+//      .style("fill", function (d) { return color(d.component) } )
+//
+//});
+//
+//function highlight02Icrf(component) {
+//  if (component == "XYZ") {
+//    ['X', 'Y', 'Z'].forEach((cmp) => {
+//    // d3.selectAll("." + cmp)
+//    svg02icrf.selectAll("." + cmp)
+//      .transition()
+//      .duration(200)
+//      .style("fill", color(cmp))
+//      .attr("r", 2)
+//    });
+//    return;
+//  }
+//
+//    //d3.selectAll(".dot")
+//    svg02icrf.selectAll(".dot")
+//      .transition()
+//      .duration(200)
+//      .style("fill", "lightgrey")
+//      .attr("r", .9)
+//    //d3.selectAll("." + component)
+//    svg02icrf.selectAll("." + component)
+//      .transition()
+//      .duration(200)
+//      .style("fill", color(component))
+//      .attr("r", 2)
+//}
+
 //Read the data
-d3.csv("/02gravityfield_itrf.csv").then( function(data) {
+function plot(csvfn, svgnm) {
+d3.csv(csvfn).then( function(data) {
 
   // add X-axis
   var x = d3.scaleLinear()
     .domain([0e0, 86400e0])
     .range([0, width]);
-  svg02itrf.append("g")
+  svgnm.append("g")
     .attr("transform", `translate(0, ${height})`)
     .call(d3.axisBottom(x));
 
@@ -146,19 +315,19 @@ d3.csv("/02gravityfield_itrf.csv").then( function(data) {
   var y = d3.scaleLinear()
     .domain(d3.extent(data, (d) => (scale*(parseFloat(d.refval)-parseFloat(d.val)))))
     .range([height, 0]);
-  svg02itrf.append("g")
+  svgnm.append("g")
     .call(d3.axisLeft(y)
       .tickFormat(function(d){return d3.format('.1e')(d);}));
 
   // Add X axis label:
-  svg02itrf.append("text")
+  svgnm.append("text")
     .attr("text-anchor", "end")
     .attr("x", width)
     .attr("y", height + margin.top + 20)
     .text("Hours");
 
 // Y axis label:
-svg02itrf.append("text")
+svgnm.append("text")
     .attr("text-anchor", "end")
     .attr("transform", "rotate(-90)")
     .attr("y", -margin.left+20)
@@ -166,7 +335,7 @@ svg02itrf.append("text")
     .text("Acceleration in [m/s^2]"+d3.format("1.0e")(1/scale));
 
   // Add dots
-  svg02itrf.append('g')
+  svgnm.append('g')
     .selectAll("dot")
     .data(data)
     .enter()
@@ -178,12 +347,15 @@ svg02itrf.append("text")
       .style("fill", function (d) { return color(d.component) } )
 
 });
+}
 
-function highlight02Itrf(component) {
+function highlight(component, svgid) {
+  // var svgnm = document.getElementById(svgid);
+  var svgnm = d3.select('#'+svgid);
+  console.log('element id = ' + svgid);
   if (component == "XYZ") {
     ['X', 'Y', 'Z'].forEach((cmp) => {
-    // d3.selectAll("." + cmp)
-    svg02itrf.selectAll("." + cmp)
+    svgnm.selectAll("." + cmp)
       .transition()
       .duration(200)
       .style("fill", color(cmp))
@@ -192,93 +364,19 @@ function highlight02Itrf(component) {
     return;
   }
 
-    //d3.selectAll(".dot")
-    svg02itrf.selectAll(".dot")
+    svgnm.selectAll(".dot")
       .transition()
       .duration(200)
       .style("fill", "lightgrey")
       .attr("r", .9)
-    //d3.selectAll("." + component)
-    svg02itrf.selectAll("." + component)
+    svgnm.selectAll("." + component)
       .transition()
       .duration(200)
       .style("fill", color(component))
       .attr("r", 2)
 }
-
-//Read the data
-d3.csv("/02gravityfield_icrf.csv").then( function(data) {
-
-  // add X-axis
-  var x = d3.scaleLinear()
-    .domain([0e0, 86400e0])
-    .range([0, width]);
-  svg02icrf.append("g")
-    .attr("transform", `translate(0, ${height})`)
-    .call(d3.axisBottom(x));
-
-  // Add Y-axis
-  var y = d3.scaleLinear()
-    .domain(d3.extent(data, (d) => (scale*(parseFloat(d.refval)-parseFloat(d.val)))))
-    .range([height, 0]);
-  svg02icrf.append("g")
-    .call(d3.axisLeft(y)
-      .tickFormat(function(d){return d3.format('.1e')(d);}));
-
-  // Add X axis label:
-  svg02icrf.append("text")
-    .attr("text-anchor", "end")
-    .attr("x", width)
-    .attr("y", height + margin.top + 20)
-    .text("Hours");
-
-// Y axis label:
-svg02icrf.append("text")
-    .attr("text-anchor", "end")
-    .attr("transform", "rotate(-90)")
-    .attr("y", -margin.left+20)
-    .attr("x", -margin.top)
-    .text("Acceleration in [m/s^2]"+d3.format("1.0e")(1/scale));
-
-  // Add dots
-  svg02icrf.append('g')
-    .selectAll("dot")
-    .data(data)
-    .enter()
-    .append("circle")
-      .attr("class", function (d) { return "dot " + d.component} )
-      .attr("cx", function (d) { return x(d.sec); } )
-      .attr("cy", function (d) { return y(scale*(parseFloat(d.refval-d.val))); } )
-      .attr("r", .9)
-      .style("fill", function (d) { return color(d.component) } )
-
-});
-
-function highlight02Icrf(component) {
-  if (component == "XYZ") {
-    ['X', 'Y', 'Z'].forEach((cmp) => {
-    // d3.selectAll("." + cmp)
-    svg02icrf.selectAll("." + cmp)
-      .transition()
-      .duration(200)
-      .style("fill", color(cmp))
-      .attr("r", 2)
-    });
-    return;
-  }
-
-    //d3.selectAll(".dot")
-    svg02icrf.selectAll(".dot")
-      .transition()
-      .duration(200)
-      .style("fill", "lightgrey")
-      .attr("r", .9)
-    //d3.selectAll("." + component)
-    svg02icrf.selectAll("." + component)
-      .transition()
-      .duration(200)
-      .style("fill", color(component))
-      .attr("r", 2)
-}
+plot("/02gravityfield_itrf.csv", svg02itrf);
+plot("/02gravityfield_icrf.csv", svg02icrf);
+plot("/03directTideMoon_icrf.csv", svg03directTideMoon);
 
 </script>
