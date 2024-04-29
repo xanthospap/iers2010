@@ -6,6 +6,7 @@
 
 constexpr const int DEGREE = 180;
 constexpr const int ORDER = 180;
+constexpr const int formatD3Plot = 1;
 
 using namespace costg;
 
@@ -48,7 +49,11 @@ int main(int argc, char *argv[]) {
                                                                     DEGREE + 3);
 
   /* spit out a title for plotting */
-  printf("#title Gravity Field %s Diffs (ICRF)\n", basename(argv[3]));
+  if (formatD3Plot) {
+    printf("mjd,sec,refval,val,component\n");
+  } else {
+    printf("#title Gravity Field %s Diffs (ICRF)\n", basename(argv[2]));
+  }
 
   /* compare results epoch by epoch */
   Eigen::Matrix<double, 3, 1> a;
@@ -72,9 +77,20 @@ int main(int argc, char *argv[]) {
       fprintf(stderr, "ERROR Faile to match epochs in input files\n");
       return 1;
     }
-    printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n",
-           in.epoch.imjd(), in.epoch.seconds(), acc->axyz(0), acc->axyz(1),
-           acc->axyz(2), a(0), a(1), a(2));
+
+    if (formatD3Plot) {
+      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(0), a(0));
+      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(1), a(1));
+      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(2), a(2));
+    } else {
+      printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n", in.epoch.imjd(),
+             in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
+             a(1), a(2));
+    }
+
     ++acc;
     ++rot;
   }

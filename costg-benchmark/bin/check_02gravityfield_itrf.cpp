@@ -70,13 +70,16 @@ int main(int argc, char *argv[]) {
     }
 
     if (formatD3Plot) {
-      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(), in.epoch.seconds(), acc->axyz(0), a(0));
-      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(), in.epoch.seconds(), acc->axyz(1), a(1));
-      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(), in.epoch.seconds(), acc->axyz(2), a(2));
+      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(0), a(0));
+      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(1), a(1));
+      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(2), a(2));
     } else {
-      printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n",
-           in.epoch.imjd(), in.epoch.seconds(), acc->axyz(0), acc->axyz(1),
-           acc->axyz(2), a(0), a(1), a(2));
+      printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n", in.epoch.imjd(),
+             in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
+             a(1), a(2));
     }
 
     ++acc;

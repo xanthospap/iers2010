@@ -3,17 +3,105 @@
 
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v6.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_SVG"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    processEscapes: true
+  }
+});
+</script>
+
+<h2>Validating Against COST-G Benchmark Test</h2>
+
+<p>Most of the conservative forces acting on an Earth-orbiting satellite (and hence
+their respective accelerations) can be validated using the benchmark test described 
+in <a hfref="#Lasser2020">Lassert et al, 2020</a>. This uses a one day arc of 
+GRACE and a series of models to check the discriepancies for computed acclerations 
+between various software packages.</p>
+
+<p>A folder of the project. i.e. <code class="path">costg-benchmark</code> is meant 
+for programs that compute these forces/acclerations and can be used to validate  
+the models implemented in the library. The results shown here, should be completely 
+reproducible, given that <em>(a)</em> the input data and reference results 
+are available (see ibid. for retrieving them) and <em>(b)</em> of-course that they 
+are compiled; for the latter, one can use the command: 
+<code class="command">$ scons test - vs - costg =1</code>
+and using the script <code class="path">costg-benchmark/bin/cmdplt.py</code>.
+In the following, we will give comparisson results and relevant info to reproduce 
+them, for all accelarations included in the benchmark test. We will also set
+the variable <var>COSTG_DIR</var> to the top-level benchmark directory (i.e. where 
+the file <code class="path">00README_simulation.txt</code> is located).
+</p>
+
+<p>Note that in the following plots, acceleration differences are scaled to 
+1e-10 to assist visualization.</p>
+
+<h3>Earth's Gravity Field</h3>
+
+<p>The model <em>EIGEN-6C4</em> (<a hfref="#Forste2014">Förste et al, 2014</a>) is used 
+in the benchmark test to extract coefficients for the Earth's gravity potential 
+and compute gravity-induced acceleration. Results (i.e. cartesian acceleration 
+components) are given in both ITRF and ICRF.</p>
+
+<p>To reproduce the plot, you can use:
+<pre><code>
+$> costg-benchmark/bin/check-02gravityfield-itrf.out $COSTG_DIR/satellite/00orbit_itrf.txt \ 
+  $COSTG_DIR/models/EIGEN6-C4.gfc \
+  $COSTG_DIR/02gravityfield_itrf.txt > costg-benchmark/bin/02gravityfield_itrf.csv
+</pre></code>
+Once the csv file is created, reload the page!.
+</p>
 
 <!-- Radio button: one item selected only -->
 <br><br><br>
 <div>
-  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X');"> X<br>
-  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y');"> Y<br>
-  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z');"> Z<br>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight02Itrf('X');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight02Itrf('Y');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight02Itrf('Z');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight02Itrf('XYZ');"> All<br>
 </div>
 <!-- Create a div where the graph will take place -->
-<div id="my_dataviz"></div>
+<p>Earth's Gravity field (EIGEN-6C4) in ITRF</p>
+<div id="dv02gravityitrf"></div>
 
+<p>Note that for the case of ICRF, we need to transform the computed acceleration 
+components to the celestial reference frame. To perform this task, we use the 
+<code class="path">01earthRotation_rotaryMatrix.txt</code> provided with the 
+benchmark data files.</p>
+
+<p>To reproduce the plot, you can use:
+<pre><code>
+$> costg-benchmark/bin/check-02gravityfield-icrf.out \
+  $COSTG_PATH/satellite/00orbit_itrf.txt \
+  COSTG_PATH/satellite/01earthRotation_rotaryMatrix.txt \
+  COSTG_PATH/models/EIGEN6-C4.gfc \
+  COSTG_PATH/satellite/02gravityfield_icrf.txt > costg-benchmark/bin/02gravityfield_icrf.csv
+</pre></code></p>
+
+<br><br><br>
+<div>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight02Icrf('X');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight02Icrf('Y');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight02Icrf('Z');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight02Icrf('XYZ');"> All<br>
+</div>
+<!-- Create a div where the graph will take place -->
+<p>Earth's Gravity field (EIGEN-6C4) in ICRF</p>
+<div id="dv02gravityicrf"></div>
+
+<h3>Third Body Attractions</h3>
+
+<h2>Bibliography</h2>
+<p>
+  <ul>
+    <li id="Lasser2020">Lasser, M., Meyer, U., Jäggi, A., Mayer-Gürr, T., Kvas, A., Neumayer, K. H., Dahle, C., Flechtner, F., Lemoine, J.-M., Koch, I., Weigelt, M., and Flury, J.: Benchmark data for verifying background model implementations in orbit and gravity field determination software, Adv. Geosci., 55, 1–11, https://doi.org/10.5194/adgeo-55-1-2020, 2020.</li>
+    <li id="Forste2014">Förste, C., Bruinsma, S. L., Abrikosov, O., Lemoine, J.-M., Marty, J. C., Flechtner, F., Balmino, G., Barthelmes, F., and Biancale, R.: EIGEN-6C4 The latest combined global gravity field model including GOCE data up to degree and order 2190 of GFZ Potsdam and GRGS Toulouse, GFZ Data Services, https://doi.org/10.5880/icgem.2015.1, 2014</li>
+  </ul>
+</p>
 <script>
 // set the dimensions and margins of the graph
 var margin = {top: 10, right: 30, bottom: 30, left: 80},
@@ -21,7 +109,14 @@ var margin = {top: 10, right: 30, bottom: 30, left: 80},
     height = 400 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
-var svg = d3.select("#my_dataviz")
+var svg02itrf = d3.select("#dv02gravityitrf")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+var svg02icrf = d3.select("#dv02gravityicrf")
   .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -34,7 +129,6 @@ var color = d3.scaleOrdinal()
     .domain(["X", "Y", "Z" ])
     .range([ "#440154ff", "#21908dff", "#fde725ff"])
 
-
 var scale = 1e+10;
 
 //Read the data
@@ -44,22 +138,35 @@ d3.csv("/02gravityfield_itrf.csv").then( function(data) {
   var x = d3.scaleLinear()
     .domain([0e0, 86400e0])
     .range([0, width]);
-  svg.append("g")
+  svg02itrf.append("g")
     .attr("transform", `translate(0, ${height})`)
     .call(d3.axisBottom(x));
 
-  //console.log(data);
-  //console.log("Min max of y axis:", d3.extent(data, (d) => (scale*(parseFloat(d.refval)-parseFloat(d.val)))));
-  
   // Add Y-axis
   var y = d3.scaleLinear()
     .domain(d3.extent(data, (d) => (scale*(parseFloat(d.refval)-parseFloat(d.val)))))
     .range([height, 0]);
-  svg.append("g")
-    .call(d3.axisLeft(y));
+  svg02itrf.append("g")
+    .call(d3.axisLeft(y)
+      .tickFormat(function(d){return d3.format('.1e')(d);}));
+
+  // Add X axis label:
+  svg02itrf.append("text")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height + margin.top + 20)
+    .text("Hours");
+
+// Y axis label:
+svg02itrf.append("text")
+    .attr("text-anchor", "end")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -margin.left+20)
+    .attr("x", -margin.top)
+    .text("Acceleration in [m/s^2]"+d3.format("1.0e")(1/scale));
 
   // Add dots
-  svg.append('g')
+  svg02itrf.append('g')
     .selectAll("dot")
     .data(data)
     .enter()
@@ -72,13 +179,102 @@ d3.csv("/02gravityfield_itrf.csv").then( function(data) {
 
 });
 
-function highlight(component) {
-    d3.selectAll(".dot")
+function highlight02Itrf(component) {
+  if (component == "XYZ") {
+    ['X', 'Y', 'Z'].forEach((cmp) => {
+    // d3.selectAll("." + cmp)
+    svg02itrf.selectAll("." + cmp)
+      .transition()
+      .duration(200)
+      .style("fill", color(cmp))
+      .attr("r", 2)
+    });
+    return;
+  }
+
+    //d3.selectAll(".dot")
+    svg02itrf.selectAll(".dot")
       .transition()
       .duration(200)
       .style("fill", "lightgrey")
       .attr("r", .9)
-    d3.selectAll("." + component)
+    //d3.selectAll("." + component)
+    svg02itrf.selectAll("." + component)
+      .transition()
+      .duration(200)
+      .style("fill", color(component))
+      .attr("r", 2)
+}
+
+//Read the data
+d3.csv("/02gravityfield_icrf.csv").then( function(data) {
+
+  // add X-axis
+  var x = d3.scaleLinear()
+    .domain([0e0, 86400e0])
+    .range([0, width]);
+  svg02icrf.append("g")
+    .attr("transform", `translate(0, ${height})`)
+    .call(d3.axisBottom(x));
+
+  // Add Y-axis
+  var y = d3.scaleLinear()
+    .domain(d3.extent(data, (d) => (scale*(parseFloat(d.refval)-parseFloat(d.val)))))
+    .range([height, 0]);
+  svg02icrf.append("g")
+    .call(d3.axisLeft(y)
+      .tickFormat(function(d){return d3.format('.1e')(d);}));
+
+  // Add X axis label:
+  svg02icrf.append("text")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height + margin.top + 20)
+    .text("Hours");
+
+// Y axis label:
+svg02icrf.append("text")
+    .attr("text-anchor", "end")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -margin.left+20)
+    .attr("x", -margin.top)
+    .text("Acceleration in [m/s^2]"+d3.format("1.0e")(1/scale));
+
+  // Add dots
+  svg02icrf.append('g')
+    .selectAll("dot")
+    .data(data)
+    .enter()
+    .append("circle")
+      .attr("class", function (d) { return "dot " + d.component} )
+      .attr("cx", function (d) { return x(d.sec); } )
+      .attr("cy", function (d) { return y(scale*(parseFloat(d.refval-d.val))); } )
+      .attr("r", .9)
+      .style("fill", function (d) { return color(d.component) } )
+
+});
+
+function highlight02Icrf(component) {
+  if (component == "XYZ") {
+    ['X', 'Y', 'Z'].forEach((cmp) => {
+    // d3.selectAll("." + cmp)
+    svg02icrf.selectAll("." + cmp)
+      .transition()
+      .duration(200)
+      .style("fill", color(cmp))
+      .attr("r", 2)
+    });
+    return;
+  }
+
+    //d3.selectAll(".dot")
+    svg02icrf.selectAll(".dot")
+      .transition()
+      .duration(200)
+      .style("fill", "lightgrey")
+      .attr("r", .9)
+    //d3.selectAll("." + component)
+    svg02icrf.selectAll("." + component)
       .transition()
       .duration(200)
       .style("fill", color(component))
