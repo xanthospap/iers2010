@@ -10,6 +10,7 @@ using namespace costg;
 constexpr const double GM_Sun = 1.32712442076e20;
 constexpr const double GM_Moon = 0.49028010560e13;
 constexpr const int DEGREE = 4;
+constexpr const int formatD3Plot = 1;
 
 int main(int argc, char *argv[]) {
   if (argc != 5) {
@@ -26,11 +27,16 @@ int main(int argc, char *argv[]) {
 
   /* read orbit from input file */
   const auto orbvec = parse_orbit(argv[1]);
-  printf("#Note: read %d data sets from input file\n", (int)orbvec.size());
 
   /* read acceleration from input file */
   const auto accvec = parse_acceleration(argv[2]);
-  printf("#Note: read %d data sets from input file\n", (int)accvec.size());
+  
+  /* spit out a title for plotting */
+  if (formatD3Plot) {
+    printf("mjd,sec,refval,val,component\n");
+  } else {
+    printf("#title Relativistic Corrections (ephermeris: %s)\n", basename(argv[3]));
+  }
   
   /* compare results epoch by epoch */
   Eigen::Matrix<double, 3, 1> a;
@@ -58,9 +64,19 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    printf("%d %.9f %.15e %.15e %.15e %.15e %.15e %.15e\n", in.epoch.imjd(),
-           in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
-           a(1), a(2));
+    if (formatD3Plot) {
+      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(0), a(0));
+      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(1), a(1));
+      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(2), a(2));
+    } else {
+      printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n", in.epoch.imjd(),
+             in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
+             a(1), a(2));
+    }
+
     ++acc;
   }
 }

@@ -49,9 +49,10 @@ components) are given in both ITRF and ICRF.</p>
 
 <p>To reproduce the plot, you can use:
 <pre><code>
-$> costg-benchmark/bin/check-02gravityfield-itrf.out $COSTG_DIR/satellite/00orbit_itrf.txt \ 
+$> costg-benchmark/bin/check-02gravityfield-itrf.out \
+  $COSTG_DIR/satellite/00orbit_itrf.txt \ 
   $COSTG_DIR/models/EIGEN6-C4.gfc \
-  $COSTG_DIR/02gravityfield_itrf.txt > costg-benchmark/bin/02gravityfield_itrf.csv
+  $COSTG_DIR/satellite/02gravityfield_itrf.txt > costg-benchmark/bin/02gravityfield_itrf.csv
 </pre></code>
 Once the csv file is created, reload the page!.
 </p>
@@ -65,7 +66,6 @@ Once the csv file is created, reload the page!.
   <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv02gravityitrf');"> All<br>
 </div>
 <!-- Create a div where the graph will take place -->
-<p>Earth's Gravity field (EIGEN-6C4) in ITRF</p>
 <div id="dv02gravityitrf"></div>
 
 <p>Note that for the case of ICRF, we need to transform the computed acceleration 
@@ -76,10 +76,10 @@ benchmark data files.</p>
 <p>To reproduce the plot, you can use:
 <pre><code>
 $> costg-benchmark/bin/check-02gravityfield-icrf.out \
-  $COSTG_PATH/satellite/00orbit_itrf.txt \
-  COSTG_PATH/satellite/01earthRotation_rotaryMatrix.txt \
-  COSTG_PATH/models/EIGEN6-C4.gfc \
-  COSTG_PATH/satellite/02gravityfield_icrf.txt > costg-benchmark/bin/02gravityfield_icrf.csv
+  $COSTG_DIR/satellite/00orbit_itrf.txt \
+  $COSTG_DIR/satellite/01earthRotation_rotaryMatrix.txt \
+  $COSTG_DIR/models/EIGEN6-C4.gfc \
+  $COSTG_DIR/satellite/02gravityfield_icrf.txt > costg-benchmark/bin/02gravityfield_icrf.csv
 </pre></code></p>
 
 <br><br><br>
@@ -90,11 +90,19 @@ $> costg-benchmark/bin/check-02gravityfield-icrf.out \
   <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv02gravityicrf');"> All<br>
 </div>
 <!-- Create a div where the graph will take place -->
-<p>Earth's Gravity field (EIGEN-6C4) in ICRF</p>
 <div id="dv02gravityicrf"></div>
 
 <h3>Third Body Attractions</h3>
 
+Note that when computing planetary third body acceleration (i.e. from Sun and Moon in 
+this case), we use planetary ephemeris file and a means to interpolate them. In this case, 
+we use the JPL DE421 (<a hfref="#Folkner2009">Folkner et al., 2009</a>) ephemeris and 
+<a href="https://naif.jpl.nasa.gov/naif/toolkit.html">The SPICE Toolkit</a> to interact 
+with it. Hence, to reproduce the plots, you are going to need the files <code>de421.bsp</code> 
+and <code>latest_leapseconds.tls</code> which are distributed by NASA/JPL (the latter 
+holds leap seconds history for computations performed within SPICE). 
+
+<h4>Acceleration induced by Moon (third body)</h4>
 <br><br><br>
 <div>
   <input type="radio" name="acccmp" value="daccx" onclick="highlight('X'  , 'dv03directTideMoon');"> X<br>
@@ -103,14 +111,110 @@ $> costg-benchmark/bin/check-02gravityfield-icrf.out \
   <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv03directTideMoon');"> All<br>
 </div>
 <!-- Create a div where the graph will take place -->
-<p>Third Body Acceleration - Moon ICRF</p>
 <div id="dv03directTideMoon"></div>
+<p>To reproduce the plot, you can use:
+<pre><code>
+$> costg-benchmark/bin/check-03directTideMoon-icrf.out \
+  $COSTG_DIR/satellite/00orbit_icrf.txt \
+  $COSTG_DIR/satellite/03directTideMoon_icrf.txt \
+  data/de421.bsp data/latest_leapseconds.tls > costg-benchmark/bin/03directTideMoon_icrf.csv
+</pre></code></p>
+
+<h4>Acceleration induced by Sun (third body)</h4>
+
+<br><br><br>
+<div>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X'  , 'dv03directTideSun');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y'  , 'dv03directTideSun');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z'  , 'dv03directTideSun');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv03directTideSun');"> All<br>
+</div>
+<!-- Create a div where the graph will take place -->
+<div id="dv03directTideSun"></div>
+<p>To reproduce the plot, you can use:
+<pre><code>
+$> costg-benchmark/bin/check-03directTideSun-icrf.out \
+  $COSTG_DIR/satellite/00orbit_icrf.txt \
+  $COSTG_DIR/satellite/03directTideSun_icrf.txt \
+  data/de421.bsp data/latest_leapseconds.tls > costg-benchmark/bin/03directTideSun_icrf.csv
+</pre></code></p>
+
+
+<h3>Solid Earth Tide</h3>
+
+In this case, apart from the input GRACE orbit in ICRF and the corresponding results (i.e. 
+<code>00orbit_icrf.txt</code> and <code>04solidEarthTide_icrf.txt</code>), we also need 
+planetary ephemeris (see above) and a means to transform between the ITRF and ICRF. 
+To perform this task, we use the file <code>01earthRotation_rotaryMatrix.txt</code> 
+provided by the benchmark test, which holds tabulated values of the transformation 
+matrix between the two frames.
+
+<br><br><br>
+<div>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X'  , 'dv04SolidEarthTide');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y'  , 'dv04SolidEarthTide');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z'  , 'dv04SolidEarthTide');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv04SolidEarthTide');"> All<br>
+</div>
+<!-- Create a div where the graph will take place -->
+<div id="dv04SolidEarthTide"></div>
+<p>To reproduce the plot, you can use:
+<pre><code>
+$> costg-benchmark/bin/check-04solidEarthTide-icrf.out \
+  $COSTG_DIR/satellite/00orbit_icrf.txt \
+  $COSTG_DIR/satellite/04solidEarthTide_icrf.txt \
+  data/de421.bsp \
+  data/latest_leapseconds.tls \
+  $COSTG_DIR/eopc04_14_IAU2000.62-now \ 
+  $COSTG_DIR/satellite/01earthRotation_rotaryMatrix.txt > doc/validation/04solidEarthTide_icrf.csv
+</pre></code></p>
+
+<h3>Relativistic Corrections</h3>
+
+<br><br><br>
+<div>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X'  , 'dv07Relativistic');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y'  , 'dv07Relativistic');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z'  , 'dv07Relativistic');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv07Relativistic');"> All<br>
+</div>
+<!-- Create a div where the graph will take place -->
+<div id="dv07Relativistic"></div>
+<p>To reproduce the plot, you can use:
+<pre><code>
+$> costg-benchmark/bin/check-07relativistic-icrf.out \
+  $COSTG_DIR/satellite/00orbit_icrf.txt \
+  $COSTG_DIR/satellite/07relativistic_icrf.txt \
+  data/de421.bsp \
+  data/latest_leapseconds.tls > doc/validation/07relativistic_icrf.csv
+</pre></code></p>
+
+<h3>De-Aliasing AOD1B</h3>
+
+<br><br><br>
+<div>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X'  , 'dv08DeAliasing');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y'  , 'dv08DeAliasing');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z'  , 'dv08DeAliasing');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv08DeAliasing');"> All<br>
+</div>
+<!-- Create a div where the graph will take place -->
+<div id="dv08DeAliasing"></div>
+<p>To reproduce the plot, you can use:
+<pre><code>
+$> costg-benchmark/bin/check-08aod1b-RL06-icrf.out \
+  $COSTG_DIR/satellite/00orbit_itrf.txt \
+  $COSTG_DIR/models/AOD1B_2008-07-03_X_06.asc \
+  $COSTG_DIR/satellite/08aod1b_RL06_icrf.txt \
+  $COSTG_DIR/satellite/01earthRotation_rotaryMatrix.txt > doc/validation/08aod1b_RL06_icrf.csv
+</pre></code></p>
 
 <h2>Bibliography</h2>
 <p>
   <ul>
     <li id="Lasser2020">Lasser, M., Meyer, U., Jäggi, A., Mayer-Gürr, T., Kvas, A., Neumayer, K. H., Dahle, C., Flechtner, F., Lemoine, J.-M., Koch, I., Weigelt, M., and Flury, J.: Benchmark data for verifying background model implementations in orbit and gravity field determination software, Adv. Geosci., 55, 1–11, https://doi.org/10.5194/adgeo-55-1-2020, 2020.</li>
     <li id="Forste2014">Förste, C., Bruinsma, S. L., Abrikosov, O., Lemoine, J.-M., Marty, J. C., Flechtner, F., Balmino, G., Barthelmes, F., and Biancale, R.: EIGEN-6C4 The latest combined global gravity field model including GOCE data up to degree and order 2190 of GFZ Potsdam and GRGS Toulouse, GFZ Data Services, https://doi.org/10.5880/icgem.2015.1, 2014</li>
+    <li id="Folkner2009">Folkner, W. M., Williams, J. G., and Boggs, D. H.: The Planetary and Lunar Ephemeris DE 421. The Interplanetary Network Progress Report, Volume 42-178, 1–34, available at: https://ipnpr.jpl.nasa.gov/progress_report/42-178/178C.pdf (last access: 1 December 2020), 2009</li>
   </ul>
 </p>
 <script>
@@ -141,6 +245,34 @@ var svg03directTideMoon = d3.select("#dv03directTideMoon")
   .append("g")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
+var svg03directTideSun = d3.select("#dv03directTideSun")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+var svg04SolidEarthTide = d3.select("#dv04SolidEarthTide")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+var svg07Relativistic = d3.select("#dv07Relativistic")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+var svg08DeAliasing = d3.select("#dv08DeAliasing")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
   
 // Color scale: give me a specie name, I return a color
 var color = d3.scaleOrdinal()
@@ -149,158 +281,8 @@ var color = d3.scaleOrdinal()
 
 var scale = 1e+10;
 
-////Read the data
-//d3.csv("/02gravityfield_itrf.csv").then( function(data) {
-//
-//  // add X-axis
-//  var x = d3.scaleLinear()
-//    .domain([0e0, 86400e0])
-//    .range([0, width]);
-//  svg02itrf.append("g")
-//    .attr("transform", `translate(0, ${height})`)
-//    .call(d3.axisBottom(x));
-//
-//  // Add Y-axis
-//  var y = d3.scaleLinear()
-//    .domain(d3.extent(data, (d) => (scale*(parseFloat(d.refval)-parseFloat(d.val)))))
-//    .range([height, 0]);
-//  svg02itrf.append("g")
-//    .call(d3.axisLeft(y)
-//      .tickFormat(function(d){return d3.format('.1e')(d);}));
-//
-//  // Add X axis label:
-//  svg02itrf.append("text")
-//    .attr("text-anchor", "end")
-//    .attr("x", width)
-//    .attr("y", height + margin.top + 20)
-//    .text("Hours");
-//
-//// Y axis label:
-//svg02itrf.append("text")
-//    .attr("text-anchor", "end")
-//    .attr("transform", "rotate(-90)")
-//    .attr("y", -margin.left+20)
-//    .attr("x", -margin.top)
-//    .text("Acceleration in [m/s^2]"+d3.format("1.0e")(1/scale));
-//
-//  // Add dots
-//  svg02itrf.append('g')
-//    .selectAll("dot")
-//    .data(data)
-//    .enter()
-//    .append("circle")
-//      .attr("class", function (d) { return "dot " + d.component} )
-//      .attr("cx", function (d) { return x(d.sec); } )
-//      .attr("cy", function (d) { return y(scale*(parseFloat(d.refval-d.val))); } )
-//      .attr("r", .9)
-//      .style("fill", function (d) { return color(d.component) } )
-//
-//});
-//
-//function highlight02Itrf(component) {
-//  if (component == "XYZ") {
-//    ['X', 'Y', 'Z'].forEach((cmp) => {
-//    // d3.selectAll("." + cmp)
-//    svg02itrf.selectAll("." + cmp)
-//      .transition()
-//      .duration(200)
-//      .style("fill", color(cmp))
-//      .attr("r", 2)
-//    });
-//    return;
-//  }
-//
-//    //d3.selectAll(".dot")
-//    svg02itrf.selectAll(".dot")
-//      .transition()
-//      .duration(200)
-//      .style("fill", "lightgrey")
-//      .attr("r", .9)
-//    //d3.selectAll("." + component)
-//    svg02itrf.selectAll("." + component)
-//      .transition()
-//      .duration(200)
-//      .style("fill", color(component))
-//      .attr("r", 2)
-//}
-//
-////Read the data
-//d3.csv("/02gravityfield_icrf.csv").then( function(data) {
-//
-//  // add X-axis
-//  var x = d3.scaleLinear()
-//    .domain([0e0, 86400e0])
-//    .range([0, width]);
-//  svg02icrf.append("g")
-//    .attr("transform", `translate(0, ${height})`)
-//    .call(d3.axisBottom(x));
-//
-//  // Add Y-axis
-//  var y = d3.scaleLinear()
-//    .domain(d3.extent(data, (d) => (scale*(parseFloat(d.refval)-parseFloat(d.val)))))
-//    .range([height, 0]);
-//  svg02icrf.append("g")
-//    .call(d3.axisLeft(y)
-//      .tickFormat(function(d){return d3.format('.1e')(d);}));
-//
-//  // Add X axis label:
-//  svg02icrf.append("text")
-//    .attr("text-anchor", "end")
-//    .attr("x", width)
-//    .attr("y", height + margin.top + 20)
-//    .text("Hours");
-//
-//// Y axis label:
-//svg02icrf.append("text")
-//    .attr("text-anchor", "end")
-//    .attr("transform", "rotate(-90)")
-//    .attr("y", -margin.left+20)
-//    .attr("x", -margin.top)
-//    .text("Acceleration in [m/s^2]"+d3.format("1.0e")(1/scale));
-//
-//  // Add dots
-//  svg02icrf.append('g')
-//    .selectAll("dot")
-//    .data(data)
-//    .enter()
-//    .append("circle")
-//      .attr("class", function (d) { return "dot " + d.component} )
-//      .attr("cx", function (d) { return x(d.sec); } )
-//      .attr("cy", function (d) { return y(scale*(parseFloat(d.refval-d.val))); } )
-//      .attr("r", .9)
-//      .style("fill", function (d) { return color(d.component) } )
-//
-//});
-//
-//function highlight02Icrf(component) {
-//  if (component == "XYZ") {
-//    ['X', 'Y', 'Z'].forEach((cmp) => {
-//    // d3.selectAll("." + cmp)
-//    svg02icrf.selectAll("." + cmp)
-//      .transition()
-//      .duration(200)
-//      .style("fill", color(cmp))
-//      .attr("r", 2)
-//    });
-//    return;
-//  }
-//
-//    //d3.selectAll(".dot")
-//    svg02icrf.selectAll(".dot")
-//      .transition()
-//      .duration(200)
-//      .style("fill", "lightgrey")
-//      .attr("r", .9)
-//    //d3.selectAll("." + component)
-//    svg02icrf.selectAll("." + component)
-//      .transition()
-//      .duration(200)
-//      .style("fill", color(component))
-//      .attr("r", 2)
-//}
-
 //Read the data
-function plot(csvfn, svgnm) {
+function plot(csvfn, svgnm, title) {
 d3.csv(csvfn).then( function(data) {
 
   // add X-axis
@@ -333,6 +315,15 @@ svgnm.append("text")
     .attr("y", -margin.left+20)
     .attr("x", -margin.top)
     .text("Acceleration in [m/s^2]"+d3.format("1.0e")(1/scale));
+
+  // add title
+  svgnm.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", margin.top)
+        .attr("text-anchor", "middle")  
+        .style("font-size", "20px") 
+        // .style("text-decoration", "underline")  
+        .text(title);
 
   // Add dots
   svgnm.append('g')
@@ -375,8 +366,12 @@ function highlight(component, svgid) {
       .style("fill", color(component))
       .attr("r", 2)
 }
-plot("/02gravityfield_itrf.csv", svg02itrf);
-plot("/02gravityfield_icrf.csv", svg02icrf);
-plot("/03directTideMoon_icrf.csv", svg03directTideMoon);
+plot("/02gravityfield_itrf.csv", svg02itrf, "Earth's Gravity field (EIGEN-6C4) in ITRF");
+plot("/02gravityfield_icrf.csv", svg02icrf, "Earth's Gravity field (EIGEN-6C4) in ICRF");
+plot("/03directTideMoon_icrf.csv", svg03directTideMoon, "Third Body Acceleration - Moon ICRF");
+plot("/03directTideSun_icrf.csv", svg03directTideSun, "Third Body Acceleration - Sun ICRF");
+plot("/04solidEarthTide_icrf.csv", svg04SolidEarthTide, "Solid Earth Tide ICRF");
+plot("/07relativistic_icrf.csv", svg07Relativistic, "Relativistic Correction ICRF");
+plot("/08aod1b_RL06_icrf.csv", svg08DeAliasing, "DeAliasing via AOD1B ICRF");
 
 </script>

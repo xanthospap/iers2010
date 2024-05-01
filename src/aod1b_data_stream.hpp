@@ -218,6 +218,31 @@ public:
     return 0;
   }
 
+  int feed_new_file(const char *fn_aod1b) noexcept {
+    /* read first block of new file to last index */
+    constexpr const int index = AR_SIZE - 1;
+    /* create an Aod1bIn instance and get the iterator */
+    try {
+      Aod1bIn aod1b(fn_aod1b);
+      mit = Aod1bDataBlockIterator<T>(aod1b);
+    } catch (std::exception &) {
+      return 2;
+    }
+    /* left shift data */
+    swap(0, 1);
+    swap(1, 2);
+    /* collect header and first data block */
+    mit.set_begin();
+    if (mit.collect(mcsvec[index])) {
+      fprintf(stderr,
+              "[ERROR] Failed initializing Aod1bDataStream (traceback: %s)\n",
+              __func__);
+      return 1;
+    }
+    mhdrvec[index] = mit.header();
+    return 0;
+  }
+
   /** Perform linear interpolation to compute the Stokes coefficients at 
    * the given epoch \p t.
    * On success, 0 is returned; in any other case, the result should not be 

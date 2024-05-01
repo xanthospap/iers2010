@@ -16,8 +16,8 @@ schwarzschild(const Eigen::Matrix<double, 6, 1> &sat,
 /* Lense-Thirring precession scaled by 1/{GMe/(c^2*r^3)} */
 Eigen::Matrix<double, 3, 1>
 lens_thirring(const Eigen::Matrix<double, 6, 1> &sat,
-              [[maybe_unused]]double GMe = iers2010::GMe, double J = iers2010::Je,
-              double gamma = 1e0) noexcept {
+              [[maybe_unused]] double GMe = iers2010::GMe,
+              double J = iers2010::Je, double gamma = 1e0) noexcept {
   const auto r = sat.head<3>();
   const auto v = sat.tail<3>();
   const double s = r.norm();
@@ -30,11 +30,11 @@ lens_thirring(const Eigen::Matrix<double, 6, 1> &sat,
 }
 
 /* Geodesic acceleration correction (de Sitter) scaled by -1/{GMe/(c^2*r^3)} */
-Eigen::Matrix<double, 3, 1>
-geodesic(const Eigen::Matrix<double, 6, 1> &rsat,
-         const Eigen::Matrix<double, 6, 1> &rersn, double GMe = iers2010::GMe,
-         double GMs = iers2010::GMs,
-         double gamma = 1e0) noexcept {
+Eigen::Matrix<double, 3, 1> geodesic(const Eigen::Matrix<double, 6, 1> &rsat,
+                                     const Eigen::Matrix<double, 6, 1> &rersn,
+                                     double GMe = iers2010::GMe,
+                                     double GMs = iers2010::GMs,
+                                     double gamma = 1e0) noexcept {
   // const auto r = sat.head<3>();
   const auto v = rsat.tail<3>();
   const auto re = rersn.head<3>();
@@ -51,7 +51,7 @@ Eigen::Matrix<double, 3, 1> dso::iers2010_relativistic_acceleration(
     const Eigen::Matrix<double, 6, 1> &rsunin, double GMe, double GMs, double J,
     double c, double beta, double gamma) noexcept {
 
-  /* scale: [m] to [km] to avoid too largr/small numbres */
+  /* scale: [m] to [km] to avoid too large/small numbres */
   const auto rsat = rsatin * 1e-3;
   const auto rsun = rsunin * 1e-3;
   GMe *= 1e-9;

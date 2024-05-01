@@ -13,6 +13,7 @@ using namespace costg;
 constexpr const double GM_Sun = 1.32712442076e20;
 constexpr const double GM_Moon = 0.49028010560e13;
 constexpr const int DEGREE = 4;
+constexpr const int formatD3Plot = 1;
 
 int main(int argc, char *argv[]) {
   if (argc != 7) {
@@ -29,17 +30,16 @@ int main(int argc, char *argv[]) {
 
   /* read orbit from input file */
   const auto orbvec = parse_orbit(argv[1]);
-  printf("#Note: read %d data sets from input file\n", (int)orbvec.size());
 
   /* read acceleration from input file */
   const auto accvec = parse_acceleration(argv[2]);
-  printf("#Note: read %d data sets from input file\n", (int)accvec.size());
   
   /* read rotary matrix (GCRS to ITRS) from input file */
   const auto rotvec = parse_rotary(argv[6]);
-  printf("#Note: read %d data sets from input file\n", (int)accvec.size());
 
-  /* read and parse EOP iformation */
+  /* read and parse EOP iformation; we will need UT1-UTC info latter on, to 
+   * compute e.g. GMST
+   */
   dso::EopSeries eop;
   {
     auto imjd = orbvec[0].epoch.imjd();
@@ -55,11 +55,21 @@ int main(int argc, char *argv[]) {
   /* A solidEarthTide instance */
   dso::SolidEarthTide setide(iers2010::GMe, iers2010::Re, GM_Moon, GM_Sun);
 
-    /* allocate scratch space for computations */
+  /* allocate scratch space for computations (optionally, we could let 
+   * sh2gradient_cunningham allocate the memmory it needs, but allocating only 
+   * once is better)
+  */
   dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> W(DEGREE + 3,
                                                                     DEGREE + 3);
   dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> M(DEGREE + 3,
                                                                     DEGREE + 3);
+
+  /* spit out a title for plotting */
+  if (formatD3Plot) {
+    printf("mjd,sec,refval,val,component\n");
+  } else {
+    printf("#title Solid Earth Tide (ephermeris: %s)\n", basename(argv[3]));
+  }
 
   /* compare results epoch by epoch */
   Eigen::Matrix<double, 3, 1> a;
@@ -114,9 +124,19 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    printf("%d %.9f %.15e %.15e %.15e %.15e %.15e %.15e\n", in.epoch.imjd(),
-           in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
-           a(1), a(2));
+    if (formatD3Plot) {
+      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(0), a(0));
+      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(1), a(1));
+      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(2), a(2));
+    } else {
+      printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n", in.epoch.imjd(),
+             in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
+             a(1), a(2));
+    }
+
     ++acc;
     ++rot;
   }

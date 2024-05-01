@@ -4,10 +4,10 @@
 #include "icgemio.hpp"
 #include "costg_utils.hpp"
 #include "aod1b_data_stream.hpp"
-#include <datetime/tpdate.hpp>
 
 constexpr const int DEGREE = 180;
 constexpr const int ORDER = 180;
+constexpr const int formatD3Plot = 1;
 
 using namespace costg;
 
@@ -45,6 +45,13 @@ int main(int argc, char *argv[]) {
   
   dso::Aod1bDataStream<dso::AOD1BCoefficientType::GLO> aodin(aod1b);
   aodin.initialize();
+  
+  /* spit out a title for plotting */
+  if (formatD3Plot) {
+    printf("mjd,sec,refval,val,component\n");
+  } else {
+    printf("#title De-aliasing (data: %s)\n", basename(argv[2]));
+  }
 
   /* compare results epoch by epoch */
   Eigen::Matrix<double, 3, 1> a;
@@ -59,17 +66,13 @@ int main(int argc, char *argv[]) {
     /* get Stokes coefficients for this epoch from the AOD1B file */
     if (aodin.coefficients_at(t, stokes)) {
       fprintf(stderr, "Failed interpolating coefficients\n");
-      // TODO
-      //fprintf(stderr,
-      //        "ERROR. Failed interpolating coefficients for epoch: "
-      //        "%.3f[MJD]\n",
-      //        t.fmjd());
       return 1;
     }
 
     /* for the test, degree one coefficients are not taken into account */
-    // stokes.C(0,0) = stokes.C(1,0) = stokes.C(1,1) = 0e0;
-    // stokes.S(1,1) = 0e0;
+    stokes.C(0,0);
+    stokes.C(1,0) = stokes.C(1,1) = 0e0;
+    stokes.S(1,1) = 0e0;
 
     /* compute acceleration for given epoch/position */
     if (dso::sh2gradient_cunningham(stokes, in.xyz, a, g, DEGREE, ORDER, -1, -1, &W,
@@ -90,9 +93,20 @@ int main(int argc, char *argv[]) {
       fprintf(stderr, "ERROR Faile to match epochs in input files\n");
       return 1;
     }
-    printf("%d %.9f %.15e %.15e %.15e %.15e %.15e %.15e\n", in.epoch.imjd(),
-           in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
-           a(1), a(2));
+
+    if (formatD3Plot) {
+      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(0), a(0));
+      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(1), a(1));
+      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(2), a(2));
+    } else {
+      printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n", in.epoch.imjd(),
+             in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
+             a(1), a(2));
+    }
+    
     ++acc;
     if (argc == 5) ++rot;
   }
