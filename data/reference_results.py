@@ -770,6 +770,6 @@ special_progs = [
     "exit": 0},
     {"prog":"planet-state.out", 
      "path": "test/unit_tests",
-    "args": ["data/de432s.bsk", "data/latest_leapseconds.tls"], 
+    "args": ["data/de432s.bsp", "data/latest_leapseconds.tls"], 
     "exit": 0}
 ]

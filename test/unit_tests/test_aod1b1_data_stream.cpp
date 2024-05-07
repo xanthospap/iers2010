@@ -14,16 +14,15 @@ int main(int argc, char *argv[]) {
 
   char buf[64];
 
-  dso::Aod1bIn aod(argv[1]);
-  dso::Aod1bDataStream<dso::AOD1BCoefficientType::ATM> stream(aod);
+  dso::Aod1bDataStream<dso::AOD1BCoefficientType::ATM> stream(argv[1]);
   dso::StokesCoeffs cs(120, 120, 0e0, 0e0);
 
   if (stream.initialize()) {
     return 1;
   }
 
-  auto t = aod.first_epoch();
-  while (t < aod.last_epoch()) {
+  auto t = stream.stream().first_epoch();
+  while (t < stream.stream().last_epoch()) {
     if (stream.coefficients_at(t, cs))
       return 8;
     printf("%s %+.15e %+.15e\n",
@@ -35,31 +34,31 @@ int main(int argc, char *argv[]) {
 
   /* some dummy epochs so that we go back & forth in the file */
   {
-    t = aod.first_epoch();
+    t = stream.stream().first_epoch();
     t.add_seconds(dso::seconds(180));
     if (stream.coefficients_at(t, cs))
       return 8;
   }
   {
-    t = aod.first_epoch();
+    t = stream.stream().first_epoch();
     t.add_seconds(dso::seconds(3600 * 9 + 1));
     if (stream.coefficients_at(t, cs))
       return 8;
   }
   {
-    t = aod.first_epoch();
+    t = stream.stream().first_epoch();
     t.add_seconds(dso::seconds(3600 * 20 + 1));
     if (stream.coefficients_at(t, cs))
       return 8;
   }
   {
-    t = aod.first_epoch();
+    t = stream.stream().first_epoch();
     t.add_seconds(dso::seconds(3600 * 6 + 1));
     if (stream.coefficients_at(t, cs))
       return 8;
   }
   { /* error */
-    t = aod.first_epoch();
+    t = stream.stream().first_epoch();
     t.add_seconds(dso::seconds(-1));
     if (stream.coefficients_at(t, cs)) {
       // printf("Expected an error and got an error! OK\n");
@@ -69,7 +68,7 @@ int main(int argc, char *argv[]) {
     }
   }
   { /* error */
-    t = aod.last_epoch();
+    t = stream.stream().last_epoch();
     // t.add_seconds(dso::seconds(-1));
     if (stream.coefficients_at(t, cs)) {
       // printf("Expected an error and got an error! OK\n");

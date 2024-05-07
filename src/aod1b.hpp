@@ -64,6 +64,38 @@ public:
     AOD1BCoefficientType mtype;
   }; /* Aod1bBlockHeader */
 
+/* @class Enable resolving/compiling non-tidal AOD1B data filenames.
+ * 
+ * For information see 
+ */
+  struct Aod1bNonTidalFilenameStruct {
+    dso::Datetime<dso::seconds> mt;
+    char msatid{'X'};
+    char mrevision[2];
+    char mext[3];
+
+    Aod1bNonTidalFilenameStruct &next() noexcept {
+      mt += (dso::datetime_interval<dso::seconds>(1, dso::seconds(0)));
+      return *this;
+    }
+
+    /** @brief Constructor from a (non-tidal) AOD1B filename.
+     *
+     * Note that the given filename is expected to comply with the format:
+     * “AOD1B YYYY-MM-DD S RL.EXT[.gz]”. The compression extension is
+     * skipped/ignored. The filename must not include the path.
+     */
+    Aod1bNonTidalFilenameStruct(const char *fn);
+
+    /** @brief Construct the filename according the the instance info.
+     *
+     * The filename produced will comply with the format:
+     * “AOD1B YYYY-MM-DD S RL.EXT”.
+     * Note that the filename compiled will not have a compression extension.
+     */
+    const char *make(char *buf) const noexcept;
+  }; /* Aod1bNonTidalFilenameStruct */
+
 private:
   /** filename */
   std::string mfn;
@@ -143,6 +175,7 @@ private:
 
   /** Given a stream (fin) to an AOD1B file, go to the start of the next data
    * block of type \p type.
+   * 
    * Note that the stream should be placed at a position so that the next line
    * to be read is a data block header
    */
@@ -204,7 +237,8 @@ public:
     return mdentry;
   }
 
-  /** Constructor from AOD1B filename.
+  /** @brief Constructor from AOD1B filename.
+   *
    * The constructor will automatically call read_header on the instance,
    * and collect/assign all header info.
    */
@@ -217,11 +251,25 @@ public:
   Aod1bIn &operator=(Aod1bIn &&other) noexcept;
   ~Aod1bIn() noexcept {};
 
-  /** Read and parse an AOD1B header block, assigning info to the instance 
+  /** @brief Read and parse an AOD1B header block, assigning info to the 
+   * instance.
    *
    * This fucntion works for both non-tidal and tidal AOD1B files/products.
    */
   int read_header() noexcept;
+
+  /** @brief Return the filename of what would be the name of the data file 
+   * following this one (i.e. for the next day).
+   *
+   * No path is included, only the filename is returned.
+   *
+   * @param[in] buf A character array large enough to hold the resulting 
+   *                filename.
+   */
+  const char *next_nontidal_filename(char *buf) const noexcept {
+    Aod1bNonTidalFilenameStruct s(mfn.c_str());
+    return s.next().make(buf);
+  }
 
 
   /** Read in and parse coefficients from a tidal AOD1B file, for a given
@@ -309,7 +357,15 @@ public:
     return (mheader.mepoch == Datetime<nanoseconds>::min() && mfin.eof());
   }
 
-  /** Set the instance to the first data block in the AOD1B file.
+  const char *next_nontidal_filename(char *buf) const noexcept {
+    return maod->next_nontidal_filename(buf);
+  }
+
+  const char *fn() const noexcept {
+    return maod ? maod->fn().c_str() : nullptr;
+  }
+
+  /** @brief Set the instance to the first data block in the AOD1B file.
    *
    * At success, the instance's mheader will hold the header of the first 
    * data block of the AOD1B file (of type T, e.g. "ATM").
@@ -338,7 +394,7 @@ public:
   /** Skip the current data block (i.e. the one corresponding to this mheader */
   void skip() noexcept { maod->skip_lines(mfin, mheader.mnum_lines); }
 
-  /** Collect the coefficients of the current data block.
+  /** @brief Collect the coefficients of the current data block.
    * 
    * Collect the coefficients of the current data block, up to maximum degree 
    * and order (max_degree, max_order). If these parameters are set to 
@@ -362,7 +418,7 @@ public:
     return 0;
   }
 
-  /** Go/advance to the next data block.
+  /** @brief Go/advance to the next data block.
    *
    * Note that before calling this function, either skip() or collect should 
    * have been called, depending on what we want to do with data.

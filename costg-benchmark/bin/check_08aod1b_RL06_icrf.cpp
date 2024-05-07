@@ -12,12 +12,12 @@ constexpr const int formatD3Plot = 1;
 using namespace costg;
 
 int main(int argc, char *argv[]) {
-  if (argc != 4 && argc != 5) {
+  if (argc != 4 && argc != 6) {
     fprintf(stderr,
             "Usage: %s [00orbit_icrf.txt] [AOD1B_2008-07-03_X_06.asc] "
             "[08aod1b_RL06_icrf.txt], or\nUsage: %s [00orbit_itrf.txt] "
             "[AOD1B_2008-07-03_X_06.asc] [08aod1b_RL06_icrf.txt] "
-            "[01earthRotation_rotaryMatrix.txt]\n",
+            "[01earthRotation_rotaryMatrix.txt] [AOD1B_DATA_DIR]\n",
             argv[0], argv[0]);
     return 1;
   }
@@ -40,11 +40,12 @@ int main(int argc, char *argv[]) {
     rotvec = parse_rotary(argv[4]);
   }
 
-  dso::Aod1bIn aod1b(argv[2]);
-  dso::StokesCoeffs stokes(DEGREE, ORDER, aod1b.GM(), aod1b.Re());
+  // dso::Aod1bIn aod1b(argv[2]);
+  // dso::StokesCoeffs stokes(DEGREE, ORDER, aod1b.GM(), aod1b.Re());
   
-  dso::Aod1bDataStream<dso::AOD1BCoefficientType::GLO> aodin(aod1b);
+  dso::Aod1bDataStream<dso::AOD1BCoefficientType::GLO> aodin(argv[2], argv[5]);
   aodin.initialize();
+  dso::StokesCoeffs stokes(DEGREE, ORDER, aodin.stream().GM(), aodin.stream().Re());
   
   /* spit out a title for plotting */
   if (formatD3Plot) {
