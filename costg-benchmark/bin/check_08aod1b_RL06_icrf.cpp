@@ -1,9 +1,9 @@
+#include "aod1b_data_stream.hpp"
+#include "costg_utils.hpp"
 #include "datetime/calendar.hpp"
 #include "eigen3/Eigen/Eigen"
 #include "gravity.hpp"
 #include "icgemio.hpp"
-#include "costg_utils.hpp"
-#include "aod1b_data_stream.hpp"
 
 constexpr const int DEGREE = 180;
 constexpr const int ORDER = 180;
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
             argv[0], argv[0]);
     return 1;
   }
-  
+
   /* allocate scratch space for computations */
   dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> W(DEGREE + 3,
                                                                     DEGREE + 3);
@@ -40,13 +40,15 @@ int main(int argc, char *argv[]) {
     rotvec = parse_rotary(argv[4]);
   }
 
-  // dso::Aod1bIn aod1b(argv[2]);
-  // dso::StokesCoeffs stokes(DEGREE, ORDER, aod1b.GM(), aod1b.Re());
-  
+  /* we initialize the instance using a starting (AOD1B) file and a directory
+   * well subsequent files are placed and can be used.
+   */
   dso::Aod1bDataStream<dso::AOD1BCoefficientType::GLO> aodin(argv[2], argv[5]);
   aodin.initialize();
-  dso::StokesCoeffs stokes(DEGREE, ORDER, aodin.stream().GM(), aodin.stream().Re());
-  
+
+  dso::StokesCoeffs stokes(DEGREE, ORDER, aodin.stream().GM(),
+                           aodin.stream().Re());
+
   /* spit out a title for plotting */
   if (formatD3Plot) {
     printf("mjd,sec,refval,val,component\n");
@@ -71,20 +73,20 @@ int main(int argc, char *argv[]) {
     }
 
     /* for the test, degree one coefficients are not taken into account */
-    stokes.C(0,0);
-    stokes.C(1,0) = stokes.C(1,1) = 0e0;
-    stokes.S(1,1) = 0e0;
+    stokes.C(0, 0);
+    stokes.C(1, 0) = stokes.C(1, 1) = 0e0;
+    stokes.S(1, 1) = 0e0;
 
     /* compute acceleration for given epoch/position */
-    if (dso::sh2gradient_cunningham(stokes, in.xyz, a, g, DEGREE, ORDER, -1, -1, &W,
-                                    &M)) {
+    if (dso::sh2gradient_cunningham(stokes, in.xyz, a, g, DEGREE, ORDER, -1, -1,
+                                    &W, &M)) {
       fprintf(stderr, "ERROR Failed computing acceleration/gradient\n");
       return 1;
     }
 
     /* if needed, transform acceleration from ITRF to GCRF */
     if (argc == 6) {
-      const Eigen::Matrix<double,3,3> R = rot->R.transpose();
+      const Eigen::Matrix<double, 3, 3> R = rot->R.transpose();
       assert(rot->epoch == in.epoch);
       a = R * a;
     }
@@ -107,9 +109,10 @@ int main(int argc, char *argv[]) {
              in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
              a(1), a(2));
     }
-    
+
     ++acc;
-    if (argc == 6) ++rot;
+    if (argc == 6)
+      ++rot;
   }
 
   return 0;

@@ -1,11 +1,11 @@
+#include "atmospheric_tides.hpp"
+#include "costg_utils.hpp"
 #include "datetime/calendar.hpp"
 #include "eigen3/Eigen/Eigen"
-#include "gravity.hpp"
-#include "icgemio.hpp"
-#include "costg_utils.hpp"
-#include "atmospheric_tides.hpp"
 #include "eop.hpp"
 #include "fundarg.hpp"
+#include "gravity.hpp"
+#include "icgemio.hpp"
 
 constexpr const int DEGREE = 180;
 constexpr const int ORDER = 180;
@@ -15,11 +15,13 @@ using namespace costg;
 int main(int argc, char *argv[]) {
   if (argc != 6) {
     fprintf(stderr,
-            "Usage: %s [00orbit_itrf.txt] [AOD1B_ATM_S1_06.asc] [01earthRotation_rotaryMatrix.txt] [eopc04.1962-now] [09aod1b_atmosphericTides_S1_icrf.txt]\n",
+            "Usage: %s [00orbit_itrf.txt] [AOD1B_ATM_S1_06.asc] "
+            "[01earthRotation_rotaryMatrix.txt] [eopc04.1962-now] "
+            "[09aod1b_atmosphericTides_S1_icrf.txt]\n",
             argv[0]);
     return 1;
   }
-  
+
   /* allocate scratch space for computations */
   dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> W(DEGREE + 3,
                                                                     DEGREE + 3);
@@ -32,7 +34,7 @@ int main(int argc, char *argv[]) {
   /* read accleration from input file */
   const auto accvec = parse_acceleration(argv[5]);
 
-    /* read rotary matrix (GCRS to ITRS) from input file */
+  /* read rotary matrix (GCRS to ITRS) from input file */
   std::vector<BmRotaryMatrix> rotvec = parse_rotary(argv[3]);
 
   /* read EOPS (we will need DUT1) */
@@ -53,7 +55,8 @@ int main(int argc, char *argv[]) {
 
   /* apend S1 wave */
   if (atm.append_wave(argv[2], DEGREE, ORDER)) {
-    fprintf(stderr, "ERROR. Failed appending atmospheric tide from file %s\n", argv[2]);
+    fprintf(stderr, "ERROR. Failed appending atmospheric tide from file %s\n",
+            argv[2]);
     return 1;
   }
 
@@ -79,24 +82,24 @@ int main(int argc, char *argv[]) {
     atm.stokes_coeffs(t, t.tt2ut1(dut1_approx), fargs);
 
     /* for the test, degree one coefficients are not taken into account */
-    //stokes.C(0,0) = stokes.C(1,0) = stokes.C(1,1) = 0e0;
-    //stokes.S(1,1) = 0e0;
+    atm.stokes.C(0, 0) = atm.stokes.C(1, 0) = atm.stokes.C(1, 1) = 0e0;
+    atm.stokes.S(1, 1) = 0e0;
 
     /* compute acceleration for given epoch/position */
-    if (dso::sh2gradient_cunningham(atm.stokes_coeffs(), in.xyz, a, g, DEGREE, ORDER, -1, -1, &W,
-                                    &M)) {
+    if (dso::sh2gradient_cunningham(atm.stokes_coeffs(), in.xyz, a, g, DEGREE,
+                                    ORDER, -1, -1, &W, &M)) {
       fprintf(stderr, "ERROR Failed computing acceleration/gradient\n");
       return 1;
     }
-  
+
     /* transform acceleration from ITRF to GCRF */
-      const Eigen::Matrix<double,3,3> R = rot->R.transpose();
-      assert(rot->epoch == in.epoch);
-      a = R * a;
+    const Eigen::Matrix<double, 3, 3> R = rot->R.transpose();
+    assert(rot->epoch == in.epoch);
+    a = R * a;
 
     /* get COSTG result */
     if (acc->epoch != in.epoch) {
-      fprintf(stderr, "ERROR Faile to match epochs in input files\n");
+      fprintf(stderr, "ERROR Failed to match epochs in input files\n");
       return 1;
     }
     printf("%d %.9f %.15e %.15e %.15e %.15e %.15e %.15e\n", in.epoch.imjd(),
