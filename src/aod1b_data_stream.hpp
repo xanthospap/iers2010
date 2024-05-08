@@ -100,18 +100,12 @@ private:
    */
   int hunt_range(const Datetime<nanoseconds> &t) noexcept {
     /* quick return */
-    //printf("Hunting range t=%.3f\n", t.fmjd());
-    //printf("\t %.3f to %.3f\n, and", mhdrvec[0].mepoch.fmjd(), mhdrvec[1].mepoch.fmjd());
-    //printf("\t %.3f to %.3f\n", mhdrvec[1].mepoch.fmjd(), mhdrvec[2].mepoch.fmjd());
     if (t >= mhdrvec[0].mepoch && t < mhdrvec[1].mepoch) {
-      //printf("\tquick return 0\n");
       return 0;
     }
     if (t >= mhdrvec[1].mepoch && t < mhdrvec[2].mepoch) {
-      //printf("\tquick return 1\n");
       return 1;
     }
-    //printf("\thunt_range: no quick return!\n");
 
     /* shit, we don;t have the bounding coeffs!
      * (a) First, read in one more header/block, and see if we are there yet.
@@ -204,7 +198,7 @@ private:
       char buf[64];
       fprintf(
           stderr,
-          "[ERROR] Failed collecting coeffs for epoch %s (TT) from "
+          "[WRNNG] Failed collecting coeffs for epoch %s (TT) from "
           "AOD1B file %s; epoch out of bounds (traceback: %s)\n",
           to_char<YMDFormat::YYYYMMDD, HMSFormat::HHMMSSF, nanoseconds>(t, buf),
           mit.aod1b().fn().c_str(), __func__);

@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   const auto accvec = parse_acceleration(argv[3]);
 
   std::vector<BmRotaryMatrix> rotvec;
-  if (argc == 5) {
+  if (argc == 6) {
     /* read rotary matrix (GCRS to ITRS) from input file */
     rotvec = parse_rotary(argv[4]);
   }
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* if needed, transform acceleration from ITRF to GCRF */
-    if (argc == 5) {
+    if (argc == 6) {
       const Eigen::Matrix<double,3,3> R = rot->R.transpose();
       assert(rot->epoch == in.epoch);
       a = R * a;
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
     }
     
     ++acc;
-    if (argc == 5) ++rot;
+    if (argc == 6) ++rot;
   }
 
   return 0;
