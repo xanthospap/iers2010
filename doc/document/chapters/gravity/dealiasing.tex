@@ -1,0 +1,32 @@
+\section{Non-Tidal Mass Variations and Dealiasing}\label{sec:non-tidal_mass_variations_and_dealiasing}
+
+Non-tidal temporal variations in the Earth's gravity field can be modelled using the 
+well known \gls{aod1b} products (\cite{aod1b07}). These provide a priori information 
+about such variations induced by non-tidal circulation processes in atmosphere 
+and ocean, computed using \gls{grace} and \gls{gracefo} data. Various releases 
+of such products exist (marked as \emph{RLXX} with \emph{XX}=1,2,\dots ,6,7) and 
+made available by GFZ (see \url{https://isdc.gfz-potsdam.de/esmdata/aod1b/}). 
+
+Non-tidal \gls{aod1b} files, contain (normalized) Stokes coefficients (i.e. 
+$\bar{C}_{nm}$ and $\bar{S}_{nm}$ for spherical harmonic expansion) 
+of the anomalous external gravity field of the Earth caused by the mass variability 
+predicted from numerical models. Four different coefficients sets are available, 
+i.e. 
+
+\begin{displayquote}
+the effect of the atmosphere (ATM) that includes the contribution of atmospheric surface 
+pressure over the continents; the static contribution of atmospheric pressure to ocean bottom 
+pressure elsewhere; and the much weaker contribution of upper-air density anomalies 
+above both continents and oceans. Further, the dynamic ocean contribution to ocean 
+bottom pressure (OCN) is provided, and the sum of ATM and OCN are given as the so-called 
+GLO coefficients, which are typically applied as a background model in precise
+orbit determination. For particular oceanographic applications, a fourth set of 
+coefficients OBA is additionally included, which is zero over the continents and 
+provides the simulated ocean bottom pressure that includes air and water 
+contributions elsewhere. Thus, OBA deviates from GLO over the ocean domain only 
+by disregarding the small contribution of upper-air density anomalies to 
+the external gravity field.
+\end{displayquote} \cite{Dobslaw2017}
+
+The temporal resolution is (currently) 3 hours and the max degree/order of the 
+coefficients is 180.
