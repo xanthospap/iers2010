@@ -19,7 +19,7 @@ int dso::AtmosphericTides::stokes_coeffs(
   /* iterate through individual constituents */
   for (const auto &wave: mwaves) {
     /* compute angle: θ(f) = Σ(i=1,6) n(i)*β(i) */
-    const double arg = wave.mdentry._d.argument(f) + wave.mdentry._d.pifactor();
+    const double arg = wave.mdentry._d.argument(f) + wave.mdentry._d.pifactor() * dso::DPI;
     const double carg = std::cos(arg);
     const double sarg = std::sin(arg);
     mcs.Cnm() += wave.mCosCs.Cnm() * carg + wave.mSinCs.Cnm() * sarg;

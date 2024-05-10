@@ -133,6 +133,47 @@ std::vector<costg::BmRotaryMatrix> costg::parse_rotary(const char *fn) {
   return vec;
 }
 
+std::vector<costg::BmEops> costg::parse_eops(const char *fn) {
+  std::ifstream fin(fn);
+  if (!fin.is_open()) {
+    fprintf(stderr, "ERROR Failed opening file %s\n", fn);
+    throw std::runtime_error("Failed opening input file " + std::string(fn) +
+                             "\n");
+  }
+
+  char line[1024];
+  for (int i = 0; i < 6; i++)
+    fin.getline(line, 1024);
+  std::vector<costg::BmEops> vec;
+
+  int error = 0;
+  while (fin.getline(line, 1024) && (!error)) {
+    double td[10];
+    int sz = std::strlen(line);
+    const char *str = line;
+    for (int i = 0; i < 9; i++) {
+      auto res = std::from_chars(skipws(str), line + sz, td[i]);
+      if (res.ec != std::errc{})
+        ++error;
+      str = res.ptr;
+    }
+    if (!error) {
+      int imjd = (int)td[0];
+      double fsec = (td[0] - imjd) * 86400e0;
+      const dso::MjdEpoch t(imjd, dso::FractionalSeconds{fsec});
+      vec.emplace_back(t, &td[1]);
+    }
+  }
+
+  if (error || (!fin.eof())) {
+    fprintf(stderr, "ERROR Failed parsing input file %s\n", fn);
+    throw std::runtime_error("Failed parsing input file " + std::string(fn) +
+                             "\n");
+  }
+
+  return vec;
+}
+
 const char *basename(const char *fn) {
   const char *last_split = fn;
   const char *c = fn;

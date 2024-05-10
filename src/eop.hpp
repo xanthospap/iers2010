@@ -13,6 +13,22 @@
 
 namespace dso {
 
+/** Struct to represent secular pole coordinates in [milliarcseconds]. */
+struct secularPole { double xs, ys; }; /* secularPole */
+
+/** @brief Coordinates of secular pole designated (xs, ys) in 
+ *         [milliarcsec].
+ *
+ * This function uses the approach outlined in IERS 2010 (2018 update), Ch. 
+ * 7.1.4 "Rotational deformation due to polar motion: Secular polar motion and 
+ * the pole tide".
+ */
+inline secularPole secular_pole(const MjdEpoch &tt) noexcept {
+  constexpr const auto j2000 = MjdEpoch::j2000_mjd();
+  const double dt = tt.diff<DateTimeDifferenceType::FractionalYears>(j2000);
+  return secularPole{55e0+1.677e0*dt, 320e0+3.460e0*dt};
+}
+
 /** Compute ocean tide effect on polar motion, UT1 and LOD.
  *
  * Variations in polar motion are tidal variations in Earth orientation, 

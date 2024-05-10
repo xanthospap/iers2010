@@ -9,6 +9,7 @@
 
 constexpr const int DEGREE = 180;
 constexpr const int ORDER = 180;
+constexpr const int formatD3Plot = 1;
 
 using namespace costg;
 
@@ -59,6 +60,13 @@ int main(int argc, char *argv[]) {
             argv[2]);
     return 1;
   }
+  
+  /* spit out a title for plotting */
+  if (formatD3Plot) {
+    printf("mjd,sec,refval,val,component\n");
+  } else {
+    printf("#title Atmospheric Loading - S1 (data: %s)\n", basename(argv[2]));
+  }
 
   /* compare results epoch by epoch */
   double fargs[5];
@@ -82,10 +90,10 @@ int main(int argc, char *argv[]) {
     atm.stokes_coeffs(t, t.tt2ut1(dut1_approx), fargs);
 
     /* for the test, degree one coefficients are not taken into account */
-    atm.stokes.C(0, 0) = atm.stokes.C(1, 0) = atm.stokes.C(1, 1) = 0e0;
-    atm.stokes.S(1, 1) = 0e0;
+    atm.stokes_coeffs().C(0, 0) = atm.stokes_coeffs().C(1, 0) = atm.stokes_coeffs().C(1, 1) = 0e0;
+    atm.stokes_coeffs().S(1, 1) = 0e0;
 
-    /* compute acceleration for given epoch/position */
+    /* compute acceleration for given epoch/position (ITRF) */
     if (dso::sh2gradient_cunningham(atm.stokes_coeffs(), in.xyz, a, g, DEGREE,
                                     ORDER, -1, -1, &W, &M)) {
       fprintf(stderr, "ERROR Failed computing acceleration/gradient\n");
@@ -102,9 +110,20 @@ int main(int argc, char *argv[]) {
       fprintf(stderr, "ERROR Failed to match epochs in input files\n");
       return 1;
     }
-    printf("%d %.9f %.15e %.15e %.15e %.15e %.15e %.15e\n", in.epoch.imjd(),
-           in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
-           a(1), a(2));
+    
+    if (formatD3Plot) {
+      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(0), a(0));
+      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(1), a(1));
+      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(), in.epoch.seconds(),
+             acc->axyz(2), a(2));
+    } else {
+      printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n", in.epoch.imjd(),
+             in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
+             a(1), a(2));
+    }
+    
     ++acc;
     ++rot;
   }

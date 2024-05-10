@@ -37,15 +37,25 @@ struct BmRotaryMatrix {
   }
 };
 
-const char *skipws(const char *line) noexcept;
+struct BmEops {
+  dso::MjdEpoch epoch;
+  double xp, yp, sp, dUT1, LOD, X, Y, s;
+  BmEops(const dso::MjdEpoch &t, const double *data)
+      : epoch(t), xp(data[0]), yp(data[1]), sp(data[2]), dUT1(data[3]),
+        LOD(data[4]), X(data[5]), Y(data[6]), s(data[7]){};
+};
 
-std::vector<BmAcceleration> parse_acceleration(const char *fn);
+  const char *skipws(const char *line) noexcept;
 
-std::vector<BmOrbit> parse_orbit(const char *fn);
+  std::vector<BmAcceleration> parse_acceleration(const char *fn);
 
-std::vector<BmRotaryMatrix> parse_rotary(const char *fn);
+  std::vector<BmOrbit> parse_orbit(const char *fn);
 
-const char *basename(const char *fn);
+  std::vector<BmRotaryMatrix> parse_rotary(const char *fn);
+
+  std::vector<BmEops> parse_eops(const char *fn);
+
+  const char *basename(const char *fn);
 
 } /* namespace costg */
 

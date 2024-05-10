@@ -39,6 +39,7 @@ public:
                     const double *const delaunay_args) noexcept;
 
   const StokesCoeffs &stokes_coeffs() const noexcept { return mcs; }
+  StokesCoeffs &stokes_coeffs() noexcept { return mcs; }
 }; /* AtmosphericTides */
 
 } /* namespace dso */

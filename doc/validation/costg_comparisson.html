@@ -169,6 +169,26 @@ $> costg-benchmark/bin/check-04solidEarthTide-icrf.out \
   $COSTG_DIR/satellite/01earthRotation_rotaryMatrix.txt > doc/validation/04solidEarthTide_icrf.csv
 </pre></code></p>
 
+<h3>Solid Earth Pole Tide</h3>
+
+<br><br><br>
+<div>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X'  , 'dv05poleTide');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y'  , 'dv05poleTide');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z'  , 'dv05poleTide');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv05poleTide');"> All<br>
+</div>
+<!-- Create a div where the graph will take place -->
+<div id="dv05poleTide"></div>
+<p>To reproduce the plot, you can use:
+<pre><code>
+$> costg-benchmark/bin/check-05poleTide-icrf.out \
+  $COSTG_DIR/satellite/00orbit_itrf.txt \
+  $COSTG_DIR/satellite/01earthRotation_rotaryMatrix.txt \
+  $COSTG_DIR/satellite/01earthRotation_interpolatedEOP.txt \
+  $COSTG_DIR/satellite/05poleTide_icrf.txt > doc/validation/05poleTide_icrf.csv 
+</pre></code></p>
+
 <h3>Relativistic Corrections</h3>
 
 <br><br><br>
@@ -207,6 +227,27 @@ $> costg-benchmark/bin/check-08aod1b-RL06-icrf.out \
   $COSTG_DIR/models/AOD1B_2008-07-03_X_06.asc \
   $COSTG_DIR/satellite/08aod1b_RL06_icrf.txt \
   $COSTG_DIR/satellite/01earthRotation_rotaryMatrix.txt > doc/validation/08aod1b_RL06_icrf.csv
+</pre></code></p>
+
+<h3>De-Aliasing AOD1B</h3>
+
+<br><br><br>
+<div>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X'  , 'dv09AtmLoadingS1');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y'  , 'dv09AtmLoadingS1');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z'  , 'dv09AtmLoadingS1');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv09AtmLoadingS1');"> All<br>
+</div>
+<!-- Create a div where the graph will take place -->
+<div id="dv09AtmLoadingS1"></div>
+<p>To reproduce the plot, you can use:
+<pre><code>
+$> costg-benchmark/bin/check-09aod1b-atmosphericTides-S1-icrf.out \
+  $COSTG_DIR/satellite/00orbit_itrf.txt \
+  $COSTG_DIR/models/AOD1B_tides/AOD1B_ATM_S1_06.asc \
+  $COSTG_DIR/satellite/01earthRotation_rotaryMatrix.txt \
+  $COSTG_DIR/models/eopc04_14_IAU2000.62-now \
+  $COSTG_DIR/satellite/09aod1b_atmosphericTides_S1_icrf.txt > doc/validation/09aod1b_atmosphericTides_S1_icrf.csv
 </pre></code></p>
 
 <h2>Bibliography</h2>
@@ -259,6 +300,13 @@ var svg04SolidEarthTide = d3.select("#dv04SolidEarthTide")
   .append("g")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
+var svg05poleTide = d3.select("#dv05poleTide")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
 var svg07Relativistic = d3.select("#dv07Relativistic")
   .append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -267,6 +315,13 @@ var svg07Relativistic = d3.select("#dv07Relativistic")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 var svg08DeAliasing = d3.select("#dv08DeAliasing")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+var svg09AtmLoadingS1 = d3.select("#dv09AtmLoadingS1")
   .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -371,7 +426,9 @@ plot("/02gravityfield_icrf.csv", svg02icrf, "Earth's Gravity field (EIGEN-6C4) i
 plot("/03directTideMoon_icrf.csv", svg03directTideMoon, "Third Body Acceleration - Moon ICRF");
 plot("/03directTideSun_icrf.csv", svg03directTideSun, "Third Body Acceleration - Sun ICRF");
 plot("/04solidEarthTide_icrf.csv", svg04SolidEarthTide, "Solid Earth Tide ICRF");
+plot("/05poleTide_icrf.csv", svg05poleTide, "(Solid Earth) Pole Tide ICRF");
 plot("/07relativistic_icrf.csv", svg07Relativistic, "Relativistic Correction ICRF");
 plot("/08aod1b_RL06_icrf.csv", svg08DeAliasing, "DeAliasing via AOD1B ICRF");
+plot("/09aod1b_atmosphericTides_S1_icrf.csv", svg09AtmLoadingS1, "Atmospheric Loading dut to S1 - AOD1B ICRF");
 
 </script>

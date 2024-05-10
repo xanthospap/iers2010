@@ -43,10 +43,18 @@ int dso::AtmosphericTides::append_wave(const char *aod1b_fn, int max_degree,
   }
 
   /* do we need to re-size the instance's stokes coeffs size? */
-  if (mdeg_collected > mcs.max_degree() || mord_collected > mcs.max_order())
+  if (mdeg_collected > mcs.max_degree() || mord_collected > mcs.max_order()) {
     mcs.cresize(mdeg_collected, mord_collected);
-  if (mdeg_collected > mcs.max_degree() || mord_collected > mcs.max_order())
+  }
+  if (mdeg_collected > mcs.max_degree() || mord_collected > mcs.max_order()) {
     mcs.cresize(mdeg_collected, mord_collected);
+  }
+
+  //int sz = mwaves.size();
+  //printf("Collected wave: %s with factor: %.1f, d/o: %d/%d\n",
+  //       mwaves[sz - 1].mdentry._n, mwaves[sz - 1].mdentry._d.pifactor(),
+  //       mwaves[sz - 1].mCosCs.max_degree(),
+  //       mwaves[sz - 1].mCosCs.max_order());
 
   return 0;
 }
