@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
   if (argc != 7) {
     fprintf(
         stderr,
-        "Usage: %s [00orbit_icrf.txt] [04solidEarthTide_icrf.txt] [de421.bsp] [naif*.tls] [eopc04.1962-now] [01earthRotation_rotaryMatrix.txt]\n",
+        "Usage: %s [00orbit_itrf.txt] [04solidEarthTide_icrf.txt] [de421.bsp] [naif*.tls] [eopc04.1962-now] [01earthRotation_rotaryMatrix.txt]\n",
         argv[0]);
     return 1;
   }
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
     /* GCRF to ITRF */
     rsun = R * rsun;
     rmon = R * rmon;
-    rsat = R * in.xyz;
+    rsat = in.xyz;
     
     /* compute gmst using an approximate value for UT1 (linear interpolation) */
     double dut1_approx;
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
     /* compute solid earth tide geopotential variations */
     setide.stokes_coeffs(t, t.tt2ut1(dut1_approx), rmon, rsun, fargs);
 
-    /* compute acceleration for given epoch/position */
+    /* compute acceleration for given epoch/position (ITRF) */
     dso::sh2gradient_cunningham(setide.stokes_coeffs(), rsat, a, g, -1, -1, -1,
                                 -1, &W, &M);
 

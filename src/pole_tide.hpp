@@ -91,22 +91,24 @@ public:
     return 0;
   }
 
-  int parse_desai02_coeffs(
-      const char *fn, int max_degree, int max_order,
-      CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &A_real,
-      CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &A_imag,
-      CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &B_real,
-      CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &B_imag) noexcept;
-  int parse_desai02_coeffs(
-      const char *fn,
-      CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &A_real,
-      CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &A_imag,
-      CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &B_real,
-      CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &B_imag) noexcept 
-      {
-    return parse_desai02_coeffs(fn, MAX_DEGREE_DESAI_2002, MAX_ORDER_DESAI_2002,
-                                A_real, A_imag, B_real, B_imag);
-      }
+  //int stokes_coeffs();
+
+  //int parse_desai02_coeffs(
+  //    const char *fn, int max_degree, int max_order,
+  //    CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &A_real,
+  //    CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &A_imag,
+  //    CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &B_real,
+  //    CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &B_imag) noexcept;
+  //int parse_desai02_coeffs(
+  //    const char *fn,
+  //    CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &A_real,
+  //    CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &A_imag,
+  //    CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &B_real,
+  //    CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> &B_imag) noexcept 
+  //    {
+  //  return parse_desai02_coeffs(fn, MAX_DEGREE_DESAI_2002, MAX_ORDER_DESAI_2002,
+  //                              A_real, A_imag, B_real, B_imag);
+  //    }
 }; /* class oceanPoleTide */
 
 }/* namespace dso */

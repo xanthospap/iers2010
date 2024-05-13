@@ -45,6 +45,12 @@ int dso::SolidEarthTide::stokes_coeffs(
   mcs.S(4, 4) = dS[11];
 
 
+  mcs.clear();
+  mcs.C(2, 0) = dC20;
+  mcs.C(2, 1) = dC21;
+  mcs.C(2, 2) = dC22;
+  mcs.S(2, 1) = dS21;
+  mcs.S(2, 2) = dS22;
   //printf("C(2,0)=%+.15f C(2,1)=%+.15f C(2,2)=%+.15f\n", mcs.C(2,0), mcs.C(2,1), mcs.C(2,2));
   //printf("C(3,0)=%+.15f C(3,1)=%+.15f C(3,2)=%+.15f C(3,3)=%+.15f\n", mcs.C(3,0), mcs.C(3,1), mcs.C(3,2), mcs.C(3,3));
   //printf("C(4,0)=%+.15f C(4,1)=%+.15f C(4,2)=%+.15f C(4,3)=%+.15f C(4,4)=%+.15f\n", mcs.C(4,0), mcs.C(4,1), mcs.C(4,2), mcs.C(4,3), mcs.C(4,4));
