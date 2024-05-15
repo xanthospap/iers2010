@@ -15,6 +15,9 @@ MathJax.Hub.Config({
 });
 </script>
 
+ <!-- Bootstrap CSS -->
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
 <h2>Validating Against COST-G Benchmark Test</h2>
 
 <p>Most of the conservative forces acting on an Earth-orbiting satellite (and hence
@@ -169,6 +172,18 @@ $> costg-benchmark/bin/check-04solidEarthTide-icrf.out \
   $COSTG_DIR/satellite/01earthRotation_rotaryMatrix.txt > doc/validation/04solidEarthTide_icrf.csv
 </pre></code></p>
 
+<div class="alert alert-warning" role="alert">
+  <p>It seems that acceleration differences are primarily induced by discrepancies between 
+  <em>Step-2</em> geopotential coefficients (mainly \(\Delta C(2,1)\) and \(\Delta S(2,1)\)). 
+  As far as i can tell, the reason for this is differences in <em>GMST</em> needed 
+  to compute the tidal argument (using the <em>Doodson</em> formulation \(\theta (t) = \sum_{1}^{6} \beta _i n_i\)).
+  Within this library, we use the IAU 2006/2000A model involving both <em>TT</em> and 
+  <em>UT1</em> (see <a hfref="#iers2010">Petit and Luzum, 2010</a>, Ch. 5.5.7).</p>
+
+  <p>Note that if we consider only <em>Step-1</em> corrections, the acceleration discrepancies 
+  are in the order of \(6e-14\).</p>
+</div>
+
 <h3>Solid Earth Pole Tide</h3>
 
 <br><br><br>
@@ -256,6 +271,7 @@ $> costg-benchmark/bin/check-09aod1b-atmosphericTides-S1-icrf.out \
     <li id="Lasser2020">Lasser, M., Meyer, U., Jäggi, A., Mayer-Gürr, T., Kvas, A., Neumayer, K. H., Dahle, C., Flechtner, F., Lemoine, J.-M., Koch, I., Weigelt, M., and Flury, J.: Benchmark data for verifying background model implementations in orbit and gravity field determination software, Adv. Geosci., 55, 1–11, https://doi.org/10.5194/adgeo-55-1-2020, 2020.</li>
     <li id="Forste2014">Förste, C., Bruinsma, S. L., Abrikosov, O., Lemoine, J.-M., Marty, J. C., Flechtner, F., Balmino, G., Barthelmes, F., and Biancale, R.: EIGEN-6C4 The latest combined global gravity field model including GOCE data up to degree and order 2190 of GFZ Potsdam and GRGS Toulouse, GFZ Data Services, https://doi.org/10.5880/icgem.2015.1, 2014</li>
     <li id="Folkner2009">Folkner, W. M., Williams, J. G., and Boggs, D. H.: The Planetary and Lunar Ephemeris DE 421. The Interplanetary Network Progress Report, Volume 42-178, 1–34, available at: https://ipnpr.jpl.nasa.gov/progress_report/42-178/178C.pdf (last access: 1 December 2020), 2009</li>
+    <li id="iers2010">Petit, G. and Luzum, B.: IERS Conventions (2010), IERS Technical Note No. 36, Verlag des Bundesamts für Kartographie und Geodäsie, Frankfurt am Main, Germany, 2010</li>
   </ul>
 </p>
 <script>

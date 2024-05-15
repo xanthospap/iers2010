@@ -58,7 +58,6 @@ public:
     const double m2 = m12.m2; /* m2 in [arcsec] */
     dC21 = -1.333e-9 * (m1 + 0.0115e0 * m2);
     dS21 = -1.333e-9 * (m2 - 0.0115e0 * m1);
-    //printf("m1=%.15f m2=%.15f c21=%.15f s21=%.15f\n", m1, m2, dC21, dS21);
     return 0;
   }
 }; /* class poleTide */
