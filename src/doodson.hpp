@@ -98,6 +98,7 @@ public:
   }
 
   /* @brief Transform to a Doodson-number string as: "%1d%2d%2d.%2d%2d%2d"
+   * 
    * @param[out] buf A char buffer of size at least 13 where the instance
    *            will be written to.
    * @param[in] use_5s_convention Add +5 to all integers after the first
@@ -179,6 +180,17 @@ public:
   }
 
 }; /* DoodsonConstituent */
+
+/** @brief Resolve a string of type: '272.556' to a Doodson number/wave.
+ *
+ * This is how waves are usually denoted in the IERS 2010 standards, using 
+ * the Doodson convention.
+ * The input string does not have to be null-terminated. Only the first 
+ * 7 characters will be considered, AFTER ommiting any leading whitespace 
+ * characters. Hence, the string can start with any number of whitespaces 
+ * wchich will be skipped.
+ */
+DoodsonConstituent resolve_iers10_doodson_string(const char*);
 
 /* @brief Fundamental (Delaunay) arguments to Doodson variables.
  * All angles are in [rad] in the range [0,2π)
