@@ -53,6 +53,7 @@ public:
   static constexpr const bool isRowMajor = true;
   static constexpr const bool isColMajor = false;
   static constexpr const bool isRectangular = true;
+  static constexpr const bool isTriangular  = true;
 
   /** Constructor; not interested in number of cols */
   constexpr StorageImplementation(int r, [[maybe_unused]] int c) noexcept
@@ -95,11 +96,11 @@ public:
    *
    * Return the offset from the begining of the data array, given a row
    * number. First row is row 0 (NOT row 1).
-   * The input parameter \p num_elements will be set to the nu,ber of elements 
+   * The input parameter \p num_elements will be set to the number of elements 
    * stored in the row requested.
    */
   constexpr int slice(int row, int &num_elements) const noexcept {
-    num_elements = ncols() - row;
+    num_elements = row + 1;
     return slice(row); 
   }
 
@@ -113,6 +114,10 @@ public:
   constexpr int index(int row, int column) const noexcept {
     return slice(row) + column;
   }
+  
+  static constexpr int first_row_of_col([[maybe_unused]]int col) noexcept {return col;}
+  static constexpr int first_col_of_row([[maybe_unused]]int row) noexcept {return 0;}
+
 }; /* StorageImplementation<MatrixStorageType::LwTriangularRowWise> */
 
 /** @brief Implementation details for a 2-d lower triangular matrix, holding
@@ -134,6 +139,7 @@ public:
   static constexpr const bool isRowMajor = false;
   static constexpr const bool isColMajor = true;
   static constexpr const bool isRectangular = true;
+  static constexpr const bool isTriangular  = true;
 
   /** Constructor; not interested in number of cols */
   constexpr StorageImplementation(int r, [[maybe_unused]] int c) noexcept
@@ -192,6 +198,9 @@ public:
   constexpr int index(int row, int col) const noexcept {
     return slice(col) + (row - col);
   }
+  
+  static constexpr int first_row_of_col([[maybe_unused]]int col) noexcept {return col;}
+  static constexpr int first_col_of_row([[maybe_unused]]int row) noexcept {return 0;}
 }; /* StorageImplementation<MatrixStorageType::LwTriangularColWise> */
 
 /** @brief Implementation details for a 2-d trapezoid matrix, holding data in
@@ -213,6 +222,7 @@ public:
   static constexpr const bool isRowMajor = true;
   static constexpr const bool isColMajor = false;
   static constexpr const bool isRectangular = false;
+  static constexpr const bool isTriangular  = true;
   
   /** Constructor given number of rows and num of columns */
   constexpr StorageImplementation(int r, int c) noexcept : rows(r), cols(c){};
@@ -278,6 +288,9 @@ public:
   constexpr int index(int row, int column) const noexcept {
     return (column <= rows) ? (slice(row) + column) : (slice(column) + row);
   }
+  
+  static constexpr int first_row_of_col([[maybe_unused]]int col) noexcept {return col;}
+  static constexpr int first_col_of_row([[maybe_unused]]int row) noexcept {return 0;}
 
 }; /* StorageImplementation<MatrixStorageType::Trapezoid> */
 
@@ -298,6 +311,7 @@ public:
   static constexpr const bool isRowMajor = true;
   static constexpr const bool isColMajor = false;
   static constexpr const bool isRectangular = false;
+  static constexpr const bool isTriangular  = false;
 
   /** Constructor given number of rows and number of columns */
   constexpr StorageImplementation(int r, int c) noexcept : rows(r), cols(c){};
@@ -344,6 +358,9 @@ public:
   
   /** @brief Number of slices, i.e. number of rows */
   constexpr int num_slices() const noexcept { return rows; }
+  
+  static constexpr int first_row_of_col([[maybe_unused]]int col) noexcept {return 0;}
+  static constexpr int first_col_of_row([[maybe_unused]]int row) noexcept {return 0;}
 }; /* StorageImplementation<MatrixStorageType::RowWise> */
 
 /** @brief Implementation details for a 2-d dense matrix, holding data in
@@ -363,6 +380,7 @@ public:
   static constexpr const bool isRowMajor = false;
   static constexpr const bool isColMajor = true;
   static constexpr const bool isRectangular = false;
+  static constexpr const bool isTriangular  = false;
 
   /** Constructor given number of rows and number of columns */
   constexpr StorageImplementation(int r, int c) noexcept : rows(r), cols(c){};
@@ -409,6 +427,9 @@ public:
   }
 
   constexpr int num_slices() const noexcept { return ncols(); }
+
+  static constexpr int first_row_of_col([[maybe_unused]]int col) noexcept {return 0;}
+  static constexpr int first_col_of_row([[maybe_unused]]int row) noexcept {return 0;}
 
 }; /* StorageImplementation<MatrixStorageType::ColumnWise> */
 

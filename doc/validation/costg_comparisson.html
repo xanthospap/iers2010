@@ -45,6 +45,18 @@ the file <code class="path">00README_simulation.txt</code> is located).
 
 <h3>Earth's Gravity Field</h3>
 
+<!--
+plot("/02gravityfield_itrf.csv", svg02itrf, "Earth's Gravity field (EIGEN-6C4) in ITRF");
+plot("/02gravityfield_icrf.csv", svg02icrf, "Earth's Gravity field (EIGEN-6C4) in ICRF");
+plot("/03directTideMoon_icrf.csv", svg03directTideMoon, "Third Body Acceleration - Moon ICRF");
+plot("/03directTideSun_icrf.csv", svg03directTideSun, "Third Body Acceleration - Sun ICRF");
+plot("/04solidEarthTide_icrf.csv", svg04SolidEarthTide, "Solid Earth Tide ICRF");
+plot("/05poleTide_icrf.csv", svg05poleTide, "(Solid Earth) Pole Tide ICRF");
+plot("/07relativistic_icrf.csv", svg07Relativistic, "Relativistic Correction ICRF");
+plot("/08aod1b_RL06_icrf.csv", svg08DeAliasing, "DeAliasing via AOD1B ICRF");
+plot("/09aod1b_atmosphericTides_S1_icrf.csv", svg09AtmLoadingS1, "Atmospheric Loading dut to S1 - AOD1B ICRF");
+-->
+
 <p>The model <em>EIGEN-6C4</em> (<a hfref="#Forste2014">Förste et al, 2014</a>) is used 
 in the benchmark test to extract coefficients for the Earth's gravity potential 
 and compute gravity-induced acceleration. Results (i.e. cartesian acceleration 
@@ -61,13 +73,30 @@ Once the csv file is created, reload the page!.
 </p>
 
 <!-- Radio button: one item selected only -->
-<br><br><br>
-<div>
-  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X', 'dv02gravityitrf');"> X<br>
-  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y', 'dv02gravityitrf');"> Y<br>
-  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z', 'dv02gravityitrf');"> Z<br>
-  <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv02gravityitrf');"> All<br>
+<br>
+Component: <div class="btn-group btn-group-toggle" data-toggle="buttons">
+  <label class="btn btn-secondary active">
+    <input type="radio" name="acccmp" value="daccx" onclick="highlight('X', 'dv02gravityitrf');"> X
+  </label>
+  <label class="btn btn-secondary active">
+    <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y', 'dv02gravityitrf');"> Y
+  </label>
+  <label class="btn btn-secondary active">
+    <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z', 'dv02gravityitrf');"> Z
+  </label>
+  <label class="btn btn-secondary active">
+    <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv02gravityitrf');"> All
+  </label>
 </div>
+Plot: <div class="btn-group btn-group-toggle" data-toggle="buttons">
+  <label class="btn btn-secondary active">
+    <input type="radio" name="acccmp" value="daccx" onclick="plot('/02gravityfield_itrf.csv', 'dv02gravityitrf', 'Earth\'s Gravity field (EIGEN-6C4) in ITRF', 1e0);"> Diffs
+  </label>
+  <label class="btn btn-secondary active">
+    <input type="radio" name="acccmp" value="daccy" onclick="plot('/02gravityfield_itrf.csv', 'dv02gravityitrf', 'Earth\'s Gravity field (EIGEN-6C4) in ITRF', 0e0);"> Values
+  </label>
+</div>
+
 <!-- Create a div where the graph will take place -->
 <div id="dv02gravityitrf"></div>
 
@@ -352,9 +381,13 @@ var color = d3.scaleOrdinal()
 
 var scale = 1e+10;
 
-//Read the data
-function plot(csvfn, svgnm, title) {
+// Read the data
+function plot(csvfn, svgnm, title, fac=1e0) {
 d3.csv(csvfn).then( function(data) {
+  
+  // select the svg
+  //var svgnm = d3.select('#'+svgid);
+  //console.log('Plotting svg:', '#'+svgid);
 
   // add X-axis
   var x = d3.scaleLinear()
@@ -366,7 +399,7 @@ d3.csv(csvfn).then( function(data) {
 
   // Add Y-axis
   var y = d3.scaleLinear()
-    .domain(d3.extent(data, (d) => (scale*(parseFloat(d.refval)-parseFloat(d.val)))))
+    .domain(d3.extent(data, (d) => (scale*(parseFloat(d.refval)-fac*parseFloat(d.val)))))
     .range([height, 0]);
   svgnm.append("g")
     .call(d3.axisLeft(y)
@@ -379,13 +412,13 @@ d3.csv(csvfn).then( function(data) {
     .attr("y", height + margin.top + 20)
     .text("Hours");
 
-// Y axis label:
-svgnm.append("text")
-    .attr("text-anchor", "end")
-    .attr("transform", "rotate(-90)")
-    .attr("y", -margin.left+20)
-    .attr("x", -margin.top)
-    .text("Acceleration in [m/s^2]"+d3.format("1.0e")(1/scale));
+  // Y axis label:
+  svgnm.append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -margin.left+20)
+      .attr("x", -margin.top)
+      .text("Acceleration in [m/s^2]"+d3.format("1.0e")(1/scale));
 
   // add title
   svgnm.append("text")
@@ -404,7 +437,7 @@ svgnm.append("text")
     .append("circle")
       .attr("class", function (d) { return "dot " + d.component} )
       .attr("cx", function (d) { return x(d.sec); } )
-      .attr("cy", function (d) { return y(scale*(parseFloat(d.refval-d.val))); } )
+      .attr("cy", function (d) { return y(scale*(parseFloat(d.refval-fac*d.val))); } )
       .attr("r", .9)
       .style("fill", function (d) { return color(d.component) } )
 
@@ -412,9 +445,10 @@ svgnm.append("text")
 }
 
 function highlight(component, svgid) {
-  // var svgnm = document.getElementById(svgid);
+  // select the svg
   var svgnm = d3.select('#'+svgid);
-  console.log('element id = ' + svgid);
+
+  // are we plotting all components ?
   if (component == "XYZ") {
     ['X', 'Y', 'Z'].forEach((cmp) => {
     svgnm.selectAll("." + cmp)
@@ -426,17 +460,19 @@ function highlight(component, svgid) {
     return;
   }
 
-    svgnm.selectAll(".dot")
-      .transition()
-      .duration(200)
-      .style("fill", "lightgrey")
-      .attr("r", .9)
-    svgnm.selectAll("." + component)
-      .transition()
-      .duration(200)
-      .style("fill", color(component))
-      .attr("r", 2)
+  // else, choose and alter component
+  svgnm.selectAll(".dot")
+    .transition()
+    .duration(200)
+    .style("fill", "lightgrey")
+    .attr("r", .9)
+  svgnm.selectAll("." + component)
+    .transition()
+    .duration(200)
+    .style("fill", color(component))
+    .attr("r", 2)
 }
+
 plot("/02gravityfield_itrf.csv", svg02itrf, "Earth's Gravity field (EIGEN-6C4) in ITRF");
 plot("/02gravityfield_icrf.csv", svg02icrf, "Earth's Gravity field (EIGEN-6C4) in ICRF");
 plot("/03directTideMoon_icrf.csv", svg03directTideMoon, "Third Body Acceleration - Moon ICRF");
@@ -445,6 +481,15 @@ plot("/04solidEarthTide_icrf.csv", svg04SolidEarthTide, "Solid Earth Tide ICRF")
 plot("/05poleTide_icrf.csv", svg05poleTide, "(Solid Earth) Pole Tide ICRF");
 plot("/07relativistic_icrf.csv", svg07Relativistic, "Relativistic Correction ICRF");
 plot("/08aod1b_RL06_icrf.csv", svg08DeAliasing, "DeAliasing via AOD1B ICRF");
-plot("/09aod1b_atmosphericTides_S1_icrf.csv", svg09AtmLoadingS1, "Atmospheric Loading dut to S1 - AOD1B ICRF");
+plot("/09aod1b_atmosphericTides_S1_icrf.csv", svg09AtmLoadingS1, "Atmospheric Loading due to S1 - AOD1B ICRF");
+//plot("/02gravityfield_itrf.csv", "dv02gravityitrf", "Earth's Gravity field (EIGEN-6C4) in ITRF");
+//plot("/02gravityfield_icrf.csv", "dv03directTideMoon", "Earth's Gravity field (EIGEN-6C4) in ICRF");
+//plot("/03directTideMoon_icrf.csv", "dv03directTideMoon", "Third Body Acceleration - Moon ICRF");
+//plot("/03directTideSun_icrf.csv", "dv03directTideSun", "Third Body Acceleration - Sun ICRF");
+//plot("/04solidEarthTide_icrf.csv", "dv04SolidEarthTide", "Solid Earth Tide ICRF");
+//plot("/05poleTide_icrf.csv", "dv05poleTide", "(Solid Earth) Pole Tide ICRF");
+//plot("/07relativistic_icrf.csv", "dv07Relativistic", "Relativistic Correction ICRF");
+//plot("/08aod1b_RL06_icrf.csv", "dv08DeAliasing", "DeAliasing via AOD1B ICRF");
+//plot("/09aod1b_atmosphericTides_S1_icrf.csv", "dv09AtmLoadingS1", "Atmospheric Loading dut to S1 - AOD1B ICRF");
 
 </script>

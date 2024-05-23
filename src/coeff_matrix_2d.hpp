@@ -13,6 +13,19 @@
 #ifdef DEBUG
 #include <cstdio>
 #endif
+  
+namespace {
+inline double &op_equal(double &lhs, double rhs) noexcept {return lhs = rhs;}
+inline double &op_eqadd(double &lhs, double rhs) noexcept {return lhs += rhs;}
+enum class ReductionAssignmentOperator { Equal, EqAdd };
+template <ReductionAssignmentOperator Op>
+inline double &op(double &lhs, double rhs) noexcept {
+  if constexpr (Op == ReductionAssignmentOperator::Equal)
+    return op_equal(lhs, rhs);
+  else
+    return op_eqadd(lhs, rhs);
+}
+}
 
 namespace dso {
 
@@ -25,6 +38,7 @@ private:
   StorageImplementation<S> m_storage; /** storage type; dictates indexing */
   double *m_data{nullptr};            /** the actual data */
   std::size_t _capacity{0}; /** number of doubles in allocated memory arena */
+  static constexpr const int hasContiguousMem = true;
 
   /** Access an element from the underlying data; use with care IF needed */
   double data(int i) const noexcept { return m_data[i]; }
@@ -55,8 +69,88 @@ private:
     return m_data + m_storage.slice(i, num_elements); 
   }
 
+  template <ReductionAssignmentOperator Op, typename T>
+  void reduce_copy(const T &rhs) noexcept {
+    /* copy data from rhs to lhs;
+     * number of rows = rhs.rows()
+     * number of columns = rhs.cols()
+     */
+    const int cprows = rhs.rows();
+    const int cpcols = rhs.cols();
+    int num_elements = 0;
+    assert(rows() >= cprows && cols() >= cpcols);
+
+    if constexpr (StorageImplementation<S>::isRowMajor) {
+      for (int i = 0; i < cprows; i++) {
+        double *entries = slice(i, num_elements);
+        for (int j = 0; j < std::min(cpcols, num_elements); j++) {
+          op<Op>(entries[j], rhs(i,j));
+        }
+      }
+    } else {
+      for (int i = 0; i < cpcols; i++) {
+        double *entries = slice(i, num_elements);
+        const int k = StorageImplementation<S>::first_row_of_col(i);
+        for (int j = k; j < cprows; j++) {
+          op<Op>(entries[j-k], rhs(j,i));
+        }
+      }
+    }
+  }
+
 public:
   template <typename T1, typename T2> struct _SumProxy;
+  template <typename T1> struct _ScaledProxy;
+
+  /* T1 can be e.g. a CoeffMatrix2D<...>, _ScaledProxy<...>, _SumProxy<...> */
+  template <typename T1> struct _ReducedViewProxy {
+    const T1 &mat;
+    int reduced_rows;
+    int reduced_cols;
+    static constexpr const int hasContiguousMem = 0;
+
+    int rows() const noexcept { return reduced_rows; }
+    int cols() const noexcept { return reduced_cols; }
+
+    _ReducedViewProxy(const T1 &t1, int rrows, int rcols) noexcept :
+    mat(t1), reduced_rows(rrows), reduced_cols(rcols) 
+    {
+      assert((mat.rows() >= reduced_rows) && (mat.cols() >= reduced_cols));
+    }
+    double operator()(int i, int j) const noexcept { return mat(i, j); }
+
+    template <typename T2>
+    _SumProxy<_ReducedViewProxy, _ReducedViewProxy<T2>>
+    operator+(const _ReducedViewProxy<T2> &s2) const noexcept {
+      assert(this->rows() == s2.rows() && this->cols() == s2.cols());
+      return _SumProxy<_ReducedViewProxy, _ReducedViewProxy<T2>>(*this, s2);
+    }
+    
+    template <typename T2>
+    _SumProxy<_ReducedViewProxy, _ScaledProxy<T2>>
+    operator+(const _ScaledProxy<T2> &s2) const noexcept {
+      assert(this->rows() == s2.rows() && this->cols() == s2.cols());
+      return _SumProxy<_ReducedViewProxy, _ScaledProxy<T2>>(*this, s2);
+    }
+    
+    template <typename T2, typename T3>
+    _SumProxy<_ReducedViewProxy, _SumProxy<T2,T3>>
+    operator+(const _SumProxy<T2,T3> &s2) const noexcept {
+      assert(this->rows() == s2.rows() && this->cols() == s2.cols());
+      return _SumProxy<_ReducedViewProxy, _SumProxy<T2,T3>>(*this, s2);
+    }
+
+    /* e.g. _ReducedViewProxy<> * 2. */
+    _ScaledProxy<_ReducedViewProxy>
+    operator*(double val) const noexcept { return  _ScaledProxy<_ReducedViewProxy>(*this, val); }
+  
+    /* e.g. 2. * _ReducedViewProxy<> */
+   _ScaledProxy<_ReducedViewProxy>
+   friend operator*(double val, const _ReducedViewProxy &t1) noexcept {
+      return t1 * val;
+    }
+  };
+  
 
   /** Expression Template: Structure to hold a scaled CoeffMatrix2D (i.e. the
    * multiplication of some a matrix by a real number.
@@ -64,8 +158,11 @@ public:
   template <typename T1> struct _ScaledProxy {
     const T1 &mat;
     double fac;
+    static constexpr const int hasContiguousMem = T1::hasContiguousMem;
+
     int rows() const noexcept { return mat.rows(); }
     int cols() const noexcept { return mat.cols(); }
+
     _ScaledProxy(const T1 &t1, double d) noexcept : mat(t1), fac(d) 
     {
     };
@@ -81,9 +178,12 @@ public:
   template <typename T1, typename T2> struct _SumProxy {
     const T1 &lhs;
     const T2 &rhs;
+    static constexpr const int hasContiguousMem = T1::hasContiguousMem && T2::hasContiguousMem;
+
     int rows() const noexcept { return lhs.rows(); }
     int cols() const noexcept { return lhs.cols(); }
     double operator()(int i, int j) const noexcept {
+      // printf("\t_SumProxy operator()(%d,%d)=%.2f+%.2f\n", i,j,lhs(i, j), rhs(i, j));
       return rhs(i, j) + lhs(i, j);
     }
     double data(int i) const noexcept { return lhs.data(i) + rhs.data(i); }
@@ -95,6 +195,11 @@ public:
     _SumProxy<_SumProxy<T1, T2>, _ScaledProxy<U>>
     operator+(const _ScaledProxy<U> &scaled) const noexcept {
       return _SumProxy<_SumProxy<T1, T2>, _ScaledProxy<U>>(*this, scaled);
+    }
+    template <typename U>
+    _SumProxy<_SumProxy<T1, T2>, _ReducedViewProxy<U>>
+    operator+(const _ReducedViewProxy<U> &redux) const noexcept {
+      return _SumProxy<_SumProxy<T1, T2>, _ReducedViewProxy<U>>(*this, redux);
     }
     /** Allow for _SumProxy<T1,T2> + CoeffMatrix2D<S> */
     _SumProxy<_SumProxy<T1, T2>, CoeffMatrix2D>
@@ -116,6 +221,11 @@ public:
     this->_capacity = tmp_c;
 
     return;
+  }
+
+  _ReducedViewProxy<CoeffMatrix2D<S>> reduced_view(int rows, int cols) const noexcept {
+    assert(rows<=this->rows() && cols<=this->cols());
+    return _ReducedViewProxy<CoeffMatrix2D<S>>(*this,rows,cols);
   }
 
   /** get number of rows */
@@ -269,10 +379,15 @@ public:
       : m_storage(sum.rows(), sum.cols()),
         m_data(new double[m_storage.num_elements()]),
         _capacity(m_storage.num_elements()) {
-    for (std::size_t i = 0; i < m_storage.num_elements(); i++) {
-      m_data[i] = sum.data(i);
+    if constexpr (T1::hasContiguousMem &&T2::hasContiguousMem) {
+      for (std::size_t i = 0; i < m_storage.num_elements(); i++) {
+        m_data[i] = sum.data(i);
+      }
+    } else {
+      reduce_copy<ReductionAssignmentOperator::Equal>(sum);
     }
   }
+
   template <typename T1>
   CoeffMatrix2D(_ScaledProxy<T1> &&fac) noexcept
       : m_storage(fac.rows(), fac.cols()),
@@ -418,13 +533,17 @@ public:
   }
 
   template <typename T> CoeffMatrix2D &operator+=(const T &rhs) noexcept {
-    assert((this->rows() == rhs.rows()) && (this->cols() == rhs.cols()));
-    for (std::size_t i = 0; i < m_storage.num_elements(); i++) {
-      m_data[i] += rhs.data(i);
+    if constexpr (T::hasContiguousMem) {
+      assert((this->rows() == rhs.rows()) && (this->cols() == rhs.cols()));
+      for (std::size_t i = 0; i < m_storage.num_elements(); i++) {
+        m_data[i] += rhs.data(i);
+      }
+    } else {
+      reduce_copy<ReductionAssignmentOperator::EqAdd>(rhs);
     }
     return *this;
   }
-
+  
 }; /* class CoeffMatrix2D */
 
 template <MatrixStorageType S>

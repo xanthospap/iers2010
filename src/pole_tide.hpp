@@ -50,6 +50,8 @@ public:
    * @param[in] yp Pole Y-coordinates at t in [arcsec]
    * @param[out] dC21 Geopotential coefficient correction for C_21
    * @param[out] dS21 Geopotential coefficient correction for S_21
+   *
+   * TODO i do not know what time-scale t should be in
    */
   static int stokes_coeffs(const MjdEpoch &t, double xp, double yp,
                            double &dC21, double &dS21) noexcept {
