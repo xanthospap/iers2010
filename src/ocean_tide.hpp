@@ -69,9 +69,15 @@ public:
         doodson, iers2010::GMe, iers2010::Re, max_degree, max_order));
   }
 
-  int stokes_coeffs(int max_degree, int max_order, const MjdEpoch &mjdtt,
-                    const MjdEpoch &mjdut1,
+  int stokes_coeffs(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
                     const double *const delaunay_args) noexcept;
+  
+  const StokesCoeffs &stokes_coeffs() const noexcept {return mcs;}
+  StokesCoeffs &stokes_coeffs() noexcept {return mcs;}
+  
+  void resize_stokes_ceoffs(int max_degree, int max_order) noexcept {
+    mcs.resize(max_degree, max_order);
+  }
 
 }; /* OceanTide */
 

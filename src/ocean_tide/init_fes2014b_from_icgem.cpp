@@ -156,5 +156,8 @@ dso::OceanTide dso::initFes2014bFromIcgem(const char *dir,
     throw std::runtime_error("Failed loading FES14b model\n");
   }
 
+  /* allow for computations with this degree/order */
+  fes14b.resize_stokes_ceoffs(max_degree, max_order);
+
   return fes14b;
 }

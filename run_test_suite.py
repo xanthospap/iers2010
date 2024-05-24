@@ -81,18 +81,24 @@ def check_w_precision(fn1, fn2str, cols, precision):
 
 def run_progs_with_args(special_progs_dct):
     for d in special_progs_dct:
+        comment_str = ''
         if not os.path.isfile(os.path.join(d['path'],d['prog'])):
             print('ERROR Failed to find executable {:}@{:}'.format(d['prog'], d['path']), file=sys.stderr)
             sys.exit(1)
         exe = '{:}'.format(os.path.join(d['path'],d['prog'])) 
         cmdargs = ['{:}'.format(x) for x in d['args']]
-        # print('Running command {:}'.format(' '.join([exe]+cmdargs)))
 ## run prrogram and store results in '.tmp.result'
         with open('.tmp.result', 'w') as fout:
-            #result = subprocess.run([exe] + cmdargs, stdout=fout, stderr=subprocess.STDOUT, check=False)
             result = subprocess.run([exe] + cmdargs, stdout=fout, stderr=subprocess.DEVNULL, check=False)
+## if exit is the special keyword 'nzero'
+        if d['exit'] == 'nzero':
+            if result.returncode == 0:
+                print('ERROR Expected exit code other than zero and got {:}; program: {:}'.format(result.returncode, exe), file=sys.stderr)
+                sys.exit(1)
+            else:
+                comment_str += 'Expecting runtime error; successefuly failed'
 ## check exit code
-        if result.returncode != int(d['exit']):
+        elif result.returncode != int(d['exit']):
             print('ERROR Expected exit code {:} and got {:}; program: {:}'.format(d['exit'], result.returncode, exe), file=sys.stderr)
             sys.exit(1)
 ## check result string vs reference result
@@ -107,7 +113,7 @@ def run_progs_with_args(special_progs_dct):
                     sys.exit(1)
                 report(d['prog'], 'OK', '{:}'.join(cmdargs))
         else:
-            report(d['prog'], 'OK', '{:}'.join(cmdargs))
+            report(d['prog'], 'OK', '{:}'.join(cmdargs)+comment_str)
 
 
 class myFormatter(argparse.ArgumentDefaultsHelpFormatter,

@@ -2,13 +2,9 @@
 #include "iau.hpp"
 #include "ocean_tide.hpp"
 
-int dso::OceanTide::stokes_coeffs(int max_degree, int max_order,
-                                  const dso::MjdEpoch &mjdtt,
+int dso::OceanTide::stokes_coeffs(const dso::MjdEpoch &mjdtt,
                                   const dso::MjdEpoch &mjdut1,
                                   const double *const delaunay_args) noexcept {
-  /* check d/o */
-  assert(max_degree >= max_order);
-
   /* nullify geopotential coeffs */
   mcs.clear();
 

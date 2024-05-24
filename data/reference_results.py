@@ -771,5 +771,13 @@ special_progs = [
     {"prog":"planet-state.out", 
      "path": "test/unit_tests",
     "args": ["data/de432s.bsp", "data/latest_leapseconds.tls"], 
-    "exit": 0}
+    "exit": 0},
+    {"prog":"coeff-matrix2d-trirowwise-reduce-runtime-error.out", 
+     "path": "test/unit_tests",
+    "args": [], 
+    "exit": "nzero"},
+    {"prog":"coeff-matrix2d-tricolwise-reduce-runtime-error.out", 
+     "path": "test/unit_tests",
+    "args": [], 
+    "exit": "nzero"}
 ]
