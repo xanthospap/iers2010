@@ -12,18 +12,18 @@ dso::DoodsonConstituent dso::resolve_iers10_doodson_string(const char *cstr) {
     ++str;
 
   ints[0] = *str++ - '0';
-  ints[1] = *str++ - '0';
-  ints[2] = *str++ - '0';
+  ints[1] = (*str++ - '0') - 5;
+  ints[2] = (*str++ - '0') - 5;
   if (*str != '.')
     error = 1;
   
   ++str;
-  ints[3] = *str++ - '0';
-  ints[4] = *str++ - '0';
-  ints[5] = *str++ - '0';
+  ints[3] = (*str++ - '0') - 5;
+  ints[4] = (*str++ - '0') - 5;
+  ints[5] = (*str++ - '0') - 5;
 
   for (int i = 0; i < 6; i++)
-    if (ints[i] < 0 || ints[i] > 9)
+    if (ints[i] < -9 || ints[i] > 9)
       error += 1;
 
   if (error) {

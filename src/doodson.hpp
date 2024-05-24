@@ -105,7 +105,7 @@ public:
    *            place (i.e. write the string as: τ,s+5,h+5,p+5,N'+5,ps+5)
    * @return A pointer to the start of the string, i.e. to buf
    */
-  char *str(char *buf, bool use_5s_convention = false) const noexcept;
+  char *str(char *buf, bool use_5s_convention) const noexcept;
 
   /* @brief Get Doodson multipler/integer at position i */
   int operator()(int i) const noexcept {
@@ -189,6 +189,9 @@ public:
  * 7 characters will be considered, AFTER ommiting any leading whitespace 
  * characters. Hence, the string can start with any number of whitespaces 
  * wchich will be skipped.
+ * Note that IERS 2010 Dooson strings comply with the  '+5' convnention, 
+ * i.e. the actual multipliers are the integers given minus 5 (except for 
+ * the first one).
  */
 DoodsonConstituent resolve_iers10_doodson_string(const char*);
 

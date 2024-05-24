@@ -56,3 +56,10 @@ $CDIR/models/AOD1B_tides/AOD1B_ATM_S1_06.asc \
 $CDIR/satellite/01earthRotation_rotaryMatrix.txt \
 $CDIR/models/eopc04_14_IAU2000.62-now \
 $CDIR/satellite/09aod1b_atmosphericTides_S1_icrf.txt > ${ODIR}/09aod1b_atmosphericTides_S1_icrf.csv
+
+${BDIR}/check-11oceanTide-fes2014b-34major-icrf.out \
+$CDIR/satellite/00orbit_itrf.txt \
+$CDIR/satellite/11oceanTide_fes2014b_34major_icrf.txt \
+$CDIR/satellite/01earthRotation_rotaryMatrix.txt \
+$CDIR/models/eopc04_14_IAU2000.62-now \
+$CDIR/models/FES2014b_oceanTide/fes2014b > ${ODIR}/11oceanTide_fes2014b_34major_icrf.csv

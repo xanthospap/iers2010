@@ -1,5 +1,4 @@
 #include "doodson.hpp"
-// #include <stdexcept>
 #include <cstring>
 
 const dso::detail::TidalConstituentsArrayEntry *dso::get_wave(const char *name) noexcept {

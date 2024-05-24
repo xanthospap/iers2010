@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v6.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_SVG"></script>
@@ -273,7 +277,7 @@ $> costg-benchmark/bin/check-08aod1b-RL06-icrf.out \
   $COSTG_DIR/satellite/01earthRotation_rotaryMatrix.txt > doc/validation/08aod1b_RL06_icrf.csv
 </pre></code></p>
 
-<h3>De-Aliasing AOD1B</h3>
+<h3>Atmospheric Tide</h3>
 
 <br><br><br>
 <div>
@@ -292,6 +296,27 @@ $> costg-benchmark/bin/check-09aod1b-atmosphericTides-S1-icrf.out \
   $COSTG_DIR/satellite/01earthRotation_rotaryMatrix.txt \
   $COSTG_DIR/models/eopc04_14_IAU2000.62-now \
   $COSTG_DIR/satellite/09aod1b_atmosphericTides_S1_icrf.txt > doc/validation/09aod1b_atmosphericTides_S1_icrf.csv
+</pre></code></p>
+
+<h3>Ocean Tide</h3>
+
+<br><br><br>
+<div>
+  <input type="radio" name="acccmp" value="daccx" onclick="highlight('X'  , 'dv11Fes14bMajor');"> X<br>
+  <input type="radio" name="acccmp" value="daccy" onclick="highlight('Y'  , 'dv11Fes14bMajor');"> Y<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('Z'  , 'dv11Fes14bMajor');"> Z<br>
+  <input type="radio" name="acccmp" value="daccz" onclick="highlight('XYZ', 'dv11Fes14bMajor');"> All<br>
+</div>
+<!-- Create a div where the graph will take place -->
+<div id="dv11Fes14bMajor"></div>
+<p>To reproduce the plot, you can use:
+<pre><code>
+$> costg-benchmark/bin/check-11oceanTide-fes2014b-34major-icrf.out \
+  $COSTG_DIR/softwareComparison/satellite/00orbit_itrf.txt \
+  $COSTG_DIR/softwareComparison/satellite/11oceanTide_fes2014b_34major_icrf.txt \
+  $COSTG_DIR/softwareComparison/satellite/01earthRotation_rotaryMatrix.txt \
+  $COSTG_DIR/softwareComparison/models/eopc04_14_IAU2000.62-now \
+  $COSTG_DIR/softwareComparison/models/FES2014b_oceanTide/fes2014b > doc/validation/11oceanTide_fes2014b_34major_icrf.csv
 </pre></code></p>
 
 <h2>Bibliography</h2>
@@ -373,7 +398,14 @@ var svg09AtmLoadingS1 = d3.select("#dv09AtmLoadingS1")
   .append("g")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
-  
+var svg11Fes14bMajor = d3.select("#dv11Fes14bMajor")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
 // Color scale: give me a specie name, I return a color
 var color = d3.scaleOrdinal()
     .domain(["X", "Y", "Z" ])
@@ -482,6 +514,7 @@ plot("/05poleTide_icrf.csv", svg05poleTide, "(Solid Earth) Pole Tide ICRF");
 plot("/07relativistic_icrf.csv", svg07Relativistic, "Relativistic Correction ICRF");
 plot("/08aod1b_RL06_icrf.csv", svg08DeAliasing, "DeAliasing via AOD1B ICRF");
 plot("/09aod1b_atmosphericTides_S1_icrf.csv", svg09AtmLoadingS1, "Atmospheric Loading due to S1 - AOD1B ICRF");
+plot("/11oceanTide_fes2014b_34major_icrf.csv", svg11Fes14bMajor, "Ocean Loading FES2014b (Major Waves)");
 //plot("/02gravityfield_itrf.csv", "dv02gravityitrf", "Earth's Gravity field (EIGEN-6C4) in ITRF");
 //plot("/02gravityfield_icrf.csv", "dv03directTideMoon", "Earth's Gravity field (EIGEN-6C4) in ICRF");
 //plot("/03directTideMoon_icrf.csv", "dv03directTideMoon", "Third Body Acceleration - Moon ICRF");
