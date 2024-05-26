@@ -26,6 +26,14 @@ int dso::OceanTide::stokes_coeffs(const dso::MjdEpoch &mjdtt,
         wave.cos_coeffs().Cnm() * carg + wave.sin_coeffs().Cnm() * sarg;
     mcs.Snm() +=
         wave.cos_coeffs().Snm() * carg + wave.sin_coeffs().Snm() * sarg;
+    //for (int c = 0; c <= 180; c++) {
+    //  for (int r = 0; r <= c; r++) {
+    //    mcs.C(r, c) +=
+    //        wave.cos_coeffs().C(r, c) * carg + wave.sin_coeffs().C(r, c) * sarg;
+    //    mcs.S(r, c) +=
+    //        wave.cos_coeffs().S(r, c) * carg + wave.sin_coeffs().S(r, c) * sarg;
+    //  }
+    //}
   }
 
   return 0;

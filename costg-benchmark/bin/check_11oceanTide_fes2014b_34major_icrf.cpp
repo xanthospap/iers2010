@@ -51,10 +51,11 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  /* create an OceanTide instance using the fes2014b gfc files */ 
-  auto fes14b = dso::initFes2014bFromIcgem(argv[5], "fes2014b_n180_version20170520");
+  /* create an OceanTide instance using the fes2014b gfc files */
+  auto fes14b =
+      dso::initFes2014bFromIcgem(argv[5], "fes2014b_n180_version20170520");
 
-    /* spit out a title for plotting */
+  /* spit out a title for plotting */
   if (formatD3Plot) {
     printf("mjd,sec,refval,val,component\n");
   } else {
@@ -69,7 +70,8 @@ int main(int argc, char *argv[]) {
   auto rot = rotvec.begin();
   for (const auto &in : orbvec) {
     /* GPSTime to TT */
-    const auto t = in.epoch.gps2tai().tai2tt();
+    // const auto t = in.epoch.gps2tai().tai2tt();
+    const auto t = in.epoch;
     // const auto t(dso::from_mjdepoch<dso::nanoseconds>(tt));
 
     /* compute gmst using an approximate value for UT1 (linear interpolation) */

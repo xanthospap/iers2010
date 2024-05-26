@@ -12,6 +12,7 @@ data_files = [
     {"url": "ftp://isdcftp.gfz-potsdam.de/grace/Level-1B/GFZ/AOD/RL06/2023/AOD1B_2023-11-09_X_06.asc.gz", "local": "data/AOD1B_2023-11-09_X_06.asc.gz", "actions":["decompress"]},
     {"url": "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de432s.bsp", "local": "data/de432s.bsp"},
     {"url": "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/latest_leapseconds.tls", "local": "data/latest_leapseconds.tls"},
+    #{"url": "https://ftp.tugraz.at/outgoing/ITSG/groops/data/tides/oceanTide_fes2014b_n180_version20170520.dat", "local": "data/", "actions": ["decompress"]},
 ]
 
 str1 = """Icgem filename: data/EIGEN-6S4v2.gfc
