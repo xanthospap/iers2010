@@ -6,7 +6,7 @@
 
 constexpr const int DEGREE = 180;
 constexpr const int ORDER = 180;
-constexpr const int formatD3Plot = 1;
+constexpr const int formatD3Plot = 0;
 
 using namespace costg;
 

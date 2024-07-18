@@ -35,10 +35,10 @@ int main() {
   };
 
   auto dr = set.displacement(tt, ut, rsta.mv, rmon.mv, rsun.mv, fa);
-  //printf("Displacement : %+.6f %+.6f %+.6f\n", dr(0), dr(1), dr(2));
-  //printf("Diffs        : %+.4f %+.4f %+.4f\n",
-  //       dr(0) - 0.7700420357108125891e-01, dr(1) - 0.6304056321824967613e-01,
-  //       dr(2) - 0.5516568152597246810e-01);
+  printf("Displacement : %+.4f %+.4f %+.4f\n", dr(0), dr(1), dr(2));
+  printf("Diffs        : %+.1e %+.1e %+.1e\n",
+         dr(0) - 0.7700420357108125891e-01, dr(1) - 0.6304056321824967613e-01,
+         dr(2) - 0.5516568152597246810e-01);
   
   /* Example  2 */
   printf("\nTest Case 2:\n");
@@ -74,11 +74,11 @@ int main() {
   fa[13] = fapa03(tt);
 
   dr = set.displacement(tt, ut, rsta.mv, rmon.mv, rsun.mv, fa);
-  //printf("Displacement : %+.6f %+.6f %+.6f\n", dr(0), dr(1), dr(2));
-  //printf("Diffs        : %+.4f %+.4f %+.4f\n",
-  //       dr(0) - (-0.2036831479592075833e-01),
-  //       dr(1) - 0.5658254776225972449e-01,
-  //       dr(2) - (-0.7597679676871742227e-01));
+  printf("Displacement : %+.4f %+.4f %+.4f\n", dr(0), dr(1), dr(2));
+  printf("Diffs        : %+.1e %+.1e %+.1e\n",
+         dr(0) - (-0.2036831479592075833e-01),
+         dr(1) - 0.5658254776225972449e-01,
+         dr(2) - (-0.7597679676871742227e-01));
   
   /* Example  3 */
   printf("\nTest Case 3:\n");
@@ -114,11 +114,11 @@ int main() {
   fa[13] = fapa03(tt);
 
   dr = set.displacement(tt, ut, rsta.mv, rmon.mv, rsun.mv, fa);
-  //printf("Displacement : %+.6f %+.6f %+.6f\n", dr(0), dr(1), dr(2));
-  //printf("Diffs        : %+.4f %+.4f %+.4f\n",
-  //       dr(0) - (.00509570869172363845e0),
-  //       dr(1) - (.0828663025983528700e0),
-  //       dr(2) - (-.0636634925404189617e0));
+  printf("Displacement : %+.4f %+.4f %+.4f\n", dr(0), dr(1), dr(2));
+  printf("Diffs        : %+.1e %+.1e %+.1e\n",
+         dr(0) - (.00509570869172363845e0),
+         dr(1) - (.0828663025983528700e0),
+         dr(2) - (-.0636634925404189617e0));
   
   /* Example  4 */
   printf("\nTest Case 4:\n");
@@ -154,11 +154,11 @@ int main() {
   fa[13] = fapa03(tt);
 
   dr = set.displacement(tt, ut, rsta.mv, rmon.mv, rsun.mv, fa);
-  //printf("Displacement : %+.6f %+.6f %+.6f\n", dr(0), dr(1), dr(2));
-  //printf("Diffs        : %+.4f %+.4f %+.4f\n",
-  //       dr(0) - (.0050957086917236384e0),
-  //       dr(1) - (.082866302598352870e0),
-  //       dr(2) - (-.063663492540418962e0 ));
+  printf("Displacement : %+.4f %+.4f %+.4f\n", dr(0), dr(1), dr(2));
+  printf("Diffs        : %+.1e %+.1e %+.1e\n",
+         dr(0) - (.0050957086917236384e0),
+         dr(1) - (.082866302598352870e0),
+         dr(2) - (-.063663492540418962e0 ));
 
   return 0;
 }

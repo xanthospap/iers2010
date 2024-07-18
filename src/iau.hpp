@@ -5,7 +5,7 @@
 #include "geodesy/units.hpp"
 #include "eigen3/Eigen/Eigen"
 #include "eigen3/Eigen/src/Geometry/Quaternion.h"
-#include "geodesy/geoconst.hpp"
+#include "geodesy/core/geoconst.hpp"
 
 namespace dso {
 /* @brief Compute ERA, i.e. Earth rotation angle (IAU 2000 model).

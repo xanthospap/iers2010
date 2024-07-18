@@ -1,4 +1,4 @@
-#include "geodesy/geoconst.hpp"
+#include "geodesy/core/geoconst.hpp"
 #include "icgemio.hpp"
 #include <cassert>
 #include <charconv>

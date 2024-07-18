@@ -8,7 +8,7 @@
 #include "aod1b.hpp"
 #include "datetime/calendar.hpp"
 #include "doodson.hpp"
-#include "geodesy/geodesy.hpp"
+#include "geodesy/transformations.hpp"
 #include "stokes_coefficients.hpp"
 #include <vector>
 

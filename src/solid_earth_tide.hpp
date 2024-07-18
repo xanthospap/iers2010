@@ -12,7 +12,7 @@
 #include "iersconst.hpp"
 #include "stokes_coefficients.hpp"
 #include "datetime/calendar.hpp"
-#include "geodesy/geodesy.hpp"
+#include "geodesy/transformations.hpp"
 #include "eigen3/Eigen/Eigen"
 
 namespace dso {
@@ -132,9 +132,9 @@ private:
    *    dependence (Equations (8) and (9)) for the diurnal and semi-diurnal 
    *    band.
    *
-   * @param[in] rsta  ECEF, cartesian position vector of site/point on Earth
-   * @param[in] rsun  ECEF, cartesian position vector of Sun
-   * @param[in] rmoon ECEF, cartesian position vector of Moon
+   * @param[in] rsta  ECEF, cartesian position vector of site/point on Earth [m]
+   * @param[in] rsun  ECEF, cartesian position vector of Sun [m]
+   * @param[in] rmoon ECEF, cartesian position vector of Moon [m]
    * @param[in] tsta  An instance of type SolidEarthTide::PointSphericalTrigs
    *            holding spherical coordinates and trigonometric numbers of
    *            the site
@@ -165,7 +165,7 @@ private:
    *
    * The model follows IERS 2010 Conventions, Section 7.1.1.1 Conventional 
    * model for solid Earth tides. Equations involved are (mainly) Eq. 12 and 
-   * Eq. 13, while the consodered frequencies are taken from Tables 7.3a and 
+   * Eq. 13, while the considered frequencies are taken from Tables 7.3a and 
    * 7.3b.
    *
    * @param[in] mjdtt  Time/epoch of computation in [TT]

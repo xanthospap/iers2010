@@ -1,9 +1,8 @@
 #include "solid_earth_tide.hpp"
-#include "geodesy/geodesy.hpp"
+#include "geodesy/transformations.hpp"
 #include <cmath>
 #include <array>
 #include <algorithm>
-#include <geodesy/crdtype_warppers.hpp>
 
 namespace {
 
