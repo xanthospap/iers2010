@@ -1,0 +1,101 @@
+---
+title: libiers User's Guide
+author:
+  - name: xanthos
+    affiliation: Dionysos Satellite Observatory, National Technical University of Athens
+bibliography: doc/document/doris.bib
+...
+
+# Introduction
+This project contains a number of functions implementing models defined in
+[IERS Conventions (2010)](https://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html/) 
+as described in [@iers2010].
+The International Earth Rotation and Reference Systems Service ([IERS](https://www.iers.org/IERS/EN/Home/home_node.html))
+publishes the Conventions along with relevant documents, model implementations and 
+respective test cases; the latter two are available in the FORTRAN programming 
+language at the [IERS website](https://iers-conventions.obspm.fr/conventions_material.php).
+
+This repository is an effort to translate the algorithms in the C++ programming 
+language with (as much as possible) minor modifications. Note that the software 
+found at this website is routinely updated.
+
+# Prerequisites
+The C++ library [ggdatetime](https://github.com/xanthospap/ggdatetime) 
+is used in the library to handle datetime instances when needed. 
+Hence, you should have [ggdatetime](https://github.com/xanthospap/ggdatetime) 
+on your system.
+
+The C++ library [ggeodesy](https://github.com/xanthospap/ggeodesy) is used 
+to handle basic geodesy when needed. Again, you should have the library 
+installed (on your system) to successefuly compile this library.
+
+Vector/Matrix operations are implemented using the [eigen3](https://eigen.tuxfamily.org/index.php?title=Main_Page) 
+library. Availability of this library is also mandatory.
+
+# CSPICE
+Interaction with planetary ephemeris files (i.e. JPL's published DE), is 
+done via the [SPICE Toolkit](https://naif.jpl.nasa.gov/naif/toolkit.html). 
+The toolkit is a C library with a corresponding API. 
+
+# Installation
+
+* Download the C library from the [correponding site](https://naif.jpl.nasa.gov/naif/toolkit_C.html) and uncompress.
+
+* Use the script [c2cpp_header.py](script/cppspice/c2cpp_header.py) to tranform 
+C header file. Run the script using the cspice `include` folder path as command 
+line argument. I.e. if the uncompressed cspice folder is at `/home/work/var/cspice`, 
+use `$> c2cpp_header.py /home/work/var/cspice`.
+
+* Run the `makeall.csh` script provided by the distribution (under `cspice` folder). Note 
+that the script is in the C-sheel, hence you might need to `$>csh makeall.csh`.
+
+* Copy the [install.sh](script/cppspice/install.sh) script under the `cspicer` folder; 
+run it as root, to install the library. Header files will be available at 
+`/usr/local/include` and the library at `/usr/local/lib`.
+
+# Compilation / Installation <a name="compilation-installation"></a>
+> January 2022:
+> From now on, only the [scons](https://scons.org/) build will be supported; 
+> support for autotools is dropped.
+
+The project is built via the [scons](https://scons.org/) built system:
+
+```bash
+$> git clone https://github.com/xanthospap/iers2010.git && cd iers2010
+$> scons
+$> sudo scons install
+```
+
+# Library Components
+
+## Notes on Dates and Datetimes
+This library makes use of [ggdatetime](https://github.com/xanthospap/ggdatetime) 
+for handling dates and datetime instances. By default, this means that we are 
+(mostly) handling datetimes in the so-called **Modified Julian Date** format, 
+instead of the **Julian Date** format used throughout most of the SOFA [@sofa2021] functions. 
+
+## Earth Orientation Parameters (EOPs)
+The library can parse EOP information from IERS files using the IERS C04/14 
+(see [updateC04.txt](https://hpiers.obspm.fr/iers/eop/eopc04_14/updateC04.txt)) and 
+IERS C04/20 (see [eopc04.txt](https://hpiers.obspm.fr/iers/eop/eopc04/eopc04.txt)) 
+file formats/series. The files can be downloaded from IERS, e.g. 
+[eopc04_IAU2000.62-now](https://hpiers.obspm.fr/iers/eop/eopc04_14/eopc04_IAU2000.62-now) 
+and [eopc04.1962-now](https://hpiers.obspm.fr/iers/eop/eopc04/eopc04.1962-now).
+
+Normally, EOP information is stored in an `EopSeries` instance, which can hold 
+records for multiple epochs (ordered chronologically) and perform basic utilities 
+such as interpolation.
+
+Users can choose to "regularize" ΔUT1 and LOD values, i.e. remove zonal tidal 
+variations with frequencies ranging from 5 days to 8.6 years from UT1 values 
+(result typically denoted UT1R) and LOD (see Chapter 8.1 of [@iers2010] and [@Bradley2016]).
+
+The most important and usual operation an `EopSeries` instance performs, is the 
+interpolation of EOP values for an epoch of interest. This can be done with a 
+simple call to `EopSeries::interpolate` method. Note that for utmost accuracy 
+certain corrections will have to be applied to the resulting interpolated values, 
+such as removal of libration and ocean tidal effects (see the example source code).
+
+For a complete example of `EopSeries` usage, see [eop_interpolation.cpp](examples/eop_interpolation.cpp).
+
+# Bibliography

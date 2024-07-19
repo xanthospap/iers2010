@@ -13,34 +13,24 @@
 
 namespace dso {
 
-class EarthRotation {
-private:
-  /** EOPs to use for interpolation/trnaformation */
-  EopSeries meops;
-  /** Last used EOP values */
-  EopRecord meop;
-
-  /** Polynomial interpolation using meops toget the EOP values ate tt.
-   *
-   * Note that if the requested epoch (tt) is out of bounds, an integer other 
-   * than zero will be returned, and the EOPs will be filled with the 
-   * nearest value (see also EopSeries::interpolate).
-   *
-   * @return Anything other than zero signals that the requested epoch is 
-   *         out of bounds.
-   *         The interpolated values comnputed will be stored in meop.
-   */
-  int eops_at(const MjdEpoch &tt) noexcept;
-
-public:
-  /** Constructor using a C04 (14/20) EOP file (IERS) */
-  EarthRotation(const char *fn, const MjdEpoch &start_tt = MjdEpoch::min(),
-                const MjdEpoch &end_tt = MjdEpoch::max());
-
-  /** Get the unit quaternion to transform from ITRS to GCRS */
-  Eigen::Quaterniond itrs2gcrs_quaternion(const MjdEpoch &tt,
-                                          double *fargs14=nullptr);
-}; /* class EarthRotation */
+/** Get the unit quaternion to transform from ITRS to GCRS, i.e.
+ *  r_{GCRS} = q * r_{ITRS}
+ *
+ * @param[in] tt Epoch of request, in TT scale
+ * @param[in] eops An EopRecord instance, holding EOP data for the epoch of 
+ *               request (i.e. tt)
+ * @param[out] fargs If not NULL, at output it will hold the luni-solar and
+ *             planetary arguments used in the computation of (X,Y). Since we
+ *             are computing them, we might as well return them! If not NULL,
+ *             the array should be large enough to hold 14 doubles, i.e.
+ *         [l, l', F, D, Om, L_Me, L_Ve, L_E, L_Ma, L_J, L_Sa, L_U, L_Ne, p_A]
+ *             all in units of [rad].
+ *
+ * @return A unit quaternion q, acting in the sense: r_{GCRS} = q * r_{ITRS}
+ */
+Eigen::Quaterniond itrs2gcrs_quaternion(const MjdEpoch &tt,
+                                        const EopRecord &eops,
+                                        double *fargs = nullptr) noexcept;
 
 /** Earth's roatation rate (omega, ω) in [rad/sec]
  *
@@ -48,7 +38,7 @@ public:
  * @return Instantaneous Earth's roatation rate in [rad/sec]
  */
 inline double earth_rotation_rate(double dlod) noexcept {
-  return iers2010::OmegaEarth * (1e0 - dlod / 86400e0);
+  return ::iers2010::OmegaEarth * (1e0 - dlod / 86400e0);
 }
 
 namespace detail {

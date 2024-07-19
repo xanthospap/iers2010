@@ -90,25 +90,25 @@ Note that the SOFA [^1] library is needed to compile and run the tests.
 
 ## Earth Orientation Parameters (EOPs)
 
-The library can parse EOP information from IERS files, using the IERS C04/14 
-(see [updateC04.txt](https://hpiers.obspm.fr/iers/eop/eopc04_14/updateC04.txt)) 
+The library can parse EOP information from IERS files using the IERS C04/14 
+(see [updateC04.txt](https://hpiers.obspm.fr/iers/eop/eopc04_14/updateC04.txt)) and 
 IERS C04/20 (see [eopc04.txt](https://hpiers.obspm.fr/iers/eop/eopc04/eopc04.txt)) 
-file formats. The files can be downloaded from IERS, e.g. 
+file formats/series. The files can be downloaded from IERS, e.g. 
 [eopc04_IAU2000.62-now](https://hpiers.obspm.fr/iers/eop/eopc04_14/eopc04_IAU2000.62-now) 
 and [eopc04.1962-now](https://hpiers.obspm.fr/iers/eop/eopc04/eopc04.1962-now).
 
 Normally, EOP information is stored in an `EopSeries` instance, which can hold 
-records for multiple epoch (ordered chronologically) and perform basic utilities 
+records for multiple epochs (ordered chronologically) and perform basic utilities 
 such as interpolation.
 
-Users can choose to "regularize" ΔUt1 and LOD values, i.e. remove zonal tidal 
+Users can choose to "regularize" ΔUT1 and LOD values, i.e. remove zonal tidal 
 variations with frequencies ranging from 5 days to 8.6 years from UT1 values 
 (result typically denoted UT1R) and LOD (see Chapter 8.1 of [^2] and [^3]).
 
 The most important and usual operation an `EopSeries` instance performs, is the 
 interpolation of EOP values for an epoch of interest. This can be done with a 
 simple call to `EopSeries::interpolate` method. Note that for utmost accuracy 
-certain corrections will have to be applied to the resulting interpolating values, 
+certain corrections will have to be applied to the resulting interpolated values, 
 such as removal of libration and ocean tidal effects (see the example source code).
 
 For a complete example of `EopSeries` usage, see [eop_interpolation.cpp](examples/eop_interpolation.cpp).
