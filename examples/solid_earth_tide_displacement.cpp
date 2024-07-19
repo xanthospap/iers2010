@@ -1,3 +1,5 @@
+#ifdef INCOMPLETE_EXAPLE
+
 #include "fundarg.hpp"
 #include "solid_earth_tide.hpp"
 #include <charconv>
@@ -73,16 +75,27 @@ int main(int argc, char *argv[]) {
   SolidEarthTide set(3.986004418e14, 6378136.6e0, 4.9048695e12,
                      1.32712442099e20);
   
-  TwoPartDateUTC utc(dso::datetime<nanoseconds>(
-      year(2009), month(4), day_of_month(13), nanoseconds(0)));
-  MjdEpoch tt(utc.utc2tt());
-  MjdEpoch ut(tt.tt2ut1(0.3089055e0));
+  auto t = start;
+  while (t<end) {
+    /* TAI to TT */
+    auto tt = t.tai2tt();
+    /* Fundamental arguments (IERS 2003) */
+    const double fa[14] = {
+        fal03(tt),  falp03(tt), faf03(tt),  fad03(tt),  faom03(tt),
+        fame03(tt), fave03(tt), fae03(tt),  fama03(tt), faju03(tt),
+        fasa03(tt), faur03(tt), fane03(tt), fapa03(tt),
+    };
+    /* get ΔUT1 */
+    dso::EopRecord eops;
+     if (EopSeries::out_of_bounds(eop.interpolate(t, eops))) {
+      fprintf(stderr, "Failed to interpolate: Epoch is out of bounds!\n");
+      return 1;
+    }
+    /* compute UT1 */
+    auto ut1 = tt.tt2ut1(dut1);
+    /* get position of Sun and Moon in ITRF */
 
-  /* Fundamental arguments (IERS 2003) */
-  double fa[14] = {
-      fal03(tt),  falp03(tt), faf03(tt),  fad03(tt),  faom03(tt),
-      fame03(tt), fave03(tt), fae03(tt),  fama03(tt), faju03(tt),
-      fasa03(tt), faur03(tt), fane03(tt), fapa03(tt),
-  };
-
-  auto dr = set.displacement(tt, ut, rsta.mv, rmon.mv, rsun.mv, fa);
+    /* compute deformation (cartesian) */
+    auto dr = set.displacement(tt, ut, rsta.mv, rmon.mv, rsun.mv, fa);
+  }
+#endif
