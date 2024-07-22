@@ -9,17 +9,17 @@
 #include "icgemio.hpp"
 #include "pole_tide.hpp"
 
-constexpr const int DEGREE = 2;
-constexpr const int ORDER = 2;
+constexpr const int DEGREE = 180;
+constexpr const int ORDER = 180;
 constexpr const int formatD3Plot = 0;
 
 using namespace costg;
 
 int main(int argc, char *argv[]) {
-  if (argc != 5) {
+  if (argc != 6) {
     fprintf(stderr,
             "Usage: %s [00orbit_itrf.txt] [01earthRotation_rotaryMatrix.txt] "
-            "[01earthRotation_interpolatedEOP.txt] [05poleTide_icrf.txt]\n",
+            "[01earthRotation_interpolatedEOP.txt] [06oceanPoleTide_icrf.txt] [desaiscopolecoef.txt]\n",
             argv[0]);
     return 1;
   }
@@ -42,7 +42,8 @@ int main(int argc, char *argv[]) {
   /* read interpolated EOPs */
   const auto ieops = parse_eops(argv[3]);
 
-  dso::StokesCoeffs stokes(DEGREE, ORDER);
+  /* Ocean Pole tide instance */
+  dso::OceanPoleTide opt(argv[5]);
 
   /* spit out a title for plotting */
   if (formatD3Plot) {
@@ -61,25 +62,25 @@ int main(int argc, char *argv[]) {
     /* GPSTime */
     const auto tt = in.epoch;
 
-    /* clear Stokes coefficients */
-    stokes.clear();
-
     /* (xp,yp) rad to arcsec */
     const double xp = dso::rad2sec(eop->xp);
     const double yp = dso::rad2sec(eop->yp);
     assert(eop->epoch == in.epoch);
 
     /* compute potential corrections from Pole Tide */
-    dso::PoleTide::stokes_coeffs(tt, xp, yp, stokes.C(2, 1), stokes.S(2, 1));
+    if (opt.stokes_coeffs(tt, xp, yp, DEGREE, ORDER)) {
+      fprintf(stderr, "ERROR Failed computing Stokes COefficients\n");
+      return 1;
+    }
 
     /* compute acceleration for given epoch/position */
-    if (dso::sh2gradient_cunningham(stokes, in.xyz, a, g, DEGREE, ORDER, -1, -1,
-                                    &W, &M)) {
+    if (dso::sh2gradient_cunningham(opt.stokes_coeffs(), in.xyz, a, g, DEGREE,
+                                    ORDER, -1, -1, &W, &M)) {
       fprintf(stderr, "ERROR Failed computing acceleration/gradient\n");
       return 1;
     }
 
-    /* if needed, transform acceleration from ITRF to GCRF */
+    /* transform acceleration from ITRF to GCRF */
     const Eigen::Matrix<double, 3, 3> R = rot->R.transpose();
     assert(rot->epoch == in.epoch);
     a = R * a;

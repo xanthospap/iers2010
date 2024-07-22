@@ -10,9 +10,15 @@ inline bool cmp_nwsc(const char *line) noexcept {
   const int hsz = std::strlen(header);
   const char *c = line;
   int idx = 0;
-  while (*c && *c != ' ') {
-    if (*c != header[idx++])
-      return 1;
+  while (*c) {
+    if (*c != ' ') {
+      if (*c == header[idx]) {
+        ++idx;
+      } else {
+        return 1;
+      }
+    }
+    ++c;
   }
   return (idx == hsz) ? 0 : 1;
 }
@@ -24,7 +30,7 @@ inline const char *skipws(const char *line) noexcept {
 }
 } /* unnamed namespace */
 
-int dso::oceanPoleTide::parse_desai02_coeffs(
+int dso::pole_tide_details::parse_desai02_coeffs(
     const char *fn, int max_degree, int max_order,
     dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> &A_real,
     dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> &A_imag,
@@ -42,8 +48,8 @@ int dso::oceanPoleTide::parse_desai02_coeffs(
   }
 
   if ((max_degree < max_order) ||
-      (max_degree > dso::oceanPoleTide::MAX_DEGREE_DESAI_2002) ||
-      (max_order > dso::oceanPoleTide::MAX_ORDER_DESAI_2002)) {
+      (max_degree > dso::pole_tide_details::MAX_DEGREE_DESAI_2002) ||
+      (max_order > dso::pole_tide_details::MAX_ORDER_DESAI_2002)) {
     fprintf(stderr,
             "[ERROR] Invalid degree/order for parsing Ocean Pole Tide %s "
             "(traceback: %s)\n",
