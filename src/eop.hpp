@@ -1,7 +1,9 @@
 /** @file
+ *
  * Utilities and parsers to handle Earth Orientation Parameters (EOP) and 
- * (time)series of such values.
+ * (time-)series of such values.
  */
+
 #ifndef __DSO_IERS_PRODUCTS_EOP_HPP__
 #define __DSO_IERS_PRODUCTS_EOP_HPP__
 
@@ -13,11 +15,18 @@
 
 namespace dso {
 
-/** Struct to represent secular pole coordinates in [milliarcseconds]. */
+/** Struct to represent secular pole coordinates in [mas]. 
+ *
+ * The selular pole is a conventional representation of the low-frequency 
+ * motion of the Earth’s rotation axis with respect to the terrestrial 
+ * reference system free of the principal high-frequency periodic motions.
+ * Its coordinates are usually designated as (xs, ys) and are angular values.
+ * For more information, see IERS 2010, Ch. 7.1.4 "Rotational deformation due 
+ * to polar motion: Secular polar motion and the pole tide" (2018 update).
+ */
 struct secularPole { double xs, ys; }; /* secularPole */
 
-/** @brief Coordinates of secular pole designated (xs, ys) in 
- *         [milliarcsec].
+/** @brief Coordinates of secular pole designated (xs, ys) in [mas].
  *
  * This function uses the approach outlined in IERS 2010 (2018 update), Ch. 
  * 7.1.4 "Rotational deformation due to polar motion: Secular polar motion and 
@@ -26,7 +35,7 @@ struct secularPole { double xs, ys; }; /* secularPole */
 inline secularPole secular_pole(const MjdEpoch &tt) noexcept {
   constexpr const auto j2000 = MjdEpoch::j2000_mjd();
   const double dt = tt.diff<DateTimeDifferenceType::FractionalYears>(j2000);
-  return secularPole{55e0+1.677e0*dt, 320e0+3.460e0*dt};
+  return secularPole{55e0+1.677e0*dt, 320.5e0+3.460e0*dt};
 }
 
 /** Compute ocean tide effect on polar motion, UT1 and LOD.
@@ -34,7 +43,7 @@ inline secularPole secular_pole(const MjdEpoch &tt) noexcept {
  * Variations in polar motion are tidal variations in Earth orientation, 
  * including diurnal and semi-diurnal variations in pole coordinates caused by 
  * ocean tides. 
- * They are described in IERS 2010, Ch. 5.5.1.2, "ariations (∆x, ∆y)_oceantides 
+ * They are described in IERS 2010, Ch. 5.5.1.2, "Variations (∆x, ∆y)_oceantides 
  * in polar motion".
  * Variations in UT1 and LOD computed here are described in IERS 2010, 
  * Ch. 5.5.3.2, "Variations ∆UT1 ocean tides and ∆LOD ocean tides in UT1 and 
@@ -58,7 +67,7 @@ int deop_ocean_tide(const double *const fargs, double gmst, double &dxp,
                     double &dyp, double &dut1, double &dlod) noexcept;
 
 /** Compute libration effect, i.e. the diurnal lunisolar effect on polar 
- *  motion, UT1 and LOD
+ *  motion, UT1 and LOD.
  *
  * The libration effect is described in IERS 2010, Ch. 5.5.1.3 "Variations 
  * (∆x, ∆y)_libration in polar motion". 
@@ -182,16 +191,16 @@ class EopSeries {
   static constexpr int MAX_POLY_INTERPOLATION_DEGREE = 9;
   /** Vector of EopRecords stored in series */
   std::vector<EopRecord> mvec{};
-  /** Last used index in mvec; speed-up interpolation when requesting 
-   * interpolation results for epochs within one day (e.g. every N seconds). 
-   * This is the most often use-case.
+  /** Last used index in mvec. 
+   * Speed-up interpolation when requesting interpolation results for epochs 
+   * within one day (e.g. every N seconds). This is the most often use-case.
    * This is a mutable member, i.e. changing values in here does not actually 
    * 'change' the instance; it is only used to hunt interpolation indexes.
    */
   mutable cvit last_it{mvec.end()};
-  /** Scratch/Workspace memoty to use in interpolation. This is a mutable 
-   * member, i.e. changing values in here does not actually 'change' the 
-   * instance.
+  /** Scratch/Workspace memoty to use in interpolation. 
+   * This is a mutable member, i.e. changing values in here does not actually 
+   * 'change' the instance.
    */
   mutable std::array<double, (MAX_POLY_INTERPOLATION_DEGREE+1)*2> work;
   
@@ -285,7 +294,7 @@ public:
   /** Push back an EopRecord entry.
    *
    * Warning! The vector of EopRecord should always be chronologically ordered. 
-   * If yous use this method be sure that the entry you are pushing is indeed 
+   * If you use this method be sure that the entry you are pushing is indeed 
    * later that then last current entry in the table.
    *
    * Warning! This function may invalidate the last_it pointer. Please, reset 

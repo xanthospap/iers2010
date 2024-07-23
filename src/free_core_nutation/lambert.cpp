@@ -1,5 +1,5 @@
 #include "fcn.hpp"
-#include "geodesy/geoconst.hpp"
+#include "geodesy/core/geoconst.hpp"
 #include <algorithm>
 
 dso::fcn::FcnResult

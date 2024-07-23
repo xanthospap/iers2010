@@ -1,5 +1,5 @@
 #include "solid_earth_tide.hpp"
-#include <geodesy/crdtype_warppers.hpp>
+#include "geodesy/core/crdtype_warppers.hpp"
 
 Eigen::Matrix<double, 3, 1>
 dso::SolidEarthTide::displacement(const dso::MjdEpoch &mjdtt,
@@ -37,7 +37,7 @@ dso::SolidEarthTide::displacement(const dso::MjdEpoch &mjdtt,
   /* transform displacement vector from Cartesian to topocentric (enu) */
   Eigen::Matrix<double, 3, 1> dxyz = R * dr;
 
-  printf("Dehantideinel: %.9f %.9f %.9f\n", dxyz(0), dxyz(1), dxyz(2));
+  // printf("Dehantideinel: %.9f %.9f %.9f\n", dxyz(0), dxyz(1), dxyz(2));
 
   /* all done */
   return dxyz;

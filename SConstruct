@@ -51,7 +51,7 @@ lib_src_files += glob.glob(r"src/aod1b/*.cpp")
 lib_src_files += glob.glob(r"src/doodson/*.cpp")
 lib_src_files += glob.glob(r"src/solid_earth_tides/*.cpp")
 lib_src_files += glob.glob(r"src/atmospheric_tides/*.cpp")
-#lib_src_files += glob.glob(r"src/pole_tide/*.cpp")
+lib_src_files += glob.glob(r"src/pole_tide/*.cpp")
 lib_src_files += glob.glob(r"src/ocean_tide/*.cpp")
 lib_src_files += glob.glob(r"src/earth_rotation/*.cpp")
 lib_src_files += glob.glob(r"src/eop/*.cpp")
@@ -77,6 +77,7 @@ test = ARGUMENTS.get('test', 0)
 sofa = ARGUMENTS.get('test-vs-sofa', 0)
 costg = ARGUMENTS.get('test-vs-costg', 0)
 examples = ARGUMENTS.get('make-examples', 0)
+official = ARGUMENTS.get('test-vs-official', 0)
 
 ## Construct the build enviroment
 env = denv.Clone() if int(debug) else penv.Clone()
@@ -144,6 +145,17 @@ if examples:
     tenv = env.Clone()
     tenv['CXXFLAGS'] = ' '.join([ x for x in env['CXXFLAGS'].split() if 'inline' not in x])
     test_sources = glob.glob(r"examples/*.cpp")
+    tenv.Append(RPATH=root_dir)
+    for tsource in test_sources:
+        ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
+        tenv.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+[ 'geodesy', 'datetime', 'cspice'], LIBPATH='.')
+
+## Compile examples
+if official:
+    print('Compiling official...')
+    tenv = env.Clone()
+    tenv['CXXFLAGS'] = ' '.join([ x for x in env['CXXFLAGS'].split() if 'inline' not in x])
+    test_sources = glob.glob(r"test/official/*.cpp")
     tenv.Append(RPATH=root_dir)
     for tsource in test_sources:
         ttarget = os.path.join(os.path.dirname(tsource), os.path.basename(tsource).replace('_', '-').replace('.cpp', '.out'))
