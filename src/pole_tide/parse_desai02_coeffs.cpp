@@ -96,8 +96,8 @@ int dso::pole_tide_details::parse_desai02_coeffs(
     if (l <= max_degree && m <= max_order) {
       A_real(l, m) = data[0];
       B_real(l, m) = data[1];
-      A_imag(l, m) = data[0];
-      B_imag(l, m) = data[1];
+      A_imag(l, m) = data[2];
+      B_imag(l, m) = data[3];
     }
   }
 

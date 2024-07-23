@@ -32,7 +32,7 @@ inline m12Coeffs mcoeffs(const MjdEpoch &t, double xp, double yp) noexcept {
   /* secular pole in  [mas] */
   const auto spole = secular_pole(t);
   /* m1, m2 coefficients in [arcsec] */
-  return m12Coeffs{xp - spole.xs * 1e-3, spole.ys * 1e-3 - yp};
+  return m12Coeffs{xp - spole.xs * 1e-3, -(yp - spole.ys * 1e-3)};
 }
 
 /* max degree of coefficients for the Desai 2002 model. Applies to

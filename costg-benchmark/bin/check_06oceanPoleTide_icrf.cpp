@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
   auto rot = rotvec.begin();
   auto eop = ieops.begin();
   for (const auto &in : orbvec) {
+    
     /* GPSTime */
     const auto tt = in.epoch;
 
@@ -68,7 +69,7 @@ int main(int argc, char *argv[]) {
     assert(eop->epoch == in.epoch);
 
     /* compute potential corrections from Pole Tide */
-    if (opt.stokes_coeffs(tt, xp, yp, DEGREE, ORDER)) {
+    if (opt.stokes_coeffs(tt.gps2tai(), xp, yp, DEGREE, ORDER)) {
       fprintf(stderr, "ERROR Failed computing Stokes COefficients\n");
       return 1;
     }
@@ -103,6 +104,13 @@ int main(int argc, char *argv[]) {
              in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
              a(1), a(2));
     }
+
+    /* check/validate using only the C21 and S21 coeffs */
+    //{
+    //  double c21,s21;
+    //  dso::OceanPoleTide::stokes_coeffs(tt, xp, yp, c21,s21);
+    //  printf("c21=%.15e s21=%.15e\n", c21, s21);
+    //}
 
     ++acc;
     ++rot;

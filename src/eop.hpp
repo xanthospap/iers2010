@@ -35,7 +35,7 @@ struct secularPole { double xs, ys; }; /* secularPole */
 inline secularPole secular_pole(const MjdEpoch &tt) noexcept {
   constexpr const auto j2000 = MjdEpoch::j2000_mjd();
   const double dt = tt.diff<DateTimeDifferenceType::FractionalYears>(j2000);
-  return secularPole{55e0+1.677e0*dt, 320e0+3.460e0*dt};
+  return secularPole{55e0+1.677e0*dt, 320.5e0+3.460e0*dt};
 }
 
 /** Compute ocean tide effect on polar motion, UT1 and LOD.

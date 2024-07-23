@@ -208,13 +208,13 @@ int dso::OceanPoleTide::stokes_coeffs(const dso::MjdEpoch &t, double xp,
   constexpr const double rhow = 1025e0;
   constexpr const double g2_real = 0.6870e0;
   constexpr const double g2_imag = 0.0036e0;
-  const double fac = ((OmegaEarth * OmegaEarth) * std::pow(Re, 4) / GM) *
-                     (2e0 * D2PI * G * rhow) / ge;
+  
   const auto m12 = dso::pole_tide_details::mcoeffs(t, xp, yp);
-  const double m1 = m12.m1*1e3; /* m1 in [arcsec] */
-  const double m2 = m12.m2*1e3; /* m2 in [arcsec] */
-  const double freal = dso::sec2rad(m1 * g2_real + m2 * g2_imag);
-  const double fimag = dso::sec2rad(m2 * g2_real - m1 * g2_imag);
+  const double m1 = dso::sec2rad(m12.m1); /* m1 in [rad] */
+  const double m2 = dso::sec2rad(m12.m2); /* m2 in [rad] */
+  
+  const double freal = m1 * g2_real + m2 * g2_imag;
+  const double fimag = m2 * g2_real - m1 * g2_imag;
 
   double knfac_arr[pole_tide_details::MAX_DEGREE_DESAI_2002];
   double *__restrict__ knfac = &(knfac_arr[0]);
@@ -224,28 +224,26 @@ int dso::OceanPoleTide::stokes_coeffs(const dso::MjdEpoch &t, double xp,
   for (int l = m; l <= max_degree; l++) {
     knfac[l] = (1e0 + kn[l]) / (2 * l + 1);
     mcs.C(l, m) =
-        fac * knfac[l] * (A_real(l, m) * freal + A_imag(l, m) * fimag);
+        knfac[l] * (A_real(l, m) * freal + A_imag(l, m) * fimag);
     mcs.S(l, m) =
-        fac * knfac[l] * (B_real(l, m) * freal + B_imag(l, m) * fimag);
+        knfac[l] * (B_real(l, m) * freal + B_imag(l, m) * fimag);
   }
 
   /* all toher orders (m) except m=0 */
   for (m = 1; m <= max_order; m++) {
     for (int l = m; l <= max_degree; l++) {
       mcs.C(l, m) =
-          fac * knfac[l] * (A_real(l, m) * freal + A_imag(l, m) * fimag);
+          knfac[l] * (A_real(l, m) * freal + A_imag(l, m) * fimag);
       mcs.S(l, m) =
-          fac * knfac[l] * (B_real(l, m) * freal + B_imag(l, m) * fimag);
+          knfac[l] * (B_real(l, m) * freal + B_imag(l, m) * fimag);
     }
   }
+  
+  /* scale (i.e. multiply) with constant term */
+  const double fac = ((OmegaEarth * OmegaEarth) * std::pow(Re, 4) / GM) *
+                     (2e0 * D2PI * G * rhow) / ge;
+  mcs.scale(fac);
 
-  mcs.C(0,0) = 0e0;
-  mcs.C(1,0) = 0e0;
-  mcs.C(1,1) = 0e0;
-  mcs.S(0,0) = 0e0;
-  mcs.S(1,0) = 0e0;
-  mcs.S(1,1) = 0e0;
-
+  /* all done */
   return 0;
 }
-
