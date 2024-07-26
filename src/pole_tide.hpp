@@ -9,6 +9,8 @@
 #include "eop.hpp"
 #include "stokes_coefficients.hpp"
 #include "geodesy/transformations.hpp"
+#include <geodesy/core/crdtype_warppers.hpp>
+#include <vector>
 
 namespace dso {
 
@@ -274,6 +276,8 @@ public:
                     double ge = ::iers2010::ge) noexcept;
 }; /* class oceanPoleTide */
 
+int get_desai_ocp_deformation_coeffs(const char *fn,
+                                     std::vector<dso::GeodeticCrd> &sta);
 
 }/* namespace dso */
 

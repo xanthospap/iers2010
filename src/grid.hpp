@@ -1,129 +1,101 @@
 #ifndef __DSO_TOOLS_GRID_HPP__
 #define __DSO_TOOLS_GRID_HPP__
 
-/*
- * Currently not used anywhere (obsolete)
- * Will later be used for tropo grids
- */
-
-#include <cstdio>
 #include <cmath>
-#include <stdexcept>
+#include <cstdio>
 
 namespace dso {
+enum class GridAxis { X, Y };
 
-/** @class GridAxis
- * A one-dimensional grid/axis that has 'nodes' and 'cells', as follows:
- *
- * node0   node1   node2                   nodeN
- * |       |       |                       |
- * V       V       V                       V
- * +-------+-------+-------+--...--+-------+
- * start           < step  >               stop
- * |cell0  | cell1 | cell2 |  ...  | celln |
- *
- */
-class GridAxis {
-  double _start;
-  double _step;
-  int _nodes;
-
+template <GridAxis LeadingAxis> class TwoDimGrid {
 public:
-  struct CellNodes {
-    double prev, next;
-    CellNodes(double x1, double x2) noexcept : prev(x1), next(x2){};
+  struct Node {
+    double x, y;
   };
 
-  /* Constructor 
-   * Note that the value of to (passed in) may not be the value of the final 
-   * node after construction. This is due to floating point precesion. The 
-   * actual value of the final node will be:
-   * from + _nodes * step
-   * where
-   * _nodes = (to - from) / step
-   * */
-  GridAxis(double from, double to, double step)
-      : _start(from), _step(step), _nodes((to - from) / step) {
-    if ((to - from < 0 && step > 0) || (to - from > 0 && step < 0)) {
-      throw std::runtime_error(
-          "[ERROR] Failed to construct GridAxis from given values!\n");
+private:
+  int mxpts, mypts;
+  double mxstart, mxstep;
+  double mystart, mystep;
+
+  int xindex(double xpts) const noexcept {
+    return std::floor((xpts - mxstart) / mxstep);
+  }
+
+  int yindex(double ypts) const noexcept {
+    return std::floor((ypts - mystart) / mystep);
+  }
+
+  long xyindex(double xpts, double ypts) const noexcept {
+    auto xidx = xindex(xpts);
+    auto yidx = yindex(ypts);
+    if constexpr (LeadingAxis == GridAxis::X) {
+      return xidx * mypts + yidx;
+    } else {
+      return yidx * mxpts + xidx;
     }
   }
 
-  /* number of nodes on axis, i.e. [from, to], both ends inclusive */
-  int num_nodes() const noexcept { return _nodes + 1; }
-
-  /* number of cells on axis */
-  int num_cells() const noexcept { return num_nodes() - 1; }
-
-  /* value of node with index idx */
-  double node(int idx) const noexcept { return _start + idx * _step; }
-
-  /* value of last node */
-  double end() const noexcept { return _start + _nodes * _step; }
-
-  /* If the axis is in ascending order (i.e. step>0), returns the index of the
-   * node with the last value <= x, i.e. value of index+1 node will be > x.
-   * int idx = lower_bound(123.456);
-   * node(idx) <= 123.456 < node(idx+1)
-   *
-   * If the axis is in descending order (i.e. step<0), returns the index of
-   * the node with the last value >= x, i.e. value of index+1 will be < x.
-   * int idx = lower_bound(123.456);
-   * node(idx) >= 123.456 > node(idx+1)
-   *
-   * Note that the limits of the instance are not considered here, and the 
-   * value passed in could be outside the actual range of the instance (i.e. 
-   * start/end nodes). It is the user's responsibility to check beforehand if 
-   * the passed-in x value is indeed within the range of the instance.
-   */
-  int lower_bound(double x) const noexcept {
-    return std::floor((x - _start) / _step);
+  bool out_of_range_x(double x) const noexcept {
+    return !(x >= mxstart && x < xstop());
   }
-
-  int out_of_bounds(double x) const noexcept {
-    return (x < _start || x > end());
+  bool out_of_range_y(double y) const noexcept {
+    return !(y >= mystart && y < ystop());
   }
-
-  /* Value of nodes of the cell. Nota that if the instance is in ascending 
-   * order, then CellNodes.prev < CellNodes.next.
-   * If the instance is in descending order, then 
-   * CellNodes.prev > CellNodes.next.
-   * 
-   * Note that the limits of the instance are not considered here, and the 
-   * value passed in could be outside the actual range of the instance (i.e. 
-   * start/end nodes). It is the user's responsibility to check beforehand if 
-   * the passed-in x value is indeed within the range of the instance.
-   */
-  CellNodes cell_nodes(int idx) noexcept {
-    return CellNodes(node(idx), node(idx+1));
-  }
-
-}; /* class GridAxis */
-
-class TwoDimGrid {
-  /* x is the first, leading dimension */
-  GridAxis _x;
-  /* y is the 'inner' dimension */
-  GridAxis _y;
-public:
-  struct IndexPair {
-    int xidx;
-    int yidx;
-    IndexPair(int i1, int i2) noexcept : xidx(i1), yidx(i2) {};
-  }; /* IndexPair */
-
-  TwoDimGrid(const GridAxis &x, const GridAxis &y) noexcept : _x(x), _y(y) {}
   
-  /* number of nodes on grid */
-  int num_nodes() const noexcept { return _x.num_nodes() * _y.num_nodes(); }
-  int num_x_nodes() const noexcept { return _x.num_nodes();}
-  int num_y_nodes() const noexcept { return _y.num_nodes();}
+  void surrounding_nodes(long idx_bl, long &idx_br, long &idx_tl,
+                         long &idx_tr) const noexcept {
+    if constexpr (LeadingAxis == GridAxis::X) {
+      idx_br = idx_bl + mypts;
+      idx_tl = idx_bl + 1;
+      idx_tr = idx_tl + 1;
+    } else {
+      idx_br = idx_bl + 1;
+      idx_tl = idx_bl + mxpts;
+      idx_tr = idx_tl + 1;
+    }
+  }
 
-  GridAxis &xaxis() noexcept { return _x; }
-  const GridAxis &xaxis() const noexcept { return _x; }
-  GridAxis &yaxis() noexcept { return _y; }
-  const GridAxis &yaxis() const noexcept { return _y; }
+public:
+  TwoDimGrid(double xstart, double xstep, int xpts, double ystart, double ystep,
+             int ypts)
+      : mxpts(xpts), mypts(ypts), mxstart(xstart), mxstep(xstep),
+        mystart(ystart), mystep(ystep) {};
+
+  double xstep() const noexcept { return mxstep; }
+  double ystep() const noexcept { return mystep; }
+  double xstop() const noexcept { return mxstart + mxpts * mxstep; }
+  double ystop() const noexcept { return mystart + mypts * mystep; }
+
+  long line(double x, double y) const noexcept {
+    if (out_of_range_x(x) || out_of_range_y(y)) {
+      fprintf(stderr,
+              "[ERROR] Given point is out of range of grid; (%.3f, %.3f) "
+              "(traceback: %s)\n",
+              x, y, __func__);
+      return -1;
+    }
+    return xyindex(x, y);
+  }
+
+  Node xyindex2node(long index) const noexcept {
+    if constexpr (LeadingAxis == GridAxis::X) {
+      long xi = index / mypts;
+      long yi = index - xi * mxpts;
+      return Node{xi * mxstep + mxstart, yi * mystep + mystart};
+    } else {
+      int yi = index / mxpts;
+      int xi = index - yi * mxpts;
+      return Node{xi * mxstep + mxstart, yi * mystep + mystart};
+    }
+  }
+
+  void surrounding_nodes(double x, double y, long &idx_bl, long &idx_br,
+                         long &idx_tl, long &idx_tr) const noexcept {
+    idx_bl = line(x, y);
+    if (idx_bl<0) idx_bl = idx_br = idx_tl = idx_tr = -1;
+    surrounding_nodes(idx_bl, idx_br, idx_tl, idx_tr);
+  }
 
 }; /* class TwoDimGrid */
 } /* namespace dso */
