@@ -97,6 +97,13 @@ inline int parse_desai02_coeffs(
 }
 } /* namespace pole_tide_details */
 
+/* Utility struct: holds coefficients (per site) for computing Ocean Pole Tide 
+ * Loading deformation, using the Desai 2002 (see also IERS 2010) model.
+ */
+struct OceanPoleTideDesaiCoeffs {
+  double rR, rI, nR, nI, eR, eI;
+}; /* OceanPoleTideDesaiCoeffs */
+
 class PoleTide {
 public:
 
@@ -274,10 +281,36 @@ public:
                     double OmegaEarth = ::iers2010::OmegaEarth,
                     double G = ::iers2010::G,
                     double ge = ::iers2010::ge) noexcept;
+
+  static dso::CartesianCrd
+  deformation(const MjdEpoch &t, double xp, double yp,
+              const dso::SphericalCrdConstView &rsta,
+              const dso::OceanPoleTideDesaiCoeffs &coef,
+              double Re = ::iers2010::Re, double GM = ::iers2010::GMe,
+              double OmegaEarth = ::iers2010::OmegaEarth,
+              double G = ::iers2010::G, double ge = ::iers2010::ge) noexcept;
 }; /* class oceanPoleTide */
 
-int get_desai_ocp_deformation_coeffs(const char *fn,
-                                     std::vector<dso::GeodeticCrd> &sta);
+/** Get (radial, north, east) coefficients for computing deformation due to 
+ * ocean pole tide, according to IERS 2010 and Desai 2002.
+ *
+ * To compute deformation that is caused by ocean pole tide loading at a 
+ * given site, using the Desai 2002 model (IERS 2010), we need (radial, 
+ * north, east) coeffcients (see e.g. IERS 2010, Ch. 7.1.5 "Ocean pole tide 
+ * loading", Eq. (29)).
+ * Maps of the required ocean pole load tide coeﬃcients are available on an 
+ * equally space global grid, published by IERS at:
+ * https://iers-conventions.obspm.fr/content/chapter7/additional_info/opoleloadcoefcmcor.txt.gz
+ * This function computes values for these coefficients, given the 
+ * opoleloadcoefcmcor.txt file.
+ * The coefficients are complex numbers for each component (r, n, e). For 
+ * each of the components, we perform bilinear interpolation to compute the 
+ * coefficients at the given point(s). For each of the components, the real 
+ * and imaginary parts are interpolated indipendently.
+ */
+int get_desai_ocp_deformation_coeffs(
+    const char *fn, const std::vector<dso::GeodeticCrd> &sta,
+    std::vector<OceanPoleTideDesaiCoeffs> &cfs) noexcept;
 
 }/* namespace dso */
 

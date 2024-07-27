@@ -1,20 +1,34 @@
+#include "geodesy/units.hpp"
 #include "grid.hpp"
 #include "pole_tide.hpp"
-#include "geodesy/units.hpp"
 #include <charconv>
 #include <cstring>
 #include <fstream>
+#include <geodesy/core/geoconst.hpp>
 
 namespace {
+
+/* max number of chars in opoleloadcoefcmcor.txt file */
 constexpr const int MAX_CH = 256;
+
+/* go forward until we meet an '=' sign, and then skip all whitespaces. used 
+ * for resolving numeric data off from the header of opoleloadcoefcmcor.txt 
+ * file.
+ */
 const char *nf(const char *line) noexcept {
   while (*line && *line != '=')
     ++line;
+  ++line;
   while (*line && *line == ' ')
     ++line;
   return line;
 }
 
+/* parse the header off from a opoleloadcoefcmcor.txt file, and return the 
+ * grid (as a TwoDimGrid) as specified therein.
+ * the function will leave the input stream at a position where the next line 
+ * to be read is a data line (i.e. all header lines are read through).
+ */
 int parse_desai_header(std::ifstream &fin,
                        dso::TwoDimGrid<dso::GridAxis::Y> &grd) noexcept {
   char line[MAX_CH];
@@ -52,7 +66,7 @@ int parse_desai_header(std::ifstream &fin,
     }
     const int sz = std::strlen(line);
     auto [ptr, ec] = std::from_chars(nf(line), line + sz, lon_pts);
-    if (ec == std::errc()) {
+    if (ec != std::errc()) {
       fprintf(stderr,
               "[ERROR] Failed parsing OPT coeffs file for line %s (traceback: "
               "%s)\n",
@@ -72,7 +86,7 @@ int parse_desai_header(std::ifstream &fin,
     }
     const int sz = std::strlen(line);
     auto [ptr, ec] = std::from_chars(nf(line), line + sz, lon_start);
-    if (ec == std::errc()) {
+    if (ec != std::errc()) {
       fprintf(stderr,
               "[ERROR] Failed parsing OPT coeffs file for line %s (traceback: "
               "%s)\n",
@@ -92,7 +106,7 @@ int parse_desai_header(std::ifstream &fin,
     }
     const int sz = std::strlen(line);
     auto [ptr, ec] = std::from_chars(nf(line), line + sz, lon_last);
-    if (ec == std::errc()) {
+    if (ec != std::errc()) {
       fprintf(stderr,
               "[ERROR] Failed parsing OPT coeffs file for line %s (traceback: "
               "%s)\n",
@@ -112,7 +126,7 @@ int parse_desai_header(std::ifstream &fin,
     }
     const int sz = std::strlen(line);
     auto [ptr, ec] = std::from_chars(nf(line), line + sz, lon_step);
-    if (ec == std::errc()) {
+    if (ec != std::errc()) {
       fprintf(stderr,
               "[ERROR] Failed parsing OPT coeffs file for line %s (traceback: "
               "%s)\n",
@@ -122,7 +136,7 @@ int parse_desai_header(std::ifstream &fin,
   }
   {
     fin.getline(line, MAX_CH);
-    const char *str = "Number_latitude_Grid_Points";
+    const char *str = "Number_latitude_grid_points";
     if (std::strncmp(line, str, std::strlen(str))) {
       fprintf(stderr,
               "[ERROR] Failed parsing OPT coeffs file; expected %s found %s "
@@ -132,7 +146,7 @@ int parse_desai_header(std::ifstream &fin,
     }
     const int sz = std::strlen(line);
     auto [ptr, ec] = std::from_chars(nf(line), line + sz, lat_pts);
-    if (ec == std::errc()) {
+    if (ec != std::errc()) {
       fprintf(stderr,
               "[ERROR] Failed parsing OPT coeffs file for line %s (traceback: "
               "%s)\n",
@@ -152,7 +166,7 @@ int parse_desai_header(std::ifstream &fin,
     }
     const int sz = std::strlen(line);
     auto [ptr, ec] = std::from_chars(nf(line), line + sz, lat_start);
-    if (ec == std::errc()) {
+    if (ec != std::errc()) {
       fprintf(stderr,
               "[ERROR] Failed parsing OPT coeffs file for line %s (traceback: "
               "%s)\n",
@@ -172,7 +186,7 @@ int parse_desai_header(std::ifstream &fin,
     }
     const int sz = std::strlen(line);
     auto [ptr, ec] = std::from_chars(nf(line), line + sz, lat_last);
-    if (ec == std::errc()) {
+    if (ec != std::errc()) {
       fprintf(stderr,
               "[ERROR] Failed parsing OPT coeffs file for line %s (traceback: "
               "%s)\n",
@@ -192,7 +206,7 @@ int parse_desai_header(std::ifstream &fin,
     }
     const int sz = std::strlen(line);
     auto [ptr, ec] = std::from_chars(nf(line), line + sz, lat_step);
-    if (ec == std::errc()) {
+    if (ec != std::errc()) {
       fprintf(stderr,
               "[ERROR] Failed parsing OPT coeffs file for line %s (traceback: "
               "%s)\n",
@@ -232,8 +246,16 @@ int parse_desai_header(std::ifstream &fin,
   return 0;
 }
 
-struct SiteNode { long bl, br, tl, tr; };
+/* utility struct: hold indexes/line-numbers of the sourounding nodes */
+struct SiteNode {
+  long bl, br, tl, tr;
+};
 
+/* Flatten out and sort (numerically) a series of SiteNode instances.
+ * The resulting vector will hold all individual entries of the passed in 
+ * SiteNode's, sorted numerically. Thus the size of the resulting vector will 
+ * be len(nodes) * 4
+ */
 std::vector<long> nodes2indexes(const std::vector<SiteNode> &nodes) noexcept {
   std::vector<long> vidx;
   vidx.reserve(nodes.size() * 4);
@@ -247,15 +269,54 @@ std::vector<long> nodes2indexes(const std::vector<SiteNode> &nodes) noexcept {
   return vidx;
 }
 
+/* utility struct: holds the data and the index of a line of 
+ * opoleloadcoefcmcor.txt file. Note the the index corresponds to the line 
+ * number, if all header lines are ommited.
+ */
 struct OptRecord {
+  long index;
   double lon, lat, rR, rI, nR, nI, eR, eI;
 }; /* OptRecord */
+
+/* skip whitespaces */
+const char *skipws(const char *line) noexcept {
+  while (*line && *line == ' ')
+    ++line;
+  return line;
+}
+
+/* parse a line off from a opoleloadcoefcmcor.txt file */
+int parse_line(const char *line, OptRecord &rec) {
+  double data[8];
+  int error = 0;
+  const int sz = std::strlen(line);
+  for (int i = 0; i < 8; i++) {
+    auto res = std::from_chars(skipws(line), line + sz, data[i]);
+    if (res.ec != std::errc{})
+      ++error;
+    line = res.ptr;
+  }
+  rec.lon = data[0];
+  rec.lat = data[1];
+  rec.rR = data[2];
+  rec.rI = data[3];
+  rec.nR = data[4];
+  rec.nI = data[5];
+  rec.eR = data[6];
+  rec.eI = data[7];
+  return error;
+}
+
 } /* unnamed namespace */
 
 int dso::get_desai_ocp_deformation_coeffs(
-    const char *fn, std::vector<dso::GeodeticCrd> &sta) noexcept {
+    const char *fn, const std::vector<dso::GeodeticCrd> &sta,
+    std::vector<dso::OceanPoleTideDesaiCoeffs> &coeffs) noexcept {
+  coeffs.clear();
+  coeffs.reserve(sta.size());
+
   std::ifstream fin(fn);
-  if (!fn.is_open()) {
+  if (!fin.is_open()) {
     fprintf(stderr,
             "[ERROR] Failed opening ocean pole tide deformation coeffs file %s "
             "(traceback: %s)\n",
@@ -263,7 +324,7 @@ int dso::get_desai_ocp_deformation_coeffs(
     return 1;
   }
 
-  /* cosntruct the grid */
+  /* read the header off from the input file and construct the grid */
   dso::TwoDimGrid<dso::GridAxis::Y> grd;
   if (parse_desai_header(fin, grd)) {
     fprintf(stderr,
@@ -273,19 +334,127 @@ int dso::get_desai_ocp_deformation_coeffs(
     return 1;
   }
 
-  /* for each site in list, compute the line numbers of the 4 neighbouring 
-   * nodes, i.e. BL, BR, TL, TR
+  /* for each site in list, compute the line numbers (of the input file) that
+   * correspond to the 4 neighbouring nodes, i.e. BL, BR, TL, TR.
+   * Note that line 0 is the first (data) line after the header.
+   * For each site, we have a corresponding SiteNode entry, holding the four
+   * indexes (or line numbers).
+   *
+   * WARNING!
+   * lon is usually in the range [-π, π), but the coefficients file uses the
+   * range [0, 2π)
    */
   std::vector<SiteNode> nodes;
   nodes.reserve(sta.size());
   for (const auto &s : sta) {
     long bl, br, tl, tr;
-    grd.surrounding_nodes(dso::rad2deg(s.lon()), dso::rad2deg(s.lat()), bl, br,
-                           tl, tr);
+    grd.surrounding_nodes(
+        dso::anp<dso::detail::AngleUnit::Degrees>(dso::rad2deg(s.lon())),
+        dso::rad2deg(s.lat()), bl, br, tl, tr);
     nodes.emplace_back(SiteNode{bl, br, tl, tr});
   }
 
-  /* sorted list of indexes (i.e. line numbers) to be read */
+  /* flatten and sort list of indexes (i.e. line numbers) to be read */
   const auto lines2read = nodes2indexes(nodes);
-  
+
+  /* parse lines of interest; note that the input stream is now at the end
+   * of header.
+   * Sequentially read all lies in lines2read, and store records (recs).
+   */
+  std::vector<OptRecord> recs;
+  recs.reserve(sta.size() * 4);
+  char line[MAX_CH];
+  fin.getline(line, MAX_CH);
+  long cidx = 0;
+  for (auto idx : lines2read) {
+    while (cidx < idx) {
+      fin.getline(line, MAX_CH);
+      ++cidx;
+    }
+
+    OptRecord rec;
+    if (parse_line(line, rec)) {
+      fprintf(stderr, "[ERROR] Failed parsing OPT line: %s (traceback: %s)\n",
+              line, __func__);
+      return 1;
+    }
+    rec.index = cidx;
+    recs.emplace_back(rec);
+
+  } /* read all lines/indexes of interest */
+
+  /* we have now stored all records needed; interpolate for every site */
+  auto nptr = nodes.cbegin();
+  for (const auto &site : sta) {
+    /* surrounding nodes */
+    auto bl = std::lower_bound(
+        recs.begin(), recs.end(), nptr->bl,
+        [](const OptRecord &r, long i) { return r.index < i; });
+    auto br = std::lower_bound(
+        recs.begin(), recs.end(), nptr->br,
+        [](const OptRecord &r, long i) { return r.index < i; });
+    auto tl = std::lower_bound(
+        recs.begin(), recs.end(), nptr->tl,
+        [](const OptRecord &r, long i) { return r.index < i; });
+    auto tr = std::lower_bound(
+        recs.begin(), recs.end(), nptr->tr,
+        [](const OptRecord &r, long i) { return r.index < i; });
+    if (nptr->bl != bl->index || nptr->br != br->index ||
+        nptr->tl != tl->index || nptr->tr != tr->index) {
+      fprintf(stderr,
+              "[ERROR] Failed interpolating for site at (%.3f %.3f) "
+              "(traceback: %s)\n",
+              dso::rad2deg(site.lon()), dso::rad2deg(site.lat()), __func__);
+      return 1;
+    }
+    /* bilinear interpolation */
+    const double x1 = bl->lon;
+    const double x2 = br->lon;
+    // const double x = dso::rad2deg(site.lon());
+    const double x = dso::anp<dso::detail::AngleUnit::Degrees>(dso::rad2deg(site.lon()));
+    const double y1 = bl->lat;
+    const double y2 = tl->lat;
+    const double y = dso::rad2deg(site.lat());
+    const double f = 1e0 / ((x2 - x1) * (y2 - y1));
+    const double f11 = (x2 - x) * (y2 - y);
+    const double f21 = (x - x1) * (y2 - y);
+    const double f12 = (x2 - x) * (y - y1);
+    const double f22 = (x - x1) * (y - y1);
+#ifdef DEBUG
+    const double x0 = dso::anp<dso::detail::AngleUnit::Degrees>(dso::rad2deg(site.lon()));
+    const double y0 = dso::rad2deg(site.lat());
+    //printf("TL(%.2f, %.2f)    TR(%.2f, %.2f)\n", tl->lon, tl->lat, tr->lon, tr->lat);
+    //printf("             (%.2f,  %.2f)\n", x0, y0);
+    //printf("BL(%.2f, %.2f)    BR(%.2f, %.2f)\n", bl->lon, bl->lat, br->lon, br->lat);
+    assert(bl->lon <= x0 && bl->lat <= y0);
+    assert(br->lon > x0 && br->lat <= y0);
+    assert(tl->lon <= x0 && tl->lat > y0);
+    assert(tr->lon > x0 && tr->lat > y0);
+#endif
+    /* (redundant?) checks */
+    assert(((bl->lon == tl->lon) && (br->lon == tr->lon)) &&
+           ((bl->lat == br->lat) && (tl->lat == tr->lat)));
+    assert(bl->lon <= x0 && bl->lat <= y0);
+
+    const double rR =
+        f * (bl->rR * f11 + br->rR * f21 + tl->rR * f12 + tr->rR * f22);
+    const double rI =
+        f * (bl->rI * f11 + br->rI * f21 + tl->rI * f12 + tr->rI * f22);
+    const double nR =
+        f * (bl->nR * f11 + br->nR * f21 + tl->nR * f12 + tr->nR * f22);
+    const double nI =
+        f * (bl->nI * f11 + br->nI * f21 + tl->nI * f12 + tr->nI * f22);
+    const double eR =
+        f * (bl->eR * f11 + br->eR * f21 + tl->eR * f12 + tr->eR * f22);
+    const double eI =
+        f * (bl->eI * f11 + br->eI * f21 + tl->eI * f12 + tr->eI * f22);
+
+    /* add interpolated coefficients to return vector */
+    coeffs.emplace_back(dso::OceanPoleTideDesaiCoeffs{rR, rI, nR, nI, eR, eI});
+
+    /* next node */
+    ++nptr;
+  }
+
+  return 0;
 }

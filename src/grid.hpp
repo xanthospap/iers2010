@@ -42,7 +42,7 @@ private:
   bool out_of_range_y(double y) const noexcept {
     return !(y >= mystart && y < ystop());
   }
-  
+
   void surrounding_nodes(long idx_bl, long &idx_br, long &idx_tl,
                          long &idx_tr) const noexcept {
     if constexpr (LeadingAxis == GridAxis::X) {
@@ -57,6 +57,8 @@ private:
   }
 
 public:
+  TwoDimGrid() noexcept
+      : mxpts(0), mypts(0), mxstart(0), mxstep(0), mystart(0), mystep(0) {};
   TwoDimGrid(double xstart, double xstep, int xpts, double ystart, double ystep,
              int ypts)
       : mxpts(xpts), mypts(ypts), mxstart(xstart), mxstep(xstep),
@@ -70,9 +72,10 @@ public:
   long line(double x, double y) const noexcept {
     if (out_of_range_x(x) || out_of_range_y(y)) {
       fprintf(stderr,
-              "[ERROR] Given point is out of range of grid; (%.3f, %.3f) "
+              "[ERROR] Given point is out of range of grid; (%.3f, %.3f) for "
+              "[%.2f/%.2f/%.2f/%.2f] "
               "(traceback: %s)\n",
-              x, y, __func__);
+              x, y, mxstart, xstop(), mystart, ystop(), __func__);
       return -1;
     }
     return xyindex(x, y);
@@ -93,7 +96,8 @@ public:
   void surrounding_nodes(double x, double y, long &idx_bl, long &idx_br,
                          long &idx_tl, long &idx_tr) const noexcept {
     idx_bl = line(x, y);
-    if (idx_bl<0) idx_bl = idx_br = idx_tl = idx_tr = -1;
+    if (idx_bl < 0)
+      idx_bl = idx_br = idx_tl = idx_tr = -1;
     surrounding_nodes(idx_bl, idx_br, idx_tl, idx_tr);
   }
 

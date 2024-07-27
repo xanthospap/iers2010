@@ -17,9 +17,9 @@ dso::PoleTide::deformation(const dso::MjdEpoch &t, double xp, double yp,
   const double c2t = 2e0 * ct * ct - 1e0;
   /* IERS 2010, Eq. (26) */
   Eigen::Matrix<double, 3, 1> s;
-  s(0) = -9e0 * c2t * (m1 * cl + m2 * sl);
-  s(1) = 9e0 * ct * (m1 * sl - m2 * cl);
-  s(2) = -33e0 * s2t * (m1 * cl + m2 * sl);
+  s(0) = -9e0 * c2t * (m1 * cl + m2 * sl);  /* Sθ along colatitude */
+  s(1) = 9e0 * ct * (m1 * sl - m2 * cl);    /* Sλ along longitude */
+  s(2) = -33e0 * s2t * (m1 * cl + m2 * sl); /* Sr radial */
   /* Rotation matrix to Cartesian coordinates; IERS 2010, Eq. (28) */
   Eigen::Matrix<double, 3, 3> R;
   R(0, 0) = ct * cl;
