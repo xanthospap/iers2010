@@ -348,9 +348,8 @@ int dso::get_desai_ocp_deformation_coeffs(
   nodes.reserve(sta.size());
   for (const auto &s : sta) {
     long bl, br, tl, tr;
-    grd.surrounding_nodes(
-        dso::anp<dso::detail::AngleUnit::Degrees>(dso::rad2deg(s.lon())),
-        dso::rad2deg(s.lat()), bl, br, tl, tr);
+    grd.surrounding_nodes(dso::rad2deg(s.lon() + DPI), dso::rad2deg(s.lat()),
+                          bl, br, tl, tr);
     nodes.emplace_back(SiteNode{bl, br, tl, tr});
   }
 
@@ -410,8 +409,7 @@ int dso::get_desai_ocp_deformation_coeffs(
     /* bilinear interpolation */
     const double x1 = bl->lon;
     const double x2 = br->lon;
-    // const double x = dso::rad2deg(site.lon());
-    const double x = dso::anp<dso::detail::AngleUnit::Degrees>(dso::rad2deg(site.lon()));
+    const double x = dso::rad2deg(site.lon()+DPI);
     const double y1 = bl->lat;
     const double y2 = tl->lat;
     const double y = dso::rad2deg(site.lat());
@@ -421,7 +419,7 @@ int dso::get_desai_ocp_deformation_coeffs(
     const double f12 = (x2 - x) * (y - y1);
     const double f22 = (x - x1) * (y - y1);
 #ifdef DEBUG
-    const double x0 = dso::anp<dso::detail::AngleUnit::Degrees>(dso::rad2deg(site.lon()));
+    const double x0 = dso::rad2deg(site.lon() + DPI);
     const double y0 = dso::rad2deg(site.lat());
     //printf("TL(%.2f, %.2f)    TR(%.2f, %.2f)\n", tl->lon, tl->lat, tr->lon, tr->lat);
     //printf("             (%.2f,  %.2f)\n", x0, y0);

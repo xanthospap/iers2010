@@ -13,6 +13,7 @@ data_files = [
     {"url": "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de432s.bsp", "local": "data/de432s.bsp"},
     {"url": "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/latest_leapseconds.tls", "local": "data/latest_leapseconds.tls"},
     #{"url": "https://ftp.tugraz.at/outgoing/ITSG/groops/data/tides/oceanTide_fes2014b_n180_version20170520.dat", "local": "data/", "actions": ["decompress"]},
+    {"url": "https://iers-conventions.obspm.fr/content/chapter7/additional_info/opoleloadcoefcmcor.txt.gz", "local": "data/opoleloadcoefcmcor.txt.gz", "actions": ["decompress"]}
 ]
 
 str1 = """Icgem filename: data/EIGEN-6S4v2.gfc
@@ -780,5 +781,9 @@ special_progs = [
     {"prog":"coeff-matrix2d-tricolwise-reduce-runtime-error.out", 
      "path": "test/unit_tests",
     "args": [], 
-    "exit": "nzero"}
+    "exit": "nzero"},
+    {"prog":"test-desai-opt-deformation.out", 
+     "path": "test/unit_tests",
+    "args": ["data/opoleloadcoefcmcor.txt"], 
+    "exit": 0}
 ]

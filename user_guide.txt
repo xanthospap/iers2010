@@ -98,4 +98,6 @@ such as removal of libration and ocean tidal effects (see the example source cod
 
 For a complete example of `EopSeries` usage, see [eop_interpolation.cpp](examples/eop_interpolation.cpp).
 
+## Permanent Tide
+
 # Bibliography
