@@ -4,6 +4,7 @@
 #include <charconv>
 #include <cstring>
 #include <fstream>
+#include <geodesy/core/crdtype_warppers.hpp>
 #include <geodesy/core/geoconst.hpp>
 
 namespace {
@@ -310,7 +311,7 @@ int parse_line(const char *line, OptRecord &rec) {
 } /* unnamed namespace */
 
 int dso::get_desai_ocp_deformation_coeffs(
-    const char *fn, const std::vector<dso::GeodeticCrd> &sta,
+    const char *fn, const std::vector<dso::SphericalCrd> &sta,
     std::vector<dso::OceanPoleTideDesaiCoeffs> &coeffs) noexcept {
   coeffs.clear();
   coeffs.reserve(sta.size());
@@ -432,7 +433,7 @@ int dso::get_desai_ocp_deformation_coeffs(
     /* (redundant?) checks */
     assert(((bl->lon == tl->lon) && (br->lon == tr->lon)) &&
            ((bl->lat == br->lat) && (tl->lat == tr->lat)));
-    assert(bl->lon <= x0 && bl->lat <= y0);
+    assert(bl->lon <= x && bl->lat <= y);
 
     const double rR =
         f * (bl->rR * f11 + br->rR * f21 + tl->rR * f12 + tr->rR * f22);

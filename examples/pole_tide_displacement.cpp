@@ -1,6 +1,8 @@
 #include "eop.hpp"
+#include "geodesy/core/crdtype_warppers.hpp"
 #include "pole_tide.hpp"
-#include <geodesy/core/crdtype_warppers.hpp>
+
+using namespace dso;
 
 int main(int argc, char *argv[]) {
   if (argc != 3) {
@@ -9,38 +11,40 @@ int main(int argc, char *argv[]) {
   }
 
   /* put coordinates in a vector, in geodetic form */
-  std::vector<dso::SphericalCrd> sta;
+  std::vector<SphericalCrd> sta;
   {
     /* SVAC at Ny-Alesund, Norway*/
-    dso::CartesianCrd svac;
+    CartesianCrd svac;
     svac.mv << 1201300.042, 251874.432, 6238000.308;
     /* THULE at Thule Air Force base, Greenland */
-    dso::CartesianCrd thule;
+    CartesianCrd thule;
     thule.mv << 538110.515, -1389031.364, 6180994.514;
     /* DIOB, Greece*/
-    dso::CartesianCrd diob;
+    CartesianCrd diob;
     diob.mv << 4595212.468, 2039473.691, 3912617.891;
     /* KOUROU, French Guiana */
-    dso::CartesianCrd kourou;
+    CartesianCrd kourou;
     kourou.mv << 3855260.440, -5049735.535, 563056.590;
     /* BELGRANO at Antarctica */
-    dso::CartesianCrd belb;
+    CartesianCrd belb;
     belb.mv << 1106046.627, -763739.010, -6214243.195;
     /* TERRE-ADELIE at Antarctica */
-    dso::CartesianCrd adhc;
+    CartesianCrd adhc;
     adhc.mv << -1940878.515, 1628473.041, -5833723.413;
 
-    sta.emplace_back(dso::cartesian2spherical(svac));
-    sta.emplace_back(dso::cartesian2spherical(thule));
-    sta.emplace_back(dso::cartesian2spherical(diob));
-    sta.emplace_back(dso::cartesian2spherical(kourou));
-    sta.emplace_back(dso::cartesian2spherical(belb));
-    sta.emplace_back(dso::cartesian2spherical(adhc));
+    sta.emplace_back(cartesian2spherical(svac));
+    sta.emplace_back(cartesian2spherical(thule));
+    sta.emplace_back(cartesian2spherical(diob));
+    sta.emplace_back(cartesian2spherical(kourou));
+    sta.emplace_back(cartesian2spherical(belb));
+    sta.emplace_back(cartesian2spherical(adhc));
   }
 
+  const char *names[6] = { "svac", "thub", "diob", "krwb", "belb", "adhc"};
+
   /* a vector to hold interpolated coeffs */
-  std::vector<dso::OceanPoleTideDesaiCoeffs> coef;
-  if (dso::get_desai_ocp_deformation_coeffs(argv[1], sta, coef)) {
+  std::vector<OceanPoleTideDesaiCoeffs> coef;
+  if (get_desai_ocp_deformation_coeffs(argv[1], sta, coef)) {
     fprintf(stderr, "ERROR Failed interpolating coeffs\n");
     return 1;
   }
@@ -69,18 +73,20 @@ int main(int argc, char *argv[]) {
     }
 
     auto cf = coef.begin();
+    const char **name = &names[0];
     for (const auto &site : sta) {
       /* (solid) pole tide displacement */
-      auto dr1 = dso::PoleTide::deformation(tt, eop.xp(), eop.yp(), site);
+      auto dr1 = PoleTide::deformation(tt, eop.xp(), eop.yp(),
+                                       SphericalCrdConstView(site));
 
       /* ocean pole tide displacement */
-      auto dr2 =
-          dso::OceanPoleTide::deformation(tt, eop.xp(), eop.yp(), site, cf);
+      auto dr2 = OceanPoleTide::deformation(tt, eop.xp(), eop.yp(),
+                                            SphericalCrdConstView(site), *cf);
 
       /**/
-      printf("%.9f %.4f %.4f %.4f %.4f%.4f %.4f\n",
-             tt.imjd() + tt.fractional_days(), dr1(0), dr1(1), dr1(2), dr2(0),
-             dr2(1), dr2(2));
+      printf("%s %.9f %.9e %.9e %.9e %.9e %.9e %.9e\n", *name++,
+             tt.imjd() + tt.fractional_days(), dr1.x(), dr1.y(), dr1.z(),
+             dr2.x(), dr2.y(), dr2.z());
 
       ++cf;
     }

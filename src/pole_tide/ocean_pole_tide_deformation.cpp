@@ -4,7 +4,7 @@
 
 dso::CartesianCrd
 dso::OceanPoleTide::deformation(const MjdEpoch &t, double xp, double yp,
-                                const dso::SphericalCrdConstView &rsta,
+                                const dso::SphericalCrdConstView rsta,
                                 const dso::OceanPoleTideDesaiCoeffs &coef,
                                 double Re, double GM, double OmegaEarth,
                                 double G, double ge) noexcept {

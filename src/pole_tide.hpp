@@ -135,7 +135,7 @@ public:
   /**
    */
   static CartesianCrd deformation(const MjdEpoch &t, double xp, double yp,
-                                  const SphericalCrdConstView &rsta) noexcept;
+                                  const SphericalCrdConstView rsta) noexcept;
 }; /* class poleTide */
 
 class OceanPoleTide {
@@ -317,7 +317,7 @@ public:
    */
   static dso::CartesianCrd
   deformation(const MjdEpoch &t, double xp, double yp,
-              const dso::SphericalCrdConstView &rsta,
+              const dso::SphericalCrdConstView rsta,
               const dso::OceanPoleTideDesaiCoeffs &coef,
               double Re = ::iers2010::Re, double GM = ::iers2010::GMe,
               double omega = ::iers2010::OmegaEarth, double G = ::iers2010::G,
@@ -342,7 +342,7 @@ public:
  * and imaginary parts are interpolated indipendently.
  */
 int get_desai_ocp_deformation_coeffs(
-    const char *fn, const std::vector<dso::GeodeticCrd> &sta,
+    const char *fn, const std::vector<dso::SphericalCrd> &sta,
     std::vector<OceanPoleTideDesaiCoeffs> &cfs) noexcept;
 
 } /* namespace dso */
