@@ -174,7 +174,7 @@ std::vector<costg::BmEops> costg::parse_eops(const char *fn) {
   return vec;
 }
 
-const char *basename(const char *fn) {
+const char *costg::basename(const char *fn) {
   const char *last_split = fn;
   const char *c = fn;
   while (*++c) if (*c=='/') last_split = c;

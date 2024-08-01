@@ -77,7 +77,13 @@ dso::OceanTide dso::initFes2014bFromIcgem(const char *dir,
   }
 
   if (!error) {
+    /* buffer holding filenames (copy directory) */
     char gfcfn[256];
+    int sz = std::strlen(dir);
+    if (gfcfn[sz-1] == '/') --sz;
+    std::memset(gfcfn, '\0', 256);
+    std::strncpy(gfcfn, dir, sz);
+    
     /* for all (major) waves of FES2014b, load two files: once with sin
      * coefficients and one with cos coeffs. Both should be located in the
      * directory provided.
@@ -88,13 +94,13 @@ dso::OceanTide dso::initFes2014bFromIcgem(const char *dir,
       fes14b.append_wave(doodson, max_degree, max_order);
       auto it = fes14b.waves().end() - 1;
 
-      /* first get coefficients for sin compoment */
+      /* first get coefficients for sin component */
       try {
-        std::sprintf(gfcfn, "%s/%s.%s.sin.gfc", dir, fn_generic_name,
+        std::sprintf(gfcfn+sz, "/%s.%s.sin.gfc", fn_generic_name,
                      wave_name);
         /* icgem instance (reads header) */
         dso::Icgem gfc(gfcfn);
-        /* validate the modelname field and get the Doodson number */
+        /* validate the model name field and get the Doodson number */
         if (resolve_modelname(gfc.model_name(), wave_name, doodson)) {
           fprintf(stderr,
                   "[ERROR] Failed validating model name in gfc file %s "
@@ -118,11 +124,11 @@ dso::OceanTide dso::initFes2014bFromIcgem(const char *dir,
 
       /* one more time for the cos component */
       try {
-        std::sprintf(gfcfn, "%s/%s.%s.cos.gfc", dir, fn_generic_name,
+        std::sprintf(gfcfn+sz, "/%s.%s.cos.gfc", fn_generic_name,
                      wave_name);
         /* icgem instance (reads header) */
         dso::Icgem gfc(gfcfn);
-        /* validate the modelname field and get the Doodson number */
+        /* validate the model name field and get the Doodson number */
         if (resolve_modelname(gfc.model_name(), wave_name, doodson)) {
           fprintf(stderr,
                   "[ERROR] Failed validating model name in gfc file %s "
