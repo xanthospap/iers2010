@@ -20,10 +20,12 @@ public:
   TidalConstituentsArrayEntry mdentry;
   StokesCoeffs mCosCs;
   StokesCoeffs mSinCs;
+  
   AtmosphericTidalWave(const TidalConstituentsArrayEntry *wave, double Gm,
                        double Re, int max_degree, int max_order) noexcept
       : mdentry(*wave), mCosCs(max_degree, max_order, Gm, Re),
         mSinCs(max_degree, max_order, Gm, Re){};
+
 }; /* AtmosphericTidalWave */
 } /* namespace detail */
 

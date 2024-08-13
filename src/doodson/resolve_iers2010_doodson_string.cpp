@@ -1,8 +1,8 @@
 #include "doodson.hpp"
-#include <charconv>
 #include <cstdio>
 #include <stdexcept>
 
+// dso::DoodsonConstituent dso::resolve_iers10_doodson_string(const char *cstr) {
 dso::DoodsonConstituent dso::resolve_iers10_doodson_string(const char *cstr) {
   int ints[6];
   int error = 0;

@@ -9,7 +9,7 @@
 
 constexpr const int DEGREE = 180;
 constexpr const int ORDER = 180;
-constexpr const int formatD3Plot = 1;
+constexpr const int formatD3Plot = 0;
 
 using namespace costg;
 
@@ -90,7 +90,8 @@ int main(int argc, char *argv[]) {
     atm.stokes_coeffs(t, t.tt2ut1(dut1_approx), fargs);
 
     /* for the test, degree one coefficients are not taken into account */
-    atm.stokes_coeffs().C(0, 0) = atm.stokes_coeffs().C(1, 0) = atm.stokes_coeffs().C(1, 1) = 0e0;
+    atm.stokes_coeffs().C(0, 0) = atm.stokes_coeffs().C(1, 0) =
+        atm.stokes_coeffs().C(1, 1) = 0e0;
     atm.stokes_coeffs().S(1, 1) = 0e0;
 
     /* compute acceleration for given epoch/position (ITRF) */

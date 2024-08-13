@@ -51,6 +51,13 @@ parser.add_argument(
     help='Scale plot')
 
 parser.add_argument(
+    '--no-dif',
+    action='store_true',
+    dest='nodif',
+    required=False,
+    help='Plot acceleration results insted of differences.')
+
+parser.add_argument(
     '--quite',
     action='store_true',
     dest='quiet',
@@ -84,27 +91,10 @@ if __name__ == "__main__":
 
     for line in sys.stdin:
         if line[0] != '#' and not line.startswith('mjd'):
-            #try:
-            #imjd, sec, x1, y1, z1, x2, y2, z2 = [ float(x) for x in line.split(',') ]
-            #t.append(sec)
-            #a1x.append(x1); a1y.append(y1); a1z.append(z1);
-            #a2x.append(x2); a2y.append(y2); a2z.append(z2);
-            imjd, sec, x1, x2 = [ float(x) for x in line.strip().split(',')[0:-1] ]
-            c = line.strip().split(',')[-1]
-            if c.lower() == 'x':
-                t.append(sec)
-                a1x.append(x1); a2x.append(x2);
-            elif c.lower() == 'y':
-                assert(sec == t[-1])
-                a1y.append(x1); a2y.append(x2);
-            else:
-                assert(c.lower() == 'z')
-                assert(sec == t[-1])
-                a1z.append(x1); a2z.append(x2);
-
-            #except:
-            #    #pass
-            #    print('Ommiting line {:}'.format(line.strip()))
+            imjd, sec, x1, y1, z1, x2, y2, z2 = [ float(x) for x in line.split(' ') ]
+            t.append(sec)
+            a1x.append(x1); a1y.append(y1); a1z.append(z1);
+            a2x.append(x2); a2y.append(y2); a2z.append(z2);
         else:
             if line.startswith('#title'):
                 title = line.replace('#title','').strip()
@@ -123,28 +113,46 @@ if __name__ == "__main__":
     sz = stats.describe(ar)
     zstr = r'$\delta \ddot{{r}}_z$: max={:.1e} mean={:+.1e}$\pm${:.2e}'.format(max(abs(x) for x in sz.minmax), sz.mean, math.sqrt(sz.variance))
 
-## Plot differences (this-COST-G) per component
-    #plt.rcParams["font.family"] = "monospace"
-
     inches_per_pt = 1 / 72.27
-    #fig, axs = plt.subplots(3, 1, figsize=set_size(418,3/5.,(3,1)), sharex=True)
     fig, axs = plt.subplots(3, 1, figsize=(418*inches_per_pt,418*inches_per_pt*2/3), sharex=True)
     fig.subplots_adjust(hspace=0)
-    
-    axs[0].plot(t, [scale*(z[0]-z[1]) for z in zip(a1x,a2x)])
-    axs[0].text(t[0], sx.minmax[0]*scale, xstr)
-    
-    axs[1].plot(t, [scale*(z[0]-z[1]) for z in zip(a1y,a2y)])
-    axs[1].text(t[0], sy.minmax[0]*scale, ystr)
-    
-    axs[2].xaxis.set_major_locator(MultipleLocator(3600*3))
-    axs[2].xaxis.set_major_formatter(lambda x, pos: str(int(x/3600e0))+'h')
-    axs[2].xaxis.set_minor_locator(MultipleLocator(3600))
-    axs[2].plot(t, [scale*(z[0]-z[1]) for z in zip(a1z,a2z)])
-    axs[2].text(t[0], sz.minmax[0]*scale, zstr)
-    
-    plt.xlabel('Hours of Day')
-    fig.text(0.0, 0.5, r'$\delta \ddot{r}_x$, $\delta \ddot{r}_y$ and $\delta \ddot{r}_z$ in $[m/sec^2]\times$'+'{:.1e}'.format(1/scale), va='center', rotation='vertical')
+
+## Plot acceleration results
+    if (args.nodif):
+        axs[0].plot(t, [scale*z for z in a1x])
+        axs[0].plot(t, [scale*z for z in a2x])
+        axs[0].text(t[0], sx.minmax[0]*scale, xstr)
+        
+        axs[1].plot(t, [scale*z for z in a1y])
+        axs[1].plot(t, [scale*z for z in a2y])
+        axs[1].text(t[0], sy.minmax[0]*scale, ystr)
+        
+        axs[2].xaxis.set_major_locator(MultipleLocator(3600*3))
+        axs[2].xaxis.set_major_formatter(lambda x, pos: str(int(x/3600e0))+'h')
+        axs[2].xaxis.set_minor_locator(MultipleLocator(3600))
+        axs[2].plot(t, [scale*z for z in a1z])
+        axs[2].plot(t, [scale*z for z in a2z])
+        axs[2].text(t[0], sz.minmax[0]*scale, zstr)
+        
+        plt.xlabel('Hours of Day')
+        fig.text(0.0, 0.5, r'$\delta \ddot{r}_x$, $\delta \ddot{r}_y$ and $\delta \ddot{r}_z$ in $[m/sec^2]\times$'+'{:.1e}'.format(1/scale), va='center', rotation='vertical')
+
+## Plot differences (this-COST-G) per component
+    else:
+        axs[0].plot(t, [scale*(z[0]-z[1]) for z in zip(a1x,a2x)])
+        axs[0].text(t[0], sx.minmax[0]*scale, xstr)
+        
+        axs[1].plot(t, [scale*(z[0]-z[1]) for z in zip(a1y,a2y)])
+        axs[1].text(t[0], sy.minmax[0]*scale, ystr)
+        
+        axs[2].xaxis.set_major_locator(MultipleLocator(3600*3))
+        axs[2].xaxis.set_major_formatter(lambda x, pos: str(int(x/3600e0))+'h')
+        axs[2].xaxis.set_minor_locator(MultipleLocator(3600))
+        axs[2].plot(t, [scale*(z[0]-z[1]) for z in zip(a1z,a2z)])
+        axs[2].text(t[0], sz.minmax[0]*scale, zstr)
+        
+        plt.xlabel('Hours of Day')
+        fig.text(0.0, 0.5, r'$\delta \ddot{r}_x$, $\delta \ddot{r}_y$ and $\delta \ddot{r}_z$ in $[m/sec^2]\times$'+'{:.1e}'.format(1/scale), va='center', rotation='vertical')
 
 ##  x-grids on
     axs[0].xaxis.grid(True, which='major')

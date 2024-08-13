@@ -6,6 +6,13 @@ author:
 bibliography: doc/document/doris.bib
 ...
 
+To compile this document into html, use:
+```bash
+$> pandoc user_guide.txt  [-s] --mathml --citeproc  -o doc/userguide.html 
+# or
+$> pandoc user_guide.txt [-s] --mathjax --citeproc  -o doc/userguide.html
+```
+
 # Introduction
 This project contains a number of functions implementing models defined in
 [IERS Conventions (2010)](https://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html/) 
@@ -97,6 +104,47 @@ certain corrections will have to be applied to the resulting interpolated values
 such as removal of libration and ocean tidal effects (see the example source code).
 
 For a complete example of `EopSeries` usage, see [eop_interpolation.cpp](examples/eop_interpolation.cpp).
+
+## Fundamental and Doodson Arguments
+
+The expressions for the (lunisolar) **fundamental arguments** of nutation or 
+**Delaunay variables** are taken from [@iers2010, chap. 5.7.2]. The fundamental 
+arguments are:
+
+  * Mean Anomaly of the Moon $F_1$ or $l$,
+  * Mean Anomaly of the Sun $F_2$ or $l'$,
+  * $L − \Omega$ $F_3$ or $F$,
+  * Mean Elongation of the Moon from the Sun $F_4$ or $D$, and
+  * Mean Longitude of the Ascending Node of the Moon $F_5$ or $\Omega$
+
+For more information, see the header file [fundarg.hpp](https://github.com/xanthospap/iers2010/blob/cleanup/src/fundarg.hpp). 
+Note that strictly speaking, to compute the arguments we should input time in 
+TDB; it is usually more convenient though to use TT, which makes no significant 
+difference (see [@iers2010, chap. 5.7.1]).
+
+Another set of (astronomic) arguments that is oftenly used, mainly with tidal 
+harmonics, are the **Doodson arguments**. These are:
+
+  * $\tau$, Time angle in lunar days reckoned from lower transit,
+  * $s$, Moon's mean longitude
+  * $h$, Sun's mean longitude
+  * $p$, Longitude of Moon's mean perigee
+  * $N'$, Negative longitude of Moon's mean node
+  * $p_l$ or $p_s$ ,Longitude of Sun's mean perigee
+
+Formulae for computing the Doodson arguments from Delaunay variables, are 
+given in [@iers1992, chap. 7, pg. 53-54] and are summarized below:
+
+\begin{align*}
+  \tau = \theta _g + \pi - s \\
+  s = F + \Omega\\
+  h = s - D\\
+  p = s - l\\
+  N' = - \Omega\\
+  p_l = s - D - l'
+\end{align*}
+
+where $\theta _g$ is the Greenwich Mean Sidereal Time expressed in angle units.
 
 ## Permanent Tide
 
