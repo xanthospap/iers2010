@@ -77,7 +77,8 @@ int dso::pole_tide_details::parse_desai02_coeffs(
   }
 
   int error = 0;
-  int l, m;
+  /* older versions of gcc complain about uninitialized l, m values */
+  int l = 0, m = 0;
   double data[4];
   while (fin.getline(line, SZ) && !error) {
     auto sz = std::strlen(line);

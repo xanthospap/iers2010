@@ -39,7 +39,8 @@ int dso::Aod1bIn::collect_coeffs(std::ifstream &fin, int max_degree,
   int error = 0;
   /* watch the order in the while condition! */
   while ((lines_parsed < max_lines) && (!error) && fin.getline(line, MAXL)) {
-    int l, m;
+    /* Older versions of gcc complain about uninitialized l, m values */ 
+    int l = 0, m = 0;
     const char *stop = line + std::strlen(line);
     auto res = std::from_chars(skipws(line), stop, l);
     error += (res.ec != std::errc{});
