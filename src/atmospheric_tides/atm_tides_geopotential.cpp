@@ -2,7 +2,7 @@
 #include "doodson.hpp"
 #include "iau.hpp"
 
-int dso::AtmosphericTides::stokes_coeffs(
+int dso::AtmosphericTide::stokes_coeffs(
     const dso::MjdEpoch &mjdtt, const dso::MjdEpoch &mjdut1,
     const double *const delaunay_args) noexcept {
   /* nullify geopotential coeffs */
@@ -19,12 +19,16 @@ int dso::AtmosphericTides::stokes_coeffs(
   /* iterate through individual constituents */
   for (const auto &wave : mwaves) {
     /* compute angle: θ(f) = Σ(i=1,6) n(i)*β(i) */
-    const double arg = wave.mdentry._d.argument(f) *+
-                       wave.mdentry._d.pifactor() * dso::DPI/2;
+    const double arg = wave.wave().doodson().argument(f) *+
+                       wave.wave().doodson().pifactor() * dso::DPI/2;
     const double carg = std::cos(arg);
     const double sarg = std::sin(arg);
-    mcs.Cnm() += wave.mCosCs.Cnm() * carg + wave.mSinCs.Cnm() * sarg;
-    mcs.Snm() += wave.mCosCs.Snm() * carg + wave.mSinCs.Snm() * sarg;
+    //mcs.Cnm() += wave.mCosCs.Cnm() * carg + wave.mSinCs.Cnm() * sarg;
+    //mcs.Snm() += wave.mCosCs.Snm() * carg + wave.mSinCs.Snm() * sarg;
+    mcs.Cnm() +=
+        wave.stokes_cos().Cnm() * carg + wave.stokes_sin().Cnm() * sarg;
+    mcs.Snm() +=
+        wave.stokes_cos().Snm() * carg + wave.stokes_sin().Snm() * sarg;
   }
 
   return 0;

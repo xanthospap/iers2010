@@ -4,8 +4,11 @@
 #include <fstream>
 #include <algorithm>
 #include <cstring>
-#include "doodson.hpp"
 #include <charconv>
+#include "eigen3/Eigen/Eigen"
+#include "doodson.hpp"
+#include "icgemio.hpp"
+#include "atmospheric_tides.hpp"
 
 namespace {
 /* given a file that contains two-column string, seperated by whitespace, 
@@ -96,11 +99,56 @@ std::vector<std::array<int,6>> resolve_doodson(const char *fn) noexcept {
   return dvec;
 }
 
+int parse_admittance(const char *fn, Eigen::MatrixXd &mat) noexcept {
+  std::ifstream fin(fn);
+  if (!fin.is_open()) {
+    fprintf(stderr, "[ERROR] Failed opening file %s (traceback: %s)\n", fn,
+            __func__);
+    return 1;
+  }
+
+  const int rows = mat.rows();
+  const int cols = mat.cols();
+
+  constexpr const int LSZ = 1024;
+  char line[LSZ];
+  int error = 0;
+  int row = 0;
+
+  while (fin.getline(line, LSZ) && (!error)) {
+    if (row > rows) {
+      fprintf(stderr,
+              "[ERROR] More rows than expected in admittance file %s "
+              "(traceback: %s)\n",
+              fn, __func__);
+      return 1;
+    }
+    auto sz = std::strlen(line);
+    const char *str = line;
+    for (int col = 0; col < cols; col++) {
+      auto res = std::from_chars(skipws(str), str + sz, mat(row, col));
+      error += (res.ec != std::errc{});
+      str = res.ptr;
+    }
+    ++row;
+  }
+
+  if (error) {
+    fprintf(
+        stderr,
+        "[ERROR] Failed resolving admittance from file %s (traceback: %s)\n",
+        fn, __func__);
+    return 1;
+  }
+
+  return 0;
+}
+
 struct GroopsTideModelFileName {
   char _model[24]={"\0"};
   dso::DoodsonConstituent _doodson;
   char _constituentName[8]={"\0"};
-  char _sinCos;
+  char _sinCos; /* 'c' or 's' */
 
   GroopsTideModelFileName(const char *fn) {
     int error = 0;
@@ -144,12 +192,85 @@ struct GroopsTideModelFileName {
     }
 
     /* the rest is the model name */
-      std::memcpy(_model, fn, lastchar);
+    std::memcpy(_model, fn, lastchar);
   }
 }; /* GroopsTideModelFileName */
 } /* unnamed namespace */
 
-int dso::atm_tide_from_groops(const char *file_list, const char *doodson,
+int atm_tide_from_groops(const char *file_list, const char *doodson,
                               const char *admittance,
-                              const char *data_dir) noexcept {
+                              const char *data_dir, 
+                              int max_degree, int max_order) noexcept {
+
+  /* parse file list from <model>_001_fileList.txt */
+  const auto flvec = resolve_file_list(file_list);
+  if (flvec.size() < 1) {
+    fprintf(stderr,
+            "[ERROR] Failed parsing file list from file %s (traceback: %s)\n",
+            file_list, __func__);
+    return 1;
+  }
+
+  if (flvec.size() / 2) {
+    fprintf(stderr,
+            "[ERROR] Expected even number of files in input file %s, found %ld "
+            "(traceback: %s)\n",
+            file_list, flvec.size(), __func__);
+    return 1;
+  }
+
+  /* tidal lines in tidal atlas (i.e. k) */
+  int k = flvec.size() / 2;
+
+  /* parse Doodson numbers; number of tidal waves (doodson numbers) is f */
+  const auto ddvec = resolve_doodson(doodson);
+  int f = ddvec.size();
+
+  /* admittance matrix A of size: (k,f) */
+  Eigen::MatrixXd A(k, f);
+  if (parse_admittance(admittance, A)) {
+    fprintf(stderr,
+            "[ERROR] Failed parsing admittance matrix from file %s (traceback: "
+            "%s)\n",
+            admittance, __func__);
+    return 1;
+  }
+
+  /* Create a new (empty) AtmosphericTide instance */
+  dso::AtmosphericTide atm;
+
+  /* iterate through input files (waves) and read/parse coefficients for each 
+   * of the k waves of the atlas
+   */
+  for (const auto &wave_fn : flvec) {
+    /* resolve filename */
+    GroopsTideModelFileName wave_info(wave_fn.c_str());
+    /* check if we already have the tidal wave (in AtmosphericTide instance) */
+    auto it = std::find_if(atm.wave_vector().begin(), atm.wave_vector().end(),
+                        [=](const dso::detail::AtmosphericTidalWave &w) {
+                          return w.wave().doodson() == wave_info._doodson;
+                        });
+    if (it == atm.wave_vector().end()) {
+      /* new tidal wave */
+      it = atm.append_wave(
+          dso::detail::TidalConstituentsArrayEntry(wave_info._doodson, 0e0, 0e0,
+                                                   wave_info._constituentName),
+          max_degree, max_order);
+    } else {
+      /* tidal wave already exists */
+      ;
+    }
+    /* an Icgem instance to read data from (Stokes coefficients) */
+    dso::Icgem icgem(wave_fn.c_str());
+    /* read coefficients to sin/cos part */
+    dso::StokesCoeffs *cs = &(it->stokes_cos());
+        //(wave_info._sinCos == 's') ? &(it->stokes_sin()) : &(it->stokes_cos());
+    if (icgem.parse_data(max_degree, max_order, dso::Icgem::Datetime::min(), *cs)) {
+      fprintf(stderr,
+              "[ERROR] Failed parsing Stokes coefficients of type \'%c\' from "
+              "file %s (traceback: %s)\n",
+              wave_info._sinCos, wave_fn.c_str(), __func__);
+      return 1;
+    }
+  }
 }

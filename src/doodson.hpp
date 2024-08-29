@@ -326,12 +326,47 @@ struct TidalConstituentsArrayEntry {
   DoodsonConstituent _d;
   double _per; /* period in [deg/hour] */
   double _hf; /* from IERS 2010, Table 6.7 and [2] */
-  const char _n[8]; /* name */
+  char _n[8]; /* name */
 }; /* TidalConstituentsArrayEntry */
 } /* namespace detail */
 
+class TidalWave {
+  static constexpr const int max_chars = 15; /* +1 for '\0' */
+
+  DoodsonConstituent _d;
+  double _per; /* period in [deg/hour] */
+  double _hf; /* height */
+  char _n[max_chars+1]; /* name */
+
+public:
+  
+  const DoodsonConstituent &doodson() const noexcept { return _d; }
+  DoodsonConstituent &doodson() noexcept { return _d; }
+  double period() const noexcept {return _per;}
+  double &period() noexcept {return _per;}
+  double height() const noexcept {return _hf;}
+  double &height() noexcept {return _hf;}
+  const char *name() const noexcept {return _n;}
+
+  TidalWave(const detail::TidalConstituentsArrayEntry &entry) noexcept
+      : _d(entry._d), _per(entry._per), _hf(entry._hf) {
+    std::strcpy(_n, entry._n);
+  }
+
+  TidalWave(const DoodsonConstituent &d, double per = 0e0, double hf = 0e0,
+            const char *name = nullptr) noexcept
+      : _d(d), _per(per), _hf(hf) {
+    std::memset(_n, '\0', max_chars + 1);
+    if (name) {
+      const int sz = std::strlen(name);
+      std::memcpy(_n, name, sz > max_chars ? max_chars : sz);
+    }
+  }
+}; /* TidalWave */
+
 /** Given a tidal constituent name, return its details */
-const detail::TidalConstituentsArrayEntry *get_wave(const char *name) noexcept;
+const detail::TidalConstituentsArrayEntry *find_wave_entry(const char *name) noexcept;
+TidalWave get_wave(const char *name) noexcept;
 
 /**
  * Refernces: 

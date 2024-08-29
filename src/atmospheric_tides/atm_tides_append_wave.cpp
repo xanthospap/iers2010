@@ -1,7 +1,7 @@
 #include "atmospheric_tides.hpp"
 #include <stdexcept>
 
-int dso::AtmosphericTides::append_wave(const char *aod1b_fn, int max_degree,
+int dso::AtmosphericTide::append_wave(const char *aod1b_fn, int max_degree,
                                        int max_order) noexcept {
   /* max degree and order collected */
   int mdeg_collected = 0;
@@ -17,13 +17,8 @@ int dso::AtmosphericTides::append_wave(const char *aod1b_fn, int max_degree,
     if (max_order < 0)
       max_order = aod1b.max_degree();
 
-    /* tidal wave in AOD1B file not resolved! */
-    if (!aod1b.tidal_wave())
-      return 1;
-
-    /* construct new instance */
-    dso::detail::AtmosphericTidalWave newWave(
-        aod1b.tidal_wave(), aod1b.GM(), aod1b.Re(), max_degree, max_order);
+    /* construct new instance (may throw if not resolved) */
+    dso::TidalWave newWave(aod1b.tidal_wave());
 
     /* parse coefficients */
     if (aod1b.get_tidal_wave_coeffs(newWave.mCosCs, newWave.mSinCs, max_degree,

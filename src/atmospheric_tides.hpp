@@ -16,26 +16,53 @@ namespace dso {
 
 namespace detail {
 class AtmosphericTidalWave {
-public:
-  TidalConstituentsArrayEntry mdentry;
+private:
+  TidalWave mwave;
   StokesCoeffs mCosCs;
   StokesCoeffs mSinCs;
+
+public:
+  const StokesCoeffs &stokes_sin() const noexcept { return mSinCs; }
+  StokesCoeffs &stokes_sin() noexcept { return mSinCs; }
+  const StokesCoeffs &stokes_cos() const noexcept { return mCosCs; }
+  StokesCoeffs &stokes_cos() noexcept { return mCosCs; }
+  TidalWave wave() const noexcept { return mwave; }
+  TidalWave &wave() noexcept { return mwave; }
   
   AtmosphericTidalWave(const TidalConstituentsArrayEntry *wave, double Gm,
                        double Re, int max_degree, int max_order) noexcept
-      : mdentry(*wave), mCosCs(max_degree, max_order, Gm, Re),
+      : mwave(*wave), mCosCs(max_degree, max_order, Gm, Re),
         mSinCs(max_degree, max_order, Gm, Re){};
+
+  AtmosphericTidalWave(const TidalWave &wave, int max_degree,
+                       int max_order) noexcept
+      : mwave(wave), mCosCs(max_degree, max_order),
+        mSinCs(max_degree, max_order) {};
 
 }; /* AtmosphericTidalWave */
 } /* namespace detail */
 
-class AtmosphericTides {
+class AtmosphericTide {
 private:
   std::vector<detail::AtmosphericTidalWave> mwaves;
   StokesCoeffs mcs;
 
 public:
+  auto find_tidal_wave(const DoodsonConstituent &doodson) const noexcept {
+    return std::find_if(mwaves.begin(), mwaves.end(),
+                        [=](const detail::AtmosphericTidalWave &w) {
+                          return w.wave().doodson() == doodson;
+                        });
+  }
+
+  const auto wave_vector() const noexcept { return mwaves; }
+  auto wave_vector() noexcept { return mwaves; }
+
   int append_wave(const char *aod1b_fn, int max_degree, int max_order) noexcept;
+
+  std::vector<detail::AtmosphericTidalWave>::iterator
+  append_wave(const TidalWave &wave, int max_degree,
+              int max_order);
 
   int stokes_coeffs(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
                     const double *const delaunay_args) noexcept;

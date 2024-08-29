@@ -130,16 +130,14 @@ public:
         m_order(0), _Cnm{0, 0}, _Snm{0, 0} {}
 
   /** Constructor given degree, order, GM and radius R */
-  StokesCoeffs(int n, int m, double GM, double Re)
-      : _GM(GM), _Re(Re), _cnormalized(true), m_degree(n), m_order(m),
-        _Cnm(n + 1, n + 1), _Snm(n + 1, n + 1) 
-  {
-  }
+  StokesCoeffs(int n, int m=-1, double GM=iers2010::GMe, double Re=iers2010::Re)
+      : _GM(GM), _Re(Re), _cnormalized(true), m_degree(n), 
+        m_order((m > 0) ? m : n), _Cnm(n + 1, n + 1), _Snm(n + 1, n + 1) {}
 
   /** Constructor given degree (n)*/
-  StokesCoeffs(int n, int m = -1)
-      : _GM(::iers2010::GMe), _Re(::iers2010::Re), _cnormalized(true), m_degree(n),
-        m_order((m > 0) ? m : n), _Cnm(n + 1, n + 1), _Snm(n + 1, n + 1) {}
+  //StokesCoeffs(int n, int m = -1, double GM=iers2010::GMe, double Re=iers2010::Re)
+  //    : _GM(::iers2010::GMe), _Re(::iers2010::Re), _cnormalized(true), m_degree(n),
+  //      m_order((m > 0) ? m : n), _Cnm(n + 1, n + 1), _Snm(n + 1, n + 1) {}
 
   /* @brief Resize to new degree/order, deleting currrent data.
    *
