@@ -3,30 +3,31 @@
  * Doodson numbers.
  *
  * References:
- * [1] https://ivscc.gsfc.nasa.gov/hfeop_wg/memos/memo-conventions_Ray_2017Dec10.pdf
+ * [1]
+ * https://ivscc.gsfc.nasa.gov/hfeop_wg/memos/memo-conventions_Ray_2017Dec10.pdf
  *
- * [2] Balidakis, K., Sulzbach, R., Shihora, L., Dahle, C., Dill, R., & 
- * Dobslaw, H. (2022). Atmospheric contributions to global ocean tides for 
- * satellite gravimetry. Journal of Advances in Modeling Earth Systems, 14, 
- * e2022MS003193. https://doi.org/10.1029/2022MS003193 
+ * [2] Balidakis, K., Sulzbach, R., Shihora, L., Dahle, C., Dill, R., &
+ * Dobslaw, H. (2022). Atmospheric contributions to global ocean tides for
+ * satellite gravimetry. Journal of Advances in Modeling Earth Systems, 14,
+ * e2022MS003193. https://doi.org/10.1029/2022MS003193
  *
- * [3] Henryk Dobslaw, Inga Bergmann-Wolf, Robert Dill, Lea Poropat, Frank 
- * Flechtner, GRACE 327-750 Gravity Recovery and Climate Experiment Product 
+ * [3] Henryk Dobslaw, Inga Bergmann-Wolf, Robert Dill, Lea Poropat, Frank
+ * Flechtner, GRACE 327-750 Gravity Recovery and Climate Experiment Product
  * Description Document for AOD1B Release 06 (Rev. 6.1, October 19, 2017),
  * GFZ German Research Centre for Geosciences Department 1: Geodesy
  */
 
-#ifndef __DOODSON_NUMBER_DEFINES_HPP__
-#define __DOODSON_NUMBER_DEFINES_HPP__
+#ifndef __DSO_DOODSON_NUMBER_DEFINES_HPP__
+#define __DSO_DOODSON_NUMBER_DEFINES_HPP__
 
 #include "datetime/calendar.hpp"
 #include "geodesy/units.hpp"
+#include <array>
 #include <cassert>
+#include <cctype>
 #include <cstring>
 #include <initializer_list>
 #include <stdexcept>
-#include <cctype>
-#include <array>
 
 namespace dso {
 
@@ -64,10 +65,10 @@ private:
    *   [z] -> -1           [l] -> 21
    *   [a] -> 10           [m] -> 22
    *
-   *  The function is case-insesitive, i.e. upper- and lower-case characters 
+   *  The function is case-insesitive, i.e. upper- and lower-case characters
    *  are accepted.
-   *  Note that this conversion ignores the '+5' convension usually followed 
-   *  when resolving Doodson numbers. If needed, subtract 5 from the resolved 
+   *  Note that this conversion ignores the '+5' convension usually followed
+   *  when resolving Doodson numbers. If needed, subtract 5 from the resolved
    *  int.
    */
   inline static constexpr int char2int(char c) {
@@ -100,21 +101,23 @@ private:
    *   [a] -> 10           [m] -> 22
    */
   inline static constexpr char int2char(int d) noexcept {
-    if(d < 0) return ('n'+(d+13));
-    if(d > 9) return ('a'+(d-10));
-    return ('0'+d);
+    if (d < 0)
+      return ('n' + (d + 13));
+    if (d > 9)
+      return ('a' + (d - 10));
+    return ('0' + d);
   }
 
 public:
   /* @brief Constructor given (optionally) an int array. Default values (if
    *        no array is given) are 0
    * @param[in] ar An array of 6 integers, interpreted as:
-   *  ar[0] multiplier for τ   
-   *  ar[1] multiplier for s   
-   *  ar[2] multiplier for h   
-   *  ar[3] multiplier for p   
-   *  ar[4] multiplier for N'  
-   *  ar[5] multiplier for p_s 
+   *  ar[0] multiplier for τ
+   *  ar[1] multiplier for s
+   *  ar[2] multiplier for h
+   *  ar[3] multiplier for p
+   *  ar[4] multiplier for N'
+   *  ar[5] multiplier for p_s
    */
   explicit DoodsonConstituent(const int *ar = nullptr) {
     if (ar)
@@ -139,12 +142,12 @@ public:
   /* @brief Constructor from initializer list (of ints)
    *        i.e. enables: DoodsonConstituent d(1,2,3,4,5,6);
    * @param[in] l An initializer list of 6 ints, interpreted as:
-   *   l[0] multiplier for τ   
-   *   l[1] multiplier for s   
-   *   l[2] multiplier for h   
-   *   l[3] multiplier for p   
-   *   l[4] multiplier for N'  
-   *   l[5] multiplier for p_s 
+   *   l[0] multiplier for τ
+   *   l[1] multiplier for s
+   *   l[2] multiplier for h
+   *   l[3] multiplier for p
+   *   l[4] multiplier for N'
+   *   l[5] multiplier for p_s
    */
   constexpr DoodsonConstituent(std::initializer_list<int> l) noexcept {
     assert(l.size() == 6);
@@ -167,7 +170,7 @@ public:
    * @param[in] pifactor : π-factor
    */
   constexpr DoodsonConstituent(int a0, int a1, int a2, int a3, int a4, int a5,
-                               double pifactor=0) noexcept {
+                               double pifactor = 0) noexcept {
     iar[0] = a0;
     iar[1] = a1;
     iar[2] = a2;
@@ -178,7 +181,7 @@ public:
   }
 
   /* @brief Transform to a Doodson-number string as: "xxx.xxx"
-   * 
+   *
    * For integers that are <0 or >9, we follow the GROOPS convention, i.e.:
    *   [n] -> -13 [0] -> 0 [a] -> 10
    *   [o] -> -12 [1] -> 1 [b] -> 11
@@ -200,7 +203,7 @@ public:
    *            place (i.e. write the string as: τ,s+5,h+5,p+5,N'+5,ps+5)
    * @return A pointer to the start of the string, i.e. to buf
    */
-  char *str(char *buf, bool use_5s_convention=true) const noexcept;
+  char *str(char *buf, bool use_5s_convention = true) const noexcept;
 
   /* @brief Get Doodson multipler/integer at position i */
   int operator()(int i) const noexcept {
@@ -218,7 +221,7 @@ public:
     return iar[i];
   }
 
-  double pifactor() const noexcept {return pifac;}
+  double pifactor() const noexcept { return pifac; }
 
   /* @brief Equality comparisson */
   bool operator==(const DoodsonConstituent &other) const noexcept {
@@ -255,44 +258,43 @@ public:
     return (this->same_group(other) && (iar[2] == other.iar[2]));
   }
 
-  /** @brief Compute the 'angular' argument (ARGUMENT) 
+  /** @brief Compute the 'angular' argument (ARGUMENT)
    *
-   * The argument is often designated as ARGUMENT in the iERS standards and 
-   * often is also called 'phase'. 
-   * The computation formula is: 
+   * The argument is often designated as ARGUMENT in the iERS standards and
+   * often is also called 'phase'.
+   * The computation formula is:
    *           θ_f = Σ(β_i * n_i), i=1,..,6
    * where:
-   * β_i are the [τ, s, h, p, N', pl] arguments (e.g. derived from Delaunay 
+   * β_i are the [τ, s, h, p, N', pl] arguments (e.g. derived from Delaunay
    * arguments plus GMST) and n_i are the Doodson multipliers.
    *
    * @return Angular argument in [rad], within the range [0,2π).
    */
-  double
-  argument(const double *const doodson_arguments) const noexcept {
+  double argument(const double *const doodson_arguments) const noexcept {
     const double *__restrict__ f = doodson_arguments;
     return dso::anp(f[0] * iar[0] + f[1] * iar[1] + f[2] * iar[2] +
                     f[3] * iar[3] + f[4] * iar[4] + f[5] * iar[5]);
   }
 
-  const int *int_array() const noexcept {return iar;}
+  const int *int_array() const noexcept { return iar; }
 
 }; /* DoodsonConstituent */
 
 /** @brief Resolve a string of type: '272.556' to a Doodson number/wave.
  *
- * This is how waves are usually denoted in the IERS 2010 standards, using 
+ * This is how waves are usually denoted in the IERS 2010 standards, using
  * the Doodson convention.
  *
- * The input string does not have to be null-terminated. Only the first 
- * 7 characters will be considered, AFTER ommiting any leading whitespace 
- * characters. Hence, the string can start with any number of whitespaces 
+ * The input string does not have to be null-terminated. Only the first
+ * 7 characters will be considered, AFTER ommiting any leading whitespace
+ * characters. Hence, the string can start with any number of whitespaces
  * wchich will be skipped.
  *
- * Note that IERS 2010 Dooson strings comply with the  '+5' convnention, 
- * i.e. the actual multipliers are the integers given minus 5 (except for 
+ * Note that IERS 2010 Dooson strings comply with the  '+5' convnention,
+ * i.e. the actual multipliers are the integers given minus 5 (except for
  * the first one).
  */
-DoodsonConstituent resolve_iers10_doodson_string(const char*);
+DoodsonConstituent resolve_iers10_doodson_string(const char *);
 
 /* @brief Fundamental (Delaunay) arguments to Doodson variables.
  * All angles are in [rad] in the range [0,2π)
@@ -301,7 +303,7 @@ DoodsonConstituent resolve_iers10_doodson_string(const char*);
  *             [l, lp, f, d, Ω], see notes.
  * @param[out] doodson Corresponding Doodson variables, in the order
  *             [τ, s, h, p, N', ps]
- * 
+ *
  * @note Explanation of symbols used:
  *   * [0] l  : Mean anomaly of the Moon [rad]
  *   * [1] lp : Mean anomaly of the Sun [rad]
@@ -317,7 +319,7 @@ DoodsonConstituent resolve_iers10_doodson_string(const char*);
  *   * [5] pl : Longitude of Sun's mean perigee [rad]; often also noted as p_s
  */
 inline double *delaunay2doodson(const double *const fundarg, double gmst,
-                           double *doodson) noexcept {
+                                double *doodson) noexcept {
   doodson[1] = dso::anp(fundarg[2] + fundarg[4]);
   doodson[2] = dso::anp(fundarg[2] + fundarg[4] - fundarg[3]);
   doodson[3] = dso::anp(fundarg[2] + fundarg[4] - fundarg[0]);
@@ -328,25 +330,25 @@ inline double *delaunay2doodson(const double *const fundarg, double gmst,
 }
 
 namespace detail {
-  /** @class
-   * This class is the same as TidalWave with the only difference of a const 
-   * char member. This allows for constexpr construction, and is therefor 
-   * only used for constructing compile-time TidalWave's.
-   * An instance of this class can be used to construct an instance of type 
-   * TidalWave.
-   */
+/** @class
+ * This class is the same as TidalWave with the only difference of a const
+ * char member. This allows for constexpr construction, and is therefor
+ * only used for constructing compile-time TidalWave's.
+ * An instance of this class can be used to construct an instance of type
+ * TidalWave.
+ */
 struct TidalConstituentArrayEntry {
   DoodsonConstituent _d;
   double _per; /* period in [deg/hour] */
-  double _hf; /* from IERS 2010, Table 6.7 and [2] */
-  char _n[8]; /* name */
+  double _hf;  /* from IERS 2010, Table 6.7 and [2] */
+  char _n[8];  /* name */
   const DoodsonConstituent &doodson() const noexcept { return _d; }
   DoodsonConstituent &doodson() noexcept { return _d; }
-  double period() const noexcept {return _per;}
-  double &period() noexcept {return _per;}
-  double height() const noexcept {return _hf;}
-  double &height() noexcept {return _hf;}
-  const char *name() const noexcept {return _n;}
+  double period() const noexcept { return _per; }
+  double &period() noexcept { return _per; }
+  double height() const noexcept { return _hf; }
+  double &height() noexcept { return _hf; }
+  const char *name() const noexcept { return _n; }
 }; /* TidalConstituentsArrayEntry */
 
 /* Atmospheric tidal waves as described in [2].
@@ -396,21 +398,20 @@ class TidalWave {
   static constexpr const int max_chars = 15; /* +1 for '\0' */
 
   DoodsonConstituent _d;
-  double _per; /* period in [deg/hour] */
-  double _hf; /* height */
-  char _n[max_chars+1]; /* name */
+  double _per;            /* period in [deg/hour] */
+  double _hf;             /* height */
+  char _n[max_chars + 1]; /* name */
 
 public:
-  
   const DoodsonConstituent &doodson() const noexcept { return _d; }
   DoodsonConstituent &doodson() noexcept { return _d; }
-  double period() const noexcept {return _per;}
-  double &period() noexcept {return _per;}
-  double height() const noexcept {return _hf;}
-  double &height() noexcept {return _hf;}
-  const char *name() const noexcept {return _n;}
+  double period() const noexcept { return _per; }
+  double &period() noexcept { return _per; }
+  double height() const noexcept { return _hf; }
+  double &height() noexcept { return _hf; }
+  const char *name() const noexcept { return _n; }
 
-  TidalWave()noexcept{};
+  TidalWave() noexcept {};
 
   TidalWave(const detail::TidalConstituentArrayEntry &entry) noexcept
       : _d(entry._d), _per(entry._per), _hf(entry._hf) {
@@ -429,7 +430,8 @@ public:
 }; /* TidalWave */
 
 /** Given a tidal constituent name, return its details */
-const detail::TidalConstituentArrayEntry *find_wave_entry(const char *name) noexcept;
+const detail::TidalConstituentArrayEntry *
+find_wave_entry(const char *name) noexcept;
 TidalWave get_wave(const char *name);
 } /* namespace dso */
 #endif
