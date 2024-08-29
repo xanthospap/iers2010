@@ -309,14 +309,15 @@ int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
       const char *r = header_field(line + 12, sz);
       char buf[8] = "\0";
       std::memcpy(buf, r, sizeof(char) * sz);
-      mdentry = dso::get_wave(buf);
-      if (!mdentry) {
+      const auto *waveptr = dso::find_wave_entry(buf);
+      if (!waveptr) {
         fprintf(stderr,
                 "[ERROR] Failed resolving tidal wave from AOD1B file %s "
                 "(traceback: %s)\n",
                 mfn.c_str(), __func__);
         ++error;
       }
+      mwave = *waveptr;
     } else if (!std::strncmp(line, "END OF HEADER", 13)) {
       break;
     } else {

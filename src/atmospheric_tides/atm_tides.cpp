@@ -2,13 +2,14 @@
 #include <cstdio>
 #include <stdexcept>
 
-std::vector<dso::TidalWave>::iterator
+std::vector<dso::detail::AtmosphericTidalWave>::iterator
 dso::AtmosphericTide::append_wave(
     const dso::TidalWave &wave, int max_degree,
     int max_order) {
   if (auto it = find_tidal_wave(wave.doodson()); it == mwaves.end()) {
     /* add new constituent */
-    mwaves.emplace_back(dso::TidalWave(&wave, max_degree, max_order));
+    mwaves.emplace_back(
+        dso::detail::AtmosphericTidalWave(wave, max_degree, max_order));
   } else {
     /* this doodson number (wave) already exists */
     char buf[8] = "\0";

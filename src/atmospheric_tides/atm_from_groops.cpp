@@ -199,7 +199,7 @@ struct GroopsTideModelFileName {
 
 int atm_tide_from_groops(const char *file_list, const char *doodson,
                               const char *admittance,
-                              const char *data_dir, 
+                              [[maybe_unused]]const char *data_dir, 
                               int max_degree, int max_order) noexcept {
 
   /* parse file list from <model>_001_fileList.txt */
@@ -252,19 +252,21 @@ int atm_tide_from_groops(const char *file_list, const char *doodson,
                         });
     if (it == atm.wave_vector().end()) {
       /* new tidal wave */
-      it = atm.append_wave(
-          dso::detail::TidalConstituentsArrayEntry(wave_info._doodson, 0e0, 0e0,
-                                                   wave_info._constituentName),
-          max_degree, max_order);
+      it = atm.append_wave(dso::TidalWave(wave_info._doodson, 0e0, 0e0,
+                                          wave_info._constituentName),
+                           max_degree, max_order);
     } else {
       /* tidal wave already exists */
       ;
     }
+    
     /* an Icgem instance to read data from (Stokes coefficients) */
     dso::Icgem icgem(wave_fn.c_str());
+    
     /* read coefficients to sin/cos part */
-    dso::StokesCoeffs *cs = &(it->stokes_cos());
-        //(wave_info._sinCos == 's') ? &(it->stokes_sin()) : &(it->stokes_cos());
+    dso::StokesCoeffs *cs =
+      (wave_info._sinCos == 's') ? &(it->stokes_sin()) : &(it->stokes_cos());
+
     if (icgem.parse_data(max_degree, max_order, dso::Icgem::Datetime::min(), *cs)) {
       fprintf(stderr,
               "[ERROR] Failed parsing Stokes coefficients of type \'%c\' from "
@@ -273,4 +275,6 @@ int atm_tide_from_groops(const char *file_list, const char *doodson,
       return 1;
     }
   }
+
+  return 0;
 }

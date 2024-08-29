@@ -52,9 +52,9 @@ int main(int argc, char *argv[]) {
   }
 
   /* an AtmosphericTides instance */
-  dso::AtmosphericTides atm;
+  dso::AtmosphericTide atm;
 
-  /* apend S1 wave */
+  /* apend S1 wave (from AOD1b product file) */
   if (atm.append_wave(argv[2], DEGREE, ORDER)) {
     fprintf(stderr, "ERROR. Failed appending atmospheric tide from file %s\n",
             argv[2]);

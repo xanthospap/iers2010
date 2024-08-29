@@ -132,7 +132,7 @@ private:
   /** Time of last data block in TT */
   Datetime<nanoseconds> mlast_epoch;
   /** Only for TIDAL files */
-  const detail::TidalConstituentsArrayEntry *mdentry;
+  TidalWave mwave;
   
   /** Read and parse an AOD1B header block, assigning info to the instance */
   int read_header(std::ifstream &fin) noexcept;
@@ -233,9 +233,7 @@ public:
   Datetime<nanoseconds> &first_epoch() noexcept { return mfirst_epoch; }
   Datetime<nanoseconds> last_epoch() const noexcept { return mlast_epoch; }
   Datetime<nanoseconds> &last_epoch() noexcept { return mlast_epoch; }
-  const detail::TidalConstituentsArrayEntry *tidal_wave() const {
-    return mdentry;
-  }
+  TidalWave tidal_wave() const { return mwave; }
 
   /** @brief Constructor from AOD1B filename.
    *

@@ -23,7 +23,7 @@ dso::Aod1bIn::Aod1bIn(const dso::Aod1bIn &other) noexcept
       mcoeff_normalized(other.mcoeff_normalized), mGM(other.mGM),
       mRe(other.mRe), mflat(other.mflat), momega(other.momega),
       mnum_data_sets(other.mnum_data_sets), mtime_epoch(other.mtime_epoch),
-      mfirst_epoch(other.mfirst_epoch), mlast_epoch(other.mlast_epoch) {
+      mfirst_epoch(other.mfirst_epoch), mlast_epoch(other.mlast_epoch), mwave(other.mwave) {
   std::memcpy(charArena, other.charArena, sizeof(char) * 80);
 }
 
@@ -36,7 +36,7 @@ dso::Aod1bIn::Aod1bIn(dso::Aod1bIn &&other) noexcept
       mcoeff_normalized(other.mcoeff_normalized), mGM(other.mGM),
       mRe(other.mRe), mflat(other.mflat), momega(other.momega),
       mnum_data_sets(other.mnum_data_sets), mtime_epoch(other.mtime_epoch),
-      mfirst_epoch(other.mfirst_epoch), mlast_epoch(other.mlast_epoch) {
+      mfirst_epoch(other.mfirst_epoch), mlast_epoch(other.mlast_epoch), mwave(other.mwave) {
   std::memcpy(charArena, other.charArena, sizeof(char) * 80);
 }
 
@@ -58,6 +58,7 @@ dso::Aod1bIn &dso::Aod1bIn::operator=(const dso::Aod1bIn &other) noexcept {
     mtime_epoch = other.mtime_epoch;
     mfirst_epoch = other.mfirst_epoch;
     mlast_epoch = other.mlast_epoch;
+    mwave = other.mwave;
     std::memcpy(charArena, other.charArena, sizeof(char) * 80);
   }
   return *this;
@@ -81,6 +82,7 @@ dso::Aod1bIn &dso::Aod1bIn::operator=(dso::Aod1bIn &&other) noexcept {
     mtime_epoch = other.mtime_epoch;
     mfirst_epoch = other.mfirst_epoch;
     mlast_epoch = other.mlast_epoch;
+    mwave = other.mwave;
     std::memcpy(charArena, other.charArena, sizeof(char) * 80);
   }
   return *this;
