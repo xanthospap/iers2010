@@ -11,8 +11,8 @@ namespace fs = std::filesystem;
 
 namespace {
 
-constexpr const int FES14B_MAX_DEGREE = 180;
-constexpr const int FES14B_MAX_ORDER = 180;
+constexpr const int OC_MAX_DEGREE = 180;
+constexpr const int OC_MAX_ORDER = 180;
 
 /* (Darwin?) names of all FES2014b tidal waves; corresponding files should
  * be available to "load" the model.
@@ -53,18 +53,20 @@ dso::OceanTide dso::initFes2014bFromIcgem(const char *dir,
                                           int max_degree, int max_order) {
 
   /* check max degree/order */
-  if (max_degree < max_order || max_degree > FES14B_MAX_DEGREE ||
-      max_order > FES14B_MAX_ORDER) {
+  if (max_degree < max_order || max_degree > OC_MAX_DEGREE ||
+      max_order > OC_MAX_ORDER) {
     fprintf(stderr,
-            "[ERROR] Invalid degree/order provided for loading FES2014b model "
+            "[ERROR] Invalid degree/order provided for ocean loading model "
             "(traceback: %s)\n",
             __func__);
     throw std::runtime_error(
-        "Invalid degree/order provided for loading FES2014b model\n");
+        "Invalid degree/order provided for ocean loading model\n");
   }
 
-  dso::OceanTide fes14b;
-  fes14b.reserve(fes14b_waves.size());
+  if (max_degree < 0) max_degree = OC_MAX_DEGREE;
+  if (max_order < 0) max_order = OC_MAX_ORDER;
+
+  dso::OceanTide octide;
   int error = 0;
 
   /* make sure we have a valid directory */
@@ -91,8 +93,8 @@ dso::OceanTide dso::initFes2014bFromIcgem(const char *dir,
     for (const auto &wave_name : fes14b_waves) {
       /* resolving/adding new wave/constituent */
       dso::DoodsonConstituent doodson;
-      fes14b.append_wave(doodson, max_degree, max_order);
-      auto it = fes14b.waves().end() - 1;
+      //fes14b.append_wave(doodson, max_degree, max_order);
+      //auto it = fes14b.waves().end() - 1;
 
       /* first get coefficients for sin component */
       try {

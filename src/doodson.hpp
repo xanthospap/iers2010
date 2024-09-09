@@ -15,6 +15,20 @@
  * Flechtner, GRACE 327-750 Gravity Recovery and Climate Experiment Product
  * Description Document for AOD1B Release 06 (Rev. 6.1, October 19, 2017),
  * GFZ German Research Centre for Geosciences Department 1: Geodesy
+ *
+ * [4] Daniel Rieser, Torsten Mayer-G¨urr, Roman Savcenko, Wolfgang Bosch, 
+ * Johann W¨unsch, Christoph Dahle and Frank Flechtner, The ocean tide model 
+ * EOT11a in spherical harmonics representation, Technical Note, July 2012,
+ * https://www.tugraz.at/fileadmin/user_upload/Institute/IFG/satgeo/pdf/TN_EOT11a.pdf
+ *
+ * [5] Torsten Mayer-Guerr, 00README_simulation.txt, available from the data 
+ * download area for the COST-G benchmark test, see [6]
+ *
+ * [6] Lasser, M., Meyer, U., Jäggi, A., Mayer-Gürr, T., Kvas, A., Neumayer,
+ * K. H., Dahle, C., Flechtner, F., Lemoine, J.-M., Koch, I., Weigelt, M.,
+ * and Flury, J.: Benchmark data for verifying background model
+ * implementations in orbit and gravity field determination software,
+ * Adv. Geosci., 55, 1–11, https://doi.org/10.5194/adgeo-55-1-2020, 2020.
  */
 
 #ifndef __DSO_DOODSON_NUMBER_DEFINES_HPP__
@@ -341,7 +355,7 @@ struct TidalConstituentArrayEntry {
   DoodsonConstituent _d;
   double _per; /* period in [deg/hour] */
   double _hf;  /* from IERS 2010, Table 6.7 and [2] */
-  char _n[8];  /* name */
+  char _n[16];  /* name */
   const DoodsonConstituent &doodson() const noexcept { return _d; }
   DoodsonConstituent &doodson() noexcept { return _d; }
   double period() const noexcept { return _per; }
@@ -354,44 +368,100 @@ struct TidalConstituentArrayEntry {
 /* Atmospheric tidal waves as described in [2].
  * Note that we have no information on the Dooson-Warburg correction here.
  */
-constexpr static std::array<dso::detail::TidalConstituentArrayEntry, 16>
+constexpr static std::array<TidalConstituentArrayEntry, 18>
     AtmosphericTidalHarmonics = {
-        {{/*162.556*/ dso::DoodsonConstituent(1, 1, -3, 0, 0, 1, -1.0e+00),
+        {{/*162.556*/ DoodsonConstituent(1, 1, -3, 0, 0, 1, -1.0e+00),
           14.917866090000, 0.00, "π1"},
-         {/*163.555*/ dso::DoodsonConstituent(1, 1, -2, 0, 0, 0, -1.0e+00),
+         {/*163.555*/ DoodsonConstituent(1, 1, -2, 0, 0, 0, -1.0e+00),
           14.958932770000, 0.00, "P1"},
          // as in [2]
-         //{/*164.556*/ dso::DoodsonConstituent(1, 1, -1, 0, 0, 1, +1.0e+00),
+         //{/*164.556*/ DoodsonConstituent(1, 1, -1, 0, 0, 1, +1.0e+00),
          // 15.000001410000, 0.00, "S1"},
          /* as in [3] */
-         {/*164.556*/ dso::DoodsonConstituent(1, 1, -1, 0, 0, 0, +2.0e+00),
+         {/*164.556*/ DoodsonConstituent(1, 1, -1, 0, 0, 0, +2.0e+00),
           15.000001410000, 0.00, "S1"},
-         {/*165.555*/ dso::DoodsonConstituent(1, 1, 0, 0, 0, 0, +1.0e+00),
+         {/*165.555*/ DoodsonConstituent(1, 1, 0, 0, 0, 0, +1.0e+00),
           15.041070050000, 0.00, "K1"},
-         {/*166.554*/ dso::DoodsonConstituent(1, 1, 1, 0, 0, -1, +1.0e+00),
+         {/*166.554*/ DoodsonConstituent(1, 1, 1, 0, 0, -1, +1.0e+00),
           15.082136730000, 0.00, "ψ1"},
-         {/*255.555*/ dso::DoodsonConstituent(2, 0, 0, 0, 0, 0, +0.0e+00),
+         {/*255.555*/ DoodsonConstituent(2, 0, 0, 0, 0, 0, +0.0e+00),
           28.984107050000, 0.00, "M2"},
-         {/*272.556*/ dso::DoodsonConstituent(2, 2, -3, 0, 0, 1, +0.0e+00),
+         {/*272.556*/ DoodsonConstituent(2, 2, -3, 0, 0, 1, +0.0e+00),
           29.958936140000, 0.00, "T2"},
-         {/*273.555*/ dso::DoodsonConstituent(2, 2, -2, 0, 0, 0, -1.0e+00),
+         {/*273.555*/ DoodsonConstituent(2, 2, -2, 0, 0, 0, -1.0e+00),
           30.000002820000, 0.00, "S2"},
-         {/*274.554*/ dso::DoodsonConstituent(2, 2, -1, 0, 0, -1, +2.0e+00),
+         {/*274.554*/ DoodsonConstituent(2, 2, -1, 0, 0, -1, +2.0e+00),
           30.041069500000, 0.00, "R2"},
-         {/*275.555*/ dso::DoodsonConstituent(2, 2, 0, 0, 0, 0, +0.0e+00),
+         {/*275.555*/ DoodsonConstituent(2, 2, 0, 0, 0, 0, +0.0e+00),
           30.082140100000, 0.00, "K2"},
-         {/*381.555*/ dso::DoodsonConstituent(3, 3, -4, 0, 0, 0, +0.0e+00),
+          /* extraced from [3] Table 5.1 */
+         {/*245.655*/ DoodsonConstituent(2, -1, 0, 1, 0, 0, +0.0e+00), 
+          28.439729500000, 0.00, "N2"},
+          /* extraced from [3] Table 5.1 */
+         {/*265.455*/ DoodsonConstituent(2, 1, 0, -1, 0, 0, +2.0e+00), 
+          28.439729500000, 0.00, "L2"},
+         {/*381.555*/ DoodsonConstituent(3, 3, -4, 0, 0, 0, +0.0e+00),
           44.958935590000, 0.00, "T3"},
-         {/*382.555*/ dso::DoodsonConstituent(3, 3, -3, 0, 0, 0, +2.0e+00),
+         {/*382.555*/ DoodsonConstituent(3, 3, -3, 0, 0, 0, +2.0e+00),
           45.000004230000, 0.00, "S3"},
-         {/*383.555*/ dso::DoodsonConstituent(3, 3, -2, 0, 0, 0, +0.0e+00),
+         {/*383.555*/ DoodsonConstituent(3, 3, -2, 0, 0, 0, +0.0e+00),
           45.041072870000, 0.00, "R3"},
-         {/*491.555*/ dso::DoodsonConstituent(4, 4, -4, 0, 0, 0, +0.0e+00),
+         {/*491.555*/ DoodsonConstituent(4, 4, -4, 0, 0, 0, +0.0e+00),
           60.000005640000, 0.00, "S4"},
-         {/*5100.555*/ dso::DoodsonConstituent(5, 5, -5, 0, 0, 0, +0.0e+00),
+         {/*5100.555*/ DoodsonConstituent(5, 5, -5, 0, 0, 0, +0.0e+00),
           75.000007050000, 0.00, "S5"},
-         {/*611-1.555*/ dso::DoodsonConstituent(6, 6, -6, 0, 0, 0, +0.0e+00),
+         {/*611-1.555*/ DoodsonConstituent(6, 6, -6, 0, 0, 0, +0.0e+00),
           90.000008460000, 0.00, "S6"}}}; /* AtmosphericTidalHarmonics */
+
+constexpr static std::array<TidalConstituentArrayEntry, 34>
+  OceanicTidalHarmonics = {
+{{/*055.565*/DoodsonConstituent(0,0,0,0,1,0,2e0),  0e0, 0e0, "Omega1"},/* [4] and [5], EOT11 */
+ {/*055.575*/DoodsonConstituent(0,0,0,0,2,0,0),    0e0, 0e0, "Omega2"},/* [4] and [5], EOT11 */
+ {/*056.554*/DoodsonConstituent(0,0,1,0,0,-1,0),   0e0, 0e0, "Sa"    },/* [4] and [5], EOT11 */
+ {/*057.555*/DoodsonConstituent(0,0,2,0,0,0,0),    0e0, 0e0, "Ssa"   },/* [4] and [5], EOT11 */
+ {/*065.455*/DoodsonConstituent(0,1,0,-1,0,0,0),   0e0, 0e0, "Mm"    },/* [4] and [5], EOT11 */
+ {/*075.555*/DoodsonConstituent(0,2,0,0,0,0,0),    0e0, 0e0, "Mf"    },/* [4] and [5], EOT11 */
+ {/*085.455*/DoodsonConstituent(0,3,0,-1,0,0,0),   0e0, 0e0, "Mtm"   },/* [4] and [5], EOT11 */
+ {/*093.555*/DoodsonConstituent(0,4,-2,0,0,0,0),   0e0, 0e0, "Msqm"  },/* [4] and [5], EOT11 */
+ 
+ {/*135.655*/DoodsonConstituent(1,-2,0,1,0,0,-1e0), 0e0, 0e0, "Q1"   },/* [4] and [5], EOT11 */
+ {/*145.555*/DoodsonConstituent(1,-1,0,0,0,0,-1e0), 0e0, 0e0, "O1"   },/* [4] and [5], EOT11 */
+ {/*163.555*/DoodsonConstituent(1,1,-2,0,0,0,-1e0), 0e0, 0e0, "P1"   },/* [4] and [5], EOT11 */
+ {/*165.555*/DoodsonConstituent(1,1,0,0,0,0,+1e0),  0e0, 0e0, "K1"   },/* [4] and [5], EOT11 */
+ {/*164.555*/DoodsonConstituent(1,1,-1,0,0,0,+2e0), 0e0, +0e+00, "S1"},/* [5] */
+ {/*175.455*/DoodsonConstituent(1,2,0,-1,0,0,+1e0), 0e0, +0e+00, "J1"},/* [5] */
+
+ 
+ {/*235.755*/DoodsonConstituent(2,-2,0,2,0,0,0),   0e0, 0e0, "2N2"   },/* [4] and [5], EOT11 */
+ {/*245.655*/DoodsonConstituent(2,-1,0,1,0,0,0),   0e0, 0e0, "N2"    },/* [4] and [5], EOT11 */
+ {/*255.555*/DoodsonConstituent(2,0,0,0,0,0,0),    0e0, 0e0, "M2"    },/* [4] and [5], EOT11 */
+ {/*273.555*/DoodsonConstituent(2,2,-2,0,0,0,0),   0e0, 0e0, "S2"    },/* [4] and [5], EOT11 */
+ {/*275.555*/DoodsonConstituent(2,2,0,0,0,0,0),    0e0, 0e0, "K2"    },/* [4] and [5], EOT11 */
+ {/*272.556*/DoodsonConstituent(2,2,-3,0,0,1,0),   0e0, +0e+00,   "T2" },/* [5] */
+ {/*227.655*/DoodsonConstituent(2,-3,2,1,0,0,0),   0e0, +0e+00,   "Epsilon2"},/* [5] */
+ {/*237.555*/DoodsonConstituent(2,-2,2,0,0,0,0),   0e0, +0e+00,   "Mu2"}, /* [5] */
+ {/*247.455*/DoodsonConstituent(2,-1,2,-1,0,0,0),  0e0, +0e+00,   "Nu2"},/* [5] */
+ {/*263.655*/DoodsonConstituent(2,1,-2,1,0,0,+2e0), 0e0, +0e+00,  "La2"},/* [5] */
+ {/*265.455*/DoodsonConstituent(2,1,0,-1,0,0,+2e0), 0e0, +0e+00,  "L2"},/* [5] */
+ {/*274.554*/DoodsonConstituent(2,2,-1,0,0,-1,+2e0), 0e0, +0e+00, "R2"},/* [5] */
+
+ {/*355.555*/DoodsonConstituent(3,0,0,0,0,0,+2e0), 0e0, +0e+00, "M3"},/* [5] */
+ 
+ {/*455.555*/DoodsonConstituent(4,0,0,0,0,0,0),  0e0, 0e0,    "M4"    },/* [4] and [5], EOT11 */
+ {/*435.755*/DoodsonConstituent(4,-2,0,2,0,0,0), 0e0, +0e+00, "N4"},/* [5] */
+ {/*445.655*/DoodsonConstituent(4,-1,0,1,0,0,0), 0e0, +0e+00, "Mn4"},/* [5] */
+ {/*473.555*/DoodsonConstituent(4,2,-2,0,0,0,0), 0e0, +0e+00, "Ms4"},/* [5] */
+ {/*491.555*/DoodsonConstituent(4,4,-4,0,0,0,0), 0e0, +0e+00, "S4"},/* [5] */
+
+ {/*655.555*/DoodsonConstituent(6,0,0,0,0,0,0),  0e0, +0e+00, "M6"},/* [5] */
+ 
+ {/*855.555*/DoodsonConstituent(8,0,0,0,0,0,0),  0e0, +0e+00, "M8"},/* [5] */
+}};
+
+const TidalConstituentArrayEntry *
+match_ocean_tide_wave(const DoodsonConstituent &wave) noexcept;
+const TidalConstituentArrayEntry *
+match_ocean_tide_wave(const char *wave) noexcept;
 } /* namespace detail */
 
 class TidalWave {

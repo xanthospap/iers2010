@@ -109,11 +109,14 @@ public:
  * follow Eq. (28) of [4].
  */
 class AtmosphericTide {
+  static constexpr const int NAME_MAX_CHARS = 64;
 private:
   /* list of tidal constituents (waves) included in the model */
   std::vector<detail::AtmosphericTidalWave> mwaves;
   /* Stokes coeffs to hold (if needed) the accumulated effect of all waves */
   StokesCoeffs mcs;
+  /* name of the model */
+  char mname[NAME_MAX_CHARS] = {'\0'};
 
 public:
   /* @brief Search the list of tidal constituent for a specific wave.
