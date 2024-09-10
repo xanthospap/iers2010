@@ -58,6 +58,24 @@ private:
   char mname[NAME_MAX_CHARS] = {'\0'};
 
 public:
+  
+  int max_atlas_degree(int &max_order) const noexcept {
+    int max_degree = 0;
+    max_order = 0;
+    for (const auto &w : mwaves) {
+      max_degree = std::max(max_degree, w.stokes_cos().max_degree());
+      max_order  = std::max(max_order, w.stokes_cos().max_order());
+    }
+    return max_degree;
+  }
+  int max_atlas_degree() const noexcept {
+    int max_degree = 0;
+    for (const auto &w : mwaves) {
+      max_degree = std::max(max_degree, w.stokes_cos().max_degree());
+    }
+    return max_degree;
+  }
+  
   /* @brief Search the list of tidal constituent for a specific wave.
    *
    * Given a Doodson number, search through the list of constituents included
@@ -112,7 +130,7 @@ public:
   append_wave(const TidalWave &wave, int max_degree, int max_order);
 }; /* TideAtlas */
 
-TideAtlas groops_atlas(const char *fn, int max_degree=-1, int max_order=-1);
+TideAtlas groops_atlas(const char *fn, const char *dir, int max_degree=-1, int max_order=-1);
 
 } /* namespace dso */
 

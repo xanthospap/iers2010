@@ -64,6 +64,16 @@ public:
   const TideAtlas &atlas() const noexcept {return matlas;}
   TideAtlas &atlas() noexcept {return matlas;}
 
+  AtmosphericTide(const TideAtlas &atlas, const char *name = nullptr)
+      : matlas(atlas), mcs(atlas.max_atlas_degree()) {
+    int max_order;
+    int max_degree = matlas.max_atlas_degree(max_order);
+    if (max_order < max_degree)
+      mcs.resize(max_degree, max_order);
+    if (name)
+      std::strcpy(matlas.name(), name);
+  }
+
   /** @brief Append a tidal wave using the AOD1B format.
    *
    * This function is normally used to append a specific wave, via an AOD1B

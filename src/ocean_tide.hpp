@@ -44,6 +44,16 @@ public:
   const TideAtlas &atlas() const noexcept {return matlas;}
   TideAtlas &atlas() noexcept {return matlas;}
   
+  OceanTide(const TideAtlas &atlas, const char *name = nullptr)
+      : matlas(atlas), mcs(atlas.max_atlas_degree()) {
+    int max_order;
+    int max_degree = matlas.max_atlas_degree(max_order);
+    if (max_order < max_degree)
+      mcs.resize(max_degree, max_order);
+    if (name)
+      std::strcpy(matlas.name(), name);
+  }
+  
   /** @brief Compute accumulated Stokes coefficients.
    *
    * Compute the accumulated Stokes coefficients using all available waves
@@ -75,8 +85,8 @@ public:
 
 }; /* OceanTide */
 
-OceanTide initFes2014bFromIcgem(const char *dir, const char *fn_generic_name,
-                                int max_degree = -1, int max_order = -1);
+//OceanTide initFes2014bFromIcgem(const char *dir, const char *fn_generic_name,
+//                                int max_degree = -1, int max_order = -1);
 
 } /* namespace dso */
 

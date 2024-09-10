@@ -214,9 +214,11 @@ struct GroopsTideModelFileName {
     std::memcpy(_model, fn, lastchar);
   }
 }; /* GroopsTideModelFileName */
+
 } /* unnamed namespace */
 
 dso::TideAtlas dso::groops_atlas(const char *file_list,
+const char *dir,
                            int max_degree,
                            int max_order) {
 
@@ -267,9 +269,21 @@ dso::TideAtlas dso::groops_atlas(const char *file_list,
       /* tidal wave already exists */
       ;
     }
+
+    char cfilename[124];
+    {
+      /* construct full filename, including path */
+      std::strcpy(cfilename, dir);
+      #ifdef _WIN32
+      std::strcat(cfilename, "\\");
+#else
+      std::strcat(cfilename, "/");
+#endif
+      std::strcat(cfilename, wave_fn.c_str());
+    }
     
     /* an Icgem instance to read data from (Stokes coefficients) */
-    dso::Icgem icgem(wave_fn.c_str());
+    dso::Icgem icgem(cfilename);
     if (tmp_name[0] && std::strcmp(tmp_name, icgem.model_name())) {
       fprintf(stderr,
               "[WRNNG] Model name in file %s differs from previous files, i.e. "
