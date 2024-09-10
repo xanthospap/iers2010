@@ -1,5 +1,4 @@
 #include "atmospheric_tides.hpp"
-#include "doodson.hpp"
 #include "iau.hpp"
 
 int dso::AtmosphericTide::stokes_coeffs(
@@ -17,7 +16,7 @@ int dso::AtmosphericTide::stokes_coeffs(
       dso::delaunay2doodson(delaunay_args, gmst, __dargs);
 
   /* iterate through individual constituents */
-  for (const auto &wave : mwaves) {
+  for (const auto &wave : atlas().waves()) {
     /* compute angle: θ(f) = Σ(i=1,6) n(i)*β(i) */
     const double arg = wave.wave().doodson().argument(f) +
                        wave.wave().doodson().pifactor() * dso::DPI/2;

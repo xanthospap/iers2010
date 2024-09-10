@@ -45,6 +45,11 @@
 
 namespace dso {
 
+namespace detail {
+  /* max character for any tidal wave name */
+  constexpr const int MAX_CHARS_TIDAL_WAVE = 16;
+}
+
 /* @class
  * @ref "Indexing and argument conventions for tides", Richard Ray (GSFC),
  *        2017, available at [1]
@@ -354,8 +359,8 @@ namespace detail {
 struct TidalConstituentArrayEntry {
   DoodsonConstituent _d;
   double _per; /* period in [deg/hour] */
-  double _hf;  /* from IERS 2010, Table 6.7 and [2] */
-  char _n[16];  /* name */
+  double _hf;  /* */
+  char _n[detail::MAX_CHARS_TIDAL_WAVE];  /* name */
   const DoodsonConstituent &doodson() const noexcept { return _d; }
   DoodsonConstituent &doodson() noexcept { return _d; }
   double period() const noexcept { return _per; }
@@ -465,12 +470,10 @@ match_ocean_tide_wave(const char *wave) noexcept;
 } /* namespace detail */
 
 class TidalWave {
-  static constexpr const int max_chars = 15; /* +1 for '\0' */
-
   DoodsonConstituent _d;
   double _per;            /* period in [deg/hour] */
   double _hf;             /* height */
-  char _n[max_chars + 1]; /* name */
+  char _n[detail::MAX_CHARS_TIDAL_WAVE]; /* name */
 
 public:
   const DoodsonConstituent &doodson() const noexcept { return _d; }
@@ -491,10 +494,10 @@ public:
   TidalWave(const DoodsonConstituent &d, double per = 0e0, double hf = 0e0,
             const char *name = nullptr) noexcept
       : _d(d), _per(per), _hf(hf) {
-    std::memset(_n, '\0', max_chars + 1);
+    std::memset(_n, '\0', detail::MAX_CHARS_TIDAL_WAVE);
     if (name) {
       const int sz = std::strlen(name);
-      std::memcpy(_n, name, sz > max_chars ? max_chars : sz);
+      std::memcpy(_n, name, sz > detail::MAX_CHARS_TIDAL_WAVE ? detail::MAX_CHARS_TIDAL_WAVE : sz);
     }
   }
 }; /* TidalWave */

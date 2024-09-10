@@ -1,4 +1,3 @@
-#include "doodson.hpp"
 #include "iau.hpp"
 #include "ocean_tide.hpp"
 
@@ -17,7 +16,7 @@ int dso::OceanTide::stokes_coeffs(const dso::MjdEpoch &mjdtt,
       dso::delaunay2doodson(delaunay_args, gmst, __dargs);
 
   /* iterate through individual constituents */
-  for (const auto &wave : mwaves) {
+  for (const auto &wave : atlas().waves()) {
     /* compute angle: θ(f) = Σ(i=1,6) n(i)*β(i) */
     const double arg = wave.wave().doodson().argument(f);
     const double carg = std::cos(arg);

@@ -18,8 +18,7 @@ int dso::AtmosphericTide::append_wave(const char *aod1b_fn, int max_degree,
       max_order = aod1b.max_degree();
 
     /* construct new instance */
-    dso::detail::AtmosphericTidalWave newWave(aod1b.tidal_wave(), max_degree,
-                                      max_order);
+    dso::TidalConstituent newWave(aod1b.tidal_wave(), max_degree, max_order);
 
     /* parse coefficients */
     if (aod1b.get_tidal_wave_coeffs(newWave.stokes_cos(), newWave.stokes_sin(),
@@ -28,7 +27,7 @@ int dso::AtmosphericTide::append_wave(const char *aod1b_fn, int max_degree,
     }
 
     /* push back the new wave */
-    mwaves.emplace_back(newWave);
+    atlas().waves().emplace_back(newWave);
 
     /* set degree and order collected */
     mdeg_collected = newWave.stokes_cos().max_degree();
@@ -39,7 +38,6 @@ int dso::AtmosphericTide::append_wave(const char *aod1b_fn, int max_degree,
   }
 
   /* do we need to re-size the instance's stokes coeffs size? */
-  /* TODO why is this needed ? */
   if (mdeg_collected > mcs.max_degree() || mord_collected > mcs.max_order()) {
     mcs.cresize(mdeg_collected, mord_collected);
   }

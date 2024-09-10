@@ -33,66 +33,11 @@
 #define __DSO_ATMOSPHERIC_TIDE_HPP__
 
 #include "aod1b.hpp"
+#include "tide_atlas.hpp"
 #include "datetime/calendar.hpp"
-#include "doodson.hpp"
-#include "geodesy/transformations.hpp"
-#include "stokes_coefficients.hpp"
 #include <vector>
 
 namespace dso {
-
-/** @class AtmosphericTidalWave
- *
- * A tidal constituent (wave) to represent contribution from an individual
- * wave. A wave has a TidalWave component that holds its characteristics
- * (e.g. Doodson number) as well as Stokes coefficients for in-phase (Cnm_cos
- * and Snm_cos) and quadrature (Cnm_sin and Snm_sin) components.
- *
- * For example, an instance of AtmosphericTidalWave could be used to compute
- * the potential (via spherical harmonics) due to atmospheric tidal loading
- * owing to the S1 tidal wave.
- *
- * Normally, an Atmospheric Loading model includes multiple waves, i.e.
- * multiple AtmosphericTidalWave's.
- *
- * References: [1], [2]
- */
-namespace detail {
-class AtmosphericTidalWave {
-private:
-  /* tidal wave information */
-  TidalWave mwave;
-  /* in-phase Stokes coefficients, i.e. Cnm_cos and Snm_cos */
-  StokesCoeffs mCosCs;
-  /* quadrature Stokes coefficients, i.e. Cnm_sin and Snm_sin */
-  StokesCoeffs mSinCs;
-
-public:
-  const StokesCoeffs &stokes_sin() const noexcept { return mSinCs; }
-  StokesCoeffs &stokes_sin() noexcept { return mSinCs; }
-  const StokesCoeffs &stokes_cos() const noexcept { return mCosCs; }
-  StokesCoeffs &stokes_cos() noexcept { return mCosCs; }
-  TidalWave wave() const noexcept { return mwave; }
-  TidalWave &wave() noexcept { return mwave; }
-
-  /* Constructor given a TidalConstituentsArrayEntry and the maximum degree
-   * and order of the relevant Stokes coefficients.
-   */
-  AtmosphericTidalWave(const TidalConstituentArrayEntry *wave, int max_degree,
-                       int max_order) noexcept
-      : mwave(*wave), mCosCs(max_degree, max_order),
-        mSinCs(max_degree, max_order) {};
-
-  /* Constructor given a TidalWave and the maximum degree and order of the
-   * relevant Stokes coefficients.
-   */
-  AtmosphericTidalWave(const TidalWave &wave, int max_degree,
-                       int max_order) noexcept
-      : mwave(wave), mCosCs(max_degree, max_order),
-        mSinCs(max_degree, max_order) {};
-
-}; /* AtmosphericTidalWave */
-} /* namespace detail */
 
 /** @class AtmosphericTide
  *
@@ -109,39 +54,15 @@ public:
  * follow Eq. (28) of [4].
  */
 class AtmosphericTide {
-  static constexpr const int NAME_MAX_CHARS = 64;
 private:
-  /* list of tidal constituents (waves) included in the model */
-  std::vector<detail::AtmosphericTidalWave> mwaves;
+  /* The tide atlas */
+  TideAtlas matlas;
   /* Stokes coeffs to hold (if needed) the accumulated effect of all waves */
   StokesCoeffs mcs;
-  /* name of the model */
-  char mname[NAME_MAX_CHARS] = {'\0'};
 
 public:
-  /* @brief Search the list of tidal constituent for a specific wave.
-   *
-   * Given a Doodson number, search through the list of constituents included
-   * in the instance, and return the one matching the Doodson number.
-   * For more details on "matching", see the DoodsonConstituent class
-   * operators.
-   *
-   * @param[in] doodson The DoodsonConstituent to search for
-   * @return If the given DoodsonConstituent is matched, return an iterator
-   *         to the instance's mwaves vector, that points to the matching wave.
-   *         If not matched, then return mwaves.end().
-   */
-  auto find_tidal_wave(const DoodsonConstituent &doodson) const noexcept {
-    return std::find_if(mwaves.begin(), mwaves.end(),
-                        [=](const detail::AtmosphericTidalWave &w) {
-                          return w.wave().doodson() == doodson;
-                        });
-  }
-
-  /** Return the vector of waves, i.e. mwaves */
-  const auto wave_vector() const noexcept { return mwaves; }
-  /** Return the vector of waves, i.e. mwaves */
-  auto wave_vector() noexcept { return mwaves; }
+  const TideAtlas &atlas() const noexcept {return matlas;}
+  TideAtlas &atlas() noexcept {return matlas;}
 
   /** @brief Append a tidal wave using the AOD1B format.
    *
@@ -165,28 +86,6 @@ public:
    * @return Anything other than zero denotes an error.
    */
   int append_wave(const char *aod1b_fn, int max_degree, int max_order) noexcept;
-
-  /** @brief Append a tidal wave.
-   *
-   * Append a tidal wave using an TidalWave instance to describe it. The new
-   * tidal wave will have the specified degree and order of (in-phase and
-   * quadrature) Stokes coefficients, which should be set later on.
-   *
-   * If the wave to be added has a DoodonsonConstituent that is already
-   * included in the mwaves, it is considered as duplicate and an exception
-   * will be thrown.
-   *
-   * @param[in] wave A TidalWave instance that describes the wave to be added
-   * @param[in] max_degree Max degree of the in-phase and quadrature Stokes
-   *                 coefficients
-   * @param[in] max_order Max order of the in-phase and quadrature Stokes
-   *                 coefficients
-   * @return On success (i.e. the wave was added) the function will return an
-   * iterator to the newly added wave within the mwaves vector. If the wave is
-   * already included in the mwaves vector, an exception will be thrown.
-   */
-  std::vector<detail::AtmosphericTidalWave>::iterator
-  append_wave(const TidalWave &wave, int max_degree, int max_order);
 
   /** @brief Compute accumulated Stokes coefficients.
    *
