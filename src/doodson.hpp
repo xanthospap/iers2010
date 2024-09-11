@@ -199,6 +199,34 @@ public:
     pifac = pifactor;
   }
 
+  /* copy constructor */
+  DoodsonConstituent(const DoodsonConstituent &other) noexcept {
+    std::memcpy(iar, other.iar, sizeof(int)*6);
+    pifac = other.pifac;
+  }
+  
+  /* move constructor */
+  DoodsonConstituent(DoodsonConstituent &&other) noexcept {
+    std::memcpy(iar, other.iar, sizeof(int)*6);
+    pifac = other.pifac;
+  }
+
+  /* assignment operator */
+  DoodsonConstituent &operator=(const DoodsonConstituent &other) noexcept {
+    if (this != &other) {
+    std::memcpy(iar, other.iar, sizeof(int)*6);
+    pifac = other.pifac;
+    }
+    return *this;
+  }
+  
+  /* move assignment operator */
+  DoodsonConstituent &operator=(DoodsonConstituent &&other) noexcept {
+    std::memcpy(iar, other.iar, sizeof(int)*6);
+    pifac = other.pifac;
+    return *this;
+  }
+
   /* @brief Transform to a Doodson-number string as: "xxx.xxx"
    *
    * For integers that are <0 or >9, we follow the GROOPS convention, i.e.:
@@ -473,7 +501,7 @@ class TidalWave {
   DoodsonConstituent _d;
   double _per;            /* period in [deg/hour] */
   double _hf;             /* height */
-  char _n[detail::MAX_CHARS_TIDAL_WAVE]; /* name */
+  char _n[detail::MAX_CHARS_TIDAL_WAVE]={'\0'}; /* name */
 
 public:
   const DoodsonConstituent &doodson() const noexcept { return _d; }
@@ -494,11 +522,7 @@ public:
   TidalWave(const DoodsonConstituent &d, double per = 0e0, double hf = 0e0,
             const char *name = nullptr) noexcept
       : _d(d), _per(per), _hf(hf) {
-    std::memset(_n, '\0', detail::MAX_CHARS_TIDAL_WAVE);
-    if (name) {
-      const int sz = std::strlen(name);
-      std::memcpy(_n, name, sz > detail::MAX_CHARS_TIDAL_WAVE ? detail::MAX_CHARS_TIDAL_WAVE : sz);
-    }
+    if (name) std::strncpy(_n, name, detail::MAX_CHARS_TIDAL_WAVE);
   }
 }; /* TidalWave */
 

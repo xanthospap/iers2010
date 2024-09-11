@@ -87,6 +87,10 @@ public:
 
 //OceanTide initFes2014bFromIcgem(const char *dir, const char *fn_generic_name,
 //                                int max_degree = -1, int max_order = -1);
+OceanTide ocean_tide_from_gfc(const char *fn, const char *dir,
+                              int max_degree = -1, int max_order = -1) {
+  return OceanTide(groops_atlas(fn, dir, max_degree, max_order), nullptr);
+}
 
 } /* namespace dso */
 

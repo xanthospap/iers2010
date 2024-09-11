@@ -32,17 +32,13 @@ public:
    * and order of the relevant Stokes coefficients.
    */
   TidalConstituent(const detail::TidalConstituentArrayEntry *wave, int max_degree,
-                       int max_order) noexcept
-      : mwave(*wave), mCosCs(max_degree, max_order),
-        mSinCs(max_degree, max_order) {};
+                       int max_order) noexcept;
 
   /* Constructor given a TidalWave and the maximum degree and order of the
    * relevant Stokes coefficients.
    */
   TidalConstituent(const TidalWave &wave, int max_degree,
-                       int max_order) noexcept
-      : mwave(wave), mCosCs(max_degree, max_order),
-        mSinCs(max_degree, max_order) {};
+                       int max_order) noexcept;
 
 }; /* TidalConstituent */
 
@@ -96,7 +92,7 @@ public:
   }
 
   /** Return the vector of waves, i.e. mwaves */
-  const auto waves() const noexcept { return mwaves; }
+  auto waves() const noexcept { return mwaves; }
   
   /** Return the vector of waves, i.e. mwaves */
   auto waves() noexcept { return mwaves; }

@@ -8,7 +8,7 @@ dso::TideAtlas::append_wave(const dso::TidalConstituent &wave) {
     fprintf(stderr,
             "[ERROR] Tidal wave with doodson number %s already exists; failed "
             "to append to TideAtlas instance (traceback: %s)\n",
-            buf, __func__);
+            wave.wave().doodson().str(buf, true), __func__);
     throw std::runtime_error("[ERROR] Failed pushing back tidal wave\n");
   }
   mwaves.emplace_back(wave);
@@ -24,7 +24,7 @@ dso::TideAtlas::append_wave(const dso::TidalWave &wave, int max_degree,
     fprintf(stderr,
             "[ERROR] Tidal wave with doodson number %s already exists; failed "
             "to append to TideAtlas instance (traceback: %s)\n",
-            buf, __func__);
+            wave.doodson().str(buf, true), __func__);
     throw std::runtime_error("[ERROR] Failed pushing back tidal wave\n");
   }
   mwaves.emplace_back(

@@ -7,9 +7,6 @@
 #include "relativity.hpp"
 
 using namespace costg;
-constexpr const double GM_Sun = 1.32712442076e20;
-constexpr const double GM_Moon = 0.49028010560e13;
-constexpr const int DEGREE = 4;
 constexpr const int formatD3Plot = 1;
 
 int main(int argc, char *argv[]) {

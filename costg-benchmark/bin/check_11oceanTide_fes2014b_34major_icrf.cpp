@@ -14,11 +14,11 @@ constexpr const int formatD3Plot = 0;
 using namespace costg;
 
 int main(int argc, char *argv[]) {
-  if (argc != 6) {
+  if (argc != 7) {
     fprintf(stderr,
             "Usage: %s [00orbit_itrf.txt] [11oceanTide_fes2014b_34major_icrf.txt] "
             "[01earthRotation_rotaryMatrix.txt] [eopc04.1962-now] "
-            "[FES2014b gfc dir]\n",
+            "[FES2014b_OCN_001fileList.txt] [FES2014b gfc dir]\n",
             argv[0]);
     return 1;
   }
@@ -52,8 +52,8 @@ int main(int argc, char *argv[]) {
   }
 
   /* create an OceanTide instance using the fes2014b gfc files */
-  auto fes14b =
-      dso::initFes2014bFromIcgem(argv[5], "fes2014b_n180_version20170520");
+  dso::OceanTide fes14b =
+      dso::ocean_tide_from_gfc(argv[5], argv[6], DEGREE, ORDER);
 
   /* spit out a title for plotting */
   if (formatD3Plot) {
