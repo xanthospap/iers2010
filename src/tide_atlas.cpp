@@ -1,4 +1,24 @@
 #include "tide_atlas.hpp"
+  
+std::vector<dso::TidalConstituent>::const_iterator
+dso::TideAtlas::find_tidal_wave(const dso::DoodsonConstituent &doodson) const noexcept {
+  auto it = mwaves.begin();
+  while (it != mwaves.end()) {
+    if (it->doodson() == doodson) break;
+    ++it;
+  }
+  return it;
+  }
+
+std::vector<dso::TidalConstituent>::iterator
+dso::TideAtlas::find_tidal_wave(const dso::DoodsonConstituent &doodson) noexcept {
+  auto it = mwaves.begin();
+  while (it != mwaves.end()) {
+    if (it->doodson() == doodson) break;
+    ++it;
+  }
+  return it;
+  }
 
 std::vector<dso::TidalConstituent>::iterator
 dso::TideAtlas::append_wave(const dso::TidalConstituent &wave) {

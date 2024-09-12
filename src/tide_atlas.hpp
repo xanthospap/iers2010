@@ -27,6 +27,8 @@ public:
   StokesCoeffs &stokes_cos() noexcept { return mCosCs; }
   TidalWave wave() const noexcept { return mwave; }
   TidalWave &wave() noexcept { return mwave; }
+  const DoodsonConstituent &doodson() const {return mwave.doodson(); }
+  const char* name() const {return mwave.name();}
 
   /* Constructor given a TidalConstituentsArrayEntry and the maximum degree
    * and order of the relevant Stokes coefficients.
@@ -84,18 +86,16 @@ public:
    *         to the instance's mwaves vector, that points to the matching wave.
    *         If not matched, then return mwaves.end().
    */
-  auto find_tidal_wave(const DoodsonConstituent &doodson) const noexcept {
-    return std::find_if(mwaves.begin(), mwaves.end(),
-                        [=](const TidalConstituent &w) {
-                          return w.wave().doodson() == doodson;
-                        });
-  }
+  std::vector<TidalConstituent>::const_iterator
+  find_tidal_wave(const DoodsonConstituent &doodson) const noexcept;
+  std::vector<TidalConstituent>::iterator
+  find_tidal_wave(const DoodsonConstituent &doodson) noexcept;
 
   /** Return the vector of waves, i.e. mwaves */
-  auto waves() const noexcept { return mwaves; }
+  const std::vector<TidalConstituent> &waves() const noexcept { return mwaves; }
   
   /** Return the vector of waves, i.e. mwaves */
-  auto waves() noexcept { return mwaves; }
+  std::vector<TidalConstituent> &waves() noexcept { return mwaves; }
 
   const char *name() const {return mname;}
   char *name() {return mname;}

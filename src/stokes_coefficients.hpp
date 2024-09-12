@@ -197,10 +197,8 @@ public:
 
   /** set the Cnm and Snm coefficients to zero */
   void clear() noexcept {
-    if (m_degree) {
       _Cnm.fill_with(0e0);
       _Snm.fill_with(0e0);
-    }
   }
 
   /** scale the Cnm and Snm coefficients */

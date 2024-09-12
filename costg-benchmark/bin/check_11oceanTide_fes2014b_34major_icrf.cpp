@@ -7,8 +7,8 @@
 #include "gravity.hpp"
 #include "icgemio.hpp"
 
-constexpr const int DEGREE = 180;
-constexpr const int ORDER = 180;
+constexpr const int DEGREE = 120;
+constexpr const int ORDER = 120;
 constexpr const int formatD3Plot = 0;
 
 using namespace costg;
@@ -70,9 +70,8 @@ int main(int argc, char *argv[]) {
   auto rot = rotvec.begin();
   for (const auto &in : orbvec) {
     /* GPSTime to TT */
-    // const auto t = in.epoch.gps2tai().tai2tt();
-    const auto t = in.epoch;
-    // const auto t(dso::from_mjdepoch<dso::nanoseconds>(tt));
+    const auto t = in.epoch.gps2tai().tai2tt();
+    // const auto t = in.epoch;
 
     /* compute gmst using an approximate value for UT1 (linear interpolation) */
     double dut1_approx;
@@ -118,6 +117,9 @@ int main(int argc, char *argv[]) {
              in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
              a(1), a(2));
     }
+
+    /* Debugging */
+    // printf("Cnm(5,5)sin=%.12e Snm(5,5)sin=%.12e\n", fes14b.atlas().waves()[0].stokes_sin().C(5,5), fes14b.atlas().waves()[0].stokes_sin().S(5,5));
 
     ++acc;
     ++rot;

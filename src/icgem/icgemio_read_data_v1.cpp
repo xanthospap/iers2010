@@ -16,8 +16,8 @@ int dso::Icgem::parse_data_v1(int l, int k, const Icgem::Datetime &t,
   if (l > max_degree() || k > l) {
     fprintf(
         stderr,
-        "[ERROR] Invalid degree/order given to data parse (traceback: %s)\n",
-        __func__);
+        "[ERROR] Invalid degree/order given to data parse, i.e. (n,m)=(%d,%d) (traceback: %s)\n",
+        l,k,__func__);
     error = 1;
   }
 

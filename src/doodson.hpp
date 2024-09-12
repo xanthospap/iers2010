@@ -199,34 +199,6 @@ public:
     pifac = pifactor;
   }
 
-  /* copy constructor */
-  DoodsonConstituent(const DoodsonConstituent &other) noexcept {
-    std::memcpy(iar, other.iar, sizeof(int)*6);
-    pifac = other.pifac;
-  }
-  
-  /* move constructor */
-  DoodsonConstituent(DoodsonConstituent &&other) noexcept {
-    std::memcpy(iar, other.iar, sizeof(int)*6);
-    pifac = other.pifac;
-  }
-
-  /* assignment operator */
-  DoodsonConstituent &operator=(const DoodsonConstituent &other) noexcept {
-    if (this != &other) {
-    std::memcpy(iar, other.iar, sizeof(int)*6);
-    pifac = other.pifac;
-    }
-    return *this;
-  }
-  
-  /* move assignment operator */
-  DoodsonConstituent &operator=(DoodsonConstituent &&other) noexcept {
-    std::memcpy(iar, other.iar, sizeof(int)*6);
-    pifac = other.pifac;
-    return *this;
-  }
-
   /* @brief Transform to a Doodson-number string as: "xxx.xxx"
    *
    * For integers that are <0 or >9, we follow the GROOPS convention, i.e.:
@@ -497,6 +469,7 @@ const TidalConstituentArrayEntry *
 match_ocean_tide_wave(const char *wave) noexcept;
 } /* namespace detail */
 
+// https://stackoverflow.com/questions/68795092/how-to-copy-a-built-in-array-via-copy-constructor
 class TidalWave {
   DoodsonConstituent _d;
   double _per;            /* period in [deg/hour] */
@@ -519,8 +492,8 @@ public:
     std::strcpy(_n, entry._n);
   }
 
-  TidalWave(const DoodsonConstituent &d, double per = 0e0, double hf = 0e0,
-            const char *name = nullptr) noexcept
+  TidalWave(const DoodsonConstituent &d, double per=0, double hf=0,
+            const char *name=nullptr) noexcept
       : _d(d), _per(per), _hf(hf) {
     if (name) std::strncpy(_n, name, detail::MAX_CHARS_TIDAL_WAVE);
   }

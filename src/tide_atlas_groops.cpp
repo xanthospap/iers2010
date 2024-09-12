@@ -250,39 +250,29 @@ const char *dir,
   char tmp_name[dso::TideAtlas::NAME_MAX_CHARS] = {'\0'};
   int cmaxdeg = (max_degree < 0)?120:max_degree;
   int cmaxord = (max_order < 0)?120:max_order;
-  [[maybe_unused]]  char foo1[16]; 
-  [[maybe_unused]]  char foo2[16];
   /* iterate through input files (waves) and read/parse coefficients for each 
    * of the k waves of the atlas
    */
   for (const auto &wave_fn : flvec) {
     /* resolve filename */
     GroopsTideModelFileName wave_info(wave_fn.c_str());
-    printf("Note: parsing file: %s (wave: %s)\n", wave_fn.c_str(), wave_info._doodson.str(foo2));
 
     /* check if we already have the tidal wave in the atlas */
-    //for (auto dit=atlas.waves().begin(); dit!=atlas.waves().end(); ++dit)
-    //  printf("\tcomparing %s to %s\n", dit->wave().doodson().str(foo1), wave_info._doodson.str(foo2));
-
-    auto it =
-        std::find_if(atlas.waves().begin(), atlas.waves().end(),
-                     [=](const dso::TidalConstituent &w) {
-                       return w.wave().doodson() == wave_info._doodson;
-                     });
+    auto it = atlas.find_tidal_wave(wave_info._doodson);
 
     if (it == atlas.waves().end()) {
       /* new tidal wave */
-      printf("\tseems like doodson is not within the %d waves of the atlas\n", (int)atlas.waves().size());
       it = atlas.append_wave(dso::TidalWave(wave_info._doodson, 0e0, 0e0,
                                             wave_info._constituentName),
                              (max_degree < 0) ? cmaxdeg : max_degree,
                              (max_order < 0) ? cmaxord : max_order);
+      it = atlas.waves().end() - 1;
     } else {
       /* tidal wave already exists */
       ;
     }
 
-    char cfilename[124];
+    char cfilename[248];
     {
       /* construct full filename, including path */
       std::strcpy(cfilename, dir);
@@ -318,8 +308,7 @@ const char *dir,
 
     /* current max degre/orer */
     cmaxdeg = (cmaxdeg<cs->max_degree())?cs->max_degree():cmaxdeg;
-    cmaxord = (cmaxord<cs->max_order())?cs->max_order():cmaxord;
-    printf("\tfile parsed; deg/ord = %d/%d\n", cmaxdeg, cmaxord);
+    cmaxord = (cmaxord<cs->max_order())? cs->max_order():cmaxord;
   } /* done looping through files */
 
   /* assign atlas name */
