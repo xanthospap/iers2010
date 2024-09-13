@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
   if (formatD3Plot) {
     printf("mjd,sec,refval,val,component\n");
   } else {
-    printf("#title Ocean Tidal Loading - FES2014b Major\n");
+    printf("#title Ocean Tidal Loading - %s Major\n", fes14b.atlas().name());
   }
 
   /* compare results epoch by epoch */
@@ -70,8 +70,8 @@ int main(int argc, char *argv[]) {
   auto rot = rotvec.begin();
   for (const auto &in : orbvec) {
     /* GPSTime to TT */
-    const auto t = in.epoch.gps2tai().tai2tt();
-    // const auto t = in.epoch;
+    // const auto t = in.epoch.gps2tai().tai2tt();
+    const auto t = in.epoch;
 
     /* compute gmst using an approximate value for UT1 (linear interpolation) */
     double dut1_approx;

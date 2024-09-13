@@ -285,6 +285,7 @@ const char *dir,
     }
     
     /* an Icgem instance to read data from (Stokes coefficients) */
+    printf("[WRNNG] Parsing coeffs from file %s\n", cfilename);
     dso::Icgem icgem(cfilename);
     if (tmp_name[0] && std::strcmp(tmp_name, icgem.model_name())) {
       fprintf(stderr,
