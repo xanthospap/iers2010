@@ -43,7 +43,7 @@ int iers2010_solid_earth_tide_anelastic_tb(
   const double u2 = u * u;
   const double t2 = t * t;
 
-  /* compute normalized associated Lagrange polynomials for n=2,3 */
+  /* compute normalized associated Legendre polynomials for n=2,3 */
   const double Pnm20 = std::sqrt(5e0) * 0.5e0 * (3e0 * t2 - 1e0);      // P20
   const double Pnm21 = std::sqrt(5e0 / 3e0) * 3e0 * t * u;          // P21
   const double Pnm22 = std::sqrt(5e0 / 12e0) * 3e0 * u2;            // P22
@@ -72,7 +72,7 @@ int iers2010_solid_earth_tide_anelastic_tb(
   const double __c3l = 4e0 * __cl * __cl * __cl - 3e0 * __cl;
   const double __s3l = -4e0 * __sl * __sl * __sl + 3e0 * __sl;
 
-  /* temporary storage; latter on dCt and dSt will be added to dC and dS. */
+  /* temporary storage; later on dCt and dSt will be added to dC and dS. */
   std::array<double, 12> dCt = {0e0}, dSt = {0e0};
 
   /* order n=2, Eq. (6.6) from IERS 2010, ommiting GMj/GM and (Re/r)^3 */
@@ -143,7 +143,7 @@ int iers2010_solid_earth_tide_elastic_tb(
   const double u2 = u * u;
   const double t2 = t * t;
 
-  /* compute normalized associated Lagrange polynomials for n=2,3 */
+  /* compute normalized associated Legendre polynomials for n=2,3 */
   const double Pnm20 = std::sqrt(5e0) * 0.5e0 * (3e0 * t2 - 1e0);      // P20
   const double Pnm21 = std::sqrt(5.e0 / 3.e0) * 3.e0 * t * u;          // P21
   const double Pnm22 = std::sqrt(5.e0 / 12.e0) * 3.e0 * u2;            // P22
