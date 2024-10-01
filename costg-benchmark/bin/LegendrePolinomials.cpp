@@ -20,12 +20,15 @@ NormalizedLegendre(int n_max, int m_max, double t) {
   Pnm(1, 0) = std::sqrt(3) * std::cos(t);
   Pnm(1, 1) = std::sqrt(3) * std::sin(t);
 
+  double sint = std::sin(t);
+  double cost = std::cos(t);
+  
   // The Sectorial (diagonal) values and the off - diagonal values are
   // calculated first and used as seed values for the recursion 
   // Sectorial (i.e. n = m) Pn,n(t)
   for (int n = 2; n <= n_max; n++) {
     double l = (2e0 * n + 1e0) / (2e0 * n);
-    Pnm(n, n) = std::sin(t) * std::sqrt(l) * Pnm(n - 1, n - 1);
+    Pnm(n, n) = sint * std::sqrt(l) * Pnm(n - 1, n - 1);
   }
 
   // Off - Diagonal (Degree = Order + 1)
@@ -35,7 +38,7 @@ NormalizedLegendre(int n_max, int m_max, double t) {
   }
   for (int m = 1; m <= max_col; m++) {
     double l = (2e0 * m + 3e0);
-    Pnm(m + 1, m) = std::cos(t) * std::sqrt(l) * Pnm(m, m);
+    Pnm(m + 1, m) = cost * std::sqrt(l) * Pnm(m, m);
   }
 
   // Non - Sectorial (i.e. n > m) Pn,m(t) from previously computed values
@@ -44,7 +47,7 @@ NormalizedLegendre(int n_max, int m_max, double t) {
       double l = (2e0 * n - 1e0) * (2e0 * n + 1e0) / (n - m) * (n + m);
       double k = (2e0 * n + 1) * (n + m + 1e0) * (n - m - 1e0) / (n - m) *
                  (n + m) * (2e0 * n - 3e0);
-      Pnm(n, m) = std::sqrt(l) * std::cos(t) * Pnm(n - 1e0, m) -
+      Pnm(n, m) = std::sqrt(l) * cost * Pnm(n - 1e0, m) -
                   std::sqrt(k) * Pnm(n - 2e0, m);
     }
   }
