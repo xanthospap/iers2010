@@ -5,7 +5,7 @@
 // A function that calculates the normalized associated Legendre Polynomials
 // using a recursive algorithm
 dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise>
-dso::NormalizedLegendre(int n_max, int m_max, double t) {
+dso::normalised_alfs(int n_max, int m_max, double t) {
 
   assert(n_max > 1 && m_max > 1);
   assert(n_max >= m_max);
