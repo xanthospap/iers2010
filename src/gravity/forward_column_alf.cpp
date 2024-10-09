@@ -27,9 +27,17 @@ int dso::normalised_associated_legendre_functions(
   /* check degree and order */
   assert(max_order <= max_degree);
 
+  /* check passed-in matrix dimensions */
+  if (!((P.rows() > max_degree) && (P.cols() > max_degree))) {
+    fprintf(stderr,
+            "[ERROR] Invalid size of passed-in P matrix (traceback: %s)\n",
+            __func__);
+    return 1;
+  }
+
   /* trigs for expansion */
-  const double u = std::cos(theta);
-  const double t = std::sin(theta);
+  const double t = std::cos(theta);
+  const double u = std::sin(theta);
 
   /* first two terms */
   P(0, 0) = 1e0;

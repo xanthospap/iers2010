@@ -14,13 +14,15 @@ dso::normalised_alfs(int n_max, int m_max, double t) {
   // Legendre Polynomials
   CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> Pnm(n_max + 1,
                                                                  m_max + 1);
-  // Initialize the base values in order to start the algorithm
-  Pnm(0, 0) = 1;
-  Pnm(1, 0) = std::sqrt(3) * std::cos(t);
-  Pnm(1, 1) = std::sqrt(3) * std::sin(t);
+
 
   double sint = std::sin(t);
   double cost = std::cos(t);
+  
+  // Initialize the base values in order to start the algorithm
+  Pnm(0, 0) = 1;
+  Pnm(1, 0) = std::sqrt(3e0) * cost;
+  Pnm(1, 1) = std::sqrt(3e0) * sint;
   
   // The Sectorial (diagonal) values and the off - diagonal values are
   // calculated first and used as seed values for the recursion 
@@ -28,6 +30,7 @@ dso::normalised_alfs(int n_max, int m_max, double t) {
   for (int n = 2; n <= n_max; n++) {
     double l = (2e0 * n + 1e0) / (2e0 * n);
     Pnm(n, n) = sint * std::sqrt(l) * Pnm(n - 1, n - 1);
+    printf("\tcomputed P(%d,%d) = %.3f\n", n,n,Pnm(n,n));
   }
 
   // Off - Diagonal (Degree = Order + 1)
@@ -38,16 +41,18 @@ dso::normalised_alfs(int n_max, int m_max, double t) {
   for (int m = 1; m <= max_col; m++) {
     double l = (2e0 * m + 3e0);
     Pnm(m + 1, m) = cost * std::sqrt(l) * Pnm(m, m);
+    printf("\tcomputed P(%d,%d) = %.3f\n", m + 1, m,Pnm(m+1, m));
   }
 
   // Non - Sectorial (i.e. n > m) Pn,m(t) from previously computed values
   for (int m = 0; m <= m_max; m++) {
-    for (int n = 2; n <= n_max; n++) {
-      double l = (2e0 * n - 1e0) * (2e0 * n + 1e0) / (n - m) * (n + m);
-      double k = (2e0 * n + 1) * (n + m + 1e0) * (n - m - 1e0) / (n - m) *
-                 (n + m) * (2e0 * n - 3e0);
-      Pnm(n, m) = std::sqrt(l) * cost * Pnm(n - 1e0, m) -
-                  std::sqrt(k) * Pnm(n - 2e0, m);
+    for (int n = m + 2; n <= n_max; n++) {
+      double a = (2e0 * n - 1e0) * (2e0 * n + 1e0) / ((n - m) * (n + m));
+      double b = (2e0 * n + 1e0) * (n + m - 1e0) * (n - m - 1e0) / ((n - m) *
+                 (n + m) * (2e0 * n - 3e0));
+      Pnm(n, m) = std::sqrt(a) * cost * Pnm(n - 1, m) -
+                  std::sqrt(b) * Pnm(n - 2, m);
+    printf("\tcomputed P(%d,%d) = %.3f\n", n,m,Pnm(n,m));
     }
   }
   return Pnm;
