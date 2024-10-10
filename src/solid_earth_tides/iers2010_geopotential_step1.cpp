@@ -1,4 +1,5 @@
 #include "solid_earth_tide.hpp"
+#include "gravity.hpp"
 #include "geodesy/transformations.hpp"
 #include <cmath>
 #include <array>
@@ -36,14 +37,42 @@ int iers2010_solid_earth_tide_anelastic_tb(
   /* get spherical coordinates of third body */
   const auto rtb_spherical =
       dso::cartesian2spherical(dso::CartesianCrdConstView(rtb));
-  
+
+  /* compute normalized associated Legendre polynomials for degree = 2 and order
+    = 3
+  auto Pnm = dso::normalised_alfs(3, 3, rtb_spherical.lat());
+  const double Pnm20 = Pnm(2, 0); // P20
+  const double Pnm21 = Pnm(2, 1); // P21
+  const double Pnm22 = Pnm(2, 2); // P22
+  const double Pnm30 = Pnm(3, 0); // P30
+  const double Pnm31 = Pnm(3, 1); // P31
+  const double Pnm32 = Pnm(3, 2); // P32
+  const double Pnm33 = Pnm(3, 3); // P33
+  */
+  /* compute normalised associated Legendre polynomials for degree and order = 3
+   3 using a duplicate function with different implementation 
+
+  dso::CoeffMatrix2D<dso::MatrixStorageType::LwTriangularColWise> Pnm(4, 4); 
+ 
+  int result = normalised_associated_legendre_functions(rtb_spherical.lat(), 3, 3, Pnm);
+  if (result != 0) {return 0;}
+
+  const double Pnm20 = Pnm(2, 0); // P20
+  const double Pnm21 = Pnm(2, 1); // P21
+  const double Pnm22 = Pnm(2, 2); // P22
+  const double Pnm30 = Pnm(3, 0); // P30
+  const double Pnm31 = Pnm(3, 1); // P31
+  const double Pnm32 = Pnm(3, 2); // P32
+  const double Pnm33 = Pnm(3, 3); // P33
+  */
+
   /* trigonometric numbers (of third body) */
   const double t = std::sin(rtb_spherical.lat());
   const double u = std::cos(rtb_spherical.lat());
   const double u2 = u * u;
   const double t2 = t * t;
 
-  /* compute normalized associated Legendre polynomials for n=2,3 */
+  /* compute normalized associated Legendre polynomials for n=2,3*/ 
   const double Pnm20 = std::sqrt(5e0) * 0.5e0 * (3e0 * t2 - 1e0);      // P20
   const double Pnm21 = std::sqrt(5e0 / 3e0) * 3e0 * t * u;          // P21
   const double Pnm22 = std::sqrt(5e0 / 12e0) * 3e0 * u2;            // P22
@@ -52,6 +81,7 @@ int iers2010_solid_earth_tide_anelastic_tb(
       (3e0 / 2e0) * (5e0 * t2 - 1e0) * u * std::sqrt((7e0) / 6e0); // P31
   const double Pnm32 = 15e0 * std::sqrt(7e0 / 60e0) * t * u2;      // P32
   const double Pnm33 = 15e0 * u2 * u * std::sqrt(14e0 / 720e0); // P33
+  
 
   /* IERS 2010, Table 6.3: Nominal values of solid Earth
    * tide external potential Love numbers. Anelastic

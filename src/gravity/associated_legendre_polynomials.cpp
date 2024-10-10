@@ -30,7 +30,6 @@ dso::normalised_alfs(int n_max, int m_max, double t) {
   for (int n = 2; n <= n_max; n++) {
     double l = (2e0 * n + 1e0) / (2e0 * n);
     Pnm(n, n) = sint * std::sqrt(l) * Pnm(n - 1, n - 1);
-    printf("\tcomputed P(%d,%d) = %.3f\n", n,n,Pnm(n,n));
   }
 
   // Off - Diagonal (Degree = Order + 1)
@@ -41,7 +40,6 @@ dso::normalised_alfs(int n_max, int m_max, double t) {
   for (int m = 1; m <= max_col; m++) {
     double l = (2e0 * m + 3e0);
     Pnm(m + 1, m) = cost * std::sqrt(l) * Pnm(m, m);
-    printf("\tcomputed P(%d,%d) = %.3f\n", m + 1, m,Pnm(m+1, m));
   }
 
   // Non - Sectorial (i.e. n > m) Pn,m(t) from previously computed values
@@ -52,7 +50,6 @@ dso::normalised_alfs(int n_max, int m_max, double t) {
                  (n + m) * (2e0 * n - 3e0));
       Pnm(n, m) = std::sqrt(a) * cost * Pnm(n - 1, m) -
                   std::sqrt(b) * Pnm(n - 2, m);
-    printf("\tcomputed P(%d,%d) = %.3f\n", n,m,Pnm(n,m));
     }
   }
   return Pnm;
