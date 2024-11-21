@@ -3,7 +3,6 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
-#include <datetime/dtfund.hpp>
 #include <fstream>
 #ifdef DEBUG
 #include "datetime/datetime_write.hpp"
@@ -55,7 +54,9 @@ int dso::parse_lambert_coefficients(
   lvec.clear();
   /* approximatelly two entries per year */
   lvec.reserve(std::ceil(
-      (to.diff<dso::DateTimeDifferenceType::FractionalYears>(from) + 1) * 2e0));
+      (to.diff<dso::DateTimeDifferenceType::FractionalYears>(from).years() +
+       1) *
+      2e0));
 
   /* open the coefficients file */
   std::ifstream fin(fn);

@@ -63,12 +63,12 @@ int dso::Icgem::parse_data_v2(int l, int k, const Icgem::Datetime &t,
         max_order_collected = std::max(max_order_collected, entry.order);
         /* compute C and S coefficients */
         const double dt =
-            t.diff<DateTimeDifferenceType::FractionalYears>(entry.t0);
+            t.diff<DateTimeDifferenceType::FractionalYears>(entry.t0).years();
         /* ------------------------------------------------------------------
          * WARNING !!
          * ------------------------------------------------------------------
          *  It took me fucking hours to debug this! if entry.period is zero, 
-         *  the the computations below may result in a nan value, and cast the 
+         *  the then computations below may result in a nan value, and cast the 
          *  collected values to garbage.
          *  Be extra careful to correctly avoid this issue.
          */

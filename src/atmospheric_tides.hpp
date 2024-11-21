@@ -131,8 +131,10 @@ public:
   StokesCoeffs &stokes_coeffs() noexcept { return mcs; }
 }; /* AtmosphericTides */
 
-AtmosphericTide atmospheric_tide_from_gfc(const char *fn, const char *dir,
-                              int max_degree = -1, int max_order = -1) {
+inline AtmosphericTide atmospheric_tide_from_gfc(const char *fn,
+                                                 const char *dir,
+                                                 int max_degree = -1,
+                                                 int max_order = -1) {
   return AtmosphericTide(groops_atlas(fn, dir, max_degree, max_order), nullptr);
 }
 

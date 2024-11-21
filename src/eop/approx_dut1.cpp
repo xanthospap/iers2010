@@ -34,11 +34,11 @@ dso::EopSeries::approx_dut1(const dso::MjdEpoch &t,
   const auto x0 = it - 1;
   const auto x1 = it;
   const double dx1x0 =
-      x1->t().diff<dso::DateTimeDifferenceType::FractionalDays>(x0->t());
+      x1->t().diff<dso::DateTimeDifferenceType::FractionalDays>(x0->t()).days();
   const double dx1x =
-      x1->t().diff<dso::DateTimeDifferenceType::FractionalDays>(t);
+      x1->t().diff<dso::DateTimeDifferenceType::FractionalDays>(t).days();
   const double dxx0 =
-      t.diff<dso::DateTimeDifferenceType::FractionalDays>(x0->t());
+      t.diff<dso::DateTimeDifferenceType::FractionalDays>(x0->t()).days();
   const double dx0 = dx1x / dx1x0;
   const double dx1 = dxx0 / dx1x0;
   /* continuous (UT1-TAI)j <- (UT1-UTC)j - ΔATj */

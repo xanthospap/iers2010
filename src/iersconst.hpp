@@ -63,7 +63,7 @@ constexpr const double C = 299792458e0;
  */
 constexpr const double GMs = 1.32712442099e20;
 
-/* @brief Mean equatorial gravity in [m/sec^2], see
+/* @brief Mean equatorial gravity in [m/sec^2].
  * Table 1.1: IERS numerical standards, IERS 2010
  */
 constexpr const double ge = 9.7803278e0;
@@ -73,6 +73,10 @@ constexpr const double ge = 9.7803278e0;
  */
 constexpr const double Je = 9.8e8;
 
+/** @brief Moon-Earth mass ratio.
+ *  Table 1.1: IERS numerical standards, IERS 2010
+ */
+constexpr const double MoonEarthMassRatio = 0.0123000371e0;
 } /* iers2010 */
 
 namespace dso {
@@ -80,14 +84,15 @@ namespace dso {
  * the dso namespace
  */
 
-/** Moon-Earth mass ratio according to [1] */
-constexpr const double MoonEarthMassRatio = 0.0123000371e0;
 /** Earth–Moon mass ratio according to [1] */
 constexpr const double EarthMoonMassRatio = 81.300568e0;
+
 /** Sun-Earth Mass Ratio according to [1] */
 constexpr const double SunEarthMassRatio = 332946.0487e0;
+
 /** Mass of the Sun according to [1] in [kg] */
 constexpr const double SunMass =  1.9884e30;
+
 /** Mass of the Earth according to [1] in [kg] */
 constexpr const double SunEarth =  5.9722e24;
 } /* namespace dso */

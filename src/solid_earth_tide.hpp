@@ -19,8 +19,10 @@ namespace dso {
 
 class SolidEarthTide {
 public:
+  /** max degree and order of SH for Solid Earth Tide effects */
   static constexpr const int degree = 4;
 
+  /** utility class to transfer trig numbers (avoid re-computing) */
   struct PointSphericalTrigs {
     /* spherical coordinates */
     dso::SphericalCrd msph;
@@ -45,14 +47,10 @@ public:
   }; /* struct PointsSphericalTrigs */
 
 private:
-  /* gravitational constant of Sun/Earth */
-  double mGMSun;
-  /* gravitational constant of Moon/Earth */
-  double mGMMoon;
-  /* Mass of Moon / Mass of Earth */
-  double mmeratio{dso::MoonEarthMassRatio};
-  /* Mass of Sun / Mass of Earth */
-  double mseratio{dso::SunEarthMassRatio};
+  /* gravitational constant (ratio) of Sun/Earth */
+  double mSEratio;
+  /* gravitational constant (ratio) of Moon/Earth */
+  double mMEratio;
   /* Stokes coefficients of (n,m) = (4,4) */
   StokesCoeffs mcs;
 
@@ -188,15 +186,21 @@ private:
 
 public:
   /** @brief Constructor
-   * @param GMearth Standard gravitational parameter μ=GM for the Earth
-   * [m^2/s^2]
-   * @param Rearth Equatorial radius of Earth [m]
-   * @param GMmoon Standard gravitational parameter μ=GM for the Moon [m^2/s^2]
-   * @param GMsun Standard gravitational parameter μ=GM for the Moon [m^2/s^2]
+   *
+   * @param GMearth Standard gravitational parameter μ=GM for the Earth in
+   *                [m^2/s^2]; default value from IERS 2010.
+   * @param Rearth Equatorial radius of Earth [m]; ; default value from 
+   *               IERS 2010.
+   * @param GMmoon Standard gravitational parameter μ=GM for the Moon in 
+   *               [m^2/s^2]; default JPL DE421 value.
+   * @param GMsun  Standard gravitational parameter μ=GM for the Sun in 
+   *               [m^2/s^2]; default JPL DE421 value.
    */
-  SolidEarthTide(double GMearth, double Rearth, double GMmoon,
-                 double GMsun) noexcept
-      : mGMSun(GMsun), mGMMoon(GMmoon), mcs(degree, degree, GMearth, Rearth){};
+  SolidEarthTide(double GMearth = iers2010::GMe, double Rearth = iers2010::Re,
+                 double GMsun = 1.32712442076e20,
+                 double GMmoon = 0.49028010560e13) noexcept
+      : mSEratio(GMsun / GMearth), mMEratio(GMmoon / GMearth),
+        mcs(degree, degree, GMearth, Rearth) {};
 
   /** Get the stokes coefficients of the intsance */
   const StokesCoeffs &stokes_coeffs() const noexcept { return mcs; }

@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
   }
 
   /* A solidEarthTide instance */
-  dso::SolidEarthTide setide(iers2010::GMe, iers2010::Re, GM_Moon, GM_Sun);
+  dso::SolidEarthTide setide(iers2010::GMe, iers2010::Re, GM_Sun, GM_Moon);
 
   /* allocate scratch space for computations (optionally, we could let 
    * sh2gradient_cunningham allocate the memmory it needs, but allocating only 
@@ -125,15 +125,15 @@ int main(int argc, char *argv[]) {
     }
 
     if (formatD3Plot) {
-      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(), in.epoch.seconds(),
+      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(), in.epoch.seconds().seconds(),
              acc->axyz(0), a(0));
-      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(), in.epoch.seconds(),
+      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(), in.epoch.seconds().seconds(),
              acc->axyz(1), a(1));
-      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(), in.epoch.seconds(),
+      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(), in.epoch.seconds().seconds(),
              acc->axyz(2), a(2));
     } else {
       printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n", in.epoch.imjd(),
-             in.epoch.seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
+             in.epoch.seconds().seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
              a(1), a(2));
     }
 

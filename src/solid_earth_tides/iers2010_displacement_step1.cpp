@@ -20,10 +20,9 @@ constexpr const double shida_l3 = 0.015e0;
  * following Equations (5) and (6) respectively.
  *
  * @param[in] Re Equatorial radius of the Earth [m]
- * @param[in] GM Gravitational constant of Earth
+ * @param[in] GM_ratio GM_third_party / GM_Earth ratio
  * @param[in] rtb ECEF, cartesian coordinates of third body (sun or
  *            Moon) [rad] and [m]
- * @param[in] GMtb Gravitational constant of Third body
  * @param[in] rsta ECEF, spherical coordinates of site/point on Earth
  * @return The displacement vector Δr in ECEF Cartesian coordinates, i.e.
  *         Δr = [δX, δY, δZ]
@@ -79,10 +78,9 @@ step1_in_phase(double Re, double GMratio,
  * (Equations (8) and (9)) for the diurnal and semi-diurnal band.
  *
  * @param[in] Re Equatorial radius of the Earth [m]
- * @param[in] GM Gravitational constant of Earth
+ * @param[in] GM_ratio GM_third_party / GM_Earth ratio
  * @param[in] rtb ECEF, cartesian position vector of third body (sun or
  *            Moon) [m]
- * @param[in] GMtb Gravitational constant of Third body
  * @param[in] rsta ECEF, cartesian position vector of site/point on Earth
  * @return Displacement vector in local tangent coordinates, where the
  *         Up is in the radial (not vertical) direction and East and North
@@ -400,6 +398,6 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step1_displacement(
   // assert(std::abs(dx2(2)-dr(2))< 1e-15);
 
   /* all done */
-  return step1(mcs.Re(), rsta, rSun, rMoon, mseratio, mmeratio, tSta, tSun,
+  return step1(mcs.Re(), rsta, rSun, rMoon, mSEratio, mMEratio, tSta, tSun,
                tMoon);
 }

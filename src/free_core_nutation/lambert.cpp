@@ -14,7 +14,7 @@ dso::lambert_fcn(const dso::MjdEpoch &t,
   /* phase in [rad] at given date; time is fractional days since J2000 */
   const double phi =
       (dso::D2PI / per) * (t.diff<dso::DateTimeDifferenceType::FractionalDays>(
-                              dso::MjdEpoch::j2000_mjd()));
+                              dso::MjdEpoch::j2000_mjd()).days());
 
   /* find an entry at the coefficient vector, for which t0 <= t < t1 */
   auto rit = lvec.rbegin() + 1;
@@ -29,9 +29,9 @@ dso::lambert_fcn(const dso::MjdEpoch &t,
     const auto prev = *rit;
     const auto next = *(rit - 1);
     const double dt =
-        t.diff<dso::DateTimeDifferenceType::FractionalDays>(prev.t);
+        t.diff<dso::DateTimeDifferenceType::FractionalDays>(prev.t).days();
     const double dT =
-        next.t.diff<dso::DateTimeDifferenceType::FractionalDays>(prev.t);
+        next.t.diff<dso::DateTimeDifferenceType::FractionalDays>(prev.t).days();
     /* CIP coordinates */
     const double daxc = next.xc() - prev.xc();
     const double daxs = next.xs() - prev.xs();
@@ -53,7 +53,7 @@ dso::lambert_fcn(const dso::MjdEpoch &t,
     if (t >= lvec.rbegin()->t) {
       const auto it = *lvec.rbegin();
       const double dt =
-          t.diff<dso::DateTimeDifferenceType::FractionalDays>(it.t);
+          t.diff<dso::DateTimeDifferenceType::FractionalDays>(it.t).days();
       axc[0] = it.xc();
       axs[0] = it.xs();
       ayc[0] = it.yc();
@@ -69,7 +69,7 @@ dso::lambert_fcn(const dso::MjdEpoch &t,
 #endif
       const auto it = *lvec.begin();
       const double dt =
-          t.diff<dso::DateTimeDifferenceType::FractionalDays>(it.t);
+          t.diff<dso::DateTimeDifferenceType::FractionalDays>(it.t).days();
       axc[0] = it.xc();
       axs[0] = it.xs();
       ayc[0] = it.yc();

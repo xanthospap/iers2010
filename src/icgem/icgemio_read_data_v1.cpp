@@ -75,7 +75,8 @@ int dso::Icgem::parse_data_v1(int l, int k, const Icgem::Datetime &t,
             /* set current degree, order and t0 */
             current_n = entry.degree;
             current_m = entry.order;
-            dt = t.diff<DateTimeDifferenceType::FractionalYears>(entry.t0);
+            dt = t.diff<DateTimeDifferenceType::FractionalYears>(entry.t0)
+                     .years();
             break;
           case DataEntryType::trnd:
             C = entry.C * dt;

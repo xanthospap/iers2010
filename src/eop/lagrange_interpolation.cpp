@@ -58,11 +58,11 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
     const auto x0 = it - 1;
     const auto x1 = it;
     const double dx1x0 =
-        x1->t().diff<dso::DateTimeDifferenceType::FractionalDays>(x0->t());
+        x1->t().diff<dso::DateTimeDifferenceType::FractionalDays>(x0->t()).days();
     const double dx1x =
-        x1->t().diff<dso::DateTimeDifferenceType::FractionalDays>(t);
+        x1->t().diff<dso::DateTimeDifferenceType::FractionalDays>(t).days();
     const double dxx0 =
-        t.diff<dso::DateTimeDifferenceType::FractionalDays>(x0->t());
+        t.diff<dso::DateTimeDifferenceType::FractionalDays>(x0->t()).days();
     const double dx0 = dx1x / dx1x0;
     const double dx1 = dxx0 / dx1x0;
     eop.xp() = x0->xp() * dx0 + x1->xp() * dx1;
@@ -96,9 +96,9 @@ dso::EopSeries::interpolate(const dso::MjdEpoch &t, dso::EopRecord &eop,
     for (; k != stop; ++k) {
       if (j != std::distance(it - ndp, k)) {
         const double n =
-            t.diff<dso::DateTimeDifferenceType::FractionalDays>(k->t());
+            t.diff<dso::DateTimeDifferenceType::FractionalDays>(k->t()).days();
         const double d =
-            xjt.diff<dso::DateTimeDifferenceType::FractionalDays>(k->t());
+            xjt.diff<dso::DateTimeDifferenceType::FractionalDays>(k->t()).days();
         nom[j] *= n;
         dom[j] *= d;
       }

@@ -34,7 +34,7 @@ struct secularPole { double xs, ys; }; /* secularPole */
  */
 inline secularPole secular_pole(const MjdEpoch &tt) noexcept {
   constexpr const auto j2000 = MjdEpoch::j2000_mjd();
-  const double dt = tt.diff<DateTimeDifferenceType::FractionalYears>(j2000);
+  const auto dt = tt.diff<DateTimeDifferenceType::FractionalYears>(j2000).years();
   return secularPole{55e0+1.677e0*dt, 320.5e0+3.460e0*dt};
 }
 

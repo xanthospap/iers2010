@@ -59,8 +59,8 @@ int dso::details::parse_iers_C0420(const char *c04fn,
 
   {
     /* if needed, resize the EOP table, interval is [start, end) */
-    int days =
-        std::ceil(end.diff<dso::DateTimeDifferenceType::FractionalDays>(start));
+    int days = std::ceil(
+        end.diff<dso::DateTimeDifferenceType::FractionalDays>(start).days());
     eops.clear();
     eops.reserve(days);
   }

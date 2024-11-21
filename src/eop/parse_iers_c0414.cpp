@@ -2,9 +2,6 @@
 #include <charconv>
 #include <cstdio>
 #include <cstring>
-#include <datetime/dtdatetime.hpp>
-#include <datetime/dtfund.hpp>
-#include <datetime/tpdate.hpp>
 #include <fstream>
 
 namespace {
@@ -59,7 +56,7 @@ int dso::details::parse_iers_C0414(const char *c04fn,
   {
     /* if needed, resize the EOP table, interval is [start, end) */
     int days =
-        std::ceil(end.diff<dso::DateTimeDifferenceType::FractionalDays>(start));
+        std::ceil(end.diff<dso::DateTimeDifferenceType::FractionalDays>(start).days());
     eops.clear();
     eops.reserve(days);
   }

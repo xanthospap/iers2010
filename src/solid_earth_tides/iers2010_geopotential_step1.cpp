@@ -15,10 +15,9 @@ namespace {
  * and the same goes for the dS array.
  *
  * @param[in] Re Equatorial radius of the Earth [m]
- * @param[in] GM Gravitational constant of Earth
+ * @param[in] GM_ratio GM_third_party / GM_Earth ratio
  * @param[in] r_tb ECEF, cartesian position vector of third body (sun or
  *            Moon) [m]
- * @param[in] GM_tb Gravitational constant of Third body
  * @param[out] dC Array where the computed geopotential corrections ΔC are
  *            added. Expected size is 12, in the order:
  *             dC = C20,C21,C22,C30,C31,C32,C33,C40,C41,C42,C43,C44
@@ -30,7 +29,7 @@ namespace {
  */
 [[maybe_unused]]
 int iers2010_solid_earth_tide_anelastic_tb(
-    double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb, double GMtb,
+    double Re, double GM_ratio, const Eigen::Matrix<double, 3, 1> &rtb,
     std::array<double, 12> &dC, std::array<double, 12> &dS) noexcept {
 
   /* get spherical coordinates of third body */
@@ -110,8 +109,7 @@ int iers2010_solid_earth_tide_anelastic_tb(
   /* ΔC42 */ dSt[9] = fac2 * Pnm22 * (-0.00057e0) * __s2l;
 
   /* scale and add to output arrays */
-  const double fac =
-      (GMtb / std::pow(rtb_spherical.r(), 3)) * (std::pow(Re, 3) / GM);
+  const double fac = GM_ratio * std::pow(Re/rtb_spherical.r(), 3e0);
   std::transform(dCt.cbegin(), dCt.cend(), dC.cbegin(), dC.begin(),
                  [fac](double dct, double dc) { return dc + dct * fac; });
   std::transform(dSt.cbegin(), dSt.cend(), dS.cbegin(), dS.begin(),
@@ -121,17 +119,32 @@ int iers2010_solid_earth_tide_anelastic_tb(
 }
 
 /** @brief Third body (Sun or Moon) Solid earth tide geopotential coefficient
- *        corrections, based on IERS 2010, elastic Earth.
+ *        corrections, based on IERS 2010, Elastic Earth.
  *
- *  For more information, see the function iers2010_solid_earth_tide_elastic_tb 
- *  These two functions are practically the same, except for the part of 
- *  computing ΔC(n,m) and ΔS(n,m) for n=2.
+ *  This function will compute the corrections to (geopotential) Stokes 
+ *  coefficients ΔC and ΔS, of max degree/order 4. These will be **added** 
+ *  to the input parameters dC and dS.
+ *  
  *  See also the table 6.3 in IERS 2010. 
+ *
+ *  @param[in] Re       Equatorial radius of the Earth [m]
+ *  @param[in] GM_ratio GM_third_party / GM_Earth ratio
+ *  @param[in] rtb      body-fixed (ECEF) cartesian coordinates, from 
+ *                      geocenter to third body (Moon or Sun) in [m]
+ *  @param[out] dC      deltaC_ij corrections of C Stokes coefficients, in 
+ *                      the sense:
+ *             dC = C20,C21,C22,C30,C31,C32,C33,C40,C41,C42,C43,C44
+ *      [indexes] : 0   1   2   3   4   5   6   7   8   9   10  11
+ *  @param[out] dS      deltaS_ij corrections of S Stokes coefficients, in 
+ *                      the sense:
+ *            dS = S20,S21,S22,0,S31,S32,S33,0,S41,S42,S43,S44
+ *  @return Always 1
  */
 [[maybe_unused]]
-int iers2010_solid_earth_tide_elastic_tb(
-    double Re, double GM, const Eigen::Matrix<double, 3, 1> &rtb, double GMtb,
-    std::array<double, 12> &dC, std::array<double, 12> &dS) noexcept {
+int iers2010_solid_earth_tide_elastic_tb(double Re, double GM_ratio,
+                                         const Eigen::Matrix<double, 3, 1> &rtb,
+                                         std::array<double, 12> &dC,
+                                         std::array<double, 12> &dS) noexcept {
 
   /* get spherical coordinates of third body */
   const auto rtb_spherical =
@@ -210,7 +223,7 @@ int iers2010_solid_earth_tide_elastic_tb(
   /* ΔC42 */ dSt[9] = fac2 * Pnm22 * (-0.00057e0) * __s2l;
 
   /* scale and add to output arrays */
-  const double fac = (GMtb / GM) * std::pow(Re / rtb_spherical.r(), 3e0);
+  const double fac = GM_ratio * std::pow(Re / rtb_spherical.r(), 3e0);
   std::transform(dCt.cbegin(), dCt.cend(), dC.cbegin(), dC.begin(),
                  [fac](double dct, double dc) { return dc + dct * fac; });
   std::transform(dSt.cbegin(), dSt.cend(), dS.cbegin(), dS.begin(),
@@ -229,23 +242,17 @@ int dso::SolidEarthTide::potential_step1(
   std::fill(dC.begin(), dC.end(), 0e0);
   std::fill(dS.begin(), dS.end(), 0e0);
 
-  // Compute using AnElastic Love numbers:
-  // ------------------------------------------------------------------------
+  /* Compute using AnElastic Love numbers: */
   /* start with Sun geopotential corrections */
-  iers2010_solid_earth_tide_anelastic_tb(mcs.Re(), mcs.GM(), rSun, mGMSun, dC,
-                                         dS);
+  iers2010_solid_earth_tide_anelastic_tb(mcs.Re(), mSEratio, rSun, dC, dS);
   /* add Moon */
-  iers2010_solid_earth_tide_anelastic_tb(mcs.Re(), mcs.GM(), rMoon, mGMMoon, dC,
-                                         dS);
+  iers2010_solid_earth_tide_anelastic_tb(mcs.Re(), mMEratio, rMoon, dC, dS);
   
-  // Compute using Elastic Love numbers:
-  // ------------------------------------------------------------------------
+  /* Compute using Elastic Love numbers: */
   /* start with Sun geopotential corrections */
-  //iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mcs.GM(), rSun, mGMSun, dC,
-  //                                       dS);
+  // iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mSEratio, rSun, dC, dS);
   /* add Moon */
-  //iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mcs.GM(), rMoon, mGMMoon, dC,
-  //                                       dS);
+  // iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mMEratio, rMoon, dC, dS);
   
   
   /* all done for step 1 */
