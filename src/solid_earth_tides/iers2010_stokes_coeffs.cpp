@@ -11,6 +11,8 @@ int dso::SolidEarthTide::stokes_coeffs(
 
   /* compute Step-1 corrections (Sun+Moon) */
   potential_step1(rMoon, rSun, dC, dS);
+  for (int i=0; i<12; i++) dC[i] = 0e0;
+  for (int i=0; i<12; i++) dS[i] = 0e0;
 
   /* compute Step-2 corrections */
   double dC20, dC21, dS21, dC22, dS22;

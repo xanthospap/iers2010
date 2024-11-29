@@ -43,19 +43,48 @@ Eigen::Matrix<double, 3, 3> dso::detail::gcrs2itrs(double era, double s,
   return Rm.toRotationMatrix();
 }
 
-//Eigen::Matrix<double, 3, 3> dso::detail::gcrs2itrs(double era, double s,
-//                                                   double sp, double Xcip,
-//                                                   double Ycip, double xp,
-//                                                   double yp, Eigen::Matrix<double, 3, 3> &Rv) noexcept {
-//  /* compute full rotation matrix: [C x R x W] */
-//  auto Rm =  W(xp, yp, sp) * R(era) * C(Xcip, Ycip, s);
-//
-//  /* */
-//  Eigen::Matrix<double,3,3> dR = Eigen::Matrix<double,3,3>::Zeros();
-//  dR(0,1) = earth_rotation_rate(dlod);
-//  dR(1,0) = -earth_rotation_rate(dlod);
-//
-//  auto Rv = W(xp, yp, sp) * dR * R(era) * C(Xcip, Ycip, s);
-//
-//  return Rm.toRotationMatrix();
-//}
+Eigen::Matrix<double, 3, 3>
+dso::detail::gcrs2itrs(double era, double s, double sp, double Xcip,
+                       double Ycip, double xp, double yp, double lod,
+                       Eigen::Matrix<double, 3, 3> &dRdt) noexcept {
+  /* compute full rotation matrix: [C x R x W] */
+  auto Rm = W(xp, yp, sp) * R(era) * C(Xcip, Ycip, s);
+
+  {
+    /* compute simplified rotation matrix derivative, where we only consider
+     * dR/dt: i.e.
+     * [C x dR3/dt x W], where dR3/dt =
+     *
+     * | -sin(era) -cos(era) 0 |
+     * |  cos(era) -sin(era) 0 | * ω_{earth}
+     * |    0         0      0 |
+     *
+     * and ω_{earth} = earth_rotation_rate(lod) in [rad/sec]
+     */
+    Eigen::Matrix<double, 3, 3> Rdot =
+        R(era).toRotationMatrix() * earth_rotation_rate(lod);
+    const double pcos = Rdot(0, 0);
+    const double msin = Rdot(0, 1);
+    Rdot(0, 0) = msin;
+    Rdot(1, 1) = msin;
+    Rdot(0, 1) = -pcos;
+    Rdot(1, 0) = pcos;
+    Rdot(2, 2) = 0e0;
+    dRdt = W(xp, yp, sp) * Rdot * C(Xcip, Ycip, s);
+  }
+
+  return Rm.toRotationMatrix();
+}
+
+Eigen::Matrix<double, 3, 3>
+dso::detail::gcrs2tirs(double era, double s, double sp, double Xcip,
+                       double Ycip, double xp, double yp,
+                       Eigen::Matrix<double, 3, 3> *Wpom) noexcept {
+  /* compute full rotation matrix: [C x R] */
+  auto Rm = R(era) * C(Xcip, Ycip, s);
+
+  /* polar motion matrix */
+  if (Wpom) *Wpom = W(xp, yp, sp).toRotationMatrix();
+
+  return Rm.toRotationMatrix();
+}

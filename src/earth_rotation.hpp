@@ -103,6 +103,18 @@ Eigen::Quaterniond gcrs2itrs_quaternion(double era, double s, double sp,
 Eigen::Matrix<double, 3, 3> gcrs2itrs(double era, double s, double sp,
                                       double Xcip, double Ycip, double xp,
                                       double yp) noexcept;
+
+/** @brief Compute the GCRS to ITRS transformation (rotation) matrix.
+ */
+Eigen::Matrix<double, 3, 3>
+gcrs2itrs(double era, double s, double sp, double Xcip, double Ycip, double xp,
+          double yp, double lod, Eigen::Matrix<double, 3, 3> &dRdt) noexcept;
+
+/**
+ */
+Eigen::Matrix<double, 3, 3>
+gcrs2tirs(double era, double s, double sp, double Xcip, double Ycip, double xp,
+          double yp, Eigen::Matrix<double, 3, 3> *W = nullptr) noexcept;
 } /* namespace detail */
 
 } /* namespace dso */

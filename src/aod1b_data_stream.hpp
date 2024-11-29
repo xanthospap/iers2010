@@ -344,9 +344,12 @@ public:
     /* linear interpolation */
     const auto t1 = mhdrvec[index].mepoch;
     const auto t2 = mhdrvec[index + 1].mepoch;
-    const double t2ti = t2.diff<DateTimeDifferenceType::FractionalDays>(t);
-    const double t2t1 = t2.diff<DateTimeDifferenceType::FractionalDays>(t1);
-    const double tit1 = t.diff<DateTimeDifferenceType::FractionalDays>(t1);
+    const double t2ti =
+        t2.diff<DateTimeDifferenceType::FractionalDays>(t).days();
+    const double t2t1 =
+        t2.diff<DateTimeDifferenceType::FractionalDays>(t1).days();
+    const double tit1 =
+        t.diff<DateTimeDifferenceType::FractionalDays>(t1).days();
     const double fac1 = t2ti / t2t1;
     const double fac2 = tit1 / t2t1;
     for (int m = 0; m <= cs.max_order(); m++) {

@@ -79,14 +79,14 @@ int main(int argc, char *argv[]) {
   auto acc = accvec.begin();
   auto rot = rotvec.begin();
   for (const auto &in : orbvec) {
-    /* GPSTime to TT */
-    const auto t = in.epoch.gps2tai().tai2tt();
+    /* for the test, we do not transform to TT; we will consider GPSTime */
+    const auto t = in.epoch;
 
     /* rotation matrix */
     const Eigen::Matrix<double,3,3> R = rot->R;
     assert(rot->epoch == in.epoch);
     
-    /* get Sun+Moon position in ICRF */
+    /* get Sun+Moon position in ICRF (using GPST instead of TT) */
     if (dso::planet_pos(dso::Planet::SUN, t, rsun)) {
       fprintf(stderr, "ERROR Failed to compute Sun position!\n");
       return 2;
@@ -103,13 +103,18 @@ int main(int argc, char *argv[]) {
     
     /* compute gmst using an approximate value for UT1 (linear interpolation) */
     double dut1_approx;
-    eop.approx_dut1(t, dut1_approx);
+    eop.approx_dut1(t.gps2tai().tai2tt(), dut1_approx);
 
     /* compute fundamental (Delaunay) arguments fot t */
     dso::fundarg(t, fargs);
     
-    /* compute solid earth tide geopotential variations */
-    setide.stokes_coeffs(t, t.tt2ut1(dut1_approx), rmon, rsun, fargs);
+    /* compute solid earth tide geopotential variations (again, using GPST 
+     * instead of TT).
+     */
+    // setide.stokes_coeffs(t.gps2tt(), t.gps2tai().tai2ut1(dut1_approx), rmon, rsun, fargs);
+    const auto tutc_ = t.gps2utc();
+    dso::MjdEpoch tutc(tutc_.imjd(), tutc_.seconds());
+    setide.stokes_coeffs(t, tutc, rmon, rsun, fargs);
 
     /* compute acceleration for given epoch/position (ITRF) */
     dso::sh2gradient_cunningham(setide.stokes_coeffs(), rsat, a, g, -1, -1, -1,
