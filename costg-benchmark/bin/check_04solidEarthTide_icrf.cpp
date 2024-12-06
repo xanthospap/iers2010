@@ -79,14 +79,14 @@ int main(int argc, char *argv[]) {
   auto acc = accvec.begin();
   auto rot = rotvec.begin();
   for (const auto &in : orbvec) {
-    /* for the test, we do not transform to TT; we will consider GPSTime */
+    /* we will consider GPSTime */
     const auto t = in.epoch;
 
     /* rotation matrix */
     const Eigen::Matrix<double,3,3> R = rot->R;
     assert(rot->epoch == in.epoch);
     
-    /* get Sun+Moon position in ICRF (using GPST instead of TT) */
+    /* get Sun+Moon position in ICRF, using (GPST to) TT */
     if (dso::planet_pos(dso::Planet::SUN, t.gps2tai().tai2tt(), rsun)) {
       fprintf(stderr, "ERROR Failed to compute Sun position!\n");
       return 2;
@@ -101,15 +101,12 @@ int main(int argc, char *argv[]) {
     rmon = R * rmon;
     rsat = in.xyz;
   
-    //printf("time %d + %.15f\n", t.imjd(), t.fractional_days().days());
-    //printf("Moon %.1f %.1f %.1f\n", rmon(0), rmon(1), rmon(2));
-    
     /* compute gmst using an approximate value for UT1 (linear interpolation) */
     double dut1_approx;
     eop.approx_dut1(t.gps2tai().tai2tt(), dut1_approx);
 
-    /* compute fundamental (Delaunay) arguments fot t */
-    dso::fundarg(t, fargs);
+    /* compute fundamental (Delaunay) arguments for t (using TT) */
+    dso::fundarg(t.gps2tai().tai2tt(), fargs);
     
     /* compute solid earth tide geopotential variations (again, using GPST 
      * instead of TT).

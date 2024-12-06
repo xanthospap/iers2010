@@ -18,10 +18,9 @@ int dso::SolidEarthTide::stokes_coeffs(
   potential_step2(mjdtt, mjdut1, delaunay_args, dC20, dC21, dS21, dC22,
                          dS22);
   
-  dC20= dC21= dS21= dC22= dS22 = 0e0;
-
   /* assign corrections to the isntance's Stokes coefficients */
   mcs.clear();
+  
   /* C coeffs */
   mcs.C(2, 0) = dC[0] + dC20;
   mcs.C(3, 0) = dC[3];

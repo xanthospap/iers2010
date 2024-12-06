@@ -5822,10 +5822,12 @@ int main() {
     const auto v1 = R1 * v + dRdt * r;
     
     omega << 0e0, 0e0, dso::earth_rotation_rate(lod);
-    auto R2 = dso::detail::gcrs2tirs(era, s, sp, X, Y, xp, yp, &W);
+    const auto R2 = dso::detail::gcrs2tirs(era, s, sp, X, Y, xp, yp, &W);
     const auto p2 = W * R2 * r;
-    // const Eigen::Matrix<double,3,1> v2 = W * ((R2 * v) + omega.cross(R2 * r));
-    const auto v2 = W * ((R2 * v) + omega.cross(R2 * r));
+    const Eigen::Matrix<double,3,1> v21 = W * ((R2 * v) + omega.cross(R2 * r));
+    const auto v22 = W * ((R2 * v) + omega.cross(R2 * r));
+    assert( v21 == v22 );
+    const auto v2 = v22;
 
     //const auto t  = R1 * v;
     //const auto t2 = W * (R2 * v);

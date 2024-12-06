@@ -84,7 +84,7 @@ dso::detail::gcrs2tirs(double era, double s, double sp, double Xcip,
   auto Rm = R(era) * C(Xcip, Ycip, s);
 
   /* polar motion matrix */
-  if (Wpom) *Wpom = W(xp, yp, sp).toRotationMatrix();
+  if (Wpom) *Wpom = W(xp, yp, sp);
 
   return Rm.toRotationMatrix();
 }
