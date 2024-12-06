@@ -5,21 +5,6 @@
 
 namespace {
 
-double gmst_torsten(const dso::MjdEpoch &tutc) {
-  /* Greenwich mean sidereal time, groops.  */
-  double Tu0 = (tutc.imjd() - 51544.5) / 36525.0;
-
-  double GMST0 = (6.0 / 24 + 41.0 / (24 * 60) + 50.54841 / (24 * 60 * 60)) +
-                 (8640184.812866 / (24 * 60 * 60)) * Tu0 +
-                 (0.093104 / (24 * 60 * 60)) * Tu0 * Tu0 +
-                 (-6.2e-6 / (24 * 60 * 60)) * Tu0 * Tu0 * Tu0;
-  double r = 1.002737909350795 + 5.9006e-11 * Tu0 - 5.9e-15 * Tu0 * Tu0;
-
-  double gmsttt = fmod(2 * dso::DPI * (GMST0 + r * tutc.fractional_days().days()), 2 * dso::DPI);
-
-  return gmsttt;
-}
-
 /* @brief Table 6.5a from IERS2010, to compute Step 2 corrections for m=0 */
 struct Step2TidesCoeffs {
   /* Doodson Number */
@@ -115,15 +100,9 @@ int dso::SolidEarthTide::potential_step2(const dso::MjdEpoch &mjdtt,
                                                 double &dC20, double &dC21,
                                                 double &dS21, double &dC22,
                                                 double &dS22) const noexcept {
-  // printf("Computing SE tides at time %d %.15f\n", mjdtt.imjd(), mjdtt.fractional_days().days());
-  // printf("Computing GMST at time %d %.15f\n", mjdut1.imjd(), mjdut1.fractional_days().days());
-  // silence compiler warning
-  assert(mjdtt.imjd() > 0);
 
   /* compute GMST using IAU 2006/2000A [rad] */
-  // const double gmst = dso::gmst(mjdtt, mjdut1);
-  const double gmst = gmst_torsten(mjdut1);
-  // printf("Gmst = %.15e\n", gmst);
+  const double gmst = dso::gmst(mjdtt, mjdut1);
 
   /* compute six-vector of multipliers ni from Delaunay vars */
   double __dargs[6];

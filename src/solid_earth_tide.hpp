@@ -196,7 +196,7 @@ public:
    * @param GMsun  Standard gravitational parameter μ=GM for the Sun in 
    *               [m^2/s^2]; default JPL DE421 value.
    */
-  SolidEarthTide(double GMearth = iers2010::GMe, double Rearth = iers2010::Re,
+  SolidEarthTide(double GMearth = ::iers2010::GMe, double Rearth = ::iers2010::Re,
                  double GMsun = 1.32712442076e20,
                  double GMmoon = 0.49028010560e13) noexcept
       : mSEratio(GMsun / GMearth), mMEratio(GMmoon / GMearth),
