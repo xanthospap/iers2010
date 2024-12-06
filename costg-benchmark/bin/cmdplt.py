@@ -65,7 +65,6 @@ parser.add_argument(
     help='Do not show plot(s)')
 
 if __name__ == "__main__":
-    ## parse cmd
     args = parser.parse_args()
     scale = args.scale
 

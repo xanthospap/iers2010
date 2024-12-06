@@ -6,18 +6,19 @@ int dso::SolidEarthTide::stokes_coeffs(
     const Eigen::Matrix<double, 3, 1> &rMoon,
     const Eigen::Matrix<double, 3, 1> &rSun,
     const double *const delaunay_args) noexcept {
+
   /* store dC and dS here, from Step-1 */
   std::array<double, 12> dC, dS;
 
   /* compute Step-1 corrections (Sun+Moon) */
   potential_step1(rMoon, rSun, dC, dS);
-  for (int i=0; i<12; i++) dC[i] = 0e0;
-  for (int i=0; i<12; i++) dS[i] = 0e0;
 
   /* compute Step-2 corrections */
   double dC20, dC21, dS21, dC22, dS22;
   potential_step2(mjdtt, mjdut1, delaunay_args, dC20, dC21, dS21, dC22,
                          dS22);
+  
+  dC20= dC21= dS21= dC22= dS22 = 0e0;
 
   /* assign corrections to the isntance's Stokes coefficients */
   mcs.clear();

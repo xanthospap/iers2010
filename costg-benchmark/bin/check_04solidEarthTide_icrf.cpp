@@ -87,11 +87,11 @@ int main(int argc, char *argv[]) {
     assert(rot->epoch == in.epoch);
     
     /* get Sun+Moon position in ICRF (using GPST instead of TT) */
-    if (dso::planet_pos(dso::Planet::SUN, t, rsun)) {
+    if (dso::planet_pos(dso::Planet::SUN, t.gps2tai().tai2tt(), rsun)) {
       fprintf(stderr, "ERROR Failed to compute Sun position!\n");
       return 2;
     }
-    if (dso::planet_pos(dso::Planet::MOON, t, rmon)) {
+    if (dso::planet_pos(dso::Planet::MOON, t.gps2tai().tai2tt(), rmon)) {
       fprintf(stderr, "ERROR Failed to compute Sun position!\n");
       return 2;
     }
@@ -100,6 +100,9 @@ int main(int argc, char *argv[]) {
     rsun = R * rsun;
     rmon = R * rmon;
     rsat = in.xyz;
+  
+    //printf("time %d + %.15f\n", t.imjd(), t.fractional_days().days());
+    //printf("Moon %.1f %.1f %.1f\n", rmon(0), rmon(1), rmon(2));
     
     /* compute gmst using an approximate value for UT1 (linear interpolation) */
     double dut1_approx;

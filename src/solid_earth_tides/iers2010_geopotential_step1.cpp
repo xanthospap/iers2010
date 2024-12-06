@@ -78,10 +78,10 @@ int iers2010_solid_earth_tide_anelastic_tb(
   constexpr const double fac2 = 1e0 / 5e0;
   /* ΔC20 */ dCt[0] = fac2 * Pnm20 * 0.30190e0;
   /* ΔS20 */ dSt[0] = 0e0;
-  /* ΔC21 */ dCt[1] = fac2 * Pnm21 * (0.29830e0 * __cl + (-0.00144e0) * __sl);
+  /* ΔC21 */ dCt[1] = fac2 * Pnm21  * (0.29830e0 * __cl + (-0.00144e0) * __sl);
   /* ΔC21 */ dSt[1] = fac2 * Pnm21 * (0.29830e0 * __sl - (-0.00144e0) * __cl);
   /* ΔC22 */ dCt[2] = fac2 * Pnm22 * (0.30102e0 * __c2l + (-0.00130e0) * __s2l);
-  /* ΔC22 */ dSt[2] = fac2 * Pnm22 * (0.30102e0 * __s2l - (-0.00130e0) * __c2l);
+  /* ΔS22 */ dSt[2] = fac2 * Pnm22 * (0.30102e0 * __s2l - (-0.00130e0) * __c2l);
 
   /* order n = 3 Eq. (6.6) from IERS 2010, ommiting GMj/GM and (Re/r)^3.
    * Note that there is no imaginary part of knm for n = 3
@@ -193,9 +193,9 @@ int iers2010_solid_earth_tide_elastic_tb(double Re, double GM_ratio,
   /* ΔC20 */ dCt[0] = fac2 * Pnm20 * 0.29525e0;
   /* ΔS20 */ dSt[0] = 0e0;
   /* ΔC21 */ dCt[1] = fac2 * Pnm21 *  0.29470e0 * __cl;
-  /* ΔC21 */ dSt[1] = fac2 * Pnm21 *  0.29470e0 * __sl;
+  /* ΔS21 */ dSt[1] = fac2 * Pnm21 *  0.29470e0 * __sl;
   /* ΔC22 */ dCt[2] = fac2 * Pnm22 *  0.29801e0 * __c2l;
-  /* ΔC22 */ dSt[2] = fac2 * Pnm22 *  0.29801e0 * __s2l;
+  /* ΔS22 */ dSt[2] = fac2 * Pnm22 *  0.29801e0 * __s2l;
 
   /* order n = 3 Eq. (6.6) from IERS 2010, ommiting GMj/GM and (Re/r)^3.
    * Note that there is no imaginary part of knm for n = 3
@@ -243,8 +243,10 @@ int dso::SolidEarthTide::potential_step1(
   std::fill(dS.begin(), dS.end(), 0e0);
 
   /* Compute using AnElastic Love numbers: */
-  /* start with Sun geopotential corrections */
   iers2010_solid_earth_tide_anelastic_tb(mcs.Re(), mSEratio, rSun, dC, dS);
+  std::fill(dC.begin(), dC.end(), 0e0);
+  std::fill(dS.begin(), dS.end(), 0e0);
+
   /* add Moon */
   iers2010_solid_earth_tide_anelastic_tb(mcs.Re(), mMEratio, rMoon, dC, dS);
   
@@ -253,7 +255,14 @@ int dso::SolidEarthTide::potential_step1(
   // iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mSEratio, rSun, dC, dS);
   /* add Moon */
   // iers2010_solid_earth_tide_elastic_tb(mcs.Re(), mMEratio, rMoon, dC, dS);
-  
+ 
+  // dC = C20,C21,C22,C30,C31,C32,C33,C40,C41,C42,C43,C44
+  //es] : 0   1   2   3   4   5   6   7   8   9   10  11
+  //printf("%.15f\n", 0.); 
+  //printf("%.15f %.15f\n", 0., 0.); 
+  //printf("%.15f %.15f %.15f\n", dC[0], dC[1], dC[2]); 
+  //printf("%.15f %.15f %.15f %.15f\n", dC[3], dC[4], dC[5], dC[6]); 
+  //printf("%.15f %.15f %.15f %.15f %.15f\n", dC[7], dC[8], dC[9], dC[10], dC[11]); 
   
   /* all done for step 1 */
   return 0;
