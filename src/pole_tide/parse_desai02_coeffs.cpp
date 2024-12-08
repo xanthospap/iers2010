@@ -57,14 +57,25 @@ int dso::pole_tide_details::parse_desai02_coeffs(
     return 1;
   }
 
-  /* resize (if needed).
-   * Note that to store coefficients up to max_degree, we need a matrix of 
-   * size max_degree+1, since we start counting from 0.
+  /* Resize (if needed).
+   * Notes:
+   * [1] Note that to store coefficients up to max_degree, we need a matrix 
+   * of size max_degree+1, since we start counting from 0.
+   * [2] Normally, allocations should look something like:
+   * A_real.resize(max_degree+1, max_order+1);
+   * but CoeffMatrix2D<MatrixStorageType::LwTriangularColWise> only supports 
+   * rectungular matrices, i.e. rows = cols.
    */
-  A_real.resize(max_degree+1, max_order+1);
-  A_imag.resize(max_degree+1, max_order+1);
-  B_real.resize(max_degree+1, max_order+1);
-  B_imag.resize(max_degree+1, max_order+1);
+  A_real.resize(max_degree+1, /*max_order+1*/max_degree+1);
+  A_imag.resize(max_degree+1, /*max_order+1*/max_degree+1);
+  B_real.resize(max_degree+1, /*max_order+1*/max_degree+1);
+  B_imag.resize(max_degree+1, /*max_order+1*/max_degree+1);
+
+  /* set elements to zero; this is cruacial for the C(0,0) coeff! */
+  A_real.fill_with(0e0);
+  A_imag.fill_with(0e0);
+  B_real.fill_with(0e0);
+  B_imag.fill_with(0e0);
 
   constexpr const int SZ = 256;
   char line[SZ];

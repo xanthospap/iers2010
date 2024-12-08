@@ -408,7 +408,7 @@ public:
   Aod1bDataStream &operator=(const Aod1bDataStream &other) noexcept = delete;
   /** Move-construction allowed */
   Aod1bDataStream(Aod1bDataStream &&other) noexcept
-      : mstream(std::move(other.msteam)), mit(std::move(other.mit)),
+      : mstream(std::move(other.mstream)), mit(std::move(other.mit)),
         mhdrvec(std::move(other.mhdrvec)), mcsvec(other.mcsvec) {
     other.mcsvec = nullptr;
   }
