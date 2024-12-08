@@ -228,14 +228,17 @@ int dso::OceanPoleTide::stokes_coeffs(const dso::MjdEpoch &t, double xp,
     mcs.S(l, m) =
         knfac[l] * (B_real(l, m) * freal + B_imag(l, m) * fimag);
   }
-
-  /* all toher orders (m) except m=0 */
+  
+  /* all other orders (m) except m=0 */
   for (m = 1; m <= max_order; m++) {
     for (int l = m; l <= max_degree; l++) {
       mcs.C(l, m) =
           knfac[l] * (A_real(l, m) * freal + A_imag(l, m) * fimag);
       mcs.S(l, m) =
           knfac[l] * (B_real(l, m) * freal + B_imag(l, m) * fimag);
+    //if (l==2) {
+    //  printf("C(%d,%d) += %.13e * %.15f + %.13e * %.15f\n", l,m, A_real(l, m), knfac[l]*freal*fac2, A_imag(l, m), knfac[l]*fimag*fac2);
+    //}
     }
   }
   

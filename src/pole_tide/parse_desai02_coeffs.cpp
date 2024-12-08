@@ -57,11 +57,14 @@ int dso::pole_tide_details::parse_desai02_coeffs(
     return 1;
   }
 
-  /* resize (if needed) */
-  A_real.resize(max_degree, max_order);
-  A_imag.resize(max_degree, max_order);
-  B_real.resize(max_degree, max_order);
-  B_imag.resize(max_degree, max_order);
+  /* resize (if needed).
+   * Note that to store coefficients up to max_degree, we need a matrix of 
+   * size max_degree+1, since we start counting from 0.
+   */
+  A_real.resize(max_degree+1, max_order+1);
+  A_imag.resize(max_degree+1, max_order+1);
+  B_real.resize(max_degree+1, max_order+1);
+  B_imag.resize(max_degree+1, max_order+1);
 
   constexpr const int SZ = 256;
   char line[SZ];

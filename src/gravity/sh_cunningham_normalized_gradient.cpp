@@ -86,8 +86,6 @@ int sh2gradient_cunningham_impl(
     assert(false);
   }
 
-//feenableexcept(FE_ALL_EXCEPT & ~FE_INEXACT);
-
   /* Factors up to degree/order MAX_SIZE_FOR_ALF_FACTORS. Constructed only on
    * the first function call
    */
@@ -149,17 +147,6 @@ int sh2gradient_cunningham_impl(
 
     // M.multiply(1e-280);
     // W.multiply(1e-280);
-
-    {
-      //printf("M(179) = %.15e %.15e\n", M(179,178), M(179,179));
-      //printf("M(180) = %.15e %.15e %.15e\n", M(180,178), M(180,179), M(180,180));
-      //printf("M(181) = %.15e %.15e %.15e %.15e\n", M(181,178), M(181,179), M(181,180), M(181,181));
-      //printf("M(182) = %.15e %.15e %.15e %.15e %.15e\n", M(182,178), M(182,179), M(182,180), M(182,181), M(182,182));
-      //printf("M(149) = %.15e %.15e\n", M(149,148), M(149,149));
-      //printf("M(150) = %.15e %.15e %.15e\n", M(150,148), M(150,149), M(150,150));
-      //printf("M(151) = %.15e %.15e %.15e %.15e\n", M(151,148), M(151,149), M(151,150), M(151,151));
-      //printf("M(152) = %.15e %.15e %.15e %.15e %.15e\n", M(152,148), M(152,149), M(152,150), M(152,151), M(152,152));
-    }
   } /* end computing ALF factors M and W */
 
   /* acceleration and gradient in cartesian components */
@@ -426,10 +413,6 @@ int dso::sh2gradient_cunningham(
             __func__);
     return 1;
   }
-
-  //printf("\tCalling compute with (n,m)=(%d,%d), Re=%.9f GM=%.3f r=(%.3f %.3f "
-  //       "%.3f) W(%dx%d) M(%dx%d)\n",
-  //       max_degree, max_order, Re, GM, r(0), r(1), r(2), W->rows(), W->cols(), M->rows(), M->cols());
 
   /* call core function */
   int status = sh2gradient_cunningham_impl(cs, r, max_degree, max_order, Re, GM,

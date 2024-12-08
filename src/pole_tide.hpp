@@ -33,7 +33,7 @@ struct m12Coeffs {
  *         [arcsec].
  */
 inline m12Coeffs mcoeffs(const MjdEpoch &t, double xp, double yp) noexcept {
-  /* secular pole in  [mas] */
+  /* secular pole in [mas] */
   const auto spole = secular_pole(t);
   /* m1, m2 coefficients in [arcsec] */
   return m12Coeffs{xp - spole.xs * 1e-3, -(yp - spole.ys * 1e-3)};
@@ -42,12 +42,22 @@ inline m12Coeffs mcoeffs(const MjdEpoch &t, double xp, double yp) noexcept {
 /* max degree of coefficients for the Desai 2002 model. Applies to
  * A_real, A_imag, B_real and B_imag when the degree and order of the
  * instance are > 2.
+ *
+ * Note that this is SH (max) degree, hence if you need to allocate a matrix 
+ * to hold the coeffs, you should add 1 (SH coeffs go from [0, MAX_DEGREE].).
+ * See e.g. the OceanPoleTide constructors and their allocation of A_real, 
+ * A_imag, B_real and B_imag.
  */
 constexpr int MAX_DEGREE_DESAI_2002 = 360;
 
 /* max order of coefficients for the Desai 2002 model. Applies to
  * A_real, A_imag, B_real and B_imag when the degree and order of the
  * instance are > 2.
+ *
+ * Note that this is SH (max) order, hence if you need to allocate a matrix 
+ * to hold the coeffs, you should add 1 (SH coeffs go from [0, MAX_ORDER].).
+ * See e.g. the OceanPoleTide constructors and their allocation of A_real, 
+ * A_imag, B_real and B_imag.
  */
 constexpr int MAX_ORDER_DESAI_2002 = 360;
 
@@ -149,7 +159,7 @@ class OceanPoleTide {
   /* Coefficients for SH expansion, according to the model of Desai 2002. See
    * also IERS 2010, Ch. 7.1.5 "Ocean pole tide loading".
    * These are used when computing the Stokes coefficients for the
-   * geopotential SH expansion, using the Desai model if and only if the
+   * geopotential SH expansion using the Desai model, if and only if the
    * mmaxdegree and mmaxorder are > 2.
    * They must be read off from the file:
    * ftp://tai.bipm.org/iers/conv2010/chapter6/desaiscopolecoef.txt
@@ -173,9 +183,10 @@ public:
 
   OceanPoleTide(int max_degree, int max_order, const char *fn)
       : mmaxdegree(max_degree), mmaxorder(max_order),
-        mcs(max_degree, max_order), A_real(max_degree, max_degree),
-        A_imag(max_degree, max_degree), B_real(max_degree, max_degree),
-        B_imag(max_degree, max_degree) {
+        mcs(max_degree, max_order), A_real(max_degree + 1, max_degree + 1),
+        A_imag(max_degree + 1, max_degree + 1),
+        B_real(max_degree + 1, max_degree + 1),
+        B_imag(max_degree + 1, max_degree + 1) {
     if (this->parse_desai02_coeffs(fn, max_degree, max_order)) {
       throw std::runtime_error(
           "[ERROR] Failed constructing OceanPoleTide instance\n");
@@ -184,8 +195,10 @@ public:
 
   OceanPoleTide(int max_degree, const char *fn)
       : mmaxdegree(max_degree), mmaxorder(max_degree), mcs(max_degree),
-        A_real(max_degree, max_degree), A_imag(max_degree, max_degree),
-        B_real(max_degree, max_degree), B_imag(max_degree, max_degree) {
+        A_real(max_degree + 1, max_degree + 1),
+        A_imag(max_degree + 1, max_degree + 1),
+        B_real(max_degree + 1, max_degree + 1),
+        B_imag(max_degree + 1, max_degree + 1) {
     if (this->parse_desai02_coeffs(fn, max_degree, max_degree)) {
       throw std::runtime_error(
           "[ERROR] Failed constructing OceanPoleTide instance\n");
@@ -197,14 +210,14 @@ public:
         mmaxorder(pole_tide_details::MAX_ORDER_DESAI_2002),
         mcs(pole_tide_details::MAX_DEGREE_DESAI_2002,
             pole_tide_details::MAX_ORDER_DESAI_2002),
-        A_real(pole_tide_details::MAX_DEGREE_DESAI_2002,
-               pole_tide_details::MAX_DEGREE_DESAI_2002),
-        A_imag(pole_tide_details::MAX_DEGREE_DESAI_2002,
-               pole_tide_details::MAX_DEGREE_DESAI_2002),
-        B_real(pole_tide_details::MAX_DEGREE_DESAI_2002,
-               pole_tide_details::MAX_DEGREE_DESAI_2002),
-        B_imag(pole_tide_details::MAX_DEGREE_DESAI_2002,
-               pole_tide_details::MAX_DEGREE_DESAI_2002) {
+        A_real(pole_tide_details::MAX_DEGREE_DESAI_2002+1,
+               pole_tide_details::MAX_DEGREE_DESAI_2002+1),
+        A_imag(pole_tide_details::MAX_DEGREE_DESAI_2002+1,
+               pole_tide_details::MAX_DEGREE_DESAI_2002+1),
+        B_real(pole_tide_details::MAX_DEGREE_DESAI_2002+1,
+               pole_tide_details::MAX_DEGREE_DESAI_2002+1),
+        B_imag(pole_tide_details::MAX_DEGREE_DESAI_2002+1,
+               pole_tide_details::MAX_DEGREE_DESAI_2002+1) {
     if (this->parse_desai02_coeffs(fn, pole_tide_details::MAX_DEGREE_DESAI_2002,
                                    pole_tide_details::MAX_ORDER_DESAI_2002)) {
       throw std::runtime_error(
