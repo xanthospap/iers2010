@@ -34,6 +34,7 @@ namespace dso {
  * }
  */
 template <AOD1BCoefficientType T> class Aod1bDataStream {
+  /** Number of buffered (loaded) epochs of the stream */
   static constexpr const int AR_SIZE = 3;
 
 private:
@@ -109,8 +110,8 @@ private:
 
     /* shit, we don;t have the bounding coeffs!
      * (a) First, read in one more header/block, and see if we are there yet.
-     * (b) Else, keep on reading untill we find a header that is > t (storing
-     * coeffs allong the way).
+     * (b) Else, keep on reading until we find a header that is > t (storing
+     * coeffs along the way).
      * Both are only possible if the iterator is not marked as EOF!
      * Note that mit holds the next (to current) header.
      */
@@ -131,13 +132,13 @@ private:
           /* store coeffs at 0 index */
           error = mit.collect(mcsvec[0]);
           mhdrvec[0] = mit.header();
-          error = mit.advance();
+          error += mit.advance();
         }
         if (error) {
           char buf[64];
           fprintf(stderr,
                   "[ERROR] Failed collecting coeffs for epoch %s (TT) from "
-                  "AOD1B file %s (traceback: %s)\n",
+                  "AOD1B file %s; at [1] (traceback: %s)\n",
                   to_char<YMDFormat::YYYYMMDD, HMSFormat::HHMMSSF, nanoseconds>(
                       t, buf),
                   mit.aod1b().fn().c_str(), __func__);
@@ -155,7 +156,7 @@ private:
           char buf[64];
           fprintf(stderr,
                   "[ERROR] Failed collecting coeffs for epoch %s (TT) from "
-                  "AOD1B file %s (traceback: %s)\n",
+                  "AOD1B file %s; at [2] (traceback: %s)\n",
                   to_char<YMDFormat::YYYYMMDD, HMSFormat::HHMMSSF, nanoseconds>(
                       t, buf),
                   mit.aod1b().fn().c_str(), __func__);
@@ -181,6 +182,7 @@ private:
                 to_char<YMDFormat::YYYYMMDD, HMSFormat::HHMMSSF, nanoseconds>(
                     t, buf),
                 mit.aod1b().fn().c_str(), __func__);
+        fprintf(stderr, "[ERROR] Note: first epoch in file %.12f MJD, requested epoch %.12f MJD (traceback: %s)\n", mit.aod1b().first_epoch().fmjd(),  t.fmjd(), __func__);
         return -4;
       }
       /* shit, we need to go back in the file ! */

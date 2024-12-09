@@ -14,11 +14,10 @@ using namespace costg;
 int main(int argc, char *argv[]) {
   if (argc != 4 && argc != 6) {
     fprintf(stderr,
-            "Usage: %s [00orbit_icrf.txt] [AOD1B_2008-07-03_X_06.asc] "
-            "[08aod1b_RL06_icrf.txt], or\nUsage: %s [00orbit_itrf.txt] "
+            "Usage: Usage: %s [00orbit_itrf.txt] "
             "[AOD1B_2008-07-03_X_06.asc] [08aod1b_RL06_icrf.txt] "
             "[01earthRotation_rotaryMatrix.txt] [AOD1B_DATA_DIR]\n",
-            argv[0], argv[0]);
+            argv[0]);
     return 1;
   }
 
@@ -31,17 +30,15 @@ int main(int argc, char *argv[]) {
   /* read orbit from input file */
   const auto orbvec = parse_orbit(argv[1]);
 
-  /* read accleration from input file */
+  /* read acceleration from input file */
   const auto accvec = parse_acceleration(argv[3]);
 
   std::vector<BmRotaryMatrix> rotvec;
-  if (argc == 6) {
-    /* read rotary matrix (GCRS to ITRS) from input file */
-    rotvec = parse_rotary(argv[4]);
-  }
+  /* read rotary matrix (GCRS to ITRS) from input file */
+  rotvec = parse_rotary(argv[4]);
 
   /* we initialize the instance using a starting (AOD1B) file and a directory
-   * well subsequent files are placed and can be used.
+   * where subsequent files are placed and can be used.
    */
   dso::Aod1bDataStream<dso::AOD1BCoefficientType::GLO> aodin(argv[2], argv[5]);
   aodin.initialize();
@@ -64,11 +61,10 @@ int main(int argc, char *argv[]) {
   for (const auto &in : orbvec) {
     /* GPSTime */
     const auto t = in.epoch;
-    dso::datetime<dso::nanoseconds> dt(
-        dso::from_mjdepoch<dso::nanoseconds>(t));
+    dso::datetime<dso::nanoseconds> dt(dso::from_mjdepoch<dso::nanoseconds>(t));
 
     /* get Stokes coefficients for this epoch from the AOD1B file */
-    if (aodin.coefficients_at(dt, stokes)) {
+    if (aodin.coefficients_at(dt.gps2tt(), stokes)) {
       fprintf(stderr, "Failed interpolating coefficients\n");
       return 1;
     }
@@ -86,11 +82,9 @@ int main(int argc, char *argv[]) {
     }
 
     /* if needed, transform acceleration from ITRF to GCRF */
-    if (argc == 6) {
-      const Eigen::Matrix<double, 3, 3> R = rot->R.transpose();
-      assert(rot->epoch == in.epoch);
-      a = R * a;
-    }
+    const Eigen::Matrix<double, 3, 3> R = rot->R.transpose();
+    assert(rot->epoch == in.epoch);
+    a = R * a;
 
     /* get COSTG result */
     if (acc->epoch != in.epoch) {
@@ -99,21 +93,20 @@ int main(int argc, char *argv[]) {
     }
 
     if (formatD3Plot) {
-      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(), in.epoch.seconds().seconds(),
-             acc->axyz(0), a(0));
-      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(), in.epoch.seconds().seconds(),
-             acc->axyz(1), a(1));
-      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(), in.epoch.seconds().seconds(),
-             acc->axyz(2), a(2));
+      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(),
+             in.epoch.seconds().seconds(), acc->axyz(0), a(0));
+      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(),
+             in.epoch.seconds().seconds(), acc->axyz(1), a(1));
+      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(),
+             in.epoch.seconds().seconds(), acc->axyz(2), a(2));
     } else {
       printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n", in.epoch.imjd(),
-             in.epoch.seconds().seconds(), acc->axyz(0), acc->axyz(1), acc->axyz(2), a(0),
-             a(1), a(2));
+             in.epoch.seconds().seconds(), acc->axyz(0), acc->axyz(1),
+             acc->axyz(2), a(0), a(1), a(2));
     }
 
     ++acc;
-    if (argc == 6)
-      ++rot;
+    ++rot;
   }
 
   return 0;
