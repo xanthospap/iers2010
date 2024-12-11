@@ -377,7 +377,10 @@ constexpr static std::array<TidalConstituentArrayEntry, 18>
     AtmosphericTidalHarmonics = {
         {{/*162.556*/ DoodsonConstituent(1, 1, -3, 0, 0, 1, -1.0e+00),
           14.917866090000, 0.00, "π1"},
-         {/*163.555*/ DoodsonConstituent(1, 1, -2, 0, 0, 0, -1.0e+00),
+          /* P1: the pifactor here is found by trial-and-error using COST-G
+           * benchmark test. In [2] it is different (i.e +1)
+           */
+         {/*163.555*/ DoodsonConstituent(1, 1, -2, 0, 0, 0, +1.0e+00),
           14.958932770000, 0.00, "P1"},
          // as in [2]
          //{/*164.556*/ DoodsonConstituent(1, 1, -1, 0, 0, 1, +1.0e+00),
@@ -385,7 +388,10 @@ constexpr static std::array<TidalConstituentArrayEntry, 18>
          /* as in [3] */
          {/*164.556*/ DoodsonConstituent(1, 1, -1, 0, 0, 0, +2.0e+00),
           15.000001410000, 0.00, "S1"},
-         {/*165.555*/ DoodsonConstituent(1, 1, 0, 0, 0, 0, +1.0e+00),
+          /* K1: the pifactor here is found by trial-and-error using COST-G
+           * benchmark test. In [2] it is different (i.e +1)
+           */
+         {/*165.555*/ DoodsonConstituent(1, 1, 0, 0, 0, 0, -1.0e+00),
           15.041070050000, 0.00, "K1"},
          {/*166.554*/ DoodsonConstituent(1, 1, 1, 0, 0, -1, +1.0e+00),
           15.082136730000, 0.00, "ψ1"},
@@ -393,7 +399,10 @@ constexpr static std::array<TidalConstituentArrayEntry, 18>
           28.984107050000, 0.00, "M2"},
          {/*272.556*/ DoodsonConstituent(2, 2, -3, 0, 0, 1, +0.0e+00),
           29.958936140000, 0.00, "T2"},
-         {/*273.555*/ DoodsonConstituent(2, 2, -2, 0, 0, 0, -1.0e+00),
+          /* S2: the pifactor here is found by trial-and-error using COST-G
+           * benchmark test. In [2] it is different (i.e +1)
+           */
+         {/*273.555*/ DoodsonConstituent(2, 2, -2, 0, 0, 0, 0.0e+00),
           30.000002820000, 0.00, "S2"},
          {/*274.554*/ DoodsonConstituent(2, 2, -1, 0, 0, -1, +2.0e+00),
           30.041069500000, 0.00, "R2"},
@@ -407,7 +416,10 @@ constexpr static std::array<TidalConstituentArrayEntry, 18>
           28.439729500000, 0.00, "L2"},
          {/*381.555*/ DoodsonConstituent(3, 3, -4, 0, 0, 0, +0.0e+00),
           44.958935590000, 0.00, "T3"},
-         {/*382.555*/ DoodsonConstituent(3, 3, -3, 0, 0, 0, +2.0e+00),
+          /* S3: the pifactor here is found by trial-and-error using COST-G
+           * benchmark test. In [2] it is different (i.e +1)
+           */
+         {/*382.555*/ DoodsonConstituent(3, 3, -3, 0, 0, 0, 0.0e+00),
           45.000004230000, 0.00, "S3"},
          {/*383.555*/ DoodsonConstituent(3, 3, -2, 0, 0, 0, +0.0e+00),
           45.041072870000, 0.00, "R3"},
