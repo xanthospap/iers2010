@@ -100,6 +100,8 @@ int dso::SolidEarthTide::potential_step2(const dso::MjdEpoch &mjdtt,
                                                 double &dC20, double &dC21,
                                                 double &dS21, double &dC22,
                                                 double &dS22) const noexcept {
+  /* initialize all stokes coeffs to zero */
+  dC20 = dC21 = dS21 = dC22 = dS22 = 0e0;
 
   /* compute GMST using IAU 2006/2000A [rad] */
   const double gmst = dso::gmst(mjdtt, mjdut1);

@@ -75,10 +75,13 @@ if __name__ == "__main__":
 
     for line in sys.stdin:
         if line[0] != '#' and not line.startswith('mjd'):
-            imjd, sec, x1, y1, z1, x2, y2, z2 = [ float(x) for x in line.split(' ') ]
-            t.append(sec)
-            a1x.append(x1); a1y.append(y1); a1z.append(z1);
-            a2x.append(x2); a2y.append(y2); a2z.append(z2);
+            try:
+                imjd, sec, x1, y1, z1, x2, y2, z2 = [ float(x) for x in line.split(' ') ]
+                t.append(sec)
+                a1x.append(x1); a1y.append(y1); a1z.append(z1);
+                a2x.append(x2); a2y.append(y2); a2z.append(z2);
+            except:
+                pass
         else:
             if line.startswith('#title'):
                 title = line.replace('#title','').strip()
