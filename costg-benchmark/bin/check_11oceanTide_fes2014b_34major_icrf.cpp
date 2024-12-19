@@ -69,19 +69,18 @@ int main(int argc, char *argv[]) {
   auto acc = accvec.begin();
   auto rot = rotvec.begin();
   for (const auto &in : orbvec) {
-    /* GPSTime to TT */
-    // const auto t = in.epoch.gps2tai().tai2tt();
+    /* GPSTime */
     const auto t = in.epoch;
 
     /* compute gmst using an approximate value for UT1 (linear interpolation) */
     double dut1_approx;
-    eop.approx_dut1(t, dut1_approx);
+    eop.approx_dut1(t.gps2tai().tai2tt(), dut1_approx);
 
     /* compute fundamental (Delaunay) arguments fot t */
-    dso::fundarg(t, fargs);
+    dso::fundarg(t.gps2tai().tai2tt(), fargs);
 
     /* compute Stokes coeffs (for atm. tides) */
-    fes14b.stokes_coeffs(t, t.tt2ut1(dut1_approx), fargs);
+    fes14b.stokes_coeffs(t.gps2tai().tai2tt(), t.tt2ut1(dut1_approx), fargs);
 
     /* for the test, degree one coefficients are not taken into account */
     fes14b.stokes_coeffs().C(0, 0) = fes14b.stokes_coeffs().C(1, 0) = fes14b.stokes_coeffs().C(1, 1) = 0e0;

@@ -42,10 +42,11 @@ int main(int argc, char *argv[]) {
   auto acc = accvec.begin();
   for (const auto &in : orbvec) {
     /* GPSTime to TT */
-    const auto t = in.epoch.gps2tai().tai2tt();
+    // const auto t = in.epoch.gps2tai().tai2tt();
+    const auto t = in.epoch;
 
     /* get Sun state in ICRF */
-    if (dso::planet_state(dso::Planet::SUN, t, rsun)) {
+    if (dso::planet_state(dso::Planet::SUN, t.gps2tai().tai2tt(), rsun)) {
       fprintf(stderr, "ERROR Failed to compute Sun position!\n");
       return 2;
     }
