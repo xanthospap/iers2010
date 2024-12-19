@@ -97,7 +97,13 @@ int dso::Icgem::parse_data_v1(int l, int k, const Icgem::Datetime &t,
             assert(current_m == entry.order);
             break;
           default:
-            assert(1==0);
+            /* just use current_[nm] to silence compiler warnings on set but 
+             * not used variables. setting error to this value, is nothing of 
+             * use.
+             */
+            error += (current_n + current_m);
+            /* should never reach this point */
+            assert(1==);
         }
         coeffs.C(entry.degree, entry.order) += C;
         coeffs.S(entry.degree, entry.order) += S;

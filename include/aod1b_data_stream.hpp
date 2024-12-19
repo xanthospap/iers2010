@@ -209,6 +209,8 @@ private:
       /* don't know why i am here! */
       assert(1 == 2);
     }
+    /* will never reach this point */
+    return 55;
   }
 
 public:

@@ -128,7 +128,10 @@ int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
       dso::Datetime<dso::nanoseconds> tmp =
           dso::from_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSS,
                          dso::nanoseconds>(res.ptr);
-      assert((tmp=tmp.gps2tt()) == first_epoch());
+      if ((tmp=tmp.gps2tt()) != first_epoch()) {
+        fprintf(stderr, "[ERROR] Failed parsing TIME FIRST OBS(SEC PAST EPOCH) field in AOD1B file %s (traceback: %s)\n", mfn.c_str(), __func__);
+        return 1;
+      }
     } else if (!std::strncmp(line, "TIME FIRST OBS (YEAR START)", 27)) {
       const char *last = line + std::strlen(line);
       int year;
@@ -162,7 +165,10 @@ int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
       dso::Datetime<dso::nanoseconds> tmp =
           dso::from_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSS,
                          dso::nanoseconds>(res.ptr);
-      assert(tmp.gps2tt() == last_epoch());
+      if ((tmp=tmp.gps2tt()) != last_epoch()) {
+        fprintf(stderr, "[ERROR] Failed parsing TIME LAST OBS(SEC PAST EPOCH) field in AOD1B file %s (traceback: %s)\n", mfn.c_str(), __func__);
+        return 1;
+      }
     } else if (!std::strncmp(line, "TIME LAST OBS (YEAR END)", 24)) {
       const char *last = line + std::strlen(line);
       int year;
@@ -220,7 +226,13 @@ int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
       }
     } else if (!std::strncmp(line, "COEFFICIENTS ERRORS (YES/NO)", 28)) {
       int sz = 0;
-      const char *r = header_field(line + 28, sz);
+      /* why maybe_unused? 
+       * GCC (at least 14.2), complaines about r being an unused variable, 
+       * even though it is (later) read within an assert macro.
+       * Probably marking it as unused is a god solution (?). At least i can't
+       * think of anything better.
+       */
+      [[maybe_unused]] const char *r = header_field(line + 28, sz);
       if (sz == 2) {
         assert(!std::strncmp("NO", r, 2));
         coeff_errors() = 0;
@@ -237,7 +249,7 @@ int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
       }
     } else if (!std::strncmp(line, "COEFF. NORMALIZED (YES/NO)", 26)) {
       int sz = 0;
-      const char *r = header_field(line + 26, sz);
+      [[maybe_unused]] const char *r = header_field(line + 26, sz);
       if (sz == 2) {
         assert(!std::strncmp("NO", r, 2));
         coeff_normalized() = 0;

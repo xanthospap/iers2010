@@ -1,0 +1,12 @@
+target_sources(iers
+  PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/lib/iau/dgmst.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/iau/era00.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/iau/gmst82.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/iau/gmst.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/iau/s06.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/iau/xcip06a.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/iau/xycip06a.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/iau/xycip06a_xy.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/iau/ycip06a.cpp
+)

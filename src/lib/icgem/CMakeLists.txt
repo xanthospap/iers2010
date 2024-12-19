@@ -1,0 +1,11 @@
+target_sources(iers
+  PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/lib/icgem/icgemio.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/icgem/icgemio_read_data_v1.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/icgem/icgemio_read_data_v2.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/icgem/icgemio_read_header.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/icgem/resolve_igcem_data_date_v1.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/icgem/resolve_igcem_data_date_v2.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/icgem/resolve_igcem_data_line_v1.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/icgem/resolve_igcem_data_line_v2.cpp
+)
