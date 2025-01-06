@@ -110,11 +110,6 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
 	DESTINATION include/iers
 )
 
-# Install private headers to a separate directory $PREFIX/iers/core
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/core/ 
-        DESTINATION include/iers/core
-)
-
 install(EXPORT iersTargets
         FILE iersTargets.cmake
         NAMESPACE dso::
