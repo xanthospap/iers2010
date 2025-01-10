@@ -26,7 +26,13 @@ This repository is an effort to translate the algorithms in the C++ programming
 language with (as much as possible) minor modifications. Note that the software 
 found at this website is routinely updated.
 
-# Prerequisites
+# Installation
+
+Source code is ISO C++17. Compilation should be trivial using any C++ compiler
+supporting the c++17 standard (option `-std=c++17` in [gcc](https://gcc.gnu.org/)
+and [clang](https://clang.org/)).
+
+## Prerequisites
 The C++ library [ggdatetime](https://github.com/xanthospap/ggdatetime) 
 is used in the library to handle datetime instances when needed. 
 Hence, you should have [ggdatetime](https://github.com/xanthospap/ggdatetime) 
@@ -39,12 +45,12 @@ installed (on your system) to successefuly compile this library.
 Vector/Matrix operations are implemented using the [eigen3](https://eigen.tuxfamily.org/index.php?title=Main_Page) 
 library. Availability of this library is also mandatory.
 
-# CSPICE
+## CSPICE
 Interaction with planetary ephemeris files (i.e. JPL's published DE), is 
 done via the [SPICE Toolkit](https://naif.jpl.nasa.gov/naif/toolkit.html). 
 The toolkit is a C library with a corresponding API. 
 
-# Installation
+### Installation
 
 * Download the C library from the [correponding site](https://naif.jpl.nasa.gov/naif/toolkit_C.html) and uncompress.
 
@@ -60,18 +66,46 @@ that the script is in the C-sheel, hence you might need to `$>csh makeall.csh`.
 run it as root, to install the library. Header files will be available at 
 `/usr/local/include` and the library at `/usr/local/lib`.
 
-# Compilation / Installation <a name="compilation-installation"></a>
+## Compilation / Installation <a name="compilation-installation"></a>
+
 > January 2022:
 > From now on, only the [scons](https://scons.org/) build will be supported; 
 > support for autotools is dropped.
 
-The project is built via the [scons](https://scons.org/) built system:
+The project is built via the [cmake](https://cmake.org/) built system:
 
 ```bash
 $> git clone https://github.com/xanthospap/iers2010.git && cd iers2010
-$> scons
-$> sudo scons install
+$> # step 1
+$> cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/local/lib
+$> # step 2
+$> cmake --build build --target all --config=Release -- -j4
+$> # step 3
+$> cd build && sudo make install
 ```
+
+### Build Options
+
+#### Build in DEBUG mode
+
+You can easily change to building the DEBUG version, e.g. changing 
+Steps (1) and (2) to:
+```
+$> cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=/usr/local/lib
+$> cmake --build build --target all --config Debug -- -j4
+```
+
+#### Build COST-G Benchmark Test Binaries
+
+Set the `BUILD_COSTG` option on, i.e. `cmake -S . -B build -G "Unix Makefiles" -DBUILD_COSTG=ON -DCMAKE_PREFIX_PATH=/usr/local/lib`. 
+The (binary) programs will be placed at `build/costg-benchmark/bin/`
+
+#### Build (Unit) Tests
+
+Set the `BUILD_TESTING` option on, i.e. cmake -S . -B build -G "Unix Makefiles" -DBUILD_TESTING=ON -DCMAKE_PREFIX_PATH=/usr/local/lib`.
+This will build the programs placed in the folders `test/unit_tests` and `test/should_not_compile`. 
+Additionally, if the SOFA C library [@sofa2021] is available on your platform, then 
+the programs placed in `test/sofa` will also be compiled.
 
 # Library Components
 

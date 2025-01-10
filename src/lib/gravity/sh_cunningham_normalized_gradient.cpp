@@ -306,7 +306,7 @@ int sh2gradient_cunningham_impl(
   } /* loop over all n's for m=1 */
 
   /* order m = 0 */
-  for (int n = degree; n >= 2; --n) {
+  for (int n = degree; n >= 0; --n) {
     [[maybe_unused]] const int m = 0;
     {
       /* acceleration */
