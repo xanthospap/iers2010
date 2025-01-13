@@ -17,10 +17,10 @@ find_library(CSPICE_LIB cspice REQUIRED)
 set(PROJECT_DEPENDENCIES Eigen3::Eigen geodesy datetime ${CSPICE_LIB})
 
 # Define an option for building tests (defaults to ON)
-option(BUILD_TESTING "Enable building of tests" OFF)
+option(BUILD_TESTING "Enable building of tests" ON)
 
 # Define the option to build costg
-option(BUILD_COSTG "Build costg binaries (requires iers library)" OFF)
+option(BUILD_COSTG "Build costg binaries (requires iers library)" ON)
 
 # compiler flags
 set(CMAKE_CXX_STANDARD 17)
@@ -85,7 +85,7 @@ endif()
 # The tests
 if(BUILD_TESTING)
   include(CTest)
-  #add_subdirectory(test/unit_tests)
+  add_subdirectory(test/unit_tests)
   #add_subdirectory(test/should_not_compile)
   find_library(sofa sofa_c)
   if (sofa)

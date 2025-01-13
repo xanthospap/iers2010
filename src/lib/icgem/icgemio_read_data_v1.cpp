@@ -103,7 +103,7 @@ int dso::Icgem::parse_data_v1(int l, int k, const Icgem::Datetime &t,
              */
             error += (current_n + current_m);
             /* should never reach this point */
-            assert(1==);
+            assert(1==0);
         }
         coeffs.C(entry.degree, entry.order) += C;
         coeffs.S(entry.degree, entry.order) += S;
