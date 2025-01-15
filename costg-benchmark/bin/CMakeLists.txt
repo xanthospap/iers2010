@@ -1,6 +1,8 @@
 # costg-benchmark/bin/CMakeLists.txt
 
 set(COSTG_SOURCES
+  check_03directTideMoon_icrf.cpp
+  check_03directTideSun_icrf.cpp
   check_04solidEarthTide_icrf.cpp
   check_05poleTide_icrf.cpp
   check_06oceanPoleTide_icrf.cpp

@@ -24,6 +24,7 @@ set(NO_ARGS_SOURCES
   coeff_matrix_2d_trirowise.cpp
   coeff_matrix_2d_trirowwise_cp.cpp
   coeff_matrix2d_trirowwise_reduce.cpp
+  alfs1.cpp
 )
 
 # Process each source file and create an executable
@@ -46,6 +47,8 @@ endforeach()
 set(NO_ARGS_SOURCES_EXPFAIL
   coeff_matrix2d_tricolwise_reduce_runtime_error.cpp
   coeff_matrix2d_trirowwise_reduce_runtime_error.cpp
+  coeff_matrix_2d_tricolwise_cp_runtime_error.cpp
+  coeff_matrix_2d_tricolwise23_runtime_error.cpp
 )
 
 # Process each source file and create an executable
@@ -71,3 +74,30 @@ foreach(SOURCE_FILE IN LISTS NO_ARGS_SOURCES_EXPFAIL)
     FAIL_REGULAR_EXPRESSION "Aborted \\(core dumped\\)|rows\\(\\) >= cprows && cols\\(\\) >= cpcols|SIGABRT|Assertion .* failed"
   )
 endforeach()
+
+##
+##  Testing EOPs :
+##   
+##  (1) & (2) Test parsing C04-14 and C04-20 series
+##  (3)       Test interpolation; actual interpolation values are not checked, 
+##            only responses, status, etc ...
+##
+add_executable(eop1 eop1.cpp)
+target_link_libraries(eop1 PRIVATE iers ${PROJECT_DEPENDENCIES})
+target_include_directories(eop1 PRIVATE ${CMAKE_SOURCE_DIR}/src)
+find_file(EOPC0420
+  NAMES "eopc04.1962-now"
+  PATHS ${CMAKE_SOURCE_DIR}/data/test_data
+  NO_DEFAULT_PATH
+  REQUIRED)
+add_test(NAME eopc0420 COMMAND eop1 ${EOPC0420})
+find_file(EOPC0414
+  NAMES "eopc04_IAU2000.62-now"
+  PATHS ${CMAKE_SOURCE_DIR}/data/test_data
+  NO_DEFAULT_PATH
+  REQUIRED)
+add_test(NAME eopc0414 COMMAND eop1 ${EOPC0420})
+add_executable(eop2 eop2.cpp)
+target_link_libraries(eop2 PRIVATE iers ${PROJECT_DEPENDENCIES})
+target_include_directories(eop2 PRIVATE ${CMAKE_SOURCE_DIR}/src)
+add_test(NAME eop_interpolation COMMAND eop2 ${EOPC0420})

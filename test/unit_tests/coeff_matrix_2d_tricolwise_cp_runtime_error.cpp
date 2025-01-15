@@ -32,7 +32,9 @@ int main() {
 
   {
     auto mat2(mat1);
-    /* cannot resize if rows !=  cols */
+    /* cannot resize if rows !=  cols 
+     * should call abort at runtime
+     */
     mat2.cresize(4, 3);
     assert(mat2(0, 0) == 1);
 
