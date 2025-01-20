@@ -5780,10 +5780,11 @@ int main() {
   for (const auto &orb : orbv) {
 
     /* random MJD Epoch */
-    const auto mjd = dso::MjdEpoch::random(dso::modified_julian_day(40587), dso::modified_julian_day(66154));
+    const auto mjd = dso::MjdEpoch::random(dso::modified_julian_day(40587),
+                                           dso::modified_julian_day(66154));
     const double xp = unif(re);
     const double yp = unif(re);
-    const double lod = unif(re)/100.;
+    const double lod = unif(re) / 100.;
 
     /* parameters */
     double s, sp, era, X, Y;
@@ -5801,7 +5802,7 @@ int main() {
     const auto Rthis = dso::detail::gcrs2itrs(era, s, sp, X, Y, xp, yp);
 
     /* vector to rotate */
-    Eigen::Matrix<double, 3, 1> r,v,omega;
+    Eigen::Matrix<double, 3, 1> r, v, omega;
     r << orb.x, orb.y, orb.z;
     v = r * 1e-3;
 
@@ -5810,61 +5811,67 @@ int main() {
     /* rotated vector via rotation matrix (this lib) */
     const auto r3 = Rthis * r;
 
-    /* assertions */
-    assert(std::abs(r2(0)-r3(0)) < PTOLERANCE);
-    assert(std::abs(r2(1)-r3(1)) < PTOLERANCE);
-    assert(std::abs(r2(2)-r3(2)) < PTOLERANCE);
-    assert((r2-r3).norm() < PTOLERANCE);
+    /* assertions for position vector: r2 should be equal to r3 */
+    assert(std::abs(r2(0) - r3(0)) < PTOLERANCE);
+    assert(std::abs(r2(1) - r3(1)) < PTOLERANCE);
+    assert(std::abs(r2(2) - r3(2)) < PTOLERANCE);
+    assert((r2 - r3).norm() < PTOLERANCE);
 
     Eigen::Matrix<double, 3, 3> dRdt, W;
+
+    /* transforming velocity vectors:
+     * Case 1: Get the rotation matrix and its derivative
+     */
     auto R1 = dso::detail::gcrs2itrs(era, s, sp, X, Y, xp, yp, lod, dRdt);
     const auto p1 = R1 * r;
     const auto v1 = R1 * v + dRdt * r;
-    
+    /* case 2: Use the Valldao formulation */
     omega << 0e0, 0e0, dso::earth_rotation_rate(lod);
     const auto R2 = dso::detail::gcrs2tirs(era, s, sp, X, Y, xp, yp, &W);
     const auto p2 = W * R2 * r;
-    const Eigen::Matrix<double,3,1> v21 = W * ((R2 * v) + omega.cross(R2 * r));
-    const auto v22 = W * ((R2 * v) + omega.cross(R2 * r));
-    assert( v21 == v22 );
+    /* following two implementions are the same, the only difference being
+     * that in the first we explicitelly say that v21 is a vector, while in
+     * the seconds its 'auto'
+     */
+    const Eigen::Matrix<double, 3, 1> v21 =
+        W * ((R2 * v) - omega.cross(R2 * r));
+    const auto v22 = W * ((R2 * v) - omega.cross(R2 * r));
+    assert(v21 == v22);
     const auto v2 = v22;
 
-    //const auto t  = R1 * v;
-    //const auto t2 = W * (R2 * v);
-    //const auto u  = dRdt * r;
-    //// const auto u2 = omega.cross(R2 * r);
-    //const Eigen::Matrix<double,3,1> u2 = W * omega.cross(R2 * r);
-    
-    //printf("Velocities: (%+12.6f, %+12.6f %+12.6f)\n", v1(0), v1(1), v1(2));
-    //printf("          : (%+12.6f, %+12.6f %+12.6f)\n", v2(0), v2(1), v2(2));
-    //printf("Input     : (%+12.6f, %+12.6f %+12.6f)\n", v(0), v(1), v(2));
-    //printf("Part-I    : (%+12.6f, %+12.6f %+12.6f)\n", t(0), t(1), t(2));
-    //printf("          : (%+12.6f, %+12.6f %+12.6f)\n", t2(0), t2(1), t2(2));
-    //printf("Part-II   : (%+12.6f, %+12.6f %+12.6f)\n", u(0), u(1), u(2));
-    //printf("          : (%+12.6f, %+12.6f %+12.6f)\n", u2(0), u2(1), u2(2));
+    // printf("Velocities: (%+12.6f, %+12.6f %+12.6f)\n", v1(0), v1(1), v1(2));
+    // printf("          : (%+12.6f, %+12.6f %+12.6f)\n", v2(0), v2(1), v2(2));
+    // printf("Input     : (%+12.6f, %+12.6f %+12.6f)\n", v(0), v(1), v(2));
+    // printf("Part-I    : (%+12.6f, %+12.6f %+12.6f)\n", t(0), t(1), t(2));
+    // printf("          : (%+12.6f, %+12.6f %+12.6f)\n", t2(0), t2(1), t2(2));
+    // printf("Part-II   : (%+12.6f, %+12.6f %+12.6f)\n", u(0), u(1), u(2));
+    // printf("          : (%+12.6f, %+12.6f %+12.6f)\n", u2(0), u2(1), u2(2));
 
-    //for (int i=0; i<3; i++) {
-    //  for (int j=0; j<3; j++) {
-    //    printf("%+10.6f ", W(i,j));
-    //  }
-    //  printf("\n");
-    //}
+    // for (int i=0; i<3; i++) {
+    //   for (int j=0; j<3; j++) {
+    //     printf("%+10.6f ", W(i,j));
+    //   }
+    //   printf("\n");
+    // }
 
-    assert(std::abs(r2(0)-p1(0)) < PTOLERANCE);
-    assert(std::abs(r2(1)-p1(1)) < PTOLERANCE);
-    assert(std::abs(r2(2)-p1(2)) < PTOLERANCE);
-    assert(std::abs(p2(0)-p1(0)) < PTOLERANCE);
-    assert(std::abs(p2(1)-p1(1)) < PTOLERANCE);
-    assert(std::abs(p2(2)-p1(2)) < PTOLERANCE);
-    assert(std::abs(v2(0)-v1(0)) < VTOLERANCE);
-    assert(std::abs(v2(1)-v1(1)) < VTOLERANCE);
-    assert(std::abs(v2(2)-v1(2)) < VTOLERANCE);
+    /* check position vectors */
+    assert(std::abs(r2(0) - p1(0)) < PTOLERANCE);
+    assert(std::abs(r2(1) - p1(1)) < PTOLERANCE);
+    assert(std::abs(r2(2) - p1(2)) < PTOLERANCE);
+    assert(std::abs(r2(0) - p2(0)) < PTOLERANCE);
+    assert(std::abs(r2(1) - p2(1)) < PTOLERANCE);
+    assert(std::abs(r2(2) - p2(2)) < PTOLERANCE);
+
+    /* check velocities */
+    assert(std::abs(v2(0) - v1(0)) < VTOLERANCE);
+    assert(std::abs(v2(1) - v1(1)) < VTOLERANCE);
+    assert(std::abs(v2(2) - v1(2)) < VTOLERANCE);
 
     /* print differences in [mm] */
-    //printf("[SOFA-QUAT] %+.9f %+.9f %+.9f\n", r1(0) - r2(0), r1(1) - r2(1),
-    //       r1(2) - r2(2));
-    //printf("[SOFA-ROTM] %+.9f %+.9f %+.9f\n", r1(0) - r3(0), r1(1) - r3(1),
-    //       r1(2) - r3(2));
+    // printf("[SOFA-QUAT] %+.9f %+.9f %+.9f\n", r1(0) - r2(0), r1(1) - r2(1),
+    //        r1(2) - r2(2));
+    // printf("[SOFA-ROTM] %+.9f %+.9f %+.9f\n", r1(0) - r3(0), r1(1) - r3(1),
+    //        r1(2) - r3(2));
   }
 
   return 0;

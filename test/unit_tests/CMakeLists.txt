@@ -25,6 +25,7 @@ set(NO_ARGS_SOURCES
   coeff_matrix_2d_trirowwise_cp.cpp
   coeff_matrix2d_trirowwise_reduce.cpp
   alfs1.cpp
+  itrs2gcrs_velocity.cpp
 )
 
 # Process each source file and create an executable
