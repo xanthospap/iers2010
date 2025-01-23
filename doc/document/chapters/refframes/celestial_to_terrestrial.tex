@@ -7,7 +7,7 @@ frames, is given by:
 
 The implementation defined here, is compliant with the IAU 2000/2006 resolutions and 
 follows the so-called ``CIO-based'' procedure (see \cite{iers2010}, Ch. 5).
-Note that except if otherwise noticed, the parameter $t$ should be given in the 
+Note that except if otherwise noted, the parameter $t$ should be given in the 
 \gls{tt} time scale.
 
 \subsection{Polar Motion Matrix $W(t)$}\label{ssec:polar-motion-matrix}
@@ -15,7 +15,7 @@ The matrix $W$ in \autoref{eq:iers51} accounts for \emph{polar motion}, i.e. rel
 \gls{itrs} and \gls{tirs} and is made up from three (fundamental) rotation matrices:
 \begin{equation}\label{eq:iers53}
   W(t) = R_z (-s') R_y (x_{p}) R_x (y_{p})
-\end{eqution}
+\end{equation}
 where:
 \begin{description}
   \item $s'$ is the ``\gls{tio} locator'', necessary to provide an exact realization 
@@ -32,3 +32,17 @@ published by the \gls{iers}. The standard pole coordinates to be used in \autore
 (if not estimated from the observation) are those published by the \gls{iers} with
 additional components to account for the effect of ocean tides and forced terms 
 with periods less that two days in space, i.e.:
+
+\subsection{Implementation}
+
+The library implements the \gls{gcrs} to \gls{itrs} transformation, i.e. :
+\begin{equation}
+  \bm{r}_{ITRS} = \rotmat{R} \cdot \bm{r}_{GCRS}
+\end{equation}
+
+To obtain the inverse transformation matrix, you need to invert the rotation 
+matrix $\rotmat{R}$, an operation which in this case is equal to ``transposing'' 
+$\rotmat{R}$.
+
+The same transformation can be achieved using a rotation quaternion (see \cite{Bizouard2023}) 
+and also provided by the library as option.

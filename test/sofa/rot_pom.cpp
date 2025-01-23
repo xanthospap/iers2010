@@ -1,5 +1,7 @@
 #include "sofa.h"
 #include "earth_rotation.hpp"
+#include "geodesy/rotation.hpp"
+#include "geodesy/units.hpp"
 #include <random>
 #include <cstdio>
 #include <array>
@@ -2917,16 +2919,20 @@ auto W(double xp, double yp, double sp) noexcept {
     Eigen::AngleAxisd(-sp, Eigen::Vector3d::UnitZ()));
 }
 
+constexpr const double PTOLERANCE = 1e-8;
+constexpr const double ROT_DIFF_ANGLE = dso::sec2rad(1e-3);
+
 int main() {
-    std::uniform_real_distribution<double> unif(-M_PI/6, M_PI/6);
+    std::uniform_real_distribution<double> unif(dso::sec2rad(-1.),dso::sec2rad(1.) );
     std::default_random_engine re;
  
     for (const auto &orb : orbv) {
 
       /* random MJD Epoch */
-      const auto mjd = dso::MjdEpoch::random(40587, 66154);
+      const auto mjd = dso::MjdEpoch::random(dso::modified_julian_day(47892),
+                                             dso::modified_julian_day(66154));
       const double jd1 = mjd.imjd() + dso::MJD0_JD;
-      const double jd2 = mjd.fractional_days();
+      const double jd2 = mjd.fractional_days().days();
       const double xp = unif(re);
       const double yp = unif(re);
       
@@ -2948,12 +2954,29 @@ int main() {
       /* rotated vector via rotation matrix (this lib) */
       const auto r2 = Rthis * r;
       
-      assert(std::abs(r1(0)-r2(0))<1e-6);
-      assert(std::abs(r1(1)-r2(1))<1e-6);
-      assert(std::abs(r1(2)-r2(2))<1e-6);
+      assert(std::abs(r1(0)-r2(0))<PTOLERANCE);
+      assert(std::abs(r1(1)-r2(1))<PTOLERANCE);
+      assert(std::abs(r1(2)-r2(2))<PTOLERANCE);
+      //printf("Rot. matrix distance is %.6f [asec] assert is %d\n", dso::rad2sec(dso::rotation_distance(Rsofa, Rthis.toRotationMatrix())), std::abs(dso::rotation_distance(Rsofa, Rthis.toRotationMatrix())) < ROT_DIFF_ANGLE);
+      printf("%.15e %.15e %.15e %.15e %d\n", xp, yp, sp, dso::rotation_distance(Rsofa, Rthis.toRotationMatrix()), std::abs(dso::rotation_distance(Rsofa, Rthis.toRotationMatrix())) < ROT_DIFF_ANGLE);
+      // assert(std::abs(dso::rotation_distance(Rsofa, Rthis.toRotationMatrix())) < ROT_DIFF_ANGLE);
+      //for (int i=0; i<3; i++) {
+      //  printf("[");
+      //  for (int j=0; j<2; j++) {
+      //    printf("%.15e,", Rsofa(i,j));
+      //  }
+      //  printf("%.15e],", Rsofa(i,2));
+      //}
+      //printf("\n");
+      //for (int i=0; i<3; i++) {
+      //  printf("[");
+      //  for (int j=0; j<2; j++) {
+      //    printf("%.15e,", Rthis.toRotationMatrix()(i,j));
+      //  }
+      //  printf("%.15e],", Rthis.toRotationMatrix()(i,2));
+      //}
+      //printf("\n");
 
-      /* print differences in [mm] */
-      // printf("[SOFA-QUAT] %+.3f %+.3f %+.3f\n", r1(0)-r2(0), r1(1)-r2(1), r1(2)-r2(2));
     }
 
     return 0;

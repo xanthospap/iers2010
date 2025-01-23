@@ -30,6 +30,7 @@
 \usepackage{geometry} %% somewhat wider text to allow code
 \usepackage[per-mode=symbol]{siunitx}    %% SI Units
 \usepackage{amsmath,amssymb,amsthm,bm} %% for math ...
+\usepackage{eucal}
 \usepackage{tabularx}
 \usepackage{multirow} %% for tabular
 \usepackage{booktabs} %% toprule, bottomrule
@@ -96,10 +97,10 @@
 \newcommand{\lovek}{k}
 \newcommand{\loveh}{h}
 \newcommand{\lovel}{l}
+\newcommand{\rotmat}[1]{\bm{\mathcal{#1}}}
 % Imaginary i
 \newcommand{\iim}{{i\mkern1mu}}
-% Quaternion
-\DeclareMathAlphabet{\quaternion}{T1}{calligra}{q}{n}
+
 \newenvironment{warning}
   {\par\begin{mdframed}[linewidth=2pt,linecolor=red]%
     \begin{list}{}{\leftmargin=1cm
@@ -250,6 +251,8 @@
 \clearpage
 \input{chapters/eop/eop}
 \clearpage
+\input{chapters/refframes/celestial_to_terrestrial}
+\clearpage
 \input{chapters/gravity/third_body_attraction}
 \clearpage
 \input{chapters/gravity/dealiasing}
@@ -258,8 +261,8 @@
 \clearpage
 \input{chapters/known_issues}
 \clearpage
-\input{chapters/validation/costg}
-\clearpage
+%\input{chapters/validation/costg}
+%\clearpage
 
 % for this to work, the following command must be issued:
 % makeindex report.nlo -s nomencl.ist -o report.nls

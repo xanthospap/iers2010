@@ -50,33 +50,33 @@ dso::detail::gcrs2itrs(double era, double s, double sp, double Xcip,
   /* compute full rotation matrix: [C x R x W] */
   auto Rm = W(xp, yp, sp) * R(era) * C(Xcip, Ycip, s);
 
-  Eigen::Matrix<double,3,3> T = Eigen::Matrix<double,3,3>::Zero();
-  T(0,1) = 1e0;
-  T(1,0) = -1e0;
-  dRdt = W(xp, yp, sp) * (earth_rotation_rate(lod)*T*R(era)) * C(Xcip, Ycip, s);
+  //Eigen::Matrix<double,3,3> T = Eigen::Matrix<double,3,3>::Zero();
+  //T(0,1) = 1e0;
+  //T(1,0) = -1e0;
+  //dRdt = W(xp, yp, sp) * (earth_rotation_rate(lod)*T*R(era)) * C(Xcip, Ycip, s);
 
-  //{
-  //  /* compute simplified rotation matrix derivative, where we only consider
-  //   * dR/dt: i.e.
-  //   * [C x dR3/dt x W], where dR3/dt =
-  //   *
-  //   * | -sin(era) -cos(era) 0 |
-  //   * |  cos(era) -sin(era) 0 | * ω_{earth}
-  //   * |    0         0      0 |
-  //   *
-  //   * and ω_{earth} = earth_rotation_rate(lod) in [rad/sec]
-  //   */
-  //  Eigen::Matrix<double, 3, 3> Rdot =
-  //      R(era).toRotationMatrix() * earth_rotation_rate(lod);
-  //  const double pcos = Rdot(0, 0);
-  //  const double msin = Rdot(0, 1);
-  //  Rdot(0, 0) = msin;
-  //  Rdot(1, 1) = msin;
-  //  Rdot(0, 1) = -pcos;
-  //  Rdot(1, 0) = pcos;
-  //  Rdot(2, 2) = 0e0;
-  //  dRdt = W(xp, yp, sp) * Rdot * C(Xcip, Ycip, s);
-  //}
+  {
+    /* compute simplified rotation matrix derivative, where we only consider
+     * dR/dt: i.e.
+     * [C x dR3/dt x W], where dR3/dt =
+     *
+     * | -sin(era) -cos(era) 0 |
+     * |  cos(era) -sin(era) 0 | * ω_{earth}
+     * |    0         0      0 |
+     *
+     * and ω_{earth} = earth_rotation_rate(lod) in [rad/sec]
+     */
+    Eigen::Matrix<double, 3, 3> Rdot =
+        R(era).toRotationMatrix() * (-earth_rotation_rate(lod));
+    const double pcos = Rdot(0, 0);
+    const double msin = Rdot(0, 1);
+    Rdot(0, 0) = msin;
+    Rdot(1, 1) = msin;
+    Rdot(0, 1) = -pcos;
+    Rdot(1, 0) = pcos;
+    Rdot(2, 2) = 0e0;
+    dRdt = W(xp, yp, sp) * Rdot * C(Xcip, Ycip, s);
+  }
 
   return Rm.toRotationMatrix();
 }
