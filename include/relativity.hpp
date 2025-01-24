@@ -35,9 +35,9 @@ namespace dso {
  */
 Eigen::Matrix<double, 3, 1> iers2010_relativistic_acceleration(
     const Eigen::Matrix<double, 6, 1> &rsat,
-    const Eigen::Matrix<double, 6, 1> &rsun, double GMe = iers2010::GMe,
-    double GMs = iers2010::GMs,
-    double J = iers2010::Je, double c = iers2010::C, double beta = 1e0,
+    const Eigen::Matrix<double, 6, 1> &rsun, double GMe = ::iers2010::GMe,
+    double GMs = ::iers2010::GMs,
+    double J = ::iers2010::Je, double c = ::iers2010::C, double beta = 1e0,
     double gamma = 1e0) noexcept;
 
 } /* namespace dso */
