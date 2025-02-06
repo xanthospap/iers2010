@@ -61,7 +61,8 @@ int dso::Aod1bIn::collect_coeffs(std::ifstream &fin, int max_degree,
             "[ERROR] Failed parsing coefficients for AOD1B file %s "
             "(traceback: %s)\n",
             mfn.c_str(), __func__);
-    fprintf(stderr, "Parsing stopped at line [%s]\n", line);
+    fprintf(stderr, "Parsing stopped at line [%s] i.e. %d/%d (traceback: %s)\n",
+            line, lines_parsed, max_lines, __func__);
     return 1;
   }
 

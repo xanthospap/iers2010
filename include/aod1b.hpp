@@ -9,6 +9,8 @@
 #include "stokes_coefficients.hpp"
 #include "doodson.hpp"
 #include <cstring>
+#include "datetime/datetime_write.hpp"
+#include <datetime/core/datetime_io_core.hpp>
 #include <fstream>
 #include <stdexcept>
 #include <array>
@@ -17,6 +19,48 @@ namespace dso {
 
 /** Different sets of Stokes coefficients included in AOD1B products */
 enum class AOD1BCoefficientType { ATM, OCN, GLO, OBA };
+
+class Aod1bNonTidalProductNaming {
+public:
+  /** @brief Given the product details, construct the product filename.
+   *
+   * Product naming for AOD1B Non-Tidal product files is described in
+   * Appendix A of GRACE 327-750 Gravity Recovery and Climate Experiment
+   * Product Description Document for AOD1B Release 06 (Rev. 6.1, October 19, 
+   * 2017)
+   * by Henryk Dobslaw, Inga Bergmann-Wolf, Robert Dill, Lea Poropat, Frank 
+   * Flechtner.
+   *
+   * Basically, the naming convention is: “AOD1B_YYYY-MM-DD_S_RL.EXT.gz”
+   *
+   * @param[in] t   The date of interest in GPS time.
+   * @param[in] rl  The RL number, i.e. release number.
+   * @param[in] buf The char buffer to write the compiled filename at. It must
+   *                be large enough to hold 26 chars or 29 chars (null 
+   *                terminating char included) if is_compressed is on.
+   * @param[in] satid Satellite identifier. For these products it is (most 
+   *                likely) 'X' except if you are doing something special!
+   * @param[in] is_compressed Add the '.gz' extension.
+   * @return A pointer to the compiled string (i.e. beggining of buf).
+   */
+  static const char *filename(const dso::ymd_date &t, int rl, char *buf,
+                              char satid = 'X',
+                              bool is_compressed = 0) noexcept;
+  static std::string filename(const dso::ymd_date &t, int rl, char satid = 'X',
+                              bool is_compressed = 0) noexcept {
+    char buf[32];
+    filename(t, rl, buf, satid, is_compressed);
+    return std::string(buf);
+  }
+
+  /** @brief Resolve the RL from an non-tidal AOD1B product filename.
+   *
+   * The filename (passed in as fn) can include (or not) a path. A negative 
+   * number denotes an error.
+   */
+  static int resolve_rl(const char *fn) noexcept;
+
+}; /* class Aod1bNonTidalProductNaming */
 
 /** A class to assist parsing of AOD1B product files.
  * Documentation can be found at:
@@ -63,38 +107,6 @@ public:
     /** Type of coefficients */
     AOD1BCoefficientType mtype;
   }; /* Aod1bBlockHeader */
-
-/* @class Enable resolving/compiling non-tidal AOD1B data filenames.
- * 
- * For information see 
- */
-  struct Aod1bNonTidalFilenameStruct {
-    dso::Datetime<dso::seconds> mt;
-    char msatid{'X'};
-    char mrevision[2];
-    char mext[3];
-
-    Aod1bNonTidalFilenameStruct &next() noexcept {
-      mt += (dso::datetime_interval<dso::seconds>(1, dso::seconds(0)));
-      return *this;
-    }
-
-    /** @brief Constructor from a (non-tidal) AOD1B filename.
-     *
-     * Note that the given filename is expected to comply with the format:
-     * “AOD1B YYYY-MM-DD S RL.EXT[.gz]”. The compression extension is
-     * skipped/ignored. The filename must not include the path.
-     */
-    Aod1bNonTidalFilenameStruct(const char *fn);
-
-    /** @brief Construct the filename according the the instance info.
-     *
-     * The filename produced will comply with the format:
-     * “AOD1B YYYY-MM-DD S RL.EXT”.
-     * Note that the filename compiled will not have a compression extension.
-     */
-    const char *make(char *buf) const noexcept;
-  }; /* Aod1bNonTidalFilenameStruct */
 
 private:
   /** filename */
@@ -256,20 +268,6 @@ public:
    */
   int read_header() noexcept;
 
-  /** @brief Return the filename of what would be the name of the data file 
-   * following this one (i.e. for the next day).
-   *
-   * No path is included, only the filename is returned.
-   *
-   * @param[in] buf A character array large enough to hold the resulting 
-   *                filename.
-   */
-  const char *next_nontidal_filename(char *buf) const noexcept {
-    Aod1bNonTidalFilenameStruct s(mfn.c_str());
-    return s.next().make(buf);
-  }
-
-
   /** Read in and parse coefficients from a tidal AOD1B file, for a given
    * tidal constituent.
    *
@@ -353,10 +351,6 @@ public:
   /** check if this instance is marked as EOF */
   bool is_eof() const noexcept { 
     return (mheader.mepoch == Datetime<nanoseconds>::min() && mfin.eof());
-  }
-
-  const char *next_nontidal_filename(char *buf) const noexcept {
-    return maod->next_nontidal_filename(buf);
   }
 
   const char *fn() const noexcept {

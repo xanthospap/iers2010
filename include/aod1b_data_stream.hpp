@@ -9,6 +9,7 @@
 
 #include "aod1b.hpp"
 #include "datetime/datetime_write.hpp"
+#include <datetime/date_integral_types.hpp>
 #include <filesystem>
 
 namespace dso {
@@ -259,12 +260,20 @@ public:
 
   /** @brief Continue streaming from a new non-tidal AOD1B file.
    */
-  int feed_new_file(const char *fn_aod1b) noexcept {
+  int feed_next_file() noexcept {
+    char pfn[256];
+    {
+      int rl = Aod1bNonTidalProductNaming::resolve_rl(mstream.fn().c_str());
+      auto mjd = mstream.last_epoch().imjd() + dso::modified_julian_day(1);
+      Aod1bNonTidalProductNaming::filename(mjd.to_ymd(), rl, pfn);
+      std::string fullPathStr = (mdir.path() / pfn).string();
+      std::strcpy(pfn, fullPathStr.c_str());
+    }
     /* read first block of new file to last index */
     constexpr const int index = AR_SIZE - 1;
     /* create an Aod1bIn instance and get the iterator */
     try {
-      mstream = Aod1bIn(fn_aod1b);
+      mstream = Aod1bIn(pfn);
       mit = Aod1bDataBlockIterator<T>(mstream);
     } catch (std::exception &) {
       return 2;
@@ -277,7 +286,7 @@ public:
     if (mit.collect(mcsvec[index])) {
       fprintf(stderr,
               "[ERROR] Failed initializing Aod1bDataStream from %s (traceback: %s)\n",
-              fn_aod1b, __func__);
+              pfn, __func__);
       return 1;
     }
     mhdrvec[index] = mit.header();
@@ -316,14 +325,11 @@ public:
         /* compile a possible new file (path+filename) and try using it
          * to extract next data set.
          */
-        char buf[128];
-        std::filesystem::path fnpth = mdir;
-        fnpth /= std::string(mit.next_nontidal_filename(buf));
-        if (feed_new_file(fnpth.c_str())) {
+        if (feed_next_file()) {
           fprintf(stderr,
-                  "[ERROR] Tried for new file %s but failed to feed data "
+                  "[ERROR] Tried for new file but failed to feed data "
                   "stream (traceback: %s)\n",
-                  fnpth.c_str(), __func__);
+                  __func__);
           return 1;
         } else {
           if ((index = hunt_range(t)) < 0) {
@@ -377,16 +383,6 @@ public:
                        mit.aod1b().GM(), mit.aod1b().Re());
   }
 
-  /** Constructor given the (file)name of an AOD1B file */
-  //Aod1bDataStream(const Aod1bIn &aod1b)
-  //    : mit(aod1b), mcsvec(static_cast<StokesCoeffs *>(operator new[](
-  //                      AR_SIZE * sizeof(StokesCoeffs)))) {
-  //  for (int i = 0; i < AR_SIZE; i++)
-  //    new (&mcsvec[i])
-  //        StokesCoeffs(mit.aod1b().max_degree(), mit.aod1b().max_degree(),
-  //                     mit.aod1b().GM(), mit.aod1b().Re());
-  //}
-  
   /** Constructor given the (file)name of an AOD1B file and a directory for 
    * searching the following (if any) AOD1B data files.
    */
@@ -400,12 +396,14 @@ public:
           StokesCoeffs(mit.aod1b().max_degree(), mit.aod1b().max_degree(),
                        mit.aod1b().GM(), mit.aod1b().Re());
   }
+
   /** Destructor */
   ~Aod1bDataStream() noexcept {
     for (int i = 0; i < AR_SIZE; i++)
       mcsvec[i].~StokesCoeffs();
     operator delete[](mcsvec);
   }
+
   /** No copy constructor */
   Aod1bDataStream(const Aod1bDataStream &other) noexcept = delete;
   /** No assignment operator */

@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* for the test, degree one coefficients are not taken into account */
-    stokes.C(0, 0);
+    stokes.C(0, 0) = 0e0;
     stokes.C(1, 0) = stokes.C(1, 1) = 0e0;
     stokes.S(1, 1) = 0e0;
 
@@ -107,6 +107,7 @@ int main(int argc, char *argv[]) {
 
     ++acc;
     ++rot;
+
   }
 
   return 0;

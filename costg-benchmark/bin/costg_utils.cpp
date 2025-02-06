@@ -28,18 +28,18 @@ std::vector<costg::BmAcceleration> costg::parse_acceleration(const char *fn) {
     double td[4];
     int sz = std::strlen(line);
     const char *str = line;
-    for (int i = 0; i < 4; i++) {
-      auto res = std::from_chars(skipws(str), line + sz, td[i]);
-      if (res.ec != std::errc{})
-        ++error;
-      str = res.ptr;
-    }
-    if (!error) {
-      int imjd = (int)td[0];
-      double fsec = (td[0] - imjd) * 86400e0;
-      const dso::MjdEpoch t(imjd, dso::FractionalSeconds{fsec});
-      vec.emplace_back(t, td[1], td[2], td[3]);
-    }
+      for (int i = 0; i < 4; i++) {
+        auto res = std::from_chars(skipws(str), line + sz, td[i]);
+        if (res.ec != std::errc{})
+          ++error;
+        str = res.ptr;
+      }
+      if (!error) {
+        int imjd = (int)td[0];
+        double fsec = (td[0] - imjd) * 86400e0;
+        const dso::MjdEpoch t(imjd, dso::FractionalSeconds{fsec});
+        vec.emplace_back(t, td[1], td[2], td[3]);
+      }
   }
 
   if (error || (!fin.eof())) {

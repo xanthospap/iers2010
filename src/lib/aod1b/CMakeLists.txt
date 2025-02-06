@@ -5,8 +5,8 @@ target_sources(iers
     ${CMAKE_SOURCE_DIR}/src/lib/aod1b/aod1b_data_stream.cpp
     ${CMAKE_SOURCE_DIR}/src/lib/aod1b/aod1b_get_tidal_wave.cpp
     ${CMAKE_SOURCE_DIR}/src/lib/aod1b/aod1b_goto_next_block.cpp
-    ${CMAKE_SOURCE_DIR}/src/lib/aod1b/aod1b_nontidal_filename.cpp
     ${CMAKE_SOURCE_DIR}/src/lib/aod1b/aod1b_parse_data_block_header.cpp
     ${CMAKE_SOURCE_DIR}/src/lib/aod1b/aod1b_read_header.cpp
+    ${CMAKE_SOURCE_DIR}/src/lib/aod1b/aod1bnontidalproductnaming.cpp
     ${CMAKE_SOURCE_DIR}/src/lib/aod1b/aod1b_skip_header.cpp
 )

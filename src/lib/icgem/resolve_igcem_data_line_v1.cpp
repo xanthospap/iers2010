@@ -4,7 +4,7 @@
 
 namespace {
 const char *skip_ws(const char *line) noexcept {
-  while (*line && *line == ' ')
+  while (*line && (*line == ' ' || *line == '+'))
     ++line;
   return line;
 }

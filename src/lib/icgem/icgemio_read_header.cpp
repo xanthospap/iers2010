@@ -231,10 +231,11 @@ int dso::Icgem::parse_header(bool quiet_skip) noexcept {
           _errors = ErrorModel::No;
         else {
           fprintf(stderr,
-                  "[ERROR] Failed parsing value for parameter %s in icgem "
+                  "[WRNNG] Failed parsing value for parameter %s in icgem "
                   "%s(traceback: %s)\n",
                   "errors", _filename.c_str(), __func__);
-          error = 1;
+          // error = 1;
+          _errors = ErrorModel::No;
         }
       }
 
