@@ -134,11 +134,6 @@ public:
       : _GM(GM), _Re(Re), _cnormalized(true), m_degree(n), 
         m_order((m > 0) ? m : n), _Cnm(n + 1, n + 1), _Snm(n + 1, n + 1) {}
 
-  /** Constructor given degree (n)*/
-  //StokesCoeffs(int n, int m = -1, double GM=iers2010::GMe, double Re=iers2010::Re)
-  //    : _GM(::iers2010::GMe), _Re(::iers2010::Re), _cnormalized(true), m_degree(n),
-  //      m_order((m > 0) ? m : n), _Cnm(n + 1, n + 1), _Snm(n + 1, n + 1) {}
-
   /* @brief Resize to new degree/order, deleting currrent data.
    *
    * Check current capacity and only re-allocated data if needed. 

@@ -171,19 +171,81 @@ private:
 
   /** @brief Collect Stokes coefficients.
    *
-   * The function assumes that the stream passed in is placed just before 
+   * The function assumes that the stream passed is placed just before 
    * the start of a (new) data block, i.e. the previous line read was the 
    * data block header.
+   *
    * It will continue reading lines and store coefficients for all 
    * (n,m)<=(max_degree,max_order). 
+   *
    * We do not assume that the the (n,m) coefficients are stored in some 
    * ordelry fashion, hence we must have an end condition, i.e. "when do we 
    * stop reading more lines ?". The criterion is given by the \p max_lines 
    * parameter. Hence, the function will continue to consume lines untill we 
    * reach max_lines.
+   *
+   * A block header, is a line like:
+   * DATA SET 15:  16471 COEFFICIENTS FOR 2008-07-03 09:00:00 OF TYPE glo
+   *
+   * @param[in] fin An Aod1b input stream, conviniently placed at the start of 
+   *                a data block (i.e. just after the data block header).
+   * @param[in] max_degree Mac degree of (Stokes) coefficients that the 
+   *                function will read and store at the (passed in) cs 
+   *                instance. Inclusive.
+   * @param[in] max_order Max order of (Stokes) coefficients that the 
+   *                function will read and store at the (passed in) cs 
+   *                instance. Inclusive.
+   * @param[in] max_lines The function will read that many lines off of the 
+   *                input stream; it will inspect them and if their 
+   *                degree/order less than or equal to the passed in 
+   *                max_degree and max_order parameters, it will store them in 
+   *                cs. The only reason for the function to stop consuming new
+   *                lines, is once it has reached max_lines.
+   *                For most purposes, this parameter should be set to the 
+   *                number of lines mentioned in the block header.
+   * @param[out] cs A StokesCoeffs instance where the coefficients read will 
+   *                be stored at. 
+   * @param[in] allow_resizing If set to false, the sizes of the parameters 
+   *                (i.e. degree and order) should exactly match. This means 
+   *                that: 
+   *                max_degree <= cs.max_degree() and 
+   *                max_order  <= cs.max_order() and
+   *                collected max_degree == requested max_degree and
+   *                collected max_order  == requested max_order
+   *                I.e., in this case the rquested number of coefficients to 
+   *                store should exactly match the coefficients we 
+   *                successefully parsed. Note that a user may request to 
+   *                collect degree/order less than what the cs instance can 
+   *                actually store. The rest of the coefficients, will be set 
+   *                to zeros. E.g.
+   *                std::ifstream fin("AOD1B_2008-07-03_X_06.asc");
+   *                StokesCoeffs cs(100, 100);
+   *                // some type of fin.goto_block_requested(...)
+   *                collect_coeffs(fin, 90, 80, max_lines, false);
+   *                // degree and order of cs will not have changed!
+   *                assert(cs.max_degree() == 100);
+   *                assert(cs.max_order()  == 100);
+   *                // the following will result in an error
+   *                collect_coeffs(fin, 101, 101, false);
+   *                After a successeful call, the cs.max_degree() and 
+   *                cs.max_order() will hold exactly the values they had 
+   *                before the function call; this is not the case if 
+   *                allow_resizing is set to true.
+   *                If set to true, then the above equalities do not need to
+   *                be true. We are allowed to collect as many as 
+   *                (max_degree, max_orrder) coefficients, but can be less.
+   *                The parameter cs will be enlarged or shrinked accordingly, 
+   *                to hold the number of coefficients. At output, the cs 
+   *                parameter will assume the exact size of parameters that 
+   *                were collceted (i.e. cs.max_degree() and cs.max_order() 
+   *                can be used after the function call, to query the number 
+   *                of coefficients that were read off and stored.
+   * 
+   * @snippet ../test/unit_tests/test_aod1b1.cpp example_usage
    */
   int collect_coeffs(std::ifstream &fin, int max_degree, int max_order,
-                     int max_lines, StokesCoeffs &cs) const noexcept;
+                     int max_lines, StokesCoeffs &cs,
+                     bool allow_resizing = false) const noexcept;
 
   /** Given a stream (fin) to an AOD1B file, go to the start of the next data
    * block of type \p type.
@@ -293,6 +355,7 @@ public:
  * of the file, for a given coefficient type (i.e. ATM, OCN, GLO, etc).
  *
  * Example usage:
+ * @code
  * // create an AodbIn instance from an AOD1B file
  * Aod1bIn aod(AODB1_FILE_NAME);
  * // a large enough Coefficients instance to hold data if needed
@@ -319,6 +382,7 @@ public:
  * }
  * // if j < 0 at the end of loop, we encountered EOF, i.e. we read through
  * // all the data blocks in the AOD1B file
+ * @endcode
  */
 template <AOD1BCoefficientType T> class Aod1bDataBlockIterator {
   /* header infor and filename of the AOD1B file */
@@ -392,11 +456,13 @@ public:
    * and order (max_degree, max_order). If these parameters are set to 
    * negative integers, all of the coefficients will be collected (i.e. max 
    * degree and order will be as reported in the AOD1B header).
-   * The coefficients will be stored in the passed in StokesCoeffs instance, 
-   * which must be large enough to hold them.
+   * The coefficients will be stored in the passed in StokesCoeffs instance. 
    * On success, 0 is returned. Any other integer denotes an error.
+   *
+   * @see Aod1b::collect_coeffs
    */
-  int collect(StokesCoeffs &cs, int max_degree=-1, int max_order=-1) noexcept {
+  int collect(StokesCoeffs &cs, int max_degree = -1, int max_order = -1,
+              int allow_resizing = false) noexcept {
     /* set max degree/order to collect */
     if (max_degree < 0)
       max_degree = maod->max_degree();
@@ -404,7 +470,7 @@ public:
       max_order = maod->max_degree();
     /* collect coefficients */
     if (maod->collect_coeffs(mfin, max_degree, max_order, mheader.mnum_lines,
-                             cs)) {
+                             cs, allow_resizing)) {
       return 1;
     }
     return 0;

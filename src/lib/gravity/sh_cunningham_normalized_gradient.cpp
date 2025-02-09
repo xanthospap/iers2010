@@ -86,6 +86,21 @@ int sh2gradient_cunningham_impl(
     assert(false);
   }
 
+  //printf("Stokes Coefficients size: %dx%d\n", cs.max_degree(), cs.max_order());
+  //printf("Computing dimensions    : %dx%d\n", max_degree, max_order);
+  //printf("Scratch Space size     W: %dx%d M: %dx%d\n", W.rows(), W.cols(),
+  //       M.rows(), M.cols());
+  //printf("Geometry              Re: %.3f GM: %.3f\n", Re, GM);
+#ifdef DEBUG
+  assert(cs.max_degree() >= cs.max_order());
+  assert(max_degree <= cs.max_degree());
+  assert(max_order <= cs.max_order());
+  assert(W.rows() >= max_degree + 2);
+  assert(W.cols() >= max_degree + 2);
+  assert(M.rows() >= max_degree + 2);
+  assert(M.cols() >= max_degree + 2);
+#endif
+
   /* Factors up to degree/order MAX_SIZE_FOR_ALF_FACTORS. Constructed only on
    * the first function call
    */
@@ -117,12 +132,12 @@ int sh2gradient_cunningham_impl(
 
     /* first fill m=0 terms; note that W(n,0) = 0 (already set) */
     M(1, 0) = std::sqrt(3e0) * z * M(0, 0);
-    for (int n = 2; n <= degree+2; n++) {
+    for (int n = 2; n <= degree + 2; n++) {
       M(n, 0) = F.f1(n, 0) * z * M(n - 1, 0) + F.f2(n, 0) * rr * M(n - 2, 0);
     }
 
     /* fill all elements for order m >= 1 */
-    for (int m = 1; m < order+2; m++) {
+    for (int m = 1; m < order + 2; m++) {
       /* M(m,m) and W(m,m) aka, diagonal */
       M(m, m) = F.f1(m, m) * (x * M(m - 1, m - 1) - y * W(m - 1, m - 1));
       W(m, m) = F.f1(m, m) * (y * M(m - 1, m - 1) + x * W(m - 1, m - 1));
@@ -132,7 +147,7 @@ int sh2gradient_cunningham_impl(
       W(m + 1, m) = F.f1(m + 1, m) * z * W(m, m);
 
       /* go on .... */
-      for (int n = m + 2; n <= degree+2; n++) {
+      for (int n = m + 2; n <= degree + 2; n++) {
         M(n, m) = F.f1(n, m) * z * M(n - 1, m) + F.f2(n, m) * rr * M(n - 2, m);
         W(n, m) = F.f1(n, m) * z * W(n - 1, m) + F.f2(n, m) * rr * W(n - 2, m);
       }
@@ -140,7 +155,7 @@ int sh2gradient_cunningham_impl(
 
     {
       /* well, we've left the lst term uncomputed */
-      const int m = order+2;
+      const int m = order + 2;
       M(m, m) = F.f1(m, m) * (x * M(m - 1, m - 1) - y * W(m - 1, m - 1));
       W(m, m) = F.f1(m, m) * (y * M(m - 1, m - 1) + x * W(m - 1, m - 1));
     }
@@ -176,21 +191,25 @@ int sh2gradient_cunningham_impl(
         const double Sp1 = wp1 * W(n + 1, m + 1);
 
         try {
-        const double ax = cs.C(n, m) * (Cm1 - Cp1) + cs.S(n, m) * (Sm1 - Sp1);
-        const double ay = cs.C(n, m) * (-Sm1 - Sp1) + cs.S(n, m) * (Cm1 + Cp1);
-        const double az = cs.C(n, m) * (-2 * Cm0) + cs.S(n, m) * (-2 * Sm0);
-        acc += Eigen::Matrix<double, 3, 1>(ax, ay, az) *
-               std::sqrt((2e0 * n + 1e0) / (2e0 * n + 3e0));
+          const double ax = cs.C(n, m) * (Cm1 - Cp1) + cs.S(n, m) * (Sm1 - Sp1);
+          const double ay =
+              cs.C(n, m) * (-Sm1 - Sp1) + cs.S(n, m) * (Cm1 + Cp1);
+          const double az = cs.C(n, m) * (-2 * Cm0) + cs.S(n, m) * (-2 * Sm0);
+          acc += Eigen::Matrix<double, 3, 1>(ax, ay, az) *
+                 std::sqrt((2e0 * n + 1e0) / (2e0 * n + 3e0));
         } catch (std::exception &e) {
-          fprintf(stderr, "FPE caught! Computation for (n,m)=(%d,%d)\n", n,m);
-          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m), (Cm1 - Cp1), cs.S(n, m), (Sm1 - Sp1));
-          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m), (-Sm1 - Sp1), cs.S(n, m), (Cm1 + Cp1));
-          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m), (-2 * Cm0), cs.S(n, m), (-2 * Sm0));
+          fprintf(stderr, "FPE caught! Computation for (n,m)=(%d,%d)\n", n, m);
+          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m),
+                  (Cm1 - Cp1), cs.S(n, m), (Sm1 - Sp1));
+          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m),
+                  (-Sm1 - Sp1), cs.S(n, m), (Cm1 + Cp1));
+          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m),
+                  (-2 * Cm0), cs.S(n, m), (-2 * Sm0));
           return 0;
         }
 
-        //acc += Eigen::Matrix<double, 3, 1>(ax, ay, az) *
-        //       std::sqrt((2e0 * n + 1e0) / (2e0 * n + 3e0));
+        // acc += Eigen::Matrix<double, 3, 1>(ax, ay, az) *
+        //        std::sqrt((2e0 * n + 1e0) / (2e0 * n + 3e0));
       }
       {
         /* gradient */
@@ -234,7 +253,7 @@ int sh2gradient_cunningham_impl(
                     std::sqrt((2e0 * n + 1e0) / (2e0 * n + 5e0));
       }
     } /* loop over n */
-  }   /* loop over m */
+  } /* loop over m */
 
   /* order m = 1 (begin summation from smaller terms) */
   for (int n = degree; n >= 1; --n) {
@@ -382,6 +401,22 @@ int dso::sh2gradient_cunningham(
             "[ERROR] Invalid degree/order for spherical harmonics expansion! "
             "(traceback: %s)\n",
             __func__);
+    return 1;
+  }
+
+  /* check computation degree and order w.r.t. the Stokes coeffs */
+  if (max_degree > cs.max_degree()) {
+    fprintf(stderr,
+            "[ERROR] Requesting computing SH acceleration of degree %d, but "
+            "Stokes coefficients are of size %dx%d (traceback: %s)\n",
+            max_degree, cs.max_degree(), cs.max_order(), __func__);
+    return 1;
+  }
+  if (max_order > cs.max_order()) {
+    fprintf(stderr,
+            "[ERROR] Requesting computing SH acceleration of order %d, but "
+            "Stokes coefficients are of size %dx%d (traceback: %s)\n",
+            max_order, cs.max_degree(), cs.max_order(), __func__);
     return 1;
   }
 

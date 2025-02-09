@@ -103,3 +103,16 @@ add_executable(eop2 eop2.cpp)
 target_link_libraries(eop2 PRIVATE iers ${PROJECT_DEPENDENCIES})
 target_include_directories(eop2 PRIVATE ${CMAKE_SOURCE_DIR}/src)
 add_test(NAME eop_interpolation COMMAND eop2 ${EOPC0420})
+
+##
+## Tests with AOD1B non-tidal product file
+##
+add_executable(test_aod1bin_collect_coeffs_1 test_aod1bin_collect_coeffs_1.cpp)
+target_link_libraries(test_aod1bin_collect_coeffs_1 PRIVATE iers ${PROJECT_DEPENDENCIES})
+target_include_directories(test_aod1bin_collect_coeffs_1 PRIVATE ${CMAKE_SOURCE_DIR}/src)
+find_file(AOD1B
+  NAMES "AOD1B_2008-07-03_X_06.asc"
+  PATHS ${CMAKE_SOURCE_DIR}/data/test_data
+  NO_DEFAULT_PATH
+  REQUIRED)
+add_test(NAME aod1b_01 COMMAND test_aod1bin_collect_coeffs_1 ${AOD1B})
