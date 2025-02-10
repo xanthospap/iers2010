@@ -8,12 +8,17 @@
 #include "iersconst.hpp"
 #include "planets.hpp"
 #include "solid_earth_tide.hpp"
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+#include <cassert>
 
 using namespace costg;
 constexpr const double GM_Sun = 1.32712442076e20;
 constexpr const double GM_Moon = 0.49028010560e13;
 constexpr const int DEGREE = 4;
-constexpr const int formatD3Plot = 0;
+// constexpr const int formatD3Plot = 0;
+constexpr const double TOLERANCE = 1e-11; /* [m/sec**2] */
 
 int main(int argc, char *argv[]) {
   if (argc != 7) {
@@ -66,11 +71,11 @@ int main(int argc, char *argv[]) {
                                                                     DEGREE + 3);
 
   /* spit out a title for plotting */
-  if (formatD3Plot) {
-    printf("mjd,sec,refval,val,component\n");
-  } else {
-    printf("#title Solid Earth Tide (ephermeris: %s)\n", basename(argv[3]));
-  }
+  //if (formatD3Plot) {
+  //  printf("mjd,sec,refval,val,component\n");
+  //} else {
+  //  printf("#title Solid Earth Tide (ephermeris: %s)\n", basename(argv[3]));
+  //}
 
   /* compare results epoch by epoch */
   Eigen::Matrix<double, 3, 1> a;
@@ -128,18 +133,22 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    if (formatD3Plot) {
-      printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(),
-             in.epoch.seconds().seconds(), acc->axyz(0), a(0));
-      printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(),
-             in.epoch.seconds().seconds(), acc->axyz(1), a(1));
-      printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(),
-             in.epoch.seconds().seconds(), acc->axyz(2), a(2));
-    } else {
-      printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n", in.epoch.imjd(),
-             in.epoch.seconds().seconds(), acc->axyz(0), acc->axyz(1),
-             acc->axyz(2), a(0), a(1), a(2));
-    }
+    //if (formatD3Plot) {
+    //  printf("%d,%.9f,%.17e,%.17e,X\n", in.epoch.imjd(),
+    //         in.epoch.seconds().seconds(), acc->axyz(0), a(0));
+    //  printf("%d,%.9f,%.17e,%.17e,Y\n", in.epoch.imjd(),
+    //         in.epoch.seconds().seconds(), acc->axyz(1), a(1));
+    //  printf("%d,%.9f,%.17e,%.17e,Z\n", in.epoch.imjd(),
+    //         in.epoch.seconds().seconds(), acc->axyz(2), a(2));
+    //} else {
+    //  printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e\n", in.epoch.imjd(),
+    //         in.epoch.seconds().seconds(), acc->axyz(0), acc->axyz(1),
+    //         acc->axyz(2), a(0), a(1), a(2));
+    //}
+
+    assert(std::abs(acc->axyz(0) - a(0)) < TOLERANCE);
+    assert(std::abs(acc->axyz(1) - a(1)) < TOLERANCE);
+    assert(std::abs(acc->axyz(2) - a(2)) < TOLERANCE);
 
     ++acc;
     ++rot;

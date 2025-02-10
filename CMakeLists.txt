@@ -19,8 +19,11 @@ set(PROJECT_DEPENDENCIES Eigen3::Eigen geodesy datetime ${CSPICE_LIB})
 # Define an option for building tests (defaults to ON)
 option(BUILD_TESTING "Enable building of tests" ON)
 
-# Define the option to build costg
+# Define the option to build costg executables
 option(BUILD_COSTG "Build costg binaries (requires iers library)" ON)
+
+# Define the path to costgdata dir, to build costg tests
+set(COSTG_DATA_DIR "" CACHE PATH "Path to COST-G benchmark data (optional)")
 
 # compiler flags
 set(CMAKE_CXX_STANDARD 17)
@@ -93,6 +96,10 @@ if(BUILD_TESTING)
     message(STATUS "found sofa lib, will compile relevant tests")
   else()
     message(STATUS "sofa lib not found; tests in test/sofa will not be compiled.")
+  endif()
+  if(COSTG_DATA_DIR) 
+    message(STATUS "Including extra tests from COST-G Benchmark using data folder: ${COSTG_DATA_DIR}")
+    add_subdirectory(test/costg_benchmark)
   endif()
   enable_testing()
 endif()

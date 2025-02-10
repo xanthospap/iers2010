@@ -19,12 +19,12 @@ std::vector<costg::BmAcceleration> costg::parse_acceleration(const char *fn) {
   }
 
   char line[256];
-  for (int i = 0; i < 6; i++)
-    fin.getline(line, 256);
+  //for (int i = 0; i < 6; i++)
+  //  fin.getline(line, 256);
   std::vector<costg::BmAcceleration> vec;
 
-  int error = 0;
-  while (fin.getline(line, 256) && (!error)) {
+  while (fin.getline(line, 256)) {
+    int error=0;
     double td[4];
     int sz = std::strlen(line);
     const char *str = line;
@@ -42,7 +42,7 @@ std::vector<costg::BmAcceleration> costg::parse_acceleration(const char *fn) {
       }
   }
 
-  if (error || (!fin.eof())) {
+  if (!fin.eof()) {
     fprintf(stderr, "ERROR Failed parsing input file %s\n", fn);
     throw std::runtime_error("Failed parsing input file " + std::string(fn) +
                              "\n");
@@ -60,12 +60,12 @@ std::vector<costg::BmOrbit> costg::parse_orbit(const char *fn) {
   }
 
   char line[512];
-  for (int i = 0; i < 6; i++)
-    fin.getline(line, 512);
+  //for (int i = 0; i < 6; i++)
+  //  fin.getline(line, 512);
   std::vector<costg::BmOrbit> vec;
 
-  int error = 0;
-  while (fin.getline(line, 512) && (!error)) {
+  while (fin.getline(line, 512)) {
+    int error=0;
     double td[10];
     int sz = std::strlen(line);
     const char *str = line;
@@ -83,7 +83,7 @@ std::vector<costg::BmOrbit> costg::parse_orbit(const char *fn) {
     }
   }
 
-  if (error || (!fin.eof())) {
+  if (!fin.eof()) {
     fprintf(stderr, "ERROR Failed parsing input file %s\n", fn);
     throw std::runtime_error("Failed parsing input file " + std::string(fn) +
                              "\n");
@@ -101,12 +101,12 @@ std::vector<costg::BmRotaryMatrix> costg::parse_rotary(const char *fn) {
   }
 
   char line[1024];
-  for (int i = 0; i < 6; i++)
-    fin.getline(line, 1024);
+  //for (int i = 0; i < 6; i++)
+  //  fin.getline(line, 1024);
   std::vector<costg::BmRotaryMatrix> vec;
 
-  int error = 0;
-  while (fin.getline(line, 1024) && (!error)) {
+  while (fin.getline(line, 1024)) {
+    int error = 0;
     double td[10];
     int sz = std::strlen(line);
     const char *str = line;
@@ -124,7 +124,7 @@ std::vector<costg::BmRotaryMatrix> costg::parse_rotary(const char *fn) {
     }
   }
 
-  if (error || (!fin.eof())) {
+  if (!fin.eof()) {
     fprintf(stderr, "ERROR Failed parsing input file %s\n", fn);
     throw std::runtime_error("Failed parsing input file " + std::string(fn) +
                              "\n");
@@ -142,12 +142,12 @@ std::vector<costg::BmEops> costg::parse_eops(const char *fn) {
   }
 
   char line[1024];
-  for (int i = 0; i < 6; i++)
-    fin.getline(line, 1024);
+  //for (int i = 0; i < 6; i++)
+  //  fin.getline(line, 1024);
   std::vector<costg::BmEops> vec;
 
-  int error = 0;
-  while (fin.getline(line, 1024) && (!error)) {
+  while (fin.getline(line, 1024)) {
+    int error = 0;
     double td[10];
     int sz = std::strlen(line);
     const char *str = line;
@@ -165,7 +165,7 @@ std::vector<costg::BmEops> costg::parse_eops(const char *fn) {
     }
   }
 
-  if (error || (!fin.eof())) {
+  if (!fin.eof()) {
     fprintf(stderr, "ERROR Failed parsing input file %s\n", fn);
     throw std::runtime_error("Failed parsing input file " + std::string(fn) +
                              "\n");
