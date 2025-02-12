@@ -1,9 +1,9 @@
 #include "iau.hpp"
 #include "ocean_tide.hpp"
 
-int dso::OceanTide::stokes_coeffs(const dso::MjdEpoch &mjdtt,
-                                  const dso::MjdEpoch &mjdut1,
-                                  const double *const delaunay_args) noexcept {
+int dso::OceanTide::stokes_coeffs(const dso::MjdEpoch& mjdtt,
+    const dso::MjdEpoch& mjdut1,
+    const double* const delaunay_args) noexcept {
   /* nullify geopotential coeffs */
   mcs.clear();
 
@@ -12,19 +12,16 @@ int dso::OceanTide::stokes_coeffs(const dso::MjdEpoch &mjdtt,
 
   /* compute six-vector of multipliers ni from Delaunay vars */
   double __dargs[6];
-  const double *__restrict__ f =
-      dso::delaunay2doodson(delaunay_args, gmst, __dargs);
+  const double* __restrict__ f = dso::delaunay2doodson(delaunay_args, gmst, __dargs);
 
   /* iterate through individual constituents */
-  for (const auto &wave : atlas().waves()) {
+  for (const auto& wave : atlas().waves()) {
     /* compute angle: θ(f) = Σ(i=1,6) n(i)*β(i) */
     const double arg = wave.wave().doodson().argument(f);
     const double carg = std::cos(arg);
     const double sarg = std::sin(arg);
-        mcs.Cnm() +=
-        wave.stokes_cos().Cnm() * carg + wave.stokes_sin().Cnm() * sarg;
-    mcs.Snm() +=
-        wave.stokes_cos().Snm() * carg + wave.stokes_sin().Snm() * sarg;
+    mcs.Cnm() += wave.stokes_cos().Cnm() * carg + wave.stokes_sin().Cnm() * sarg;
+    mcs.Snm() += wave.stokes_cos().Snm() * carg + wave.stokes_sin().Snm() * sarg;
   }
 
   return 0;

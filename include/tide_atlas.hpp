@@ -10,7 +10,20 @@
 
 namespace dso {
 
-/** @class TidalConstituent */
+/** @class TidalConstituent aka a tidal line. 
+ *
+ * Why do we need this class?
+ * Well, each ocean and atmospheric model, can be given as an atlas, i.e. a 
+ * list of major tidal lines/constituents, complemented by sin- and cos- 
+ * stokes coefficients for a shperical harmonics expansion. Adding the 
+ * effects of the tidal lines, will give the total effect of the model 
+ * (possibly including admittance).
+ *
+ * Each TidalConstituent represents a major tidal line of a tide atlas. It 
+ * should hold information on the wave itself (i.e. doodson number, period, 
+ * etc) encoded into a TidalWave instance, and ofcourse it should also hold 
+ * the in- and out-of- phase stokes coefficients. 
+ */
 class TidalConstituent {
 private:
   /* tidal wave information */

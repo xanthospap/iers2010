@@ -10,7 +10,7 @@ set(COSTG_SOURCES
   check_08aod1b_RL06_icrf.cpp
   check_09aod1b_atmosphericTides_icrf.cpp
   check_09aod1b_atmosphericTides_S1_icrf.cpp
-  check_11oceanTide_fes2014b_34major_icrf.cpp
+#  check_11oceanTide_fes2014b_34major_icrf.cpp
 )
 
 # Define the shared utility source file

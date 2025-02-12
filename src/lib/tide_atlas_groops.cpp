@@ -9,6 +9,7 @@
 #include "tide_atlas.hpp"
 #include "icgemio.hpp"
 #include <stdexcept>
+#include <set>
 
 
 /* References:
@@ -20,7 +21,7 @@
  */
 
 namespace {
-/* given a file that contains two-column string, seperated by whitespace, 
+/* given a file that contains two-column string, seperated by whitespace(s), 
  * resolve them and return them in a vector of strings. 
  *
  * File example:
@@ -171,6 +172,17 @@ struct GroopsTideModelFileName {
   char _constituentName[16]={"\0"};
   char _sinCos; /* 'c' or 's' */
 
+  std::string compile(const char *model_name=nullptr, const dso::DoodsonConstituent *dood=nullptr, const char *wave_name=nullptr, char sincos='s') const noexcept {
+    const char *m = (model_name == nullptr)?_model:model_name;
+    char buf[16] = {'\0'};
+    const dso::DoodsonConstituent *d = (dood==nullptr)?(&_doodson):(dood);
+    d->str(buf, true);
+    const char *w = (wave_name==nullptr)?_constituentName:wave_name;
+    char str[124] = {'\0'};
+    std::sprintf(str, "%s_%s_%s_%s.gfc", m, buf, w, (sincos=='c')?"sin":"cos");
+    return std::string(str);
+  }
+
   GroopsTideModelFileName(const char *fn) {
     int error = 0;
     /* pattern is <model name>_<doodson>_<name>_<cos/sin>.gfc */
@@ -220,6 +232,32 @@ struct GroopsTideModelFileName {
   }
 }; /* GroopsTideModelFileName */
 
+/** @brief Validate a file list extracted from a <MODEL>_001fileList.txt file.
+ *
+ * Validate means:
+ * 1. make sure we have no duplicates,
+ * 2. make sure for every sin file there is a corresponding cos file
+ */
+int validate_file_list(const std::vector<std::string> &file_list) noexcept {
+  /* search for duplicates */
+  std::set<std::string> file_set(file_list.begin(), file_list.end());
+  if (file_list.size() != file_set.size()) {
+      fprintf(stderr, "[WRNNG] Duplicate entry/ies found in file list (traceback: %s)\n", __func__);
+      return 1;
+  }
+  for (const auto &f : file_list) {
+    /* search for the corresponding trig */
+    const GroopsTideModelFileName gfn(f.c_str());
+    const std::string fr = gfn.compile(nullptr, nullptr, nullptr, (gfn._sinCos=='s')?'c':'s');
+    auto resit = std::find_if(file_list.cbegin(), file_list.cend(), [&](const std::string &s){ return s==fr; });
+    if (resit == file_list.cend()) {
+      fprintf(stderr, "[WRNNG] Failed locating respective coeff file for %s, i.e. %s (traceback: %s)\n", f.c_str(), fr.c_str(), __func__);
+      return 2;
+    }
+  }
+  return 0;
+}
+
 } /* unnamed namespace */
 
 dso::TideAtlas dso::groops_atlas(const char *file_list,
@@ -242,6 +280,12 @@ const char *dir,
             "(traceback: %s)\n",
             file_list, flvec.size(), __func__);
     throw std::runtime_error("[ERROR] Incorrect number of input file in atlas file list\n");
+  }
+
+  /* validate the file list */
+  if (validate_file_list(flvec)) {
+    fprintf(stderr, "[ERROR] Seems that the file list in %s is corrupt! (traceback: %s)\n", file_list, __func__);
+    throw std::runtime_error("[ERROR] Failed parsing tidal wave file list\n");
   }
 
   /* Create a new (empty) TidalAtlas instance */
@@ -285,14 +329,13 @@ const char *dir,
     }
     
     /* an Icgem instance to read data from (Stokes coefficients) */
-    printf("[WRNNG] Parsing coeffs from file %s\n", cfilename);
     dso::Icgem icgem(cfilename);
-    if (tmp_name[0] && std::strcmp(tmp_name, icgem.model_name())) {
-      fprintf(stderr,
-              "[WRNNG] Model name in file %s differs from previous files, i.e. "
-              "%s vs %s (traceback: %s)\n",
-              wave_fn.c_str(), icgem.model_name(), tmp_name, __func__);
-    }
+    //if (tmp_name[0] && std::strcmp(tmp_name, icgem.model_name())) {
+    //  fprintf(stderr,
+    //          "[WRNNG] Model name in file %s differs from previous files, i.e. "
+    //          "%s vs %s (traceback: %s)\n",
+    //          wave_fn.c_str(), icgem.model_name(), tmp_name, __func__);
+    //}
     std::strcpy(tmp_name, icgem.model_name());
 
     /* read coefficients to sin/cos part */
