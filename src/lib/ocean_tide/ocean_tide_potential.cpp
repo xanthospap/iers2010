@@ -26,3 +26,27 @@ int dso::OceanTide::stokes_coeffs(const dso::MjdEpoch& mjdtt,
 
   return 0;
 }
+
+//int dso::OceanTide::stokes_coeffs(const dso::MjdEpoch& mjdtt,
+//    const dso::MjdEpoch& mjdut1,
+//    const double* const delaunay_args) noexcept {
+//  /* nullify geopotential coeffs */
+//  mcs.clear();
+//
+//  /* compute GMST using IAU 2006/2000A [rad] */
+//  const double gmst = dso::gmst(mjdtt, mjdut1);
+//
+//  /* compute six-vector of multipliers ni from Delaunay vars */
+//  double __dargs[6];
+//  dso::delaunay2doodson(delaunay_args, gmst, __dargs);
+//  Eigen::Matrix<double, 6, 1> theta = Eigen::Map<Eigen::Matrix<double, 6, 1>>(__dargs);
+//
+//  /* compute theta angles for all waves (fx1) */
+//  const auto thetaf = doodson_matrix() * thetaf;
+//
+//  /* factors for cos and sin (kx) */
+//  const auto factorCos = admittance_matrix().array().colwise() * thetaf.array().cos();
+//  const auto factorSin = admittance_matrix().array().colwise() * thetaf.array().sin();
+//
+//  return 0;
+//}

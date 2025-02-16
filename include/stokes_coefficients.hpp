@@ -9,6 +9,7 @@
 #include "coeff_matrix_2d.hpp"
 #include "iersconst.hpp"
 #include <cassert>
+#include "eigen3/Eigen/Eigen"
 
 namespace dso {
 
@@ -248,6 +249,56 @@ public:
    * @warning calling instance should be larger than argument (\p sc).
    */
   StokesCoeffs &operator+=(const StokesCoeffs &sc);
+
+  /** @brief Copy C and S coefficients in 'packed storage' to an Eigen::Matrix
+   *
+   * C will be recorded in the lower triangular part of the resulting (anm) 
+   * matrix, including the main diagonal. S will be stored transposed in the 
+   * upper triangular part of anm. Note that we assume that all Snm coeffs 
+   * are equal to zero when m=0; hence these values are not stored.
+   *
+   * The returned matrix is of size (m_degree+1)x(m_degree+1).
+   * 
+   * Indexing between anm, C and S is as follows:
+   * C(row, col) = anm(row, col), assuming row>=col
+   * S(row, col) = anm(col, row) if row>cols and 0 if row==col, again 
+   *               assuming row>=col
+   *
+   * @snippet ../test/unit_tests/stokes2anm.cpp example_usage
+   */
+  Eigen::MatrixXd to_anm() const noexcept {
+    Eigen::MatrixXd anm = Eigen::MatrixXd::Zero(m_degree+1, m_degree+1);
+    for (int c=0; c<=m_degree; c++) {
+      for (int r=0; r<c; r++) {
+        anm(r,c) = _Snm(c,r+1);
+      }
+      for (int r=c; r<=m_degree; r++) {
+        anm(r,c) = _Cnm(r,c);
+      }
+    }
+    return anm;
+  }
+  
+  static StokesCoeffs from_anm(const Eigen::MatrixXd& anm, int max_order=-1) noexcept {
+    if (max_order<0) max_order = anm.rows()-1;
+    int max_degree = anm.rows()-1;
+    StokesCoeffs cs(max_degree, max_order);
+    for (int m = 0; m <= max_degree; m++) {
+        for (int l=0; l<m; l++) {
+          cs.S(m,l+1) = anm(l,m);
+        // (1,1) -> (0,1) m = 1
+        // (2,1) -> (0,2) m = 2
+        // (2,2) -> (1,2) m = 2
+        // (3,1) -> (0,3) m = 3
+        // (3,2) -> (1,3) m = 3
+        // (3,3) -> (2,3) m = 3
+        }
+        for (int l = m; l <= max_degree; l++) {
+          cs.C(l, m) = anm(l, m);
+        }
+    }
+    return cs;
+  }
 
 }; /* StokesCoeffs */
 

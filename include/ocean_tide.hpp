@@ -39,10 +39,18 @@ private:
   TideAtlas matlas;
   /* Stokes coeffs to hold (if needed) the accumulated effect of all waves */
   StokesCoeffs mcs;
+  /* if we have admitance, we need to re-structure using a GroopsTideModel */
+  GroopsTideModel *gmodel=nullptr;
 
 public:
   const TideAtlas &atlas() const noexcept {return matlas;}
   TideAtlas &atlas() noexcept {return matlas;}
+
+  /* if admittance is included */
+  auto admittance_matrix() const noexcept {return gmodel->admittance_matrix(); }
+  auto doodson_matrix() const noexcept {return gmodel->doodson_matrix(); }
+  auto num_waves() const noexcept { return gmodel->num_waves(); }
+  auto num_major_waves() const noexcept { return gmodel->num_major_waves(); }
   
   OceanTide(const TideAtlas &atlas, const char *name = nullptr)
       : matlas(atlas), mcs(atlas.max_atlas_degree()) {
@@ -54,6 +62,24 @@ public:
       std::strcpy(matlas.name(), name);
   }
   
+  OceanTide(const TideAtlas &atlas, const GroopsTideModel &gmdl, const char *name = nullptr)
+      : matlas(atlas), mcs(atlas.max_atlas_degree()), gmodel(new GroopsTideModel(gmdl)) {
+    int max_order;
+    int max_degree = matlas.max_atlas_degree(max_order);
+    if (max_order < max_degree)
+      mcs.resize(max_degree, max_order);
+    if (name)
+      std::strcpy(matlas.name(), name);
+  }
+
+  // TODO need destructor!!!
+
+  int set_groops_admittance(const GroopsTideModel &mdl) noexcept {
+    if (gmodel) delete gmodel;
+    gmodel = new GroopsTideModel(mdl);
+    return 0;
+  }
+
   /** @brief Compute accumulated Stokes coefficients.
    *
    * Compute the accumulated Stokes coefficients using all available waves
@@ -89,6 +115,14 @@ inline
 OceanTide groops_ocean_atlas(const char *fn, const char *dir,
                               int max_degree = -1, int max_order = -1) {
   return OceanTide(groops_atlas(fn, dir, max_degree, max_order), nullptr);
+}
+
+inline
+OceanTide groops_ocean_atlas(const char *f1, const char *f2, const char *f3, const char *dir,
+                              int max_degree = -1, int max_order = -1) {
+  GroopsTideModel mdl;
+  auto atlas{groops_atlas(f1, f2, f3, dir, mdl, max_degree, max_order)};
+  return OceanTide(atlas, mdl);
 }
 
 } /* namespace dso */

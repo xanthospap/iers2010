@@ -24,6 +24,8 @@ set(NO_ARGS_SOURCES
   coeff_matrix_2d_trirowise.cpp
   coeff_matrix_2d_trirowwise_cp.cpp
   coeff_matrix2d_trirowwise_reduce.cpp
+  stokes2anm.cpp
+  anm2stokes.cpp
   alfs1.cpp
   itrs2gcrs_velocity.cpp
   itrs2gcrs_transformation.cpp

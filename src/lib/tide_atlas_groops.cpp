@@ -87,16 +87,16 @@ const char *skipws(const char *line) noexcept {
   return line;
 }
 
-[[maybe_unused]]
-std::vector<std::array<int,6>> resolve_doodson(const char *fn) noexcept {
+Eigen::Matrix<int, Eigen::Dynamic, 6> parse_doodson(const char *fn) noexcept {
   std::ifstream fin(fn);
   if (!fin.is_open()) {
     fprintf(stderr, "[ERROR] Failed opening file %s (traceback: %s)\n", fn,
             __func__);
-    return std::vector<std::array<int,6>>{};
+    Eigen::Matrix<int, Eigen::Dynamic, 6> empty(0,6);
+    return empty;
   }
 
-  std::vector<std::array<int,6>> dvec;
+  std::vector<std::array<int,6>> data;
   constexpr const int LSZ = 124;
   char line[LSZ];
   int error = 0;
@@ -109,41 +109,48 @@ std::vector<std::array<int,6>> resolve_doodson(const char *fn) noexcept {
       error += (res.ec != std::errc{});
       str = res.ptr;
     }
-    dvec.emplace_back(ar);
+      data.push_back(ar);
   }
 
   if (error) {
     fprintf(stderr, "[ERROR] Failed resolving Doodson numbers from file %s (traceback: %s)\n", fn, __func__);
-    return std::vector<std::array<int,6>>{};
+    Eigen::Matrix<int, Eigen::Dynamic, 6> empty(0,6);
+    return empty;
   }
+  
+  int numRows = data.size();
+  Eigen::Matrix<int, Eigen::Dynamic, 6> mat(numRows, 6);
+  for (int i = 0; i < numRows; ++i) {
+        mat.row(i) = Eigen::Map<Eigen::RowVector<int, 6>>(data[i].data());
+   }
 
-  return dvec;
+  return mat;
 }
 
-[[maybe_unused]]
-int parse_admittance(const char *fn, Eigen::MatrixXd &mat) noexcept {
+Eigen::MatrixXd parse_admittance(const char *fn, int k, int f) noexcept {
   std::ifstream fin(fn);
   if (!fin.is_open()) {
     fprintf(stderr, "[ERROR] Failed opening file %s (traceback: %s)\n", fn,
             __func__);
-    return 1;
+    return Eigen::MatrixXd();
   }
 
-  const int rows = mat.rows();
-  const int cols = mat.cols();
+  const int rows = k;
+  const int cols = f;
 
   constexpr const int LSZ = 1024;
   char line[LSZ];
   int error = 0;
   int row = 0;
 
+  Eigen::MatrixXd mat = Eigen::MatrixXd(rows, cols);
   while (fin.getline(line, LSZ) && (!error)) {
     if (row > rows) {
       fprintf(stderr,
               "[ERROR] More rows than expected in admittance file %s "
               "(traceback: %s)\n",
               fn, __func__);
-      return 1;
+      return Eigen::MatrixXd();
     }
     auto sz = std::strlen(line);
     const char *str = line;
@@ -160,10 +167,10 @@ int parse_admittance(const char *fn, Eigen::MatrixXd &mat) noexcept {
         stderr,
         "[ERROR] Failed resolving admittance from file %s (traceback: %s)\n",
         fn, __func__);
-    return 1;
+    return Eigen::MatrixXd();
   }
 
-  return 0;
+  return mat;
 }
 
 struct GroopsTideModelFileName {
@@ -358,5 +365,29 @@ const char *dir,
   /* assign atlas name */
   std::strcpy(atlas.name(), tmp_name);
 
+  return atlas;
+}
+
+dso::TideAtlas dso::groops_atlas(const char *file_001, const char *file_002, const char *file_003,
+const char *dir, dso::GroopsTideModel &mdl,
+                           int max_degree,
+                           int max_order) {
+  auto atlas = dso::groops_atlas(file_001, dir, max_degree, max_order);
+
+  /* parse Doodon matrix D of size (fx6) */
+  Eigen::Matrix<int, Eigen::Dynamic, 6> doodson = parse_doodson(file_002);
+  if (doodson.rows() == 0) {
+    fprintf(stderr, "[ERROR] Failed reading Doodson matrix from file %s (traceback: %s)\n", file_002, __func__);
+    throw std::runtime_error("[ERROR] Failed resolving tide atlas file list\n");
+  }
+
+  /* parse admitance matrix */
+  Eigen::MatrixXd admittance = parse_admittance(file_003, atlas.waves().size(), doodson.rows());
+  if (admittance.cols() != doodson.rows()) {
+    fprintf(stderr, "[ERROR] Failed reading admittance matrix from file %s (traceback: %s)\n", file_003, __func__);
+    throw std::runtime_error("[ERROR] Failed resolving tide atlas file list\n");
+  }
+  
+  mdl = dso::GroopsTideModel(doodson, admittance);
   return atlas;
 }

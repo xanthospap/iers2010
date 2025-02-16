@@ -1,0 +1,51 @@
+
+# Ascii
+------------------------------------------------------------------------------
+
+SH size = NxN
+
+                                                                         #Row
+      | C_(  0,0)  S_(  1,0)  S(   2,0)       S_(N-1,  0)  S_(  N,0)  |     0
+      | C_(  1,0)  C_(  1,1)  S(   1,1)       S_(N-1,  1)  S_(  N,1)  |     1
+      | C_(  2,0)  C_(  2,1)  C_(  2,2)       S_(N-1,  2)  S_(  N,2)  |     2
+Anm = | C_(  3,0)  C_(  3,1)  C_(  3,2)       S_(N-1,  3)  S_(  N,3)  |     3
+      |                                                               |
+      | C_(N-2,0)  C_(N-2,1)  C_(N-2,3)       S_(N-1,N-2)  S_(N-1,N-2)|   N-2
+      | C_(N-1,0)  C_(N-1,1)  C_(N-1,2)       C_(N-1,N-1)  S_(N-1,N)  |   N-1
+      | C_(  N,0)  C_(  N,1)  C_(  N,2)       C_(  N,N-1)  C_(  N,N)  |     N  
+#Col           0          1          2               N-1          N
+
+
+# The compact Stokes/Potential Coefficients format
+------------------------------------------------------------------------------
+
+The compact matrix \( A_{nm} \) is formed as follows:
+
+\[
+A_{nm} =
+\begin{bmatrix}
+C_{0,0}   & S_{1,0}   & S_{2,0}   & \cdots & S_{N-1,0}  & S_{N,0}   \\
+C_{1,0}   & C_{1,1}   & S_{1,1}   & \cdots & S_{N-1,1}  & S_{N,1}   \\
+C_{2,0}   & C_{2,1}   & C_{2,2}   & \cdots & S_{N-1,2}  & S_{N,2}   \\
+C_{3,0}   & C_{3,1}   & C_{3,2}   & \cdots & S_{N-1,3}  & S_{N,3}   \\
+\vdots    & \vdots    & \vdots    & \ddots & \vdots     & \vdots    \\
+C_{N-2,0} & C_{N-2,1} & C_{N-2,2} & \cdots & S_{N-1,N-2} & S_{N,N-2} \\
+C_{N-1,0} & C_{N-1,1} & C_{N-1,2} & \cdots & C_{N-1,N-1} & S_{N-1,N} \\
+C_{N,0}   & C_{N,1}   & C_{N,2}   & \cdots & C_{N,N-1}  & C_{N,N}
+\end{bmatrix}
+\]
+
+where:
+- \( C_{ij} \) represents the elements of the lower trapezoidal matrix \( C \).
+- \( S_{ij} \) represents the elements of the lower trapezoidal matrix \( S \), transposed to the upper triangular part.
+- The main diagonal of \( S \) is always zero.
+
+If we have \( A_{nm} \), we can get an element of the \( C \) matrix by:
+\[ 
+C_{nm}(i,j) = A_{nm}(i,j)
+\]
+assumming that \( i \ge j \), and we can get an element of \( S \) by:
+\[
+S_{nm}(i,j) = A_{nm}(j,i)
+\]
+assumming that \( i \gt j \), and \( j \ne 0 \).
