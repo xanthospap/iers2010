@@ -42,6 +42,30 @@ private:
   /* if we have admitance, we need to re-structure using a GroopsTideModel */
   GroopsTideModel *gmodel=nullptr;
 
+  /** @brief Compute accumulated Stokes coefficients.
+   *
+   * Compute the accumulated Stokes coefficients using all available waves
+   * included in the instance. The computation follows Eq. (17) of [1].
+   * The computed Stokes coefficients are available in hte instance's mcs
+   * member variable.
+   *
+   * @param[in] mjdtt Epoch for computation in TT
+   * @param[in] mjdtt Epoch for computation in UT1
+   * @param[in] delaunay_args An array containing Delaunay (i.e. fundamental)
+   *            arguments, in the order:
+   *            l  : Mean anomaly of the Moon [rad]
+   *            lp : Mean anomaly of the Sun [rad]
+   *            f  : L - OM [rad]
+   *            d  : Mean elongation of the Moon from the Sun [rad]
+   *            om : Mean longitude of the ascending node of the Moon [rad]
+   * @return Always zero. Note that the computed Stokes coeffs are stored in
+   *            the instance's mcs member variable.
+   */
+  int stokes_coeffs_impl(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
+                    const double *const delaunay_args) noexcept;
+  int stokes_coeffs_with_admittance_impl(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
+                    const double *const delaunay_args) noexcept;
+
 public:
   const TideAtlas &atlas() const noexcept {return matlas;}
   TideAtlas &atlas() noexcept {return matlas;}
@@ -79,28 +103,12 @@ public:
     gmodel = new GroopsTideModel(mdl);
     return 0;
   }
-
-  /** @brief Compute accumulated Stokes coefficients.
-   *
-   * Compute the accumulated Stokes coefficients using all available waves
-   * included in the instance. The computation follows Eq. (17) of [1].
-   * The computed Stokes coefficients are available in hte instance's mcs
-   * member variable.
-   *
-   * @param[in] mjdtt Epoch for computation in TT
-   * @param[in] mjdtt Epoch for computation in UT1
-   * @param[in] delaunay_args An array containing Delaunay (i.e. fundamental)
-   *            arguments, in the order:
-   *            l  : Mean anomaly of the Moon [rad]
-   *            lp : Mean anomaly of the Sun [rad]
-   *            f  : L - OM [rad]
-   *            d  : Mean elongation of the Moon from the Sun [rad]
-   *            om : Mean longitude of the ascending node of the Moon [rad]
-   * @return Always zero. Note that the computed Stokes coeffs are stored in
-   *            the instance's mcs member variable.
-   */
+  
   int stokes_coeffs(const MjdEpoch &mjdtt, const MjdEpoch &mjdut1,
-                    const double *const delaunay_args) noexcept;
+                    const double *const delaunay_args) noexcept 
+                    {
+                      return (gmodel)?stokes_coeffs_with_admittance_impl(mjdtt, mjdut1, delaunay_args):stokes_coeffs_impl(mjdtt, mjdut1, delaunay_args);
+                    }
   
   const StokesCoeffs &stokes_coeffs() const noexcept {return mcs;}
   StokesCoeffs &stokes_coeffs() noexcept {return mcs;}

@@ -10,7 +10,7 @@
 #include "icgemio.hpp"
 #include <stdexcept>
 #include <set>
-
+#include <iostream>
 
 /* References:
  *
@@ -138,8 +138,16 @@ Eigen::MatrixXd parse_admittance(const char *fn, int k, int f) noexcept {
   const int rows = k;
   const int cols = f;
 
-  constexpr const int LSZ = 1024;
-  char line[LSZ];
+  /* 
+   * constexpr const int LSZ = 1024;
+   * char line[LSZ];
+   * 1024 is certainly not valid! we need more way chars for a single line!
+   * how many ?
+   * each column takes up ...[XX.00000000e+00] = 16 chars
+   * and we have f columns (let's say f+1 to be sure!)
+   */
+  std::size_t LSZ = (f+1) * 16;
+  char *line = (char *)std::malloc(LSZ * sizeof(char));
   int error = 0;
   int row = 0;
 
@@ -162,7 +170,9 @@ Eigen::MatrixXd parse_admittance(const char *fn, int k, int f) noexcept {
     ++row;
   }
 
-  if (error) {
+  std::free(line);
+
+  if ( error || !(fin.good() || fin.eof()) ) {
     fprintf(
         stderr,
         "[ERROR] Failed resolving admittance from file %s (traceback: %s)\n",

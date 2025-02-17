@@ -124,3 +124,20 @@ add_test(NAME costg_11_major COMMAND tcheck_11oceanTide_fes2014b_34major_icrf
   ${COSTG_DATA_DIR}/models/FES2014b_oceanTide/fes2014b/FES2014b_001fileList.txt
   ${COSTG_DATA_DIR}/models/FES2014b_oceanTide/fes2014b
 )
+
+add_executable(tcheck_11oceanTide_fes2014b_with361Admittance_icrf check_11oceanTide_fes2014b_with361Admittance_icrf.cpp ${CMAKE_SOURCE_DIR}/costg-benchmark/bin/costg_utils.cpp)
+target_link_libraries(tcheck_11oceanTide_fes2014b_with361Admittance_icrf PRIVATE iers ${PROJECT_DEPENDENCIES})
+target_include_directories(tcheck_11oceanTide_fes2014b_with361Admittance_icrf PRIVATE ${CMAKE_SOURCE_DIR}/costg-benchmark/bin)
+add_test(NAME costg_11_admittance COMMAND tcheck_11oceanTide_fes2014b_with361Admittance_icrf 
+  ${COSTG_DATA_DIR}/satellite/00orbit_itrf.txt 
+  ${COSTG_DATA_DIR}/satellite/11oceanTide_fes2014b_with361Admittance_icrf.txt
+  ${COSTG_DATA_DIR}/satellite/01earthRotation_rotaryMatrix.txt
+  ${CMAKE_SOURCE_DIR}/data/test_data/eopc04.1962-now
+  #${COSTG_DATA_DIR}/../oceanAndAtmosphericTides/models/FES2014b_OCN/FES2014b_OCN_001fileList.txt
+  #${COSTG_DATA_DIR}/../oceanAndAtmosphericTides/models/FES2014b_OCN/
+  ${COSTG_DATA_DIR}/models/FES2014b_oceanTide/fes2014b/FES2014b_001fileList.txt
+  ${COSTG_DATA_DIR}/../oceanAndAtmosphericTides/models/FES2014b_OCN/FES2014b_OCN_002doodson.txt
+  #${COSTG_DATA_DIR}/../oceanAndAtmosphericTides/models/FES2014b_OCN/FES2014b_OCN_003admittance.txt
+  ${COSTG_DATA_DIR}/models/FES2014b_oceanTide/fes2014b/admittance/fes2014b__admittance_linear_linear.txt
+  ${COSTG_DATA_DIR}/models/FES2014b_oceanTide/fes2014b
+)

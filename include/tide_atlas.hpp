@@ -139,21 +139,6 @@ public:
   std::vector<TidalConstituent>::iterator
   append_wave(const TidalWave &wave, int max_degree, int max_order);
 
-  //tide_atlas_to_anm() {
-  //  std::vector<Eigen::MatrixXd> anm_cos, anm_sin;
-  //  int deg = this->max_atlas_degree();
-  //  int ord = deg;
-  //  int k = mwaves.size();
-  //  anm_cos.reserve(k);
-  //  anm_sin.reserve(k);
-  //  for (int i=0; i<k; i++) {
-  //    anm_cos.push_back(Eigen::MatrixXd::Zero(deg+1, deg+1));
-  //    anm_sin.push_back(Eigen::MatrixXd::Zero(deg+1, deg+1));
-  //  }
-  //  for (int i=0; i<k; i++) {
-
-  //  }
-  //}
 }; /* TideAtlas */
 
 TideAtlas groops_atlas(const char *fn, const char *dir, int max_degree=-1, int max_order=-1);
