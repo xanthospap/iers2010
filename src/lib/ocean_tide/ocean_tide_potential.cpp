@@ -39,12 +39,22 @@ int dso::OceanTide::stokes_coeffs_with_admittance_impl(const dso::MjdEpoch& mjdt
   const double gmst = dso::gmst(mjdtt, mjdut1);
 
   /* compute six-vector of multipliers ni from Delaunay vars */
-  double __dargs[6];
-  dso::delaunay2doodson(delaunay_args, gmst, __dargs);
-  Eigen::Matrix<double, 6, 1> theta = Eigen::Map<Eigen::Matrix<double, 6, 1>>(__dargs);
+  //double __dargs[6];
+  //dso::delaunay2doodson(delaunay_args, gmst, __dargs);
+  //Eigen::Matrix<double, 6, 1> theta = Eigen::Map<Eigen::Matrix<double, 6, 1>>(__dargs);
 
   /* compute theta angles for all waves (fx1) */
-  const Eigen::VectorXd thetaf = doodson_matrix().cast<double>() * theta;
+  //const Eigen::VectorXd thetaf = doodson_matrix().cast<double>() * theta;
+  
+  double __dargs[6];
+  const double* __restrict__ f = dso::delaunay2doodson(delaunay_args, gmst, __dargs);
+  Eigen::VectorXd thetaf = Eigen::VectorXd::Zero(doodson_matrix().rows());
+  int _dint[6];
+  for (int i=0; i<doodson_matrix().rows(); i++) {
+    for (int j=0; j<6; j++) _dint[j] = doodson_matrix()(i,j);
+    dso::DoodsonConstituent ds(&_dint[0]);
+    thetaf(i) = ds.argument(f);
+  }
 
   /* factors for cos and sin (kx1) */
   //std::cout<<"admittance:\n"<<admittance_matrix()<<"\n";

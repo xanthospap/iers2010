@@ -53,32 +53,32 @@
 %% }
 %% \end{CPP}
 \usepackage{listings} 
-\lstnewenvironment{Bash}
-  {\lstset{language=Bash,frame=lines}}
-  {}
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-\lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
-    numberstyle=\tiny\color{codegray},
-    stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\tiny,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    %numbers=left,                    
-    %numbersep=5pt,                  
-    showspaces=false,                
-    showstringspaces=false,
-    showtabs=false,                  
-    tabsize=2
-}
-\lstset{style=mystyle}
+%\lstnewenvironment{Bash}
+%  {\lstset{language=Bash,frame=lines}}
+%  {}
+%\definecolor{codegreen}{rgb}{0,0.6,0}
+%\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+%\definecolor{codepurple}{rgb}{0.58,0,0.82}
+%\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+%\lstdefinestyle{mystyle}{
+%    backgroundcolor=\color{backcolour},   
+%    commentstyle=\color{codegreen},
+%    keywordstyle=\color{magenta},
+%    numberstyle=\tiny\color{codegray},
+%    stringstyle=\color{codepurple},
+%    basicstyle=\ttfamily\tiny,
+%    breakatwhitespace=false,         
+%    breaklines=true,                 
+%    captionpos=b,                    
+%    keepspaces=true,                 
+%    %numbers=left,                    
+%    %numbersep=5pt,                  
+%    showspaces=false,                
+%    showstringspaces=false,
+%    showtabs=false,                  
+%    tabsize=2
+%}
+%\lstset{style=mystyle}
 
 % augment the paragraph skip ... a bit more clear text
 \setlength{\parskip}{1em}
@@ -107,6 +107,8 @@
                    \labelwidth=\leftmargin}\item[\Large\ding{43}]}
   {\end{list}\end{mdframed}\par}
 
+
+\newcommand{\mpath}[1]{{\footnotesize\ttfamily\color{red!70!black}\nolinkurl{#1}}}
 %
 % ACRONYMS/GLOSSARY
 % ---------------------------------------------------------------------------
@@ -193,6 +195,7 @@
 \newacronym{saa}{SAA}{South Atlantic Anomaly}
 \newacronym{cddis}{CDDIS}{Crustal Dynamics Data Information System}
 \newacronym{aod1b}{AOD1B}{Atmosphere and Ocean De-Aliasing Level-1B}
+\newacronym{itsg}{ITSG}{Institute of Theoretical Geodesy and Satellite Geodesy, TU Graz}
 
 %
 % Nomenclature
@@ -225,7 +228,7 @@
 \begin{document}
 
 % gives the width of the current document in pts
-\showthe\textwidth
+% \showthe\textwidth
 
 \title{%
   DSO Geodetic Library \\
@@ -258,6 +261,8 @@
 \input{chapters/gravity/dealiasing}
 \clearpage
 \input{chapters/planetary_ephemeris}
+\clearpage
+\input{chapters/tides/ocean_tides}
 \clearpage
 \input{chapters/known_issues}
 \clearpage
