@@ -45,40 +45,17 @@
 \usepackage{tkz-euclide}
 \usetikzlibrary{arrows.meta,shapes,shadows,backgrounds}
 
-%% code snippets for var languages
-%% Usage:
-%% \begin{CPP}
-%% main() {
-%%  return 0;
-%% }
-%% \end{CPP}
 \usepackage{listings} 
-%\lstnewenvironment{Bash}
-%  {\lstset{language=Bash,frame=lines}}
-%  {}
-%\definecolor{codegreen}{rgb}{0,0.6,0}
-%\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-%\definecolor{codepurple}{rgb}{0.58,0,0.82}
-%\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-%\lstdefinestyle{mystyle}{
-%    backgroundcolor=\color{backcolour},   
-%    commentstyle=\color{codegreen},
-%    keywordstyle=\color{magenta},
-%    numberstyle=\tiny\color{codegray},
-%    stringstyle=\color{codepurple},
-%    basicstyle=\ttfamily\tiny,
-%    breakatwhitespace=false,         
-%    breaklines=true,                 
-%    captionpos=b,                    
-%    keepspaces=true,                 
-%    %numbers=left,                    
-%    %numbersep=5pt,                  
-%    showspaces=false,                
-%    showstringspaces=false,
-%    showtabs=false,                  
-%    tabsize=2
-%}
-%\lstset{style=mystyle}
+\lstdefinestyle{shell}{
+  language=bash,
+  basicstyle=\ttfamily\scriptsize,
+  backgroundcolor=\color{gray!10},
+  frame=single,
+  breaklines=false,
+  keywordstyle=\color{blue!40},
+  commentstyle=\color{green!50!black},
+  stringstyle=\color{red!40}
+}
 
 % augment the paragraph skip ... a bit more clear text
 \setlength{\parskip}{1em}

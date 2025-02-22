@@ -25,6 +25,12 @@ option(BUILD_COSTG "Build costg binaries (requires iers library)" ON)
 # Define the path to costgdata dir, to build costg tests
 set(COSTG_DATA_DIR "" CACHE PATH "Path to COST-G benchmark data (optional)")
 
+# If "-DSPARSE_ADMITTANCE_MATRIX=ON" is passed in, define 
+# SPARSE_ADMITTANCE_MATRIX
+if(SPARSE_ADMITTANCE_MATRIX)
+  add_compile_definitions(iers PRIVATE SPARSE_ADMITTANCE_MATRIX)
+endif()
+
 # compiler flags
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED On)

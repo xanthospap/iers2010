@@ -118,3 +118,16 @@ find_file(AOD1B
   NO_DEFAULT_PATH
   REQUIRED)
 add_test(NAME aod1b_01 COMMAND test_aod1bin_collect_coeffs_1 ${AOD1B})
+
+##
+## Tests with ocean loading models
+##
+add_executable(test_ocean_tides_1 ocean_tides_instances.cpp)
+target_link_libraries(test_ocean_tides_1 PRIVATE iers ${PROJECT_DEPENDENCIES})
+target_include_directories(test_ocean_tides_1 PRIVATE ${CMAKE_SOURCE_DIR}/src)
+find_path(OCEAN_TIDES_DIR
+  NAMES test_ocean_tide_models.md
+  PATHS ${CMAKE_SOURCE_DIR}/data/test_data/ocean_tides
+  NO_DEFAULT_PATH
+  REQUIRED)
+add_test(NAME make_ocean_tides COMMAND test_ocean_tides_1 ${OCEAN_TIDES_DIR})

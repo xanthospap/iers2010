@@ -1,9 +1,13 @@
 #include "eigen3/Eigen/Eigen"
+#ifdef SPARSE_ADMITTANCE_MATRIX
+#include "eigen3/Eigen/Sparse"
+#endif
 #include "icgemio.hpp"
 #include "tide_atlas.hpp"
 #include <algorithm>
 #include <charconv>
 #include <cstdio>
+#include <cctype>
 #include <cstring>
 #include <fstream>
 #include <set>
@@ -54,29 +58,28 @@ namespace {
  * @param[in] fn Filename
  * @return A vector of string, i.e. the filenames recorded/parsed in the file.
  */
-std::vector<std::string> resolve_file_list(const char* fn) noexcept
-{
+std::vector<std::string> resolve_file_list(const char *fn) noexcept {
   std::ifstream fin(fn);
   if (!fin.is_open()) {
     fprintf(stderr, "[ERROR] Failed opening file %s (traceback: %s)\n", fn,
-        __func__);
-    return std::vector<std::string> {};
+            __func__);
+    return std::vector<std::string>{};
   }
 
   std::vector<std::string> fnvec;
   constexpr const int LSZ = 512;
   char line[LSZ];
   while (fin.getline(line, LSZ)) {
-    const char* str1 = line;
+    const char *str1 = line;
     while (*str1 && *str1 == ' ')
       ++str1;
-    const char* end1 = str1;
+    const char *end1 = str1;
     while (*end1 && *end1 != ' ')
       ++end1;
-    const char* str2 = end1;
+    const char *str2 = end1;
     while (*str2 && *str2 == ' ')
       ++str2;
-    const char* end2 = str2;
+    const char *end2 = str2;
     while (*end2 && *end2 != ' ')
       ++end2;
     std::string sline(line);
@@ -86,19 +89,17 @@ std::vector<std::string> resolve_file_list(const char* fn) noexcept
   return fnvec;
 }
 
-const char* skipws(const char* line) noexcept
-{
+const char *skipws(const char *line) noexcept {
   while (*line && *line == ' ')
     ++line;
   return line;
 }
 
-Eigen::Matrix<int, Eigen::Dynamic, 6> parse_doodson(const char* fn) noexcept
-{
+Eigen::Matrix<int, Eigen::Dynamic, 6> parse_doodson(const char *fn) noexcept {
   std::ifstream fin(fn);
   if (!fin.is_open()) {
     fprintf(stderr, "[ERROR] Failed opening file %s (traceback: %s)\n", fn,
-        __func__);
+            __func__);
     Eigen::Matrix<int, Eigen::Dynamic, 6> empty(0, 6);
     return empty;
   }
@@ -110,17 +111,20 @@ Eigen::Matrix<int, Eigen::Dynamic, 6> parse_doodson(const char* fn) noexcept
   while (fin.getline(line, LSZ) && (!error)) {
     std::array<int, 6> ar;
     auto sz = std::strlen(line);
-    const char* str = line;
+    const char *str = line;
     for (int i = 0; i < 6; i++) {
       auto res = std::from_chars(skipws(str), str + sz, ar[i]);
-      error += (res.ec != std::errc {});
+      error += (res.ec != std::errc{});
       str = res.ptr;
     }
     data.push_back(ar);
   }
 
   if (error) {
-    fprintf(stderr, "[ERROR] Failed resolving Doodson numbers from file %s (traceback: %s)\n", fn, __func__);
+    fprintf(stderr,
+            "[ERROR] Failed resolving Doodson numbers from file %s (traceback: "
+            "%s)\n",
+            fn, __func__);
     Eigen::Matrix<int, Eigen::Dynamic, 6> empty(0, 6);
     return empty;
   }
@@ -134,13 +138,21 @@ Eigen::Matrix<int, Eigen::Dynamic, 6> parse_doodson(const char* fn) noexcept
   return mat;
 }
 
-Eigen::MatrixXd parse_admittance(const char* fn, int k, int f) noexcept
-{
+#ifdef SPARSE_ADMITTANCE_MATRIX
+Eigen::SparseMatrix<double>
+#else
+Eigen::MatrixXd
+#endif
+parse_admittance(const char *fn, int k, int f) noexcept {
   std::ifstream fin(fn);
   if (!fin.is_open()) {
     fprintf(stderr, "[ERROR] Failed opening file %s (traceback: %s)\n", fn,
-        __func__);
+            __func__);
+#ifdef SPARSE_ADMITTANCE_MATRIX
+    return Eigen::SparseMatrix<double>();
+#else
     return Eigen::MatrixXd();
+#endif
   }
 
   const int rows = k;
@@ -149,30 +161,48 @@ Eigen::MatrixXd parse_admittance(const char* fn, int k, int f) noexcept
   /*
    * constexpr const int LSZ = 1024;
    * char line[LSZ];
-   * 1024 is certainly not valid! we need more way chars for a single line!
+   * 1024 is certainly not valid! we need way more chars for a single line!
    * how many ?
    * each column takes up ...[XX.00000000e+00] = 16 chars
+   * but in the COSTG benchmark distributed files, they take up 27 chars,
+   * recorded like: XX.000000000000000000e+00
    * and we have f columns (let's say f+1 to be sure!)
    */
-  std::size_t LSZ = (f + 1) * 16;
-  char* line = (char*)std::malloc(LSZ * sizeof(char));
+  std::size_t LSZ = (cols + 1) * 27;
+  char *line = (char *)std::malloc(LSZ * sizeof(char));
   int error = 0;
   int row = 0;
 
+#ifdef SPARSE_ADMITTANCE_MATRIX
+  Eigen::SparseMatrix<double> mat = Eigen::SparseMatrix<double>(rows, cols);
+#else
   Eigen::MatrixXd mat = Eigen::MatrixXd(rows, cols);
+#endif
   while (fin.getline(line, LSZ) && (!error)) {
     if (row > rows) {
       fprintf(stderr,
-          "[ERROR] More rows than expected in admittance file %s "
-          "(traceback: %s)\n",
-          fn, __func__);
+              "[ERROR] More rows than expected in admittance file %s "
+              "(traceback: %s)\n",
+              fn, __func__);
+      std::free(line);
+#ifdef SPARSE_ADMITTANCE_MATRIX
+      return Eigen::SparseMatrix<double>();
+#else
       return Eigen::MatrixXd();
+#endif
     }
     auto sz = std::strlen(line);
-    const char* str = line;
+    const char *str = line;
     for (int col = 0; col < cols; col++) {
+#ifdef SPARSE_ADMITTANCE_MATRIX
+      double val;
+      auto res = std::from_chars(skipws(str), str + sz, val);
+      if (val)
+        mat.insert(row, col) = val;
+#else
       auto res = std::from_chars(skipws(str), str + sz, mat(row, col));
-      error += (res.ec != std::errc {});
+#endif
+      error += (res.ec != std::errc{});
       str = res.ptr;
     }
     ++row;
@@ -185,32 +215,55 @@ Eigen::MatrixXd parse_admittance(const char* fn, int k, int f) noexcept
         stderr,
         "[ERROR] Failed resolving admittance from file %s (traceback: %s)\n",
         fn, __func__);
+    fprintf(stderr,
+            "[ERROR] Details: error=%d stream_status=%d stream_eof=%d "
+            "rows read/expected=%d/%d (traceback: %s)\n",
+            error, fin.good(), fin.eof(), row, rows, __func__);
+#ifdef SPARSE_ADMITTANCE_MATRIX
+    return Eigen::SparseMatrix<double>();
+#else
     return Eigen::MatrixXd();
+#endif
   }
 
+#ifdef SPARSE_ADMITTANCE_MATRIX
+  mat.makeCompressed();
+#endif
   return mat;
 }
 
 struct GroopsTideModelFileName {
-  char _model[48] = { "\0" };
+  char _model[48] = {"\0"};
   dso::DoodsonConstituent _doodson;
-  char _constituentName[16] = { "\0" };
+  char _constituentName[16] = {"\0"};
   char _sinCos; /* 'c' or 's' */
 
-  std::string compile(const char* model_name = nullptr, const dso::DoodsonConstituent* dood = nullptr, const char* wave_name = nullptr, char sincos = 's') const noexcept
-  {
-    const char* m = (model_name == nullptr) ? _model : model_name;
-    char buf[16] = { '\0' };
-    const dso::DoodsonConstituent* d = (dood == nullptr) ? (&_doodson) : (dood);
+  std::string compile(const char *model_name = nullptr,
+                      const dso::DoodsonConstituent *dood = nullptr,
+                      const char *wave_name = nullptr,
+                      char sincos = 's') const noexcept {
+    /* it seems that doodsons written in filename are upper-case ! */
+    constexpr const int to_upper = true;
+    const char *m = (model_name == nullptr) ? _model : model_name;
+    char buf[16] = {'\0'};
+    const dso::DoodsonConstituent *d = (dood == nullptr) ? (&_doodson) : (dood);
     d->str(buf, true);
-    const char* w = (wave_name == nullptr) ? _constituentName : wave_name;
-    char str[124] = { '\0' };
-    std::sprintf(str, "%s_%s_%s_%s.gfc", m, buf, w, (sincos == 'c') ? "sin" : "cos");
+    /* doodson number to uppercase if neeed */
+    if (to_upper) {
+      char *strl = buf;
+      while (*strl) {
+        *strl = std::toupper(static_cast<unsigned char>(*strl));
+        ++strl;
+      }
+    }
+    const char *w = (wave_name == nullptr) ? _constituentName : wave_name;
+    char str[124] = {'\0'};
+    std::sprintf(str, "%s_%s_%s_%s.gfc", m, buf, w,
+                 (sincos == 'c') ? "sin" : "cos");
     return std::string(str);
   }
 
-  GroopsTideModelFileName(const char* fn)
-  {
+  GroopsTideModelFileName(const char *fn) {
     int error = 0;
     /* pattern is <model name>_<doodson>_<name>_<cos/sin>.gfc */
     const int sz = std::strlen(fn);
@@ -234,7 +287,7 @@ struct GroopsTideModelFileName {
     /* get name of harmonic */
     int lastchar = sz - 9; /* should be just be before '_[sin|cos]' */
     {
-      const char* str = fn + lastchar;
+      const char *str = fn + lastchar;
       while (*str && *str != '_')
         --str;
       std::memcpy(_constituentName, str + 1, fn + sz - 9 - str);
@@ -243,7 +296,7 @@ struct GroopsTideModelFileName {
 
     /* get Doodson */
     {
-      const char* str = fn + lastchar - 1;
+      const char *str = fn + lastchar - 1;
       while (*str && *str != '_')
         --str;
       _doodson = dso::DoodsonConstituent::from_chars(str + 1);
@@ -254,8 +307,12 @@ struct GroopsTideModelFileName {
     std::memcpy(_model, fn, lastchar);
 
     if (error) {
-      fprintf(stderr, "[ERROR] Failed parsing tidal constituent filename %s, part of some tide atlas (traceback: %s)\n", fn, __func__);
-      throw std::runtime_error("[ERROR] Failed parsing gfc constituent filename\n");
+      fprintf(stderr,
+              "[ERROR] Failed parsing tidal constituent filename %s, part of "
+              "some tide atlas (traceback: %s)\n",
+              fn, __func__);
+      throw std::runtime_error(
+          "[ERROR] Failed parsing gfc constituent filename\n");
     }
   }
 }; /* GroopsTideModelFileName */
@@ -266,21 +323,27 @@ struct GroopsTideModelFileName {
  * 1. make sure we have no duplicates,
  * 2. make sure for every sin file there is a corresponding cos file
  */
-int validate_file_list(const std::vector<std::string>& file_list) noexcept
-{
+int validate_file_list(const std::vector<std::string> &file_list) noexcept {
   /* search for duplicates */
   std::set<std::string> file_set(file_list.begin(), file_list.end());
   if (file_list.size() != file_set.size()) {
-    fprintf(stderr, "[WRNNG] Duplicate entry/ies found in file list (traceback: %s)\n", __func__);
+    fprintf(stderr,
+            "[WRNNG] Duplicate entry/ies found in file list (traceback: %s)\n",
+            __func__);
     return 1;
   }
-  for (const auto& f : file_list) {
+  for (const auto &f : file_list) {
     /* search for the corresponding trig */
     const GroopsTideModelFileName gfn(f.c_str());
-    const std::string fr = gfn.compile(nullptr, nullptr, nullptr, (gfn._sinCos == 's') ? 'c' : 's');
-    auto resit = std::find_if(file_list.cbegin(), file_list.cend(), [&](const std::string& s) { return s == fr; });
+    const std::string fr = gfn.compile(nullptr, nullptr, nullptr,
+                                       (gfn._sinCos == 's') ? 'c' : 's');
+    auto resit = std::find_if(file_list.cbegin(), file_list.cend(),
+                              [&](const std::string &s) { return s == fr; });
     if (resit == file_list.cend()) {
-      fprintf(stderr, "[WRNNG] Failed locating respective coeff file for %s, i.e. %s (traceback: %s)\n", f.c_str(), fr.c_str(), __func__);
+      fprintf(stderr,
+              "[WRNNG] Failed locating respective coeff file for %s, i.e. %s "
+              "(traceback: %s)\n",
+              f.c_str(), fr.c_str(), __func__);
       return 2;
     }
   }
@@ -289,45 +352,47 @@ int validate_file_list(const std::vector<std::string>& file_list) noexcept
 
 } /* unnamed namespace */
 
-dso::TideAtlas dso::groops_atlas(const char* file_list,
-    const char* dir,
-    int max_degree,
-    int max_order)
-{
+dso::TideAtlas dso::groops_atlas(const char *file_list, const char *dir,
+                                 int max_degree, int max_order) {
 
   /* parse file list from <model>_001_fileList.txt */
   const auto flvec = resolve_file_list(file_list);
   if (flvec.size() < 1) {
     fprintf(stderr,
-        "[ERROR] Failed parsing file list from file %s; cannot create tidal atlas (traceback: %s)\n",
-        file_list, __func__);
+            "[ERROR] Failed parsing file list from file %s; cannot create "
+            "tidal atlas (traceback: %s)\n",
+            file_list, __func__);
     throw std::runtime_error("[ERROR] Failed resolving tide atlas file list\n");
   }
 
   if (flvec.size() % 2) {
     fprintf(stderr,
-        "[ERROR] Expected even number of files in input file %s, found %ld "
-        "(traceback: %s)\n",
-        file_list, flvec.size(), __func__);
-    throw std::runtime_error("[ERROR] Incorrect number of input file in atlas file list\n");
+            "[ERROR] Expected even number of files in input file %s, found %ld "
+            "(traceback: %s)\n",
+            file_list, flvec.size(), __func__);
+    throw std::runtime_error(
+        "[ERROR] Incorrect number of input file in atlas file list\n");
   }
 
   /* validate the file list */
   if (validate_file_list(flvec)) {
-    fprintf(stderr, "[ERROR] Seems that the file list in %s is corrupt! (traceback: %s)\n", file_list, __func__);
+    fprintf(
+        stderr,
+        "[ERROR] Seems that the file list in %s is corrupt! (traceback: %s)\n",
+        file_list, __func__);
     throw std::runtime_error("[ERROR] Failed parsing tidal wave file list\n");
   }
 
   /* Create a new (empty) TidalAtlas instance */
   dso::TideAtlas atlas;
 
-  char tmp_name[dso::TideAtlas::NAME_MAX_CHARS] = { '\0' };
+  char tmp_name[dso::TideAtlas::NAME_MAX_CHARS] = {'\0'};
   int cmaxdeg = (max_degree < 0) ? 120 : max_degree;
   int cmaxord = (max_order < 0) ? 120 : max_order;
   /* iterate through input files (waves) and read/parse coefficients for each
    * of the k waves of the atlas
    */
-  for (const auto& wave_fn : flvec) {
+  for (const auto &wave_fn : flvec) {
     /* resolve filename */
     GroopsTideModelFileName wave_info(wave_fn.c_str());
 
@@ -337,9 +402,9 @@ dso::TideAtlas dso::groops_atlas(const char* file_list,
     if (it == atlas.waves().end()) {
       /* new tidal wave */
       it = atlas.append_wave(dso::TidalWave(wave_info._doodson, 0e0, 0e0,
-                                 wave_info._constituentName),
-          (max_degree < 0) ? cmaxdeg : max_degree,
-          (max_order < 0) ? cmaxord : max_order);
+                                            wave_info._constituentName),
+                             (max_degree < 0) ? cmaxdeg : max_degree,
+                             (max_order < 0) ? cmaxord : max_order);
       it = atlas.waves().end() - 1;
       // printf("*** appending wave from file %s\n", wave_fn.c_str());
     } else {
@@ -363,21 +428,25 @@ dso::TideAtlas dso::groops_atlas(const char* file_list,
     dso::Icgem icgem(cfilename);
     // if (tmp_name[0] && std::strcmp(tmp_name, icgem.model_name())) {
     //   fprintf(stderr,
-    //           "[WRNNG] Model name in file %s differs from previous files, i.e. "
+    //           "[WRNNG] Model name in file %s differs from previous files,
+    //           i.e. "
     //           "%s vs %s (traceback: %s)\n",
     //           wave_fn.c_str(), icgem.model_name(), tmp_name, __func__);
     // }
     std::strcpy(tmp_name, icgem.model_name());
 
     /* read coefficients to sin/cos part */
-    dso::StokesCoeffs* cs = (wave_info._sinCos == 's') ? &(it->stokes_sin()) : &(it->stokes_cos());
+    dso::StokesCoeffs *cs =
+        (wave_info._sinCos == 's') ? &(it->stokes_sin()) : &(it->stokes_cos());
 
-    if (icgem.parse_data(max_degree, max_order, dso::Icgem::Datetime::min(), *cs)) {
+    if (icgem.parse_data(max_degree, max_order, dso::Icgem::Datetime::min(),
+                         *cs)) {
       fprintf(stderr,
-          "[ERROR] Failed parsing Stokes coefficients of type \'%c\' from "
-          "file %s (traceback: %s)\n",
-          wave_info._sinCos, wave_fn.c_str(), __func__);
-      throw std::runtime_error("[ERROR] Failed parsing tidal wave sin/cos coefficients\n");
+              "[ERROR] Failed parsing Stokes coefficients of type \'%c\' from "
+              "file %s (traceback: %s)\n",
+              wave_info._sinCos, wave_fn.c_str(), __func__);
+      throw std::runtime_error(
+          "[ERROR] Failed parsing tidal wave sin/cos coefficients\n");
     }
 
     /* current max degre/orer */
@@ -391,24 +460,34 @@ dso::TideAtlas dso::groops_atlas(const char* file_list,
   return atlas;
 }
 
-dso::TideAtlas dso::groops_atlas(const char* file_001, const char* file_002, const char* file_003,
-    const char* dir, dso::GroopsTideModel& mdl,
-    int max_degree,
-    int max_order)
-{
+dso::TideAtlas dso::groops_atlas(const char *file_001, const char *file_002,
+                                 const char *file_003, const char *dir,
+                                 dso::GroopsTideModel &mdl, int max_degree,
+                                 int max_order) {
   auto atlas = dso::groops_atlas(file_001, dir, max_degree, max_order);
 
   /* parse Doodon matrix D of size (fx6) */
   Eigen::Matrix<int, Eigen::Dynamic, 6> doodson = parse_doodson(file_002);
   if (doodson.rows() == 0) {
-    fprintf(stderr, "[ERROR] Failed reading Doodson matrix from file %s (traceback: %s)\n", file_002, __func__);
+    fprintf(
+        stderr,
+        "[ERROR] Failed reading Doodson matrix from file %s (traceback: %s)\n",
+        file_002, __func__);
     throw std::runtime_error("[ERROR] Failed resolving tide atlas file list\n");
   }
 
-  /* parse admitance matrix */
-  Eigen::MatrixXd admittance = parse_admittance(file_003, atlas.waves().size(), doodson.rows());
+/* parse admitance matrix */
+#ifdef SPARSE_ADMITTANCE_MATRIX
+  Eigen::SparseMatrix<double> admittance =
+#else
+  Eigen::MatrixXd admittance =
+#endif
+      parse_admittance(file_003, atlas.waves().size(), doodson.rows());
   if (admittance.cols() != doodson.rows()) {
-    fprintf(stderr, "[ERROR] Failed reading admittance matrix from file %s (traceback: %s)\n", file_003, __func__);
+    fprintf(stderr,
+            "[ERROR] Failed reading admittance matrix from file %s (traceback: "
+            "%s)\n",
+            file_003, __func__);
     throw std::runtime_error("[ERROR] Failed resolving tide atlas file list\n");
   }
 

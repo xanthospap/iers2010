@@ -138,6 +138,6 @@ add_test(NAME costg_11_admittance COMMAND tcheck_11oceanTide_fes2014b_with361Adm
   ${COSTG_DATA_DIR}/models/FES2014b_oceanTide/fes2014b/FES2014b_001fileList.txt
   ${COSTG_DATA_DIR}/../oceanAndAtmosphericTides/models/FES2014b_OCN/FES2014b_OCN_002doodson.txt
   #${COSTG_DATA_DIR}/../oceanAndAtmosphericTides/models/FES2014b_OCN/FES2014b_OCN_003admittance.txt
-  ${COSTG_DATA_DIR}/models/FES2014b_oceanTide/fes2014b/admittance/fes2014b__admittance_linear_linear.txt
+  ${COSTG_DATA_DIR}/models/FES2014b_oceanTide/admittance/fes2014b_admittance_linear_linear.txt
   ${COSTG_DATA_DIR}/models/FES2014b_oceanTide/fes2014b
 )

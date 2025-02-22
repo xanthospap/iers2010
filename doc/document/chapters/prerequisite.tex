@@ -1,6 +1,10 @@
 \section{Installation and Prerequisites}\label{sec:installation-and-prerequisites}
 
-\subsection{Third Party Libraries}
+Source code is ISO C++17. Compilation should be trivial using any C++ compiler
+supporting the c++17 standard (option \texttt{-std=c++17} in \href{https://gcc.gnu.org/}{gcc}
+and \href{https://clang.org/}{clang}).
+
+\subsection{Third Party Libraries}\label{ssec:third-party}
 \begin{description}
   \item [\href{https://eigen.tuxfamily.org/index.php?title=Main_Page}{Eigen}]; 
   used for Vector/Matrix operations.
@@ -19,14 +23,61 @@ To install it (system-wide)
 \begin{enumerate}
   \item Download the C library from the \href{https://naif.jpl.nasa.gov/naif/toolkit_C.html}{official repository} 
     and uncompress.
-  \item Use the script \path{script/cppspice/c2cpp_header.py} to tranform 
-    C header file Run the script using the cspice \path{include} folder path 
-    as command line argument. I.e. if the uncompressed cspice folder is at \path{/home/work/var/cspice}, 
+  \item Use the script \mpath{script/cppspice/c2cpp_header.py} to tranform 
+    C header files; run the script using the cspice \mpath{include} folder path 
+    as command line argument. I.e. if the uncompressed cspice folder is at \mpath{/home/work/var/cspice}, 
     use \texttt{c2cpp\_header.py /home/work/var/cspice}.
-  \item Run the \path{makeall.csh} script provided by the distribution (under 
-    \path{cspice} folder). Note that the script is in the cshell, hence you 
+  \item Run the \mpath{makeall.csh} script provided by the distribution (under 
+    \mpath{cspice} folder). Note that the script is in the cshell, hence you 
     might need to \texttt{csh makeall.csh}.
-  \item Copy the \path{script/cppspice/install.sh} script under the \path{cspicer} 
+  \item Copy the \mpath{script/cppspice/install.sh} script under the \mpath{cspice} 
     folder; run it as root, to install the library. Header files will be available at 
-    \path{/usr/local/include} and the library at \path{/usr/local/lib}.
+    \mpath{/usr/local/include} and the library at \mpath{/usr/local/lib}.
 \end{enumerate}
+
+\subsection{Building the Project}
+Building the project is done via \href{https://cmake.org/}{cmake}. If you just need a clean build, and have already 
+installed dependencies (\ref{ssec:third-party}), go to the \texttt{ROOT} directory and just type:
+\begin{lstlisting}[style=shell, label={lst:basic-build}]
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/local/lib
+  cmake --build build --target all --config=Release -- -j4
+  cd build && sudo make install
+\end{lstlisting}
+
+\noindent\textbf{Debug Mode}: To build the project in \textbf{Debug} mode, change \texttt{Release} to \texttt{Debug} 
+in \ref{lst:basic-build}.
+
+\subsubsection{Building the Tests}
+There are a series of tests that can be build, organized in different folders. Each of these are build depending on 
+different options and Prerequisites. In general, to build any of the test stacks, you will have to turn on the 
+\texttt{BUILD\_TESTING} option (i.e. \texttt{cmake -S . [...] -DBUILD\_TESTING=ON}). If the build is successeful, you 
+can trigger the tests via the command \texttt{ctest --test-dir build}.
+
+\noindent\textbf{COSTG Benchmark Tests}: These tests are based on \cite{Lasser2020} and are a list of programs 
+that check the gravitational forces acting on a daily arc of the GRACE satellite. To compile these tests, you will need 
+to download the test data from the location specified in \cite{Lasser2020}. Once you have them in place, you can trigger 
+the building of the test programs, via the \texttt{BUILD\_COSTG} option and (optionally) set the \texttt{COSTG\_DATA\_DIR} 
+variable to the location where the (downloaded) test data are to be found. Example:
+\begin{lstlisting}[style=shell, label={lst:basic-build}]
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/local/lib \
+    -DCOSTG_DATA_DIR=/foo/bar -DBUILD_COSTG=ON -DBUILD_TESTING=ON
+  cmake --build build --target all --config=Release -- -j4 
+  # run the tests
+  ctest --test-dir build
+\end{lstlisting}
+
+\noindent\textbf{Unit Tests}: Unit tests are build by default, if the \texttt{BUILD\_TESTING} option is set 
+to \texttt{ON}.
+
+\noindent\textbf{SOFA Tests}: These tests are meant to validate various algorithms against the SOFA \cite{sofa2021}
+library (C implementation). They are build by default if :
+\begin{itemize}
+  \item the \texttt{BUILD\_TESTING} option is set to \texttt{ON}, and
+  \item the SOFA library is available on your system (as \texttt{sofa\_c})
+\end{itemize}
+
+\subsection{Build Options for Developers}
+\begin{description}
+  \item[SPARSE\_ADMITTANCE\_MATRIX] uses sparse matrices (instead of dense ones) on a few different locations 
+  (e.g. ocean tides modeling)
+\end{description}
