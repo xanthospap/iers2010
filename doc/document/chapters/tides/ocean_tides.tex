@@ -1,0 +1,90 @@
+\section{Ocean Tides}\label{sec:ocean-tides}
+
+The dynamical eﬀects of ocean tides are most easily incorporated as periodic variations in 
+the normalized Stokes coeﬃcients of degree $n$ and order $m$, as $\Delta C_{nm}$ and $\Delta S_{nm}$. 
+Typically, ocean tide models are distributed as gridded maps of tide height amplitudes, providing 
+in-phase and quadrature amplitudes of tide heights for selected, main tidal frequencies (or main 
+tidal waves), on a variable grid spacing over the oceans (\cite{iers2010}). 
+
+Because ocean tide models came in various formats and flavors, we adopt the description outlined in 
+\cite{Torsten23}. In this case, the model grids are converted to spherical harmonic coefﬁcients, 
+which are then distributed for each major wave $f$, as \emph{prograde} $(C^{cos}_{nm}, S^{cos}_{nm})_f$ 
+and \emph{retrograde} $(C^{sin}_{nm}, S^{sin}_{nm})_f$ potential coefficients. The total effect can 
+then be computed as 
+\begin{equation}
+    \begin{Bmatrix}\Delta C_{nm} \\ \Delta S_{nm}\end{Bmatrix} = 
+    \begin{Bmatrix}
+        \sum_{j=1}^{f} \left[ \cos{\theta _j} C^{cos}_{nm, j} + \sin{\theta _f} C^{sin}_{nm, j} \right] \\
+        \sum_{j=1}^{f} \left[ \cos{\theta _j} S^{cos}_{nm, j} + \sin{\theta _f} S^{sin}_{nm, j} \right]
+    \end{Bmatrix}
+\end{equation}
+
+where $\theta _f$ is the argument of the tide constituent $f$. Note that in this representation the 
+\emph{Doodson-Warburg correction} (see \cite{iers2010}, Ch. 6.6) is already applied (see also 
+\cite{Lasser2020} and \cite{Rieser2012}).
+
+To complete the tidal spectrum, admittances between the major tides can be computed using linear 
+interpolation. Admittance can be included in the computation via incorporating the relevant files 
+distributed by \gls{itsg}.
+
+Available ocean (and atmospheric) tidal models are listed in the relevant \gls{itsg} webpage: 
+\url{https://www.tugraz.at/institute/ifg/downloads/ocean-tides} and can be downloaded at 
+\url{https://ftp.tugraz.at/outgoing/ITSG/oceanAndAtmosphericTides/models/}. The naming convensions 
+and format of the respective files are described in \cite{Torsten23}.
+
+\begin{warning}
+    You should set the degree one potential coefficients ($C_{10}$, $C_{11}$ and $S_{11}$) to zero, 
+    if the freame of reference is at Center of Mass (CoM).
+\end{warning}
+
+\subsection{Implementation}
+To create an ocean tide model using the \gls{itsg}-distributed files:
+\begin{lstlisting}[language=C++, basicstyle=\footnotesize\ttfamily, frame=single]
+    #include "ocean_tide.hpp"
+
+    int degre = ...;
+    int order = ...;
+    dso::OceanTide octide ("<MODEL>_001fileList.txt", 
+        "path/to/<MODEL>_gfc_dir", degree, order);
+\end{lstlisting}
+
+\texttt{degree} and \texttt{order} can be omited and will be set to the max degree and 
+order read off from the coefficients files.
+
+where \mpath{<MODEL>\_001fileList.txt} is the corresponding \path{001} file and 
+\mpath{path/to/<MODEL>\_gfc\_dir} is the path where the prograde and retrograde coefficient files 
+are stored.
+
+To include admittance, the constructor should be augmented to hold the \texttt{002} and \texttt{003} 
+file, like:
+\begin{lstlisting}[language=C++, basicstyle=\footnotesize\ttfamily, frame=single]
+    #include "ocean_tide.hpp"
+
+    int degre = ...;
+    int order = ...;
+    dso::OceanTide octide ("<MODEL>_001fileList.txt", 
+        "<MODEL>_002doodson.txt", "<MODEL>__003admittance.txt", 
+        "path/to/<MODEL>_gfc_dir", degree, order);
+\end{lstlisting}
+
+To compute the potential coefficients summing the effects of all tides (major and admittance if 
+available), use:
+\begin{lstlisting}[language=C++, basicstyle=\footnotesize\ttfamily, frame=single]
+    #include "ocean_tide.hpp"
+
+    int degre = ...;
+    int order = ...;
+    dso::OceanTide octide ("<MODEL>_001fileList.txt", 
+        "<MODEL>_002doodson.txt", "<MODEL>__003admittance.txt", 
+        "path/to/<MODEL>_gfc_dir", degree, order);
+
+    octide.stokes_coeffs(tt, ut1(dut1), fargs);
+\end{lstlisting}
+
+where \texttt{tt} is the time of computation in \gls{TT}, \texttt{ut1} is the time transformed to 
+\gls{UT1} and \texttt{fargs} are the fundamental Delaunay arguments ($l$, $l_p$, $f$, $d$ and 
+$\Omega$) computed at the requested epoch.
+
+Example source code is included in the files: 
+\mpath{test/costg\_benchmark/check\_11oceanTide\_fes2014b\_34major\_icrf.cpp} 
+\mpath{test/costg\_benchmark/check\_11oceanTide\_fes2014b\_with361Admittance\_icrf.cpp}
