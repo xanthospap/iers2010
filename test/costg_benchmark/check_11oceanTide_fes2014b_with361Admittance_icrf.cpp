@@ -13,7 +13,7 @@
 
 constexpr const int DEGREE = 180;
 constexpr const int ORDER = 180;
-constexpr const int formatD3Plot = 0;
+[[maybe_unused]]constexpr const int formatD3Plot = 0;
 constexpr const double TOLERANCE = 1e-11; /* [m/sec**2] */
 
 using namespace costg;
@@ -61,11 +61,11 @@ dso::OceanTide fes14b =
     dso::groops_ocean_atlas(argv[5], argv[6], argv[7], argv[8], DEGREE, ORDER);
 
 /* spit out a title for plotting */
-if (formatD3Plot) {
-  printf("mjd,sec,refval,val,component\n");
-} else {
-  printf("#title Ocean Tidal Loading - %s Major\n", fes14b.atlas().name());
-}
+//if (formatD3Plot) {
+//  printf("mjd,sec,refval,val,component\n");
+//} else {
+//  printf("#title Ocean Tidal Loading - %s Major\n", fes14b.atlas().name());
+//}
 
 /* compare results epoch by epoch */
 double fargs[5];
