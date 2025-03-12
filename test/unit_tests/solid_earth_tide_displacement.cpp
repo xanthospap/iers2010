@@ -8,7 +8,7 @@
 #include <cassert>
 
 constexpr const int num_data = 1000;
-constexpr const double TOLERANCE = 1e-3;
+constexpr const double TOLERANCE = 1e-4;
 
 struct {
   int year, month, day;

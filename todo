@@ -25,9 +25,12 @@ test/should_not_compile does not work!
 
   Displacement for SET differs from dehanttideinel respective results below 
   1mm but i am not hapy with that! Basically, the computation block that causes 
-  the discrepancies is the diurnal corections for Step-2. I cannot get a hold 
-  of how this stem corresponds to the paper of Mathews et al, 1997 (see 
-  STEP2DIU.F).
+  the discrepancies is the diurnal corections for Step-2. 
+  If i use the full set of diurnal waves (see Tables7Extended in 
+  iers2010_displacement_step2.cpp) then results show an order of magnitude 
+  better compliance w.r.t. DEHANTTIDEINEL. This extended tables includes 31 
+  diurnal waves extending the original 11 waves included in Table 7a of the 
+  IERS standards.
 
   See the unit test code test/unit_tests/solid_earth_tide_displacement.cpp.
   The input (validation) data used therein are computed using dehanttideinel
