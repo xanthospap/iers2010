@@ -196,9 +196,9 @@ step1_in_phase(double Re, double GMratio,
  * and hence makes them deprecated.
  *
  * @param[in] Re Equatorial radius of the Earth [m]
- * @param[in] rsta  ECEF, cartesian position vector of site/point on Earth
- * @param[in] rsun  ECEF, cartesian position vector of Sun
- * @param[in] rmoon ECEF, cartesian position vector of Moon
+ * @param[in] rsta  ECEF, cartesian position vector of site/point on Earth [m]
+ * @param[in] rsun  ECEF, cartesian position vector of Sun [m]
+ * @param[in] rmoon ECEF, cartesian position vector of Moon [m]
  * @param[in] Msun_earth_ratio  Mass ration of Sun/Earth
  * @param[in] Mmoon_earth_ratio Mass ration of Moon/Earth
  * @param[in] tsta  An instance of type SolidEarthTide::PointSphericalTrigs
@@ -237,7 +237,7 @@ step1(double Re, const Eigen::Matrix<double, 3, 1> &rsta,
   /* displacement vector dx = [δX, δY, δZ] in [m] */
   Eigen::Matrix<double, 3, 1> dx = Eigen::Matrix<double, 3, 1>::Zero();
 
-  { /* In-phse contribution for n=2,3 for Sun */
+  { /* In-phase contribution for n=2,3 for Sun */
     const auto urtb = rsun.normalized();
     const auto ursta = rsta.normalized();
     /* Eq. (5), displacement due to degree n=2 */
@@ -253,7 +253,7 @@ step1(double Re, const Eigen::Matrix<double, 3, 1> &rsta,
           scale3;
     dx *= facSun;
   }
-  { /* In-phse contribution for n=2,3 for Moon */
+  { /* In-phase contribution for n=2,3 for Moon */
     const auto urtb = rmoon.normalized();
     const auto ursta = rsta.normalized();
     /* Eq. (5), displacement due to degree n=2 */
@@ -372,30 +372,6 @@ Eigen::Matrix<double, 3, 1> dso::SolidEarthTide::step1_displacement(
     const dso::SolidEarthTide::PointSphericalTrigs &tSta,
     const dso::SolidEarthTide::PointSphericalTrigs &tMoon,
     const dso::SolidEarthTide::PointSphericalTrigs &tSun) noexcept {
-
-  ///* step-1 corrections (time domain) for Sun (Cartesian, ECEF) */
-  // Eigen::Matrix<double, 3, 1> drxyz =
-  //     step1_in_phase(mcs.Re(), mseratio, rSun, rsta, tSta);
-  // drxyz += step1_in_phase(mcs.Re(), mmeratio, rMoon, rsta, tSta);
-
-  ///* get rotation matrix to transform between Cartesian and topocentric,
-  // * i.e. [x,y,z] = R *[enu]
-  // */
-  // const auto R = dso::geodetic2lvlh(tSta.msph.lat(), tSta.msph.lon());
-
-  ///* transform displacement vector from Cartesian to topocentric (enu) */
-  // Eigen::Matrix<double, 3, 1> dr = R.transpose() * drxyz;
-
-  ///* step1 : out-of-phase (+lat.dependence) */
-  // dr += step1_outof_phase(mcs.Re(), mseratio, rSun, rsta, tSun, tSta);
-  // dr += step1_outof_phase(mcs.Re(), mmeratio, rMoon, rsta, tMoon, tSta);
-
-  // auto dx2 =
-  //     step1(mcs.Re(), rsta, rSun, rMoon, mseratio, mmeratio, tSta, tSun,
-  //     tMoon);
-  // assert(std::abs(dx2(0)-dr(0))< 1e-15);
-  // assert(std::abs(dx2(1)-dr(1))< 1e-15);
-  // assert(std::abs(dx2(2)-dr(2))< 1e-15);
 
   /* all done */
   return step1(mcs.Re(), rsta, rSun, rMoon, mSEratio, mMEratio, tSta, tSun,

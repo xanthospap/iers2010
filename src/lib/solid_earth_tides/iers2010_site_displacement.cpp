@@ -17,13 +17,14 @@ dso::SolidEarthTide::displacement(const dso::MjdEpoch &mjdtt,
       dso::CartesianCrdConstView(rsta)};
 
 #ifdef DEBUG
-  const auto Rt = dso::geodetic2lvlh(trigs_sta.msph.lat(), trigs_sta.msph.lon());
+  const auto Rt =
+      dso::geodetic2lvlh(trigs_sta.msph.lat(), trigs_sta.msph.lon());
 #endif
   auto dr = this->step1_displacement(rsta, rMoon, rSun, trigs_sta, trigs_mon,
                                      trigs_sun);
 #ifdef DEBUG
   auto dx = Rt * dr;
-  printf("STEP1         : %15.9f %15.9f %15.9f\n", dx(0), dx(1), dx(2));
+  printf("STEP1         : %15.9e %15.9e %15.9e\n", dx(0), dx(1), dx(2));
 #endif
 
   /* step-2 corrections (frequency domain) */
@@ -36,8 +37,6 @@ dso::SolidEarthTide::displacement(const dso::MjdEpoch &mjdtt,
   
   /* transform displacement vector from Cartesian to topocentric (enu) */
   Eigen::Matrix<double, 3, 1> dxyz = R * dr;
-
-  // printf("Dehantideinel: %.9f %.9f %.9f\n", dxyz(0), dxyz(1), dxyz(2));
 
   /* all done */
   return dxyz;

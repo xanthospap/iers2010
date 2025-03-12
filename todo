@@ -1,0 +1,33 @@
+# TODO List for iers
+--------------------
+
+## Fix Mock Tests
+-----------------
+test/should_not_compile does not work!
+
+## ICGEM
+---------
+
+  * when parsing ICGEM file headers, only a number of error identifiers are 
+  valid (e.g. 'calibrated_and_formal', 'calibrated', etc). Add 'empirical'.
+
+  * add custom keyword/value pais so that we can store information like: 
+  time_period which are non-standard.
+
+### BUG
+-------
+
+  skipws should also handling a leading '+' sign in floating point. 
+  std::from_chars does not allow for a leading '+' sign.
+
+## SOLID_EARTH_TIDES
+---------------------
+
+  Displacement for SET differs from dehanttideinel respective results below 
+  1mm but i am not hapy with that! Basically, the computation block that causes 
+  the discrepancies is the diurnal corections for Step-2. I cannot get a hold 
+  of how this stem corresponds to the paper of Mathews et al, 1997 (see 
+  STEP2DIU.F).
+
+  See the unit test code test/unit_tests/solid_earth_tide_displacement.cpp.
+  The input (validation) data used therein are computed using dehanttideinel

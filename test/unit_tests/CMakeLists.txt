@@ -29,6 +29,8 @@ set(NO_ARGS_SOURCES
   alfs1.cpp
   itrs2gcrs_velocity.cpp
   itrs2gcrs_transformation.cpp
+  make_dehanttideinel_input.cpp
+  solid_earth_tide_displacement.cpp
 )
 
 # Process each source file and create an executable

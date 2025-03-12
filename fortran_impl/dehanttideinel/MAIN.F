@@ -1,73 +1,71 @@
-      PROGRAM MAIN
+      PROGRAM Main
+      IMPLICIT NONE
 
-      DOUBLE PRECISION PRN, FHR
-      INTEGER NUM_TESTS, I,J, YR, MONTH, DAY, SECDAY
-      DOUBLE PRECISION XSTA(3)
-      DOUBLE PRECISION XSUN(3), XMON(3)
-      DOUBLE PRECISION DXTIDE(3)
-
-      WRITE(*, '(A20)') 'Test Case 1'
-      XSTA(1) = 4075578.385D0
-      XSTA(2) =  931852.890D0
-      XSTA(3) = 4801570.154D0   
-      XSUN(1) = 137859926952.015D0
-      XSUN(2) = 54228127881.4350D0
-      XSUN(3) = 23509422341.6960D0
-      XMON(1) = -179996231.920342D0
-      XMON(2) = -312468450.131567D0
-      XMON(3) = -169288918.592160D0
-      YR      = 2009
-      MONTH   = 4
-      DAY     = 13
-      FHR     = 0.00D0
-      CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
-
-      WRITE(*, '(A20)') 'Test Case 2'
-      XSTA(1) =  1112189.660D0
-      XSTA(2) = -4842955.026D0
-      XSTA(3) =  3985352.284D0
-      XSUN(1) = -54537460436.2357D0
-      XSUN(2) =  130244288385.279D0
-      XSUN(3) =  56463429031.5996D0
-      XMON(1) =  300396716.912D0
-      XMON(2) =  243238281.451D0
-      XMON(3) =  120548075.939D0
-      YR      = 2012
-      MONTH   = 7
-      DAY     = 13
-      FHR     = 0.00D0
-      CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
-
-      WRITE(*, '(A20)') 'Test Case 3'
-      XSTA(1) =  1112200.5696D0
-      XSTA(2) = -4842957.8511D0
-      XSTA(3) =  3985345.9122D0   
-      XSUN(1) =  100210282451.6279D0
-      XSUN(2) =  103055630398.3160D0
-      XSUN(3) =  56855096480.4475D0
-      XMON(1) =  369817604.4348D0
-      XMON(2) =  1897917.5258D0
-      XMON(3) =  120804980.8284D0
-      YR      = 2015
-      MONTH   = 7
-      DAY     = 15
-      FHR     = 0.00D0 
-      CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
-
-      WRITE(*, '(A20)') 'Test Case 4'
-      XSTA(1) = 1112152.8166D0 
-      XSTA(2) = -4842857.5435D0
-      XSTA(3) = 3985496.1783D0
-      XSUN(1) = 8382471154.1312895D0
-      XSUN(2) = 10512408445.356153D0
-      XSUN(3) = -5360583240.3763866D0
-      XMON(1) = 380934092.93550891D0
-      XMON(2) = 2871428.1904491195D0
-      XMON(3) = 79015680.553570181D0
-      YR      = 2017
-      MONTH   = 1
-      DAY     = 15
-      FHR     = 0.00D0 
-      CALL DEHANTTIDEINEL(XSTA,YR,MONTH,DAY,FHR,XSUN,XMON,DXTIDE)
+C     Declare variables
+      INTEGER, PARAMETER :: MAX_RECORDS = 2
+      INTEGER :: YR, MONTH, DAY, IOSTAT, I
+      DOUBLE PRECISION :: FHR, DUT1
+      DOUBLE PRECISION :: XSTA(3), XSUN(3), XMON(3), DXTIDE(3)
       
-      END
+      CHARACTER(LEN=256) :: FILENAME
+      CHARACTER(LEN=512) :: LINE  ! Read the whole line
+      INTEGER :: UNIT_IN
+
+C     Ask for input file
+      WRITE(*,*) 'Enter input filename:'
+      READ(*,*) FILENAME
+
+C     Open input file
+      OPEN(UNIT=UNIT_IN, FILE=FILENAME, STATUS='OLD',
+     &     ACTION='READ', IOSTAT=IOSTAT, FORM='FORMATTED')
+
+      IF (IOSTAT .NE. 0) THEN
+         WRITE(*,*) 'ERROR: Could not open file: ', TRIM(FILENAME)
+         STOP
+C     ELSE
+C        WRITE(*,*) 'SUCCESS: Opened file: ', TRIM(FILENAME)
+      END IF
+
+      WRITE(*,*) 'Starting to read data...'
+
+      I = 0
+      DO WHILE (I .LT. MAX_RECORDS)
+         READ(UNIT_IN, '(A)', IOSTAT=IOSTAT) LINE
+         IF (IOSTAT .NE. 0) THEN
+            WRITE(*,*) 'ERROR: EOF or read error detected on line ', I
+            EXIT
+         ENDIF
+
+C        WRITE(*,*) 'Raw input line:', TRIM(LINE)
+
+         READ(LINE, *, IOSTAT=IOSTAT) YR, MONTH, DAY, FHR, DUT1, 
+     &    XSTA(1), XSTA(2), XSTA(3), XSUN(1), XSUN(2), XSUN(3), 
+     &    XMON(1), XMON(2), XMON(3)
+
+         IF (IOSTAT .NE. 0) THEN
+            WRITE(*,*) 'ERROR: Failed to parse line:', TRIM(LINE)
+            EXIT
+         ENDIF
+
+C        WRITE(*,*) 'Parsed values:', YR, MONTH, DAY, FHR,
+C    &    XSTA(1), XSTA(2), XSTA(3), XSUN(1), XSUN(2), XSUN(3),
+C    &    XMON(1), XMON(2), XMON(3)
+
+C        WRITE(*,*) 'Calling DEHANTTIDEINEL...'
+         CALL DEHANTTIDEINEL(XSTA, YR, MONTH, DAY, FHR, XSUN, XMON,
+     &        DXTIDE)
+
+         WRITE(*,*) YR, MONTH, DAY, FHR, DUT1, XSTA(1), XSTA(2), 
+     &      XSTA(3), XSUN(1), XSUN(2), XSUN(3), XMON(1), XMON(2), 
+     &      XMON(3), DXTIDE(1), DXTIDE(2), DXTIDE(3)
+
+C        WRITE(*,*) 'Iteration:', I
+         I = I + 1
+      END DO
+
+C     Close input file
+      CLOSE(UNIT_IN)
+
+      WRITE(*,*) 'Processing complete.'
+
+      END PROGRAM Main
