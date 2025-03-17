@@ -34,6 +34,10 @@ int dso::AtmosphericTide::append_wave(const char *aod1b_fn, int max_degree,
     mord_collected = newWave.stokes_cos().max_order();
 
   } catch (std::runtime_error &) {
+    fprintf(stderr,
+            "[WRNNG] Failed parsing/appending tidal wave from AOD1B file %s "
+            "(traceback: %s)\n",
+            aod1b_fn, __func__);
     return 1;
   }
 

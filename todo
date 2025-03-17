@@ -20,7 +20,7 @@ test/should_not_compile does not work!
   skipws should also handling a leading '+' sign in floating point. 
   std::from_chars does not allow for a leading '+' sign.
 
-## SOLID_EARTH_TIDES
+## Solid earth tides
 ---------------------
 
   Displacement for SET differs from dehanttideinel respective results below 
@@ -34,3 +34,19 @@ test/should_not_compile does not work!
 
   See the unit test code test/unit_tests/solid_earth_tide_displacement.cpp.
   The input (validation) data used therein are computed using dehanttideinel
+
+## Atmospheric Tides
+--------------------
+
+  To construct an atmospheric tide instance, one of the following two ways can 
+  be used:
+  1. Input tidal wave data from AOD1B files (i.e. for each wave, e.g. 
+    using AOD1B_ATM_R2_06.asc, AOD1B_ATM_S1_06.asc, etc). This is checked for 
+    the AOD1B RL06 series (via the COST-G benchmark) but a new version is now 
+    available. THe thing is, that this way we have to use a conventional π 
+    factor when computing each tidal contribution which is a bit messed up. 
+    There is no clear way of deriving this factor (see 
+    src/lib/atmospheric_tides/atm_tides_geopotential.cpp).
+
+  2. Input tidal wave data from .gfc file, the GROOPS way. This presumably 
+    works, but is untested!
