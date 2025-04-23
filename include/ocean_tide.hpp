@@ -103,6 +103,7 @@ public:
     return mcs.max_degree();
   }
   
+  /** @brief Max order of the model (as in mcs) */
   int max_order() const noexcept {
 #ifdef DEBUG
     int maorder;

@@ -1,5 +1,17 @@
 /** @file
  * Atmospheric Tide Model & computation for Geodesy.
+ * 
+ * The easiest way to construct an Atmospheric Tide model, is via the 
+ * published IFG files, see [2]. To use this means to construct an 
+ * AtmosphericTide model, use the function groops_atmospheric_atlas.
+ *
+ * Yet another way of constructing an Atmospheric Tide model is through 
+ * sequentially adding (major) waves given in the AOD1B format. This is 
+ * handled via successive calls to the (member) append_wave function.
+ *
+ * Once a model is constructed, it can be used to compute the Stokes SH 
+ * coefficients that describe the geopotential perturbation caused by the 
+ * ocean tide.
  *
  * References:
  *
@@ -27,6 +39,10 @@
  *
  * [5] GFZ-Potsdam Information System And Data Center, Global Earth Science
  * Data, ftp://isdcftp.gfz-potsdam.de/grace/Level-1B/GFZ/AOD
+ *
+ * [6] Torsten Mayer-G ¨urr and Felix ¨Ohlinger, Gravitational effect of 
+ * ocean and atmospheric tides, 
+ * https://ftp.tugraz.at/outgoing/ITSG/oceanAndAtmosphericTides/README.pdf
  */
 
 #ifndef __DSO_ATMOSPHERIC_TIDE_HPP__
@@ -43,6 +59,7 @@ namespace dso {
  *
  * A class to hold an Atmospheric Tide Atlas, i.e. a model to assist computing
  * the gravitational effect of atmospheric tides.
+ *
  * A model usually includes a series of tidal constituents (waves), each of
  * which has an individual contribution to the final effect.
  * At any given time, the gravitational effect can be represented as
@@ -50,6 +67,7 @@ namespace dso {
  * Any tidal constituent included in the model, should be an instance of the
  * AtmosphericTidalWave, so that it holds in-phase and quadrature Stokes
  * coeffcients.
+ *
  * For the computation of the (corrections to the) Stokes coefficients, we
  * follow Eq. (28) of [4].
  */
@@ -61,14 +79,19 @@ private:
   StokesCoeffs mcs;
 
 public:
+  /** @brief Return the underlying TideAtlas (const version) */
   const TideAtlas &atlas() const noexcept {return matlas;}
+
+  /** @brief Return the underlying TideAtlas (non-const version) */
   TideAtlas &atlas() noexcept {return matlas;}
 
+  /** @brief Constructor, optionally using a model name (no waves added). */
   AtmosphericTide(const char *name=nullptr):matlas() {
     if (name)
       std::strcpy(matlas.name(), name);
   }
 
+  /** @brief Constructor, using an atlas and optionally a model name. */
   AtmosphericTide(const TideAtlas &atlas, const char *name = nullptr)
       : matlas(atlas), mcs(atlas.max_atlas_degree()) {
     int max_order;
@@ -77,6 +100,26 @@ public:
       mcs.resize(max_degree, max_order);
     if (name)
       std::strcpy(matlas.name(), name);
+  }
+  
+  /** @brief Max degree of the model (as in mcs) */
+  int max_degree() const noexcept {
+#ifdef DEBUG
+    int maorder;
+    assert(matlas.max_atlas_degree(maorder) == mcs.max_degree());
+    assert(maorder == mcs.max_order());
+#endif
+    return mcs.max_degree();
+  }
+  
+  /** @brief Max order of the model (as in mcs) */
+  int max_order() const noexcept {
+#ifdef DEBUG
+    int maorder;
+    assert(matlas.max_atlas_degree(maorder) == mcs.max_degree());
+    assert(maorder == mcs.max_order());
+#endif
+    return mcs.max_order();
   }
 
   /** @brief Append a tidal wave using the AOD1B format.
@@ -129,9 +172,27 @@ public:
 
   /** @brief Get the instance's Stokes coefficients */
   StokesCoeffs &stokes_coeffs() noexcept { return mcs; }
-}; /* AtmosphericTides */
+}; /* AtmosphericTide */
 
-inline AtmosphericTide atmospheric_tide_from_gfc(const char *fn,
+/** @brief Construct an AtmiosphericTide instance, using Groops files, see [6].
+ *
+ * Construct an Atmospheric instance using a GROOPS files, as described in [6]. 
+ * Note that this version does not include adittance.
+ *
+ * @param[in] fn  The <model>_001fileList.txt file of the model. For a 
+ *            description of the contents/format of the file, see [6].
+ * @param[in] dir The directory where the tide constituent-specific, gfc files 
+ *            are located. For every major wave, two such files should 
+ *            exist (for sin and cos coefficients). The filenames should 
+ *            exactly match the ones specified in fn.
+ * @param[in] max_degree Max Stokes Coefficients degree to parse from the 
+ *            input data files. If a negative value is set, then the we are 
+ *            parsing/storing up to the maximum degree set by the input files.
+ * @param[in] max_order Max Stokes Coefficients order to parse from the 
+ *            input data files. If a negative value is set, then the we are 
+ *            parsing/storing up to the maximum order set by the input files.
+ */
+inline AtmosphericTide groops_atmospheric_atlas(const char *fn,
                                                  const char *dir,
                                                  int max_degree = -1,
                                                  int max_order = -1) {
