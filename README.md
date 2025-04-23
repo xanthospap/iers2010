@@ -4,22 +4,8 @@
 
 C++ library implementing the IERS 2010 standards.
 
-Table of Contents
-1. [Introduction](#introduction)
-2. [Prerequisites](#introduction)
-3. [Compilation / Installation](#installation)
-4. [Data Files](#data-files)
-5. [BLQ format files](#blq-files)
-6. [Status of the Library _(or translated routines)_](#library-status)
-7. [Available functions/models **not** part of the IERS 2010 Conventions](#library-extra)
-8. [Test Cases & FORTRAN vs C++ implementations](#test-cases)
-1. [Test Programs _(optional read)_](#test-programs)
-9. [How to use the library](#how-to)
-10. [Documentation & Library API (TODO)](#dox)
-11. [TODO](#todo)
-12. [Bugs & Maintanance](#bugs)
+# Introduction
 
-# Introduction <a name="introduction"></a>
 This project contains a number of functions implementing models defined in
 [IERS Conventions (2010)](https://www.iers.org/IERS/EN/Publications/TechnicalNotes/tn36.html/) 
 as described in [^2].

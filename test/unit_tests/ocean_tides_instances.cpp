@@ -37,8 +37,10 @@ int main([[maybe_unused]] int argc, char *argv[]) {
         make_fn(argv[1], "model1/model1_001fileList.txt", bf1),
         make_fn(argv[1], "model1/", bf2));
     int max_order;
-    assert(o1.max_degree(max_order) == m1_deg);
+    assert(o1.atlas().max_atlas_degree(max_order) == m1_deg);
     assert(max_order == m1_ord);
+    assert(o1.max_degree() == m1_deg);
+    assert(o1.max_order() == m1_ord);
   }
   
   // Model2, with admittance
@@ -49,8 +51,10 @@ int main([[maybe_unused]] int argc, char *argv[]) {
         make_fn(argv[1], "model2/model2_003admittance.txt", bf3),
         make_fn(argv[1], "model2/", bf4));
     int max_order;
-    assert(o1.max_degree(max_order) == m2_deg);
+    assert(o1.atlas().max_atlas_degree(max_order) == m2_deg);
     assert(max_order == m2_ord);
+    assert(o1.max_degree() == m2_deg);
+    assert(o1.max_order() == m2_ord);
   }
   
   // Model3, with admittance
@@ -61,8 +65,10 @@ int main([[maybe_unused]] int argc, char *argv[]) {
         make_fn(argv[1], "model3/model3_003admittance.txt", bf3),
         make_fn(argv[1], "model3/", bf4));
     int max_order;
-    assert(o1.max_degree(max_order) == m3_deg);
+    assert(o1.atlas().max_atlas_degree(max_order) == m3_deg);
     assert(max_order == m3_ord);
+    assert(o1.max_degree() == m3_deg);
+    assert(o1.max_order() == m3_ord);
   }
 
   // Copy Con'tors
@@ -73,13 +79,17 @@ int main([[maybe_unused]] int argc, char *argv[]) {
         make_fn(argv[1], "model3/model3_003admittance.txt", bf3),
         make_fn(argv[1], "model3/", bf4));
     int max_order;
-    assert(o1.max_degree(max_order) == m3_deg);
+    assert(o1.atlas().max_atlas_degree(max_order) == m3_deg);
     assert(max_order == m3_ord);
+    assert(o1.max_degree() == m3_deg);
+    assert(o1.max_order() == m3_ord);
 
     dso::OceanTide o2(o1);
     int max_order2;
-    assert(o2.max_degree(max_order2) == m3_deg);
+    assert(o2.atlas().max_atlas_degree(max_order2) == m3_deg);
     assert(max_order2 == m3_ord);
+    assert(o2.max_degree() == m3_deg);
+    assert(o2.max_order() == m3_ord);
 
     const double dut1 = unif(re);
     assert(!o1.stokes_coeffs(t, t.tt2ut1(dut1), delaunay));
@@ -105,23 +115,31 @@ int main([[maybe_unused]] int argc, char *argv[]) {
         make_fn(argv[1], "model3/model3_003admittance.txt", bf3),
         make_fn(argv[1], "model3/", bf4));
     int max_order;
-    assert(o3.max_degree(max_order) == m3_deg);
+    assert(o3.atlas().max_atlas_degree(max_order) == m3_deg);
     assert(max_order == m3_ord);
+    assert(o3.max_degree() == m3_deg);
+    assert(o3.max_order() == m3_ord);
 
     dso::OceanTide o2 = o3;
     int max_order2;
-    assert(o2.max_degree(max_order2) == m3_deg);
+    assert(o2.atlas().max_atlas_degree(max_order2) == m3_deg);
     assert(max_order2 == m3_ord);
+    assert(o2.max_degree() == m3_deg);
+    assert(o2.max_order() == m3_ord);
     
     dso::OceanTide o1 = dso::groops_ocean_atlas(
         make_fn(argv[1], "model1/model1_001fileList.txt", bf1),
         make_fn(argv[1], "model1/", bf2));
-    assert(o1.max_degree(max_order) == m1_deg);
+    assert(o1.atlas().max_atlas_degree(max_order) == m1_deg);
     assert(max_order == m1_ord);
+    assert(o1.max_degree() == m1_deg);
+    assert(o1.max_order() == m1_ord);
     
     o2 = o1;
-    assert(o2.max_degree(max_order2) == m1_deg);
+    assert(o2.atlas().max_atlas_degree(max_order2) == m1_deg);
     assert(max_order2 == m1_ord);
+    assert(o2.max_degree() == m1_deg);
+    assert(o2.max_order() == m1_ord);
 
     const double dut1 = unif(re);
     assert(!o1.stokes_coeffs(t, t.tt2ut1(dut1), delaunay));

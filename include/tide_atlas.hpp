@@ -1,4 +1,10 @@
 /** @file
+ *
+ * References:
+ *
+ * [1] Torsten Mayer-G ¨urr and Felix ¨Ohlinger, Gravitational effect of 
+ * ocean and atmospheric tides, 
+ * https://ftp.tugraz.at/outgoing/ITSG/oceanAndAtmosphericTides/README.pdf
  */
 
 #ifndef __DSO_TIDE_ATLAS_HPP__
@@ -141,8 +147,50 @@ public:
 
 }; /* TideAtlas */
 
+/** @brief Construct a TideAtlas instance, using Groops files, see [1].
+ *
+ * Construct an TideAtlas instance using a GROOPS files, as described in [1]. 
+ * Note that this version does not include adittance.
+ *
+ * @param[in] fn  The <model>_001fileList.txt file of the model. For a 
+ *            description of the contents/format of the file, see [2].
+ * @param[in] dir The directory where the tide constituent-specific, gfc files 
+ *            are located. For every major wave, two such files should 
+ *            exist (for sin and cos coefficients). The filenames should 
+ *            exactly match the ones specified in fn.
+ * @param[in] max_degree Max Stokes Coefficients degree to parse from the 
+ *            input data files. If a negative value is set, then the we are 
+ *            parsing/storing up to the maximum degree set by the input files.
+ * @param[in] max_order Max Stokes Coefficients order to parse from the 
+ *            input data files. If a negative value is set, then the we are 
+ *            parsing/storing up to the maximum order set by the input files.
+ */
 TideAtlas groops_atlas(const char *fn, const char *dir, int max_degree = -1,
                        int max_order = -1);
+
+/** @brief Construct an TideAtlas instance with admittance info, using Groops 
+ * files, see [1].
+ *
+ * Construct an TideAtlas instance using a GROOPS files, as described in [1]. 
+ * Note that this version does include adittance.
+ *
+ * @param[in] f1 The <model>_001fileList.txt file of the model. For a 
+ *            description of the contents/format of the file, see [2].
+ * @param[in] f2 The <model>_002doodson.txt file of the model. For a 
+ *            description of the contents/format of the file, see [2].
+ * @param[in] f3 The model>_003admittance.txt file of the model. For a
+ *            description of the contents/format of the file, see [2].
+ * @param[in] f4 The directory where the tide constituent-specific, gfc files 
+ *            are located. For every major wave, two such files should 
+ *            exist (for sin and cos coefficients). The filenames should 
+ *            exactly match the ones specified in fn.
+ * @param[in] max_degree Max Stokes Coefficients degree to parse from the 
+ *            input data files. If a negative value is set, then the we are 
+ *            parsing/storing up to the maximum degree set by the input files.
+ * @param[in] max_order Max Stokes Coefficients order to parse from the 
+ *            input data files. If a negative value is set, then the we are 
+ *            parsing/storing up to the maximum order set by the input files.
+ */
 TideAtlas groops_atlas(const char *file_001, const char *file_002,
                        const char *file_003, const char *dir,
                        GroopsTideModel &mdl, int max_degree = -1,
