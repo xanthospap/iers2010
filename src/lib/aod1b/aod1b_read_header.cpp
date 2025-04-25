@@ -120,8 +120,8 @@ int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
         ++error;
       }
       nanoseconds isec(static_cast<nanoseconds::underlying_type>(sec * 1e9));
-      first_epoch() = time_epoch();
-      first_epoch().add_seconds(isec);
+      first_epoch() = time_epoch().add_seconds(isec);
+      // first_epoch().add_seconds(isec);
       /* validate */
       while (!std::isdigit(*res.ptr))
         ++res.ptr;
@@ -157,8 +157,8 @@ int dso::Aod1bIn::read_header(std::ifstream &fin) noexcept {
         ++error;
       }
       nanoseconds isec(static_cast<nanoseconds::underlying_type>(sec * 1e9));
-      last_epoch() = time_epoch();
-      last_epoch().add_seconds(isec);
+      last_epoch() = time_epoch().add_seconds(isec);
+      // last_epoch().add_seconds(isec);
       /* validate */
       while (!std::isdigit(*res.ptr))
         ++res.ptr;
