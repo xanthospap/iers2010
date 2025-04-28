@@ -2,10 +2,10 @@
 #define __DSO_IAU_MODELS_CPP_IMPLEMENTATION_HPP__
 
 #include "datetime/calendar.hpp"
-#include "geodesy/units.hpp"
 #include "eigen3/Eigen/Eigen"
 #include "eigen3/Eigen/src/Geometry/Quaternion.h"
 #include "geodesy/core/geoconst.hpp"
+#include "geodesy/units.hpp"
 
 namespace dso {
 /* @brief Compute ERA, i.e. Earth rotation angle (IAU 2000 model).
@@ -19,22 +19,22 @@ double era00(const MjdEpoch &ut1) noexcept;
 
 /** @brief Greenwich mean sidereal time (consistent with IAU 2006 precession).
  *
- * Both UT1 and TT are required, UT1 to predict the Earth rotation and TT to 
- * predict the effects of precession. If UT1 is used for both purposes, 
+ * Both UT1 and TT are required, UT1 to predict the Earth rotation and TT to
+ * predict the effects of precession. If UT1 is used for both purposes,
  * errors of order 100 microarcseconds result.
- * This GMST is compatible with the IAU 2006 precession and must not be used 
+ * This GMST is compatible with the IAU 2006 precession and must not be used
  * with other precession models.
  * The result is returned in the range 0 to 2pi.
  * See also the iauGmst function of SOFA.
  */
 double gmst(const MjdEpoch &tt, const MjdEpoch &ut1) noexcept;
 
-/** @brief Time derivative of Greenwich mean sidereal time (consistent with 
+/** @brief Time derivative of Greenwich mean sidereal time (consistent with
  * IAU 2006 precession).
  *
  * @return [rad]/[day]
  *
- * TODO is this precise enough? e.g. we are considering no derivative between 
+ * TODO is this precise enough? e.g. we are considering no derivative between
  * UT1 and TT
  */
 double dgmst(const MjdEpoch &tt) noexcept;
@@ -42,7 +42,7 @@ double dgmst(const MjdEpoch &tt) noexcept;
 /**  Universal Time to Greenwich mean sidereal time (IAU 1982 model). */
 double gmst82(const dso::MjdEpoch &ut1) noexcept;
 
-/* @brief Compute TIO locator s'
+/** @brief Compute TIO locator s'
  *
  * The TIO locator s', positioning the Terrestrial Intermediate Origin
  * on the equator of the Celestial Intermediate Pole.
@@ -88,16 +88,16 @@ int xycip06a(const dso::MjdEpoch &tt, double &xcip, double &ycip,
              double *fargs = nullptr) noexcept;
 
 namespace extra {
-/** This version is slower than the dso::xycip06a function, but way more clear. 
- * It is kept here mainly for testing/debugging purposes. It uses two, 
- * consecutive, seperate calls for the X- and Y- components of the CIP (i.e. 
- * detail::xcip06a and detail::ycip06a). It is thus way more clear than the 
- * dso::xycip06a version, but it lacks efficiency, even if the calls are 
+/** This version is slower than the dso::xycip06a function, but way more clear.
+ * It is kept here mainly for testing/debugging purposes. It uses two,
+ * consecutive, seperate calls for the X- and Y- components of the CIP (i.e.
+ * detail::xcip06a and detail::ycip06a). It is thus way more clear than the
+ * dso::xycip06a version, but it lacks efficiency, even if the calls are
  * made parallel.
  */
 int xycip06a(const dso::MjdEpoch &tt, double &xcip, double &ycip,
              double *fargs = nullptr) noexcept;
-}
+} // namespace extra
 
 /** CIO locator compatible with the IAU 2006/2000A precession-nutation model.
  *
@@ -197,14 +197,15 @@ double ycip06a(const double *const fargs, double t) noexcept;
 int xycip06a(const double *const fargs, double t, double &xcip,
              double &ycip) noexcept;
 
-/** CIO locator compatible with the IAU 2006/2000A precession-nutation model.
+/** @brief CIO locator compatible with the IAU 2006/2000A precession-nutation
+ * model.
  *
  * We follow here IERS 2010 conventions, adopting the development for s(t),
  * or rather the quantity s + XY/2, in the last paragraph of Section 5.5.6.
  * The model is thoroughly described in Table 5.2c --here we do not use the
  * version described in table 5.2d--; the first offers better precision.
- * In essence, we compute the quantity s + XY/2 using the development 
- * described in Table 5.2c and subsequently subtract the XY/2 (where X is 
+ * In essence, we compute the quantity s + XY/2 using the development
+ * described in Table 5.2c and subsequently subtract the XY/2 (where X is
  * \p xcip and Y is \p ycip); this is why these quantities are needed.
  *
  * @param[in] fargs Holds the luni-solar and planetary arguments used in the
