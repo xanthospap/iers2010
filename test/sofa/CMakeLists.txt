@@ -8,6 +8,7 @@ endmacro()
 
 set(TEST_SOURCES
   rot_pom.cpp
+  rot_pn.cpp
 )
 
 # Process each source file and create an executable

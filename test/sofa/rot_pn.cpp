@@ -1,6 +1,4 @@
 #include "earth_rotation.hpp"
-#include "geodesy/rotation.hpp"
-#include "geodesy/units.hpp"
 #include "sofa.h"
 #include <array>
 #include <cstdio>
@@ -5776,31 +5774,75 @@ constexpr const std::array<TestOrbit, 2880> orbv = {{
      -1.537736218408579705e+06, 6.576829252585867420e+06},
 }};
 
-/* SOFA  polar motion matrix */
+/* SOFA GCRS to ITRS */
 Eigen::Matrix<double, 3, 3> sofa(double jd1, double jd2, double xp, double yp,
-                                 double &sp) {
+                                 double &s, double &sp, double &era, double &X,
+                                 double &Y) {
+
+  /* CIP and CIO, IAU 2006/2000A. */
+  double x, y;
+  iauXy06(jd1, jd2, &x, &y);
+  s = iauS06(jd1, jd2, x, y);
+
+  /* GCRS to CIRS matrix. */
+  double rc2i[3][3];
+  iauC2ixys(x, y, s, rc2i);
+
+  /* Earth rotation Angle. */
+  era = iauEra00(jd1, jd2);
+
+  /* Form celestial-terrestrial matrix (no polar motion yet). */
+  double rc2ti[3][3];
+  iauCr(rc2i, rc2ti);
+  iauRz(era, rc2ti);
 
   /* Polar motion matrix (TIRS->ITRS, IERS 2003). */
   double rpom[3][3];
   sp = iauSp00(jd1, jd2);
   iauPom00(xp, yp, sp, rpom);
 
+  /* Form celestial-terrestrial matrix (including polar motion). */
+  double rc2it[3][3];
+  iauRxr(rpom, rc2ti, rc2it);
+
   /* copy to output matrix */
   Eigen::Matrix<double, 3, 3> R;
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
-      R(i, j) = rpom[i][j];
+      R(i, j) = rc2it[i][j];
+    }
+  }
+
+  X = x;
+  Y = y;
+  return R;
+}
+
+/* SOFA  bias-precesion-nutation matrix */
+Eigen::Matrix<double, 3, 3> sofa(double jd1, double jd2, double &x, double &y,
+                                 double &s) {
+
+  /* CIP and CIO, IAU 2006/2000A. */
+  iauXy06(jd1, jd2, &x, &y);
+  s = iauS06(jd1, jd2, x, y);
+
+  /* GCRS to CIRS matrix. */
+  double rc2i[3][3];
+  iauC2ixys(x, y, s, rc2i);
+
+  /* copy to output matrix */
+  Eigen::Matrix<double, 3, 3> R;
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+      R(i, j) = rc2i[i][j];
     }
   }
 
   return R;
 }
 
-constexpr const double ROT_DIFF_ANGLE = dso::sec2rad(1e-3);
-
 int main() {
-  std::uniform_real_distribution<double> unif(dso::sec2rad(-1.),
-                                              dso::sec2rad(1.));
+  std::uniform_real_distribution<double> unif(-M_PI / 6, M_PI / 6);
   std::default_random_engine re;
 
   for (const auto &orb : orbv) {
@@ -5810,20 +5852,27 @@ int main() {
                                            dso::modified_julian_day(66154));
     const double jd1 = mjd.imjd() + dso::MJD0_JD;
     const double jd2 = mjd.fractional_days().days();
-    const double xp = unif(re);
-    const double yp = unif(re);
+    [[maybe_unused]] const double xp = unif(re);
+    [[maybe_unused]] const double yp = unif(re);
 
     /* parameters to be computed via SOFA */
-    double sp;
+    double s, X, Y;
 
     /* rotation matrix using SOFA */
-    const auto Rsofa = sofa(jd1, jd2, xp, yp, sp);
+    const auto Rsofa = sofa(jd1, jd2, X, Y, s);
 
     /* rotation matrix/quaternion using this library */
-    const auto Rthis = dso::polar_motion_matrix(xp, yp, sp);
+    const auto Rthis = dso::gcrs_to_cirs(X, Y, s);
+
+    /* alternative (this library) */
+    const auto Rthis2 = dso::detail::C_qimpl(X, Y, s);
+
+    /* alternative (this library) */
+    const auto Rthis3 = dso::detail::C_rxyimpl(X, Y, s);
 
     /* vector to rotate; case A */
     {
+      /* tolerances here are set via trial-and-error */
       constexpr const double PTOLERANCE = 1e-8;
       constexpr const double CTOLERANCE = 1e-9;
       constexpr const double STOLERANCE = 1e-8;
@@ -5835,25 +5884,46 @@ int main() {
       Eigen::Vector3d r1 = Rsofa * r;
       /* rotated vector via rotation matrix (this lib) */
       Eigen::Vector3d r2 = Rthis * r;
+      /* rotated vector via rotation matrix (this lib, alternative impl.) */
+      Eigen::Vector3d r3 = Rthis2 * r;
+      /* rotated vector via rotation matrix (this lib, alternative impl.) */
+      Eigen::Vector3d r4 = Rthis3 * r;
 
       /* compare rotated vectors via SOFA and this lib */
       assert(std::abs(r1(0) - r2(0)) < PTOLERANCE);
       assert(std::abs(r1(1) - r2(1)) < PTOLERANCE);
       assert(std::abs(r1(2) - r2(2)) < PTOLERANCE);
 
+      /* compare rotated vectors via SOFA and this lib */
+      assert(std::abs(r1(0) - r3(0)) < PTOLERANCE);
+      assert(std::abs(r1(1) - r3(1)) < PTOLERANCE);
+      assert(std::abs(r1(2) - r3(2)) < PTOLERANCE);
+
+      /* compare rotated vectors via SOFA and this lib */
+      assert(std::abs(r1(0) - r4(0)) < PTOLERANCE);
+      assert(std::abs(r1(1) - r4(1)) < PTOLERANCE);
+      assert(std::abs(r1(2) - r4(2)) < PTOLERANCE);
+
       /* inverse transformation */
       Eigen::Vector3d r11 = Rsofa.transpose() * r1;
       Eigen::Vector3d r22 = Rthis.conjugate() * r2;
-
-      // printf("SOFA dr = %.12e %.12e %.12e\n", r(0) - r11(0), r(1) - r11(1),
-      //        r(2) - r11(2));
-      // printf("MINE dr = %.12e %.12e %.12e\n", r(0) - r22(0), r(1) - r22(1),
-      //        r(2) - r22(2));
+      Eigen::Vector3d r33 = Rthis2.conjugate() * r3;
+      Eigen::Vector3d r44 = Rthis3.transpose() * r4;
 
       /* closure results, this lib. */
       assert(std::abs(r(0) - r22(0)) < CTOLERANCE);
       assert(std::abs(r(1) - r22(1)) < CTOLERANCE);
       assert(std::abs(r(2) - r22(2)) < CTOLERANCE);
+
+      /* closure results, this lib. */
+      assert(std::abs(r(0) - r33(0)) < CTOLERANCE);
+      assert(std::abs(r(1) - r33(1)) < CTOLERANCE);
+      assert(std::abs(r(2) - r33(2)) < CTOLERANCE);
+
+      /* closure results, this lib. */
+      assert(std::abs(r(0) - r44(0)) < STOLERANCE);
+      assert(std::abs(r(1) - r44(1)) < STOLERANCE);
+      assert(std::abs(r(2) - r44(2)) < STOLERANCE);
 
       /* closure results, SOFA */
       assert(std::abs(r(0) - r11(0)) < STOLERANCE);
@@ -5874,14 +5944,29 @@ int main() {
       const auto r1 = Rsofa * r;
       /* rotated vector via rotation matrix (this lib) */
       const auto r2 = Rthis * r;
+      /* rotated vector via rotation matrix (this lib, alternative impl.) */
+      Eigen::Vector3d r3 = Rthis2 * r;
+      /* rotated vector via rotation matrix (this lib, alternative impl.) */
+      Eigen::Vector3d r4 = Rthis3 * r;
 
       assert(std::abs(r1(0) - r2(0)) < PTOLERANCE);
       assert(std::abs(r1(1) - r2(1)) < PTOLERANCE);
       assert(std::abs(r1(2) - r2(2)) < PTOLERANCE);
 
+      /* compare rotated vectors via SOFA and this lib */
+      assert(std::abs(r1(0) - r3(0)) < PTOLERANCE);
+      assert(std::abs(r1(1) - r3(1)) < PTOLERANCE);
+      assert(std::abs(r1(2) - r3(2)) < PTOLERANCE);
+
+      /* compare rotated vectors via SOFA and this lib */
+      assert(std::abs(r1(0) - r4(0)) < PTOLERANCE);
+      assert(std::abs(r1(1) - r4(1)) < PTOLERANCE);
+      assert(std::abs(r1(2) - r4(2)) < PTOLERANCE);
+
       /* inverse transformation */
       Eigen::Vector3d r11 = Rsofa.transpose() * r1;
       Eigen::Vector3d r22 = Rthis.conjugate() * r2;
+      Eigen::Vector3d r44 = Rthis3.transpose() * r4;
 
       // printf("SOFA dr = %.12e %.12e %.12e\n", r(0) - r11(0), r(1) - r11(1),
       //        r(2) - r11(2));
@@ -5891,6 +5976,11 @@ int main() {
       assert(std::abs(r(0) - r22(0)) < CTOLERANCE);
       assert(std::abs(r(1) - r22(1)) < CTOLERANCE);
       assert(std::abs(r(2) - r22(2)) < CTOLERANCE);
+
+      /* closure results, this lib. */
+      assert(std::abs(r(0) - r44(0)) < STOLERANCE);
+      assert(std::abs(r(1) - r44(1)) < STOLERANCE);
+      assert(std::abs(r(2) - r44(2)) < STOLERANCE);
 
       /* closure results, SOFA */
       assert(std::abs(r(0) - r11(0)) < STOLERANCE);
@@ -5911,14 +6001,29 @@ int main() {
       const auto r1 = Rsofa * r;
       /* rotated vector via rotation matrix (this lib) */
       const auto r2 = Rthis * r;
+      /* rotated vector via rotation matrix (this lib, alternative impl.) */
+      Eigen::Vector3d r3 = Rthis2 * r;
+      /* rotated vector via rotation matrix (this lib, alternative impl.) */
+      Eigen::Vector3d r4 = Rthis3 * r;
 
       assert(std::abs(r1(0) - r2(0)) < PTOLERANCE);
       assert(std::abs(r1(1) - r2(1)) < PTOLERANCE);
       assert(std::abs(r1(2) - r2(2)) < PTOLERANCE);
 
+      /* compare rotated vectors via SOFA and this lib */
+      assert(std::abs(r1(0) - r3(0)) < PTOLERANCE);
+      assert(std::abs(r1(1) - r3(1)) < PTOLERANCE);
+      assert(std::abs(r1(2) - r3(2)) < PTOLERANCE);
+
+      /* compare rotated vectors via SOFA and this lib */
+      assert(std::abs(r1(0) - r4(0)) < PTOLERANCE);
+      assert(std::abs(r1(1) - r4(1)) < PTOLERANCE);
+      assert(std::abs(r1(2) - r4(2)) < PTOLERANCE);
+
       /* inverse transformation */
       [[maybe_unused]] Eigen::Vector3d r11 = Rsofa.transpose() * r1;
       Eigen::Vector3d r22 = Rthis.conjugate() * r2;
+      Eigen::Vector3d r44 = Rthis3.transpose() * r4;
 
       // printf("SOFA dr = %.12e %.12e %.12e\n", r(0) - r11(0), r(1) - r11(1),
       //        r(2) - r11(2));
@@ -5933,6 +6038,11 @@ int main() {
       assert(std::abs(r(0) - r11(0)) < STOLERANCE);
       assert(std::abs(r(1) - r11(1)) < STOLERANCE);
       assert(std::abs(r(2) - r11(2)) < STOLERANCE);
+
+      /* closure results, this lib. */
+      assert(std::abs(r(0) - r44(0)) < STOLERANCE);
+      assert(std::abs(r(1) - r44(1)) < STOLERANCE);
+      assert(std::abs(r(2) - r44(2)) < STOLERANCE);
     }
   }
 
