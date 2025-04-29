@@ -97,7 +97,7 @@ namespace extra {
  */
 int xycip06a(const dso::MjdEpoch &tt, double &xcip, double &ycip,
              double *fargs = nullptr) noexcept;
-} // namespace extra
+} /* namespace extra */
 
 /** CIO locator compatible with the IAU 2006/2000A precession-nutation model.
  *

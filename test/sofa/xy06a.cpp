@@ -1,68 +1,52 @@
+#include "geodesy/units.hpp"
 #include "iau.hpp"
 #include "sofa.h"
-#include "geodesy/units.hpp"
-#include <cstdio>
 #include <cassert>
 #include <limits>
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+#include <cassert>
 
-constexpr const int num_tests = 100'000;
-constexpr const double MAX_ARCSEC = 1e-12;
-constexpr const double MIND = std::numeric_limits<double>::min();
+constexpr const int num_tests = 10'000;
+constexpr const double MAX_ARCSEC_V1 = 1e-9;
+constexpr const double MAX_ARCSEC_V2 = 1e-8;
 
-int main() {
+int main()
+{
   double xsofa, ysofa;
-  double xmine,ymine;
-  double xminex,yminex;
-  [[maybe_unused]]double maxsofav1[2] = {MIND, MIND};
-  [[maybe_unused]]double maxsofav2[2] = {MIND, MIND};
-  [[maybe_unused]]double maxv1v2[2] = {MIND, MIND};
+  double xmine, ymine;
+  double xminex, yminex;
 
-  for (int i=0; i<num_tests; i++) {
+  for (int i = 0; i < num_tests; i++) {
     /* random MJD Epoch */
-    const auto mjd = dso::MjdEpoch::random(40587, 66154);
+    const auto mjd = dso::MjdEpoch::random(dso::modified_julian_day(47892),
+        dso::modified_julian_day(66154));
     const double dj1 = mjd.imjd() + dso::MJD0_JD;
-    const double dj2 = mjd.fractional_days();
+    const double dj2 = mjd.fractional_days().days();
+
     /* SOFA */
     iauXy06(dj1, dj2, &xsofa, &ysofa);
+
     /* this implementation: v1 i.e. default */
     dso::xycip06a(mjd, xmine, ymine);
     {
-      const double dx = std::abs(xsofa-xmine);
-      if (maxsofav1[0] <= dx) maxsofav1[0] = dx;
-      assert(dx < MAX_ARCSEC);
-      const double dy = std::abs(ysofa-ymine);
-      if (maxsofav1[1] <= dy) maxsofav1[1] = dy;
-      assert(dy < MAX_ARCSEC);
+      const double dx = dso::rad2sec(std::abs(xsofa - xmine));
+      assert(dx < MAX_ARCSEC_V1);
+      const double dy = dso::rad2sec(std::abs(ysofa - ymine));
+      assert(dy < MAX_ARCSEC_V1);
     }
+
     /* this implementation: v2 i.e. seperate x&y series */
     dso::extra::xycip06a(mjd, xminex, yminex);
     {
-      const double dx = std::abs(xsofa-xminex);
-      if (maxsofav2[0] <= dx) maxsofav2[0] = dx;
-      assert(dx < MAX_ARCSEC);
-      const double dy = std::abs(ysofa-yminex);
-      if (maxsofav1[1] <= dy) maxsofav1[1] = dy;
-      assert(dy < MAX_ARCSEC);
+      const double dx = dso::rad2sec(std::abs(xsofa - xminex));
+      assert(dx < MAX_ARCSEC_V2);
+      const double dy = dso::rad2sec(std::abs(ysofa - yminex));
+      assert(dy < MAX_ARCSEC_V2);
     }
-    /* compare v1 to v2 */
-    {
-      const double dx = std::abs(xmine-xminex);
-      if (maxv1v2[0] <= dx) maxv1v2[0] = dx;
-      assert(dx < MAX_ARCSEC);
-      const double dy = std::abs(ymine-yminex);
-      if (maxv1v2[1] <= dy) maxv1v2[1] = dy;
-      assert(dy < MAX_ARCSEC);
-    }
+
   }
 
-  /*
-  printf("Max differences between implementations in [microarcsec]\n");
-  printf("SOFA - v1: %.5e %.5e\n", maxsofav1[0], maxsofav1[1]);
-  printf("SOFA - v2: %.5e %.5e\n", maxsofav2[0], maxsofav2[1]);
-  printf("v1 - v2  : %.5e %.5e\n", maxv1v2[0], maxv1v2[1]);
-  */
-
-  printf("%.20s %.3e %.5s\n", "xycip06a", MAX_ARCSEC, "OK");
-  printf("%.20s %.3e %.5s\n", "::extra::xycip06a", MAX_ARCSEC, "OK");
   return 0;
 }

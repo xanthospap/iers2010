@@ -15,11 +15,37 @@ namespace dso {
 
 namespace detail {
 
-/** @brief polar motion matrix W = [R3(-s') R2(xp) R1(yp)]^T
+/** @brief Polar motion matrix W = [R3(-s') R2(xp) R1(yp)]^T
  *
  * The matrix operates in the sense: r_ITRS = W * r_TIRS
+ *
  * It is the transpose of the matrix described in Ch. 5.4.1 of the IERS 2010
  * standards.
+ *
+ * Polar motion rotation matrix is computed by the formula:
+ *  W = [R3(-s') R2(xp) R1(yp)]^T
+ * xp and yp being the “polar coordinates” of the Celestial Intermediate Pole
+ * (CIP) in the ITRS and s′ being a quantity, named “TIO locator”, which
+ * provides the position of the TIO on the equator of the CIP corresponding to
+ * the kinematical deﬁnition of the “non-rotating” origin (NRO) in the ITRS when
+ * the CIP is moving with respect to the ITRS due to polar motion.
+ *
+ * @warning This matrix is the inverse/transpose of the matrix described in
+ * Ch. 5.4.1 of the IERS 2010 standards.
+ *
+ * @param[in] xp Polar coordinate x in [rad]
+ * @param[in] yp Polar coordinate y in [rad]
+ * @param[in] sp TIO locator (s') in [rad]
+ * @return A quaternion holding equivalent of the W rotation matrix.
+ *
+ * To transform the quaternion to a "conventional" 3x3 rotation matrix, you
+ * can just call the .toRotationMatrix() method. I.e.
+ * @code
+ * Eigen::Matrix<double,3,3> R = detail::W(xp, yp, sp).to_rotation_matrix();
+ * @endcode
+ *
+ * To get the inverse transformation (quaternion), i.e. ITRS-to-TIRS, you
+ * can just call the .conjugate() method on the returned quaternion.
  */
 inline auto W(double xp, double yp, double sp) noexcept {
   /* W = [R3(-s') R2(xp) R1(yp)]^T */
@@ -253,21 +279,15 @@ inline double earth_rotation_rate(double dlod) noexcept {
   return ::iers2010::OmegaEarth * (1e0 - dlod / 86400e0);
 }
 
-/** @brief Return the polar motion rotation matrix W in the sense: TIRS-to-ITRS.
- *
- * Polar motion rotation matrix is computed by the formula:
- *  W = [R3(-s') R2(xp) R1(yp)]^(-1)
- * xp and yp being the “polar coordinates” of the Celestial Intermediate Pole
- * (CIP) in the ITRS and s′ being a quantity, named “TIO locator”, which
- * provides the position of the TIO on the equator of the CIP corresponding to
- * the kinematical deﬁnition of the “non-rotating” origin (NRO) in the ITRS when
- * the CIP is moving with respect to the ITRS due to polar motion.
+/** @brief Return the polar motion transformation W, in the sense: TIRS-to-ITRS.
  *
  * This matrix works as follows:
  * r_ITRS = W * r_TIRS
  *
  * @warning This matrix is the inverse/transpose of the matrix described in
  * Ch. 5.4.1 of the IERS 2010 standards.
+ *
+ * @see detail::W
  *
  * @param[in] xp Polar coordinate x in [rad]
  * @param[in] yp Polar coordinate y in [rad]
