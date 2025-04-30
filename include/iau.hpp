@@ -22,10 +22,19 @@ double era00(const MjdEpoch &ut1) noexcept;
  * Both UT1 and TT are required, UT1 to predict the Earth rotation and TT to
  * predict the effects of precession. If UT1 is used for both purposes,
  * errors of order 100 microarcseconds result.
+ *
  * This GMST is compatible with the IAU 2006 precession and must not be used
  * with other precession models.
- * The result is returned in the range 0 to 2pi.
- * See also the iauGmst function of SOFA.
+ *
+ * The result is returned in the range 0 to 2pi. See also the iauGmst06 function
+ * of SOFA.
+ *
+ * @warning This GMST is compatible with the IAU 2006 precession and must not be
+ * used with other precession models.
+ *
+ * @param[in] tt  Epoch in TT time scale.
+ * @param[in] ut1 Epoch in UT1 time scale.
+ * @return GMST, compatible with the IAU 2006 precession in [rad]
  */
 double gmst(const MjdEpoch &tt, const MjdEpoch &ut1) noexcept;
 
@@ -39,7 +48,11 @@ double gmst(const MjdEpoch &tt, const MjdEpoch &ut1) noexcept;
  */
 double dgmst(const MjdEpoch &tt) noexcept;
 
-/**  Universal Time to Greenwich mean sidereal time (IAU 1982 model). */
+/** @brief Universal Time to Greenwich mean sidereal time (IAU 1982 model).
+ *
+ * @param[in] ut1 Epoch in UT1 time scale.
+ * @return GMST, compatible with the IAU 1982 expression, in [rad]
+ */
 double gmst82(const dso::MjdEpoch &ut1) noexcept;
 
 /** @brief Compute TIO locator s'
@@ -63,7 +76,7 @@ inline double sp00(const MjdEpoch &tt) noexcept {
   return sec2rad(-47e-6 * t);
 }
 
-/* @brief X,Y coordinates of the CIP from series based on IAU 2006 precession
+/** @brief X,Y coordinates of the CIP from series based on IAU 2006 precession
  *  and IAU 2000A nutation.
  *
  * The X,Y coordinates are those of the unit vector towards the celestial
@@ -99,7 +112,8 @@ int xycip06a(const dso::MjdEpoch &tt, double &xcip, double &ycip,
              double *fargs = nullptr) noexcept;
 } /* namespace extra */
 
-/** CIO locator compatible with the IAU 2006/2000A precession-nutation model.
+/** @brief CIO locator compatible with the IAU 2006/2000A precession-nutation
+ * model.
  *
  * We follow here IERS 2010 conventions, adopting the development for s(t),
  * or rather the quantity s + XY/2, in the last paragraph of Section 5.5.6.
@@ -113,7 +127,8 @@ int xycip06a(const dso::MjdEpoch &tt, double &xcip, double &ycip,
  */
 double s06(const dso::MjdEpoch &tt, double xcip, double ycip) noexcept;
 
-/** CIO locator compatible with the IAU 2006/2000A precession-nutation model.
+/** @brief CIO locator compatible with the IAU 2006/2000A precession-nutation
+ * model.
  *
  * We follow here IERS 2010 conventions, adopting the development for s(t),
  * or rather the quantity s + XY/2, in the last paragraph of Section 5.5.6.

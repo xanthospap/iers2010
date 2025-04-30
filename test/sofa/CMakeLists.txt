@@ -13,7 +13,10 @@ set(TEST_SOURCES
   fundarg.cpp
   s06.cpp
   xy06a.cpp
+  gmst.cpp
   gmst82.cpp
+  sp00.cpp
+  xys06fargs.cpp
 )
 
 # Process each source file and create an executable
