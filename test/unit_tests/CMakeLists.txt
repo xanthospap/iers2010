@@ -27,8 +27,7 @@ set(NO_ARGS_SOURCES
   stokes2anm.cpp
   anm2stokes.cpp
   alfs1.cpp
-  itrs2gcrs_velocity.cpp
-  itrs2gcrs_transformation.cpp
+  #itrs2gcrs_velocity.cpp
   make_dehanttideinel_input.cpp
   solid_earth_tide_displacement.cpp
 )

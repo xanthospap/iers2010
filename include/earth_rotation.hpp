@@ -13,6 +13,20 @@
 
 namespace dso {
 
+/** @brief Celestial-to-terrestrial transformation, i.e. [TRS] = q * [CRS]
+ *
+ * The transformation follows the IAU 2006/2000A precession-nutation model.
+ *
+ * @param[in] tt Epoch of request, in TT scale.
+ * @param[in] eop An EopRecord instance, which will be used to extract: pole
+ * motion, i.e. xp, yp, corrections to CIP, i.e. dX and dY and Delta UT1.
+ * @return The rotation quaternion to transform a vector in the sense:
+ * [TRS] = q * [CRS]
+ */
+Eigen::Quaterniond c2i06a(const MjdEpoch &tt, const EopRecord &eop) noexcept;
+Eigen::Quaterniond c2i06a(const MjdEpoch &tt, const EopRecord &eop,
+                          Eigen::Matrix<double, 3, 3> &dRdt) noexcept;
+
 namespace detail {
 
 /** @brief Polar motion matrix W = [R3(-s') R2(xp) R1(yp)]^T
@@ -210,7 +224,8 @@ Eigen::Quaterniond gcrs2itrs_quaternion(double era, double s, double sp,
                                         double Xcip, double Ycip, double xp,
                                         double yp) noexcept;
 
-/** @brief Compute the GCRS to ITRS transformation (rotation) matrix.
+/** @brief Compute the GCRS to ITRS transformation (rotation) quaternion:
+ * [TRS] = q * [CRS]
  *
  * This implementation is based on the IERS 2010 document, following the
  * so called 'CIO-based' transformation.
@@ -232,31 +247,32 @@ Eigen::Quaterniond gcrs2itrs_quaternion(double era, double s, double sp,
  *                 Celestial Intermediate Pole (CIP) in the ITRS, [rad]
  * @param[in] yp   Y-coordinate of the "polar coordinates", i.e. of the
  *                 Celestial Intermediate Pole (CIP) in the ITRS, [rad]
+ * @return Rotation quaternion q, such that: [TRS] = q * [CRS]
  */
-Eigen::Matrix<double, 3, 3> gcrs2itrs(double era, double s, double sp,
-                                      double Xcip, double Ycip, double xp,
-                                      double yp) noexcept;
+Eigen::Quaterniond c2i(double era, double s, double sp, double Xcip,
+                       double Ycip, double xp, double yp) noexcept;
 
-/** @brief Compute the GCRS to ITRS transformation (rotation) matrix.
+/** @brief Compute the GCRS to ITRS transformation (rotation) matrix
+ * and its derivative
  */
-Eigen::Matrix<double, 3, 3>
-gcrs2itrs(double era, double s, double sp, double Xcip, double Ycip, double xp,
-          double yp, double lod, Eigen::Matrix<double, 3, 3> &dRdt) noexcept;
-
-/**
- */
-Eigen::Matrix<double, 3, 3>
-gcrs2tirs(double era, double s, double sp, double Xcip, double Ycip, double xp,
-          double yp, Eigen::Matrix<double, 3, 3> *W = nullptr) noexcept;
+Eigen::Quaterniond c2i(double era, double s, double sp, double Xcip,
+                       double Ycip, double xp, double yp, double lod,
+                       Eigen::Matrix<double, 3, 3> &dRdt) noexcept;
 
 } /* namespace detail */
 
 /** @brief Get the unit quaternion to transform from ITRS to GCRS, i.e.
- *  r_{GCRS} = q * r_{ITRS}
+ *  [TRS] = q * [CRS]
+ *
+ * The function will extract (observed) EOP data from the passed in eops
+ * instance, i.e. (a) xp, (b) yp, and (c) dut. The remainind data needed to
+ * perform the computation (i.e. (X,Y)_CIP, CIO locator s, and TIO locator s')
+ * will be evaluated at function call,sed on the passed in epoch (tt).
  *
  * @param[in] tt Epoch of request, in TT scale
  * @param[in] eops An EopRecord instance, holding EOP data for the epoch of
- *               request (i.e. tt)
+ *             request (i.e. tt). The following EOP data will be requested
+ *             from the instance: (a) xp, (b) yp, and (c) dut.
  * @param[out] fargs If not NULL, at output it will hold the luni-solar and
  *             planetary arguments used in the computation of (X,Y). Since we
  *             are computing them, we might as well return them! If not NULL,
@@ -264,11 +280,10 @@ gcrs2tirs(double era, double s, double sp, double Xcip, double Ycip, double xp,
  *         [l, l', F, D, Om, L_Me, L_Ve, L_E, L_Ma, L_J, L_Sa, L_U, L_Ne, p_A]
  *             all in units of [rad].
  *
- * @return A unit quaternion q, acting in the sense: r_{GCRS} = q * r_{ITRS}
+ * @return A unit quaternion q, acting in the sense: [TRS] = q * [CRS]
  */
-Eigen::Quaterniond itrs2gcrs_quaternion(const MjdEpoch &tt,
-                                        const EopRecord &eops,
-                                        double *fargs = nullptr) noexcept;
+Eigen::Quaterniond c2i06a_bz(const MjdEpoch &tt, const EopRecord &eops
+                             /*double *fargs = nullptr*/) noexcept;
 
 /** @brief Earth's roatation rate (omega, ω) in [rad/sec]
  *

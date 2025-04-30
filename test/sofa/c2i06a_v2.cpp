@@ -3,6 +3,10 @@
 #include <array>
 #include <cstdio>
 #include <random>
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+#include <cassert>
 
 struct TestOrbit {
   double mjd, x, y, z;
@@ -5770,101 +5774,159 @@ constexpr const std::array<TestOrbit, 2880> orbv = {{
      -1.537736218408579705e+06, 6.576829252585867420e+06},
 }};
 
-/* SOFA GCRS to ITRS */
-Eigen::Matrix<double, 3, 3> sofa(double jd1, double jd2, double xp, double yp,
-                                 double &s, double &sp, double &era, double &X,
-                                 double &Y) {
-
-  /* CIP and CIO, IAU 2006/2000A. */
-  double x, y;
-  iauXy06(jd1, jd2, &x, &y);
-  s = iauS06(jd1, jd2, x, y);
-
-  /* GCRS to CIRS matrix. */
-  double rc2i[3][3];
-  iauC2ixys(x, y, s, rc2i);
-
-  /* Earth rotation Angle. */
-  era = iauEra00(jd1, jd2);
-
-  /* Form celestial-terrestrial matrix (no polar motion yet). */
-  double rc2ti[3][3];
-  iauCr(rc2i, rc2ti);
-  iauRz(era, rc2ti);
-
-  /* Polar motion matrix (TIRS->ITRS, IERS 2003). */
-  double rpom[3][3];
-  sp = iauSp00(jd1, jd2);
-  iauPom00(xp, yp, sp, rpom);
-
-  /* Form celestial-terrestrial matrix (including polar motion). */
-  double rc2it[3][3];
-  iauRxr(rpom, rc2ti, rc2it);
-
+/* Celestial-to-terrestrial via SOFA, i.e. [TRS] = rc2t * [CRS] */
+Eigen::Matrix<double, 3, 3> sofa(double tt1, double tt2, double ut1, double ut2,
+                                 double xp, double yp) {
+  double rc2t[3][3];
+  iauC2t06a(tt1, tt2, ut1, ut2, xp, yp, rc2t);
   /* copy to output matrix */
   Eigen::Matrix<double, 3, 3> R;
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
-      R(i, j) = rc2it[i][j];
+      R(i, j) = rc2t[i][j];
     }
   }
-
-  X = x;
-  Y = y;
   return R;
 }
 
 int main() {
-  std::uniform_real_distribution<double> unif(-M_PI / 6, M_PI / 6);
+  std::uniform_real_distribution<double> unifp(-M_PI / 6, M_PI / 6);
+  std::uniform_real_distribution<double> unifs(-60e0, 60e0);
   std::default_random_engine re;
 
   for (const auto &orb : orbv) {
 
     /* random MJD Epoch */
-    const auto mjd = dso::MjdEpoch::random(40587, 66154);
-    const double jd1 = mjd.imjd() + dso::MJD0_JD;
-    const double jd2 = mjd.fractional_days();
-    const double xp = unif(re);
-    const double yp = unif(re);
+    const auto mjd = dso::MjdEpoch::random(dso::modified_julian_day(47892),
+                                           dso::modified_julian_day(66154));
+    const double jd1_tt = mjd.imjd() + dso::MJD0_JD;
+    const double jd2_tt = mjd.fractional_days().days();
 
-    /* parameters to be computed via SOFA */
-    double s, sp, era, X, Y;
+    /* UT1 to assign gmst computation +- 1min from TT epoch */
+    const double dut = unifs(re);
+    const auto mjd_ut1 = mjd.tt2ut1(dut);
+    const double dj1_ut1 = mjd_ut1.imjd() + dso::MJD0_JD;
+    const double dj2_ut1 = mjd_ut1.fractional_days().days();
+
+    /* polar motion, random */
+    const double xp = unifp(re);
+    const double yp = unifp(re);
 
     /* rotation matrix using SOFA */
-    const auto Rsofa = sofa(jd1, jd2, xp, yp, s, sp, era, X, Y);
+    const auto Rsofa = sofa(jd1_tt, jd2_tt, dj1_ut1, dj2_ut1, xp, yp);
+
+    /* store EOP data to an instance */
+    dso::EopRecord eops;
+    eops.xp() = xp;
+    eops.yp() = yp;
+    eops.dut() = dut;
+    eops.dX() = 0e0;
+    eops.dY() = 0e0;
 
     /* get the equivelant rotation quaternion (this library) */
-    const auto q = dso::detail::itrs2gcrs_quaternion(era, s, sp, X, Y, xp, yp);
+    const auto Rthis = dso::c2i06a_bz(mjd, eops);
 
-    /* rotation matrix using this library */
-    const auto Rthis = dso::detail::gcrs2itrs(era, s, sp, X, Y, xp, yp);
+    /* vector to rotate; case A */
+    {
+      /* tolerances here are set via trial-and-error */
+      constexpr const double PTOLERANCE = 1e-4;
+      constexpr const double CTOLERANCE = 1e-7;
+      constexpr const double STOLERANCE = 1e-8;
 
-    /* vector to rotate */
-    Eigen::Matrix<double, 3, 1> r;
-    r << orb.x, orb.y, orb.z;
+      Eigen::Matrix<double, 3, 1> r;
+      r << orb.x, orb.y, orb.z;
 
-    /* rotated vector via SOFA */
-    const auto r1 = Rsofa * r;
-    /* rotated vector via quaternion (this lib) */
-    const auto r2 = q * r;
-    /* rotated vector via rotation matrix (this lib) */
-    const auto r3 = Rthis * r;
+      /* rotated vector via SOFA */
+      Eigen::Vector3d r1 = Rsofa * r;
+      /* rotated vector via rotation matrix (this lib) */
+      Eigen::Vector3d r2 = Rthis * r;
 
-    /* assertions */
-    assert(std::abs(r1(0)-r2(0)) < 1e-6);
-    assert(std::abs(r1(1)-r2(1)) < 1e-6);
-    assert(std::abs(r1(2)-r2(2)) < 1e-6);
-    assert(std::abs(r1(0)-r3(0)) < 1e-6);
-    assert(std::abs(r1(1)-r3(1)) < 1e-6);
-    assert(std::abs(r1(2)-r3(2)) < 1e-6);
-    assert((r1-r2).norm() < 1e-6);
-    assert((r1-r3).norm() < 1e-6);
+      // printf("%+.9f %+.9f %+.9f [SOFA]\n", r1(0), r1(1), r1(2));
+      // printf("%+.9f %+.9f %+.9f       \n", r2(0), r2(1), r2(2));
 
-    /* print differences in [mm] */
-    //printf("[SOFA-QUAT] %+.9f %+.9f %+.9f\n", r1(0) - r2(0), r1(1) - r2(1),
-    //       r1(2) - r2(2));
-    //printf("[SOFA-ROTM] %+.9f %+.9f %+.9f\n", r1(0) - r3(0), r1(1) - r3(1),
-    //       r1(2) - r3(2));
+      /* compare rotated vectors via SOFA and this lib */
+      assert(std::abs(r1(0) - r2(0)) < PTOLERANCE);
+      assert(std::abs(r1(1) - r2(1)) < PTOLERANCE);
+      assert(std::abs(r1(2) - r2(2)) < PTOLERANCE);
+
+      /* inverse transformation */
+      Eigen::Vector3d r11 = Rsofa.transpose() * r1;
+      Eigen::Vector3d r22 = Rthis.conjugate() * r2;
+
+      /* closure results, this lib. */
+      assert(std::abs(r(0) - r22(0)) < CTOLERANCE);
+      assert(std::abs(r(1) - r22(1)) < CTOLERANCE);
+      assert(std::abs(r(2) - r22(2)) < CTOLERANCE);
+
+      /* closure results, SOFA */
+      assert(std::abs(r(0) - r11(0)) < STOLERANCE);
+      assert(std::abs(r(1) - r11(1)) < STOLERANCE);
+      assert(std::abs(r(2) - r11(2)) < STOLERANCE);
+    }
+
+    /* vector to rotate; case B */
+    {
+      constexpr const double PTOLERANCE = 1e-10;
+      constexpr const double CTOLERANCE = 1e-12;
+      constexpr const double STOLERANCE = 1e-12;
+
+      Eigen::Matrix<double, 3, 1> r;
+      r << 1e0, 1e0, 1e0;
+
+      /* rotated vector via SOFA */
+      const auto r1 = Rsofa * r;
+      /* rotated vector via rotation matrix (this lib) */
+      const auto r2 = Rthis * r;
+
+      assert(std::abs(r1(0) - r2(0)) < PTOLERANCE);
+      assert(std::abs(r1(1) - r2(1)) < PTOLERANCE);
+      assert(std::abs(r1(2) - r2(2)) < PTOLERANCE);
+
+      /* inverse transformation */
+      Eigen::Vector3d r11 = Rsofa.transpose() * r1;
+      Eigen::Vector3d r22 = Rthis.conjugate() * r2;
+
+      assert(std::abs(r(0) - r22(0)) < CTOLERANCE);
+      assert(std::abs(r(1) - r22(1)) < CTOLERANCE);
+      assert(std::abs(r(2) - r22(2)) < CTOLERANCE);
+
+      /* closure results, SOFA */
+      assert(std::abs(r(0) - r11(0)) < STOLERANCE);
+      assert(std::abs(r(1) - r11(1)) < STOLERANCE);
+      assert(std::abs(r(2) - r11(2)) < STOLERANCE);
+    }
+
+    /* vector to rotate; case C */
+    {
+      constexpr const double PTOLERANCE = 1e-15;
+      constexpr const double CTOLERANCE = 1e-15;
+      constexpr const double STOLERANCE = 1e-15;
+
+      Eigen::Matrix<double, 3, 1> r;
+      r << 1e-6, 1e-6, 1e-6;
+
+      /* rotated vector via SOFA */
+      const auto r1 = Rsofa * r;
+      /* rotated vector via rotation matrix (this lib) */
+      const auto r2 = Rthis * r;
+
+      assert(std::abs(r1(0) - r2(0)) < PTOLERANCE);
+      assert(std::abs(r1(1) - r2(1)) < PTOLERANCE);
+      assert(std::abs(r1(2) - r2(2)) < PTOLERANCE);
+
+      /* inverse transformation */
+      Eigen::Vector3d r11 = Rsofa.transpose() * r1;
+      Eigen::Vector3d r22 = Rthis.conjugate() * r2;
+
+      assert(std::abs(r(0) - r22(0)) < CTOLERANCE);
+      assert(std::abs(r(1) - r22(1)) < CTOLERANCE);
+      assert(std::abs(r(2) - r22(2)) < CTOLERANCE);
+
+      /* closure results, SOFA */
+      assert(std::abs(r(0) - r11(0)) < STOLERANCE);
+      assert(std::abs(r(1) - r11(1)) < STOLERANCE);
+      assert(std::abs(r(2) - r11(2)) < STOLERANCE);
+    }
   }
 
   return 0;

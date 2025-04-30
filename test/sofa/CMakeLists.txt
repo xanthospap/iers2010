@@ -17,6 +17,9 @@ set(TEST_SOURCES
   gmst82.cpp
   sp00.cpp
   xys06fargs.cpp
+  c2i06a_v1.cpp
+  c2i06a_v2.cpp
+  c2i06a_v3.cpp
 )
 
 # Process each source file and create an executable

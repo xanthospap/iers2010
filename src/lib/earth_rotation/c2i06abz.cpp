@@ -45,13 +45,20 @@ Eigen::Quaterniond dso::detail::gcrs2itrs_quaternion(double era, double s,
   return Eigen::Quaterniond(T, A, B, C);
 }
 
-Eigen::Quaterniond dso::itrs2gcrs_quaternion(const dso::MjdEpoch &tt,
-                                             const dso::EopRecord &eops,
-                                             double *fargs) noexcept {
-  /* CIP and CIO, IAU 2006/2000A (units: [rad]). */
-  double xcip, ycip;
-  dso::xycip06a(tt, xcip, ycip, fargs);
-  const double s = dso::s06(tt, xcip, ycip);
+Eigen::Quaterniond dso::c2i06a_bz(const dso::MjdEpoch &tt,
+                                  const dso::EopRecord &eops) noexcept {
+  double fargs[14];
+  double Xcip, Ycip;
+
+  /* compute (X,Y) CIP and fundamental arguments */
+  dso::xycip06a(tt, Xcip, Ycip, fargs);
+
+  /* use fundamental arguments to compute s */
+  const double s = dso::s06(tt, Xcip, Ycip, fargs);
+
+  /* apply CIP corrections */
+  Xcip += dso::sec2rad(eops.dX());
+  Ycip += dso::sec2rad(eops.dY());
 
   /* Earth rotation Angle [rad] */
   const double era = dso::era00(tt.tt2ut1(eops.dut()));
@@ -59,6 +66,6 @@ Eigen::Quaterniond dso::itrs2gcrs_quaternion(const dso::MjdEpoch &tt,
   /* TIO locator s' [rad] */
   const double sp = dso::sp00(tt);
 
-  return dso::detail::gcrs2itrs_quaternion(era, s, sp, xcip, ycip, eops.xp(),
+  return dso::detail::gcrs2itrs_quaternion(era, s, sp, Xcip, Ycip, eops.xp(),
                                            eops.yp());
 }
