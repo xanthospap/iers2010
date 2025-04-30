@@ -60,7 +60,7 @@ dso::detail::c2i(double era, double s, double sp, double Xcip, double Ycip,
     Eigen::Matrix<double, 3, 3> S = Eigen::Matrix<double, 3, 3>::Zero();
     S(0, 1) = 1e0;
     S(1, 0) = -1e0;
-    const auto M = dso::earth_rotation_rate(lod) * S *
+    const Eigen::Matrix<double,3,3> M = dso::earth_rotation_rate(lod) * S *
                    dso::detail::R(era).toRotationMatrix();
     printf("M=\n");
     for (int i = 0; i < 3; i++) {

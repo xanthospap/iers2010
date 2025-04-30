@@ -1,7 +1,7 @@
 #include "earth_rotation.hpp"
+#include "geodesy/units.hpp"
 #include "sofa.h"
 #include <array>
-#include <cstdio>
 #include <random>
 #ifdef NDEBUG
 #undef NDEBUG
@@ -5817,8 +5817,8 @@ int main() {
 
     /* store EOP data to an instance */
     dso::EopRecord eops;
-    eops.xp() = xp;
-    eops.yp() = yp;
+    eops.xp() = dso::rad2sec(xp);
+    eops.yp() = dso::rad2sec(yp);
     eops.dut() = dut;
     eops.dX() = 0e0;
     eops.dY() = 0e0;
