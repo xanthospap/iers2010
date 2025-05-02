@@ -234,3 +234,25 @@ target_include_directories(tcheck_c2i_direct PRIVATE ${CMAKE_SOURCE_DIR}/costg-b
 #  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_S3_06.asc
 #  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_T3_06.asc
 #)
+
+add_executable(tcheck_eops tcheck_eops.cpp ${CMAKE_SOURCE_DIR}/costg-benchmark/bin/costg_utils.cpp)
+target_link_libraries(tcheck_eops PRIVATE iers ${PROJECT_DEPENDENCIES}  ${SOFAC})
+target_include_directories(tcheck_eops PRIVATE ${CMAKE_SOURCE_DIR}/costg-benchmark/bin)
+#add_test(NAME costg_09 COMMAND tcheck_09aod1b_atmosphericTides_icrf 
+#  ${COSTG_DATA_DIR}/satellite/00orbit_itrf.txt 
+#  ${COSTG_DATA_DIR}/satellite/01earthRotation_rotaryMatrix.txt
+#  ${CMAKE_SOURCE_DIR}/data/test_data/eopc04.1962-now
+#  ${COSTG_DATA_DIR}/satellite/09aod1b_atmosphericTides_icrf.txt
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_K1_06.asc
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_M2_06.asc
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_P1_06.asc
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_R3_06.asc
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_S2_06.asc
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_T2_06.asc
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_L2_06.asc
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_N2_06.asc
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_R2_06.asc
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_S1_06.asc
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_S3_06.asc
+#  ${COSTG_DATA_DIR}/models/AOD1B_tides/AOD1B_ATM_T3_06.asc
+#)

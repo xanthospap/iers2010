@@ -1,6 +1,6 @@
 #include "earth_rotation.hpp"
-#include "sofa.h"
 #include "geodesy/units.hpp"
+#include "sofa.h"
 #include <array>
 #include <cstdio>
 #include <random>
@@ -5825,8 +5825,7 @@ int main() {
     eops.dY() = 0e0;
 
     /* get the equivelant rotation quaternion (this library) */
-    const auto Rthis = 
-        dso::c2i06a(mjd, eops);
+    const auto Rthis = dso::c2i06a(mjd, eops);
 
     /* vector to rotate; case A */
     {
@@ -5843,8 +5842,8 @@ int main() {
       /* rotated vector via rotation matrix (this lib) */
       Eigen::Vector3d r2 = Rthis * r;
 
-      //printf("%+.9f %+.9f %+.9f [SOFA]\n", r1(0), r1(1), r1(2));
-      //printf("%+.9f %+.9f %+.9f       \n", r2(0), r2(1), r2(2));
+      // printf("%+.9f %+.9f %+.9f [SOFA]\n", r1(0), r1(1), r1(2));
+      // printf("%+.9f %+.9f %+.9f       \n", r2(0), r2(1), r2(2));
 
       /* compare rotated vectors via SOFA and this lib */
       assert(std::abs(r1(0) - r2(0)) < PTOLERANCE);

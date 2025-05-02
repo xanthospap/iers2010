@@ -107,43 +107,19 @@ int main(int argc, char *argv[]) {
     }
 
     /* get the rotation matrix, i.e. [TRS] = q * [CRS] */
-    Eigen::Quaterniond q = dso::c2i06a(tt, eopr, dRdt);
+    Eigen::Quaterniond q = dso::c2i06a(tt, eopr);
 
-    // Eigen::Matrix<double, 3, 3> Rs;
-    //{
-    //   const double jd1_tt = tt.imjd() + dso::MJD0_JD;
-    //   const double jd2_tt = tt.fractional_days().days();
-    //   const auto ut = tt.tt2ut1(eopr.dut());
-    //   const double jd1_ut = ut.imjd() + dso::MJD0_JD;
-    //   const double jd2_ut = ut.fractional_days().days();
-    //   Rs = sofa(jd1_tt, jd2_tt, jd1_ut, jd2_ut, dso::sec2rad(eopr.xp()),
-    //             dso::sec2rad(eopr.yp()));
-    // }
+    Eigen::Vector3d cp = cin.xyz;
+    Eigen::Vector3d cv = cin.vxyz;
+    Eigen::Vector3d ca = cin.axyz;
 
     /* transform position */
-    const Eigen::Vector3d mtpos = q * cin.xyz;
+    const Eigen::Vector3d mtpos = q * cp;
     /* transform velocity */
-    const auto mtvel = q * cin.vxyz + dRdt * cin.xyz;
+    const Eigen::Vector3d mtvel =
+        (q * cv) + (dso::earth_rotation_axis(eopr.lod()).cross(q * cp));
     /* transform acceleration */
-    const auto mtacc = q * cin.axyz;
-
-    {
-      printf("R=\n");
-      const auto Q = q.toRotationMatrix();
-      for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-          printf("+%.3e ", Q(i, j));
-        }
-        printf("\n");
-      }
-      printf("dRdt=\n");
-      for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-          printf("+%.3e ", dRdt(i, j));
-        }
-        printf("\n");
-      }
-    }
+    const Eigen::Vector3d mtacc = q * ca;
 
     /* get COSTG result */
     if (tin->epoch != cin.epoch) {

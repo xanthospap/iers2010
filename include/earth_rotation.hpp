@@ -24,8 +24,6 @@ namespace dso {
  * [TRS] = q * [CRS]
  */
 Eigen::Quaterniond c2i06a(const MjdEpoch &tt, const EopRecord &eop) noexcept;
-Eigen::Quaterniond c2i06a(const MjdEpoch &tt, const EopRecord &eop,
-                          Eigen::Matrix<double, 3, 3> &dRdt) noexcept;
 
 namespace detail {
 
@@ -69,6 +67,18 @@ inline auto W(double xp, double yp, double sp) noexcept {
           AngleAxisd(-sp, Vector3d::UnitZ()));
 }
 
+inline void xycip2spherical(double Xcip, double Ycip, double &d,
+                            double &e) noexcept {
+  /* Obtain the spherical angles E and d:
+   * x = sin d cos E,
+   * y = sin d sin E,
+   * [Z = cos d]
+   */
+  const double r2 = Xcip * Xcip + Ycip * Ycip;
+  e = (r2 > 0e0) ? std::atan2(Ycip, Xcip) : 0e0;
+  d = std::atan(std::sqrt(r2 / (1e0 - r2)));
+}
+
 /** @brief Transformation matrix for the celestial motion of the CIP ( relating
  * CIRS and GCRS).
  *
@@ -98,15 +108,9 @@ inline auto W(double xp, double yp, double sp) noexcept {
  * @return Rotation quaternion q, to transform between CIRS and GCRS, in the
  * sense: r[CIRS] = q * r[GCRS]
  */
-inline auto C(double x, double y, double s) noexcept {
-  /* Obtain the spherical angles E and d:
-   * x = sin d cos E,
-   * y = sin d sin E,
-   * [Z = cos d]
-   */
-  const double r2 = x * x + y * y;
-  const double e = (r2 > 0e0) ? std::atan2(y, x) : 0e0;
-  const double d = std::atan(std::sqrt(r2 / (1e0 - r2)));
+inline auto C(double Xcip, double Ycip, double s) noexcept {
+  double d, e;
+  xycip2spherical(Xcip, Ycip, d, e);
 
   /* C = [R3 (−E) x R2 (−d) x R3 (E) x R3 (s)]^T */
   return (Eigen::AngleAxisd(e + s, Eigen::Vector3d::UnitZ()) *
@@ -134,9 +138,9 @@ inline auto C(double x, double y, double s) noexcept {
  * @return Rotation quaternion q, to transform between CIRS and GCRS, in the
  * sense: r[CIRS] = q * r[GCRS]
  */
-inline auto C_qimpl(double x, double y, double s) noexcept {
-  const double r2 = x * x + y * y;
-  const double d = std::atan(std::sqrt(r2 / (1e0 - r2)));
+inline auto C_qimpl(double Xcip, double Ycip, double s) noexcept {
+  double d, e;
+  xycip2spherical(Xcip, Ycip, d, e);
   const double z = std::cos(d);
   const double cs2 = std::cos(s / 2e0);
   const double ss2 = std::sin(s / 2e0);
@@ -146,8 +150,8 @@ inline auto C_qimpl(double x, double y, double s) noexcept {
    */
   const double f = 1e0 / std::sqrt(2e0 * (1e0 + z));
   const double w = f * (cs2 * (1e0 + z));
-  const double a = f * (cs2 * y - ss2 * (-x));
-  const double b = f * (cs2 * (-x) + ss2 * y);
+  const double a = f * (cs2 * Ycip - ss2 * (-Xcip));
+  const double b = f * (cs2 * (-Xcip) + ss2 * Ycip);
   const double c = f * (ss2 * (1e0 + z));
   return Eigen::Quaterniond(w, a, b, c);
 }
@@ -221,7 +225,7 @@ inline auto R(double era) noexcept {
  * https://doi.org/10.1007/s00190-023-01735-z
  */
 Eigen::Quaterniond gcrs2itrs_quaternion(double era, double s, double sp,
-                                        double Xcip, double Ycip, double xp,
+                                        double d, double e, double xp,
                                         double yp) noexcept;
 
 /** @brief Compute the GCRS to ITRS transformation (rotation) quaternion:
@@ -249,15 +253,13 @@ Eigen::Quaterniond gcrs2itrs_quaternion(double era, double s, double sp,
  *                 Celestial Intermediate Pole (CIP) in the ITRS, [rad]
  * @return Rotation quaternion q, such that: [TRS] = q * [CRS]
  */
-Eigen::Quaterniond c2i(double era, double s, double sp, double Xcip,
-                       double Ycip, double xp, double yp) noexcept;
-
-/** @brief Compute the GCRS to ITRS transformation (rotation) matrix
- * and its derivative
- */
-Eigen::Quaterniond c2i(double era, double s, double sp, double Xcip,
-                       double Ycip, double xp, double yp, double lod,
-                       Eigen::Matrix<double, 3, 3> &dRdt) noexcept;
+inline Eigen::Quaterniond c2i(double era, double s, double sp, double d,
+                              double e, double xp, double yp) noexcept {
+  using namespace Eigen;
+  return AngleAxisd(yp, Vector3d::UnitX()) * AngleAxisd(xp, Vector3d::UnitY()) *
+         AngleAxisd(-sp - era + e + s, Vector3d::UnitZ()) *
+         AngleAxisd(-d, Vector3d::UnitY()) * AngleAxisd(-e, Vector3d::UnitZ());
+}
 
 } /* namespace detail */
 
@@ -292,6 +294,10 @@ Eigen::Quaterniond c2i06a_bz(const MjdEpoch &tt, const EopRecord &eops
  */
 inline double earth_rotation_rate(double dlod) noexcept {
   return ::iers2010::OmegaEarth * (1e0 - dlod / 86400e0);
+}
+
+inline Eigen::Vector3d earth_rotation_axis(double lod) noexcept {
+  return Eigen::Vector3d(0e0, 0e0, earth_rotation_rate(lod));
 }
 
 /** @brief Return the polar motion transformation W, in the sense: TIRS-to-ITRS.
