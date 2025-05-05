@@ -28,14 +28,14 @@ parser.add_argument(
     dest="costg_fn",
     default=None,
     required=False,
-    help="The COSTG-benchmark reference data folder to check against.",
+    help="Reference (interpolated) EOP values from costg benchmark (01earthRotation_interpolatedEOP.txt).",
 )
 
 parser.add_argument(
     "--diffs",
     action="store_true",
     dest="plot_diffs",
-    help="The COSTG-benchmark reference data folder to check against.",
+    help="Plot diffs instead of results.",
 )
 
 
@@ -103,16 +103,38 @@ if __name__ == "__main__":
     ylabel_clk = r"[$^{\prime\prime}$]"
     with PdfPages("foo.pdf") as pdf:
         fig, ax = plt.subplots(2, 1, sharex=True)
-        ax[0].scatter([x[0] for x in rdata], [arcseconds(x[1]) for x in rdata], s=dps)
-        ax[0].scatter([x[0] for x in ldata], [arcseconds(x[1]) for x in ldata], s=dps)
-        ax[1].scatter([x[0] for x in rdata], [arcseconds(x[2]) for x in rdata], s=dps)
-        ax[1].scatter([x[0] for x in ldata], [arcseconds(x[2]) for x in ldata], s=dps)
+        ax[0].scatter(
+            [x[0] for x in rdata],
+            [arcseconds(x[1]) for x in rdata],
+            s=dps,
+            label="_nolegend_",
+        )
+        ax[0].scatter(
+            [x[0] for x in ldata],
+            [arcseconds(x[1]) for x in ldata],
+            s=dps,
+            label="_nolegend_",
+        )
+        ax[1].scatter(
+            [x[0] for x in rdata],
+            [arcseconds(x[2]) for x in rdata],
+            s=dps,
+            label="reference",
+        )
+        ax[1].scatter(
+            [x[0] for x in ldata],
+            [arcseconds(x[2]) for x in ldata],
+            s=dps,
+            label="library",
+        )
         ax[0].grid(True)
         ax[1].grid(True)
         ax[0].set_ylabel(ylabel_ang)
         ax[1].set_ylabel(ylabel_ang)
         ax[1].set_xlabel("Epoch")
         ax[0].set_title(r"$x_p$, $y_p$")
+        if not args.plot_diffs:
+            ax[1].legend()
         fig.subplots_adjust(hspace=0)
         plt.tight_layout()
         pdf.savefig(fig)

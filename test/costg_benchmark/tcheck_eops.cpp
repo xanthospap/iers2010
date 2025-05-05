@@ -15,10 +15,8 @@
 constexpr const double STOLERANCE = 1e-1; /* in [arc "] */
 constexpr const double TTOLERANCE = 1e+1; /* in ["] */
 
-int main(int argc, char *argv[])
-{
-  if (argc != 3)
-  {
+int main(int argc, char *argv[]) {
+  if (argc != 3) {
     fprintf(stderr,
             "Usage: %s [01earthRotation_interpolatedEOP.txt] "
             "[eopc04_14_IAU2000.62-now]\n",
@@ -37,8 +35,7 @@ int main(int argc, char *argv[])
           argv[2],
           ceops[0].epoch.add_seconds(dso::FractionalSeconds(-2 * 86400e0)),
           ceops[0].epoch.add_seconds(dso::FractionalSeconds(2 * 86400e0)),
-          eops))
-  {
+          eops)) {
     fprintf(stderr, "ERROR Failed parsing eop file\n");
     return 1;
   }
@@ -51,12 +48,10 @@ int main(int argc, char *argv[])
   double fargs[14];
   double Xcip, Ycip;
 
-  for (const auto &ceop : ceops)
-  {
+  for (const auto &ceop : ceops) {
     /* interpolate EOPS */
     if (dso::EopSeries::out_of_bounds(
-            eops.interpolate(ceop.epoch.gps2tt(), meop)))
-    {
+            eops.interpolate(ceop.epoch.gps2tt(), meop))) {
       fprintf(stderr, "Failed to interpolate: Epoch is out of bounds!\n");
       return 1;
     }
@@ -97,6 +92,18 @@ int main(int argc, char *argv[])
       meop.lod() += dlod * 1e-6;
     }
 
+    /* de-regularize */
+    {
+      double ut1_cor;
+      double lod_cor;
+      double omega_cor;
+
+      dso::deop_zonal_tide(fargs, ut1_cor, lod_cor, omega_cor);
+      /* apply (note: microseconds to seconds) */
+      meop.dut() += (ut1_cor * 1e-6);
+      meop.lod() += (lod_cor * 1e-6);
+    }
+
     /* check 1. diffs in ["] "*/
     // printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
     // ceop.epoch.imjd(), ceop.epoch.seconds().seconds(),
@@ -110,17 +117,16 @@ int main(int argc, char *argv[])
     /* check 2. this lib interpolation results, same units as COSTG benchmark */
     printf("%d %.9f %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
            ceop.epoch.imjd(), ceop.epoch.seconds().seconds(),
-           dso::sec2rad(meop.xp()),
-           dso::sec2rad(meop.yp()),
-           sp00(ceop.epoch.gps2tt()),
-           meop.dut(), meop.lod(),
-           Xcip, Ycip,
-           s);
+           dso::sec2rad(meop.xp()), dso::sec2rad(meop.yp()),
+           sp00(ceop.epoch.gps2tt()), meop.dut(), meop.lod(), Xcip, Ycip, s);
 
     /* assert diffs */
-    assert(dso::rad2sec(std::abs(ceop.xp - dso::sec2rad(meop.xp()))) < STOLERANCE);
-    assert(dso::rad2sec(std::abs(ceop.yp - dso::sec2rad(meop.yp()))) < STOLERANCE);
-    assert(dso::rad2sec(std::abs(ceop.sp - sp00(ceop.epoch.gps2tt()))) < STOLERANCE);
+    assert(dso::rad2sec(std::abs(ceop.xp - dso::sec2rad(meop.xp()))) <
+           STOLERANCE);
+    assert(dso::rad2sec(std::abs(ceop.yp - dso::sec2rad(meop.yp()))) <
+           STOLERANCE);
+    assert(dso::rad2sec(std::abs(ceop.sp - sp00(ceop.epoch.gps2tt()))) <
+           STOLERANCE);
     assert(std::abs(ceop.dUT1 - meop.dut()) < TTOLERANCE);
     assert(std::abs(ceop.LOD - meop.lod()) < TTOLERANCE);
     assert(dso::rad2sec(std::abs(ceop.X - Xcip)) < STOLERANCE);

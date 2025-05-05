@@ -11,7 +11,7 @@ struct Table5Data {
   double xps, xpc, yps, ypc, ut1s, ut1c, lods, lodc;
 };
 
-[[maybe_unused]]constexpr const std::array<Table5Data, 36> Table5 = {
+[[maybe_unused]] constexpr const std::array<Table5Data, 36> Table5 = {
     {{{+0, +0, +0, +0, +1, +0},
       +0.00000e+00,
       +6.00000e-01,
@@ -337,8 +337,8 @@ struct Table5Data {
       -4.00000e-01,
       -8.00000e-01}}}; /* Table5 */
 
-constexpr const std::array<Table5Data, 36-15> Table5NoLongTides = {{
-     {{+1, -2, +0, +1, -1, +0},
+constexpr const std::array<Table5Data, 36 - 15> Table5NoLongTides = {
+    {{{+1, -2, +0, +1, -1, +0},
       -4.00000e-01,
       +3.00000e-01,
       -3.00000e-01,
