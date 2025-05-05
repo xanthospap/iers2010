@@ -2,7 +2,6 @@ target_sources(iers
   PRIVATE
     ${CMAKE_SOURCE_DIR}/src/lib/eop/approx_dut1.cpp
     ${CMAKE_SOURCE_DIR}/src/lib/eop/choose_eop_c04_series.cpp
-    ${CMAKE_SOURCE_DIR}/src/lib/eop/eop_corrections.cpp
     ${CMAKE_SOURCE_DIR}/src/lib/eop/lagrange_interpolation.cpp
     ${CMAKE_SOURCE_DIR}/src/lib/eop/libration.cpp
     ${CMAKE_SOURCE_DIR}/src/lib/eop/ocean_tide_variation.cpp
