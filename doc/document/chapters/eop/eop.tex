@@ -25,14 +25,15 @@ More information can be found on the \gls{iers} website, e.g.
 and \href{https://hpiers.obspm.fr/iers/eop/eopc04/eopc04.txt}{eopc04.txt}. 
 Relevant files can be retrieved from the \gls{iers} website, e.g. 
 \href{https://hpiers.obspm.fr/iers/eop/eopc04/eopc04.1962-now}{eopc04.1962-now} for 
-\emph{EOP 20C04} and \href{https://hpiers.obspm.fr/iers/eop/eopc04_14/eopc04_IAU2000.62-now}{eopc04\_IAU2000.62-now}.
+\emph{EOP 20C04} and \href{https://hpiers.obspm.fr/iers/eop/eopc04_14/eopc04_IAU2000.62-now}{eopc04\_IAU2000.62-now} 
+for \emph{EOP 14C04}.
 
 \subsection{Parsing \gls{eop} Products and Data Structures}\label{ssec:parsing-eop-products-and-data-structures}
 
 At the time of writting, we can parse both \emph{EOP 14C04} and \emph{EOP 20C04} data files. 
 The relevant function call, will automatically choose the right format and parse 
 \gls{eop} values for a given time range. The values will be stored in a so-called 
-\texttt{EopSeries} data structure for further use.
+\index{EopSeries}\texttt{EopSeries} data structure for further use.
 
 \begin{warning}
 \gls{iers}-published \gls{eop} product files contain tabulated values, ``time-stamped'' 

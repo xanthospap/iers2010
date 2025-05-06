@@ -27,6 +27,7 @@
 \usepackage[intoc]{nomencl} %% for nomenclature
 \usepackage{etoolbox} %% for grouping nomenclature, see nomgroup
 \usepackage[acronym, toc, nonumberlist]{glossaries} %% for acronyms
+\usepackage{makeidx}
 \usepackage{geometry} %% somewhat wider text to allow code
 \usepackage[per-mode=symbol]{siunitx}    %% SI Units
 \usepackage{amsmath,amssymb,amsthm,bm} %% for math ...
@@ -174,6 +175,9 @@
 \newacronym{aod1b}{AOD1B}{Atmosphere and Ocean De-Aliasing Level-1B}
 \newacronym{itsg}{ITSG}{Institute of Theoretical Geodesy and Satellite Geodesy, TU Graz}
 
+% Index
+\makeindex
+
 %
 % Nomenclature
 % ---------------------------------------------------------------------------
@@ -251,6 +255,8 @@
 \printnomenclature
 \clearpage
 \printglossary[type=\acronymtype,title=Acronyms]
+\clearpage
+\printindex
 \clearpage
 \pagenumbering{arabic}
 

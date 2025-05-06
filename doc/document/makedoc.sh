@@ -12,5 +12,6 @@ biber $fname
 pdflatex $fname
 makeglossaries $fname
 makeindex ${fname}.nlo -s nomencl.ist -o ${fname}.nls
+makeindex ${fname}.idx
 pdflatex $fname
 pdflatex $fname
