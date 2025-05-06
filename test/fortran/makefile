@@ -6,11 +6,11 @@ FFLAGS = -O2
 LIBNAME = libtesti10for.a
 
 # Source files for the library (adjust names here)
-LIB_SRC = ORTHO_EOP.F CNMTX.F
+LIB_SRC = ORTHO_EOP.F CNMTX.F FUNDARG.F RG_ZONT2.F
 LIB_OBJ = $(LIB_SRC:.F=.o)
 
 # Main program source files (adjust names here)
-BIN_SRC = TEST_ORTHO_EOP.F
+BIN_SRC = TEST_ORTHO_EOP.F TEST_RG_ZONT2.F
 BIN_OBJ = $(BIN_SRC:.F=.o)
 BINARIES = $(BIN_SRC:.F=)
 

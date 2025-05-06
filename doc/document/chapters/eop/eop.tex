@@ -42,23 +42,27 @@ in \gls{utc}. When parsing the files however, the time scale is changed to \gls{
 
 \subsection{\gls{eop} Interpolation}\label{ssec:eop-interpolation}
 
-\begin{figure}
-  \centering
-  \input{handling_eop.tex}
-  \caption{Extracting and interpolating \gls{eop} information from \gls{iers} 
-    \texttt{C04} data files. Red nodes are seamless implicit activities, while 
-    green ones are optional, performed on user request.}
-  \label{fig:handling-eop}
-\end{figure}
+%\begin{figure}
+%  \centering
+%  \input{handling_eop.tex}
+%  \caption{Extracting and interpolating \gls{eop} information from \gls{iers} 
+%    \texttt{C04} data files. Red nodes are seamless implicit activities, while 
+%    green ones are optional, performed on user request.}
+%  \label{fig:handling-eop}
+%\end{figure}
 
 Once parsed and stored, one can interpolate \gls{eop} values to any given epoch. 
 Interpolation is perfomed using polynomial interpolation, via the \emph{Lagrange} method. 
 There are a couple of things going on, to effectively and accuratelly interpolate 
 series of \glspl{eop}:
 \begin{itemize}
-  \item \gls{eop} data should be stored in an \texttt{EopSeries} data structure. 
-    Any given instance of this data structure, holds \gls{eop} time series for 
-    a given date range.
+  \item \gls{eop} data should be stored in an \index{EopSeries}\texttt{EopSeries} 
+    data structure. Any given instance of this data structure, holds \gls{eop} 
+    time series for a given date range. Note that in this structure, angular values 
+    (e.g. $(x_p, y_p)$, $(X_{cip}, Y_{cip})$) are stored in $arcseconds$ and 
+    time (derived) values (e.g. $\Delta UT, LOD$) are stored in $seconds$. Time is 
+    stored in the \gls{tt} time-scale.
+
   \item High frequency effects (i.e. with periods less than one day) have to be 
     taken into consideration when interpolating. These are described in Chapters 
     5.5.1 and 5.5.3 of \cite{iers2010} and \cite{Bradley2016}. These include:
@@ -73,12 +77,12 @@ series of \glspl{eop}:
         software to model these effects, for polar motion and $UT1$, $LOD$ respectively. 
         %in this library, these computations are performed by the \lstinline{dso::utlod_libration}.
 
-      \item Variations $\Delta _{ocean tides}$ in polar motion $(x_p, y_p)$, $UT1$ and $LOD$; 
+      \item Variations $\Delta _{ocean tides}$ in polar motion $(x_p, y_p)$, $UT1$ and $LOD$ (see \cite{iers2010}, Ch. 8.2); 
         these are tidal variations in Earth orientation, including diurnal and semi-diurnal 
         variations in pole coordinates caused by ocean tides. \gls{iers} publishes the 
         \href{https://iers-conventions.obspm.fr/content/chapter8/software/ORTHO_EOP.F}{ORTHO\_EOP.F} 
-        software to model these effects for polar motion.
-        %Within this library, the computations are performed by the function \lstinline{dso::xypole_oceantide}.
+        software to model these effects for polar motion. Within this library, the same 
+        corrections can be evaluated by \index{deop_ocean_tide}\texttt{dso::deop_ocean_tide}.
         
       \item \gls{iers} also publishes the software 
        \href{https://hpiers.obspm.fr/iers/models/interp.f}{interp.f} 
@@ -106,6 +110,16 @@ series of \glspl{eop}:
       \cite{Bradley2016}.
 
 \end{itemize}
+
+\begin{tabular}{}
+ % \multicolumn{4}{|c|}{Country List} \\
+ ORTHO_EOP & \\
+ $x_p$, $y_p$, $\Delta UT1$ & \\
+ \hline
+ $(x_p, y_p) < 5\mu arcsec$, $\Delta UT1 < 1\mu seconds$ & \\
+ \texttt{dso::deop_ocean_tide} & \\
+ \hline
+\end{tabular}
 
 \autoref{lst:eop-interpolation} presents source code to parse, store and 
 interpolate \glspl{eop} following the above.

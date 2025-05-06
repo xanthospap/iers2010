@@ -1,3 +1,4 @@
+
 #include "eop.hpp"
 #include "fundarg.hpp"
 #include "iau.hpp"
@@ -7,14 +8,15 @@
 #undef NDEBUG
 #endif
 
-constexpr const double MAX_MICROARCSEC = 5e+0;
-constexpr const double MAX_MICROSEC = 1e+0;
+constexpr const double MAX_MICROSEC = 1e4;
+constexpr const double MAX_MICROSECDAY = 1e+3;
+constexpr const double MAX_RADSEC = 1e+0;
 
 int main(int argc, char *argv[]) {
   if (argc != 2) {
     fprintf(stderr, "USAGE: %s [DATA]\n", argv[0]);
     fprintf(stderr, "Note that reference results for this program can be "
-                    "produced via the test/fortran/TEST_ORTHO_EOP program\n");
+                    "produced via the test/fortran/TEST_RG_ZONT2 program\n");
     return 1;
   }
 
@@ -24,7 +26,8 @@ int main(int argc, char *argv[]) {
     return 2;
   }
 
-  /* read input values (epoch, dxp, dyp, dut1) in microarcsec and microsec */
+  /* read input values (epoch, dut1, dlod, domega) in sec, sec/day and rad/sec
+   */
   char line[512];
   double d[4];
   int error = 0;
@@ -48,29 +51,31 @@ int main(int argc, char *argv[]) {
     /* Setup date in mjd */
     int mjd = (int)d[0];
     double fdaysec = (d[0] - mjd) * 86400e0;
-    // dso::MjdEpoch t(mjd, dso::FractionalSeconds(fdaysec));
-    dso::TwoPartDateUTC t(mjd, dso::FractionalSeconds(fdaysec));
+    dso::MjdEpoch t(mjd, dso::FractionalSeconds(fdaysec));
 
     /* compute fundamental arguments */
     double fargs[6];
-    dso::fundarg(t.utc2tt(), fargs);
-
-    /* compute approximate gmst */
-    const double gmst = dso::gmst82(t.utc2tt().tt2ut1(0e0));
+    dso::fundarg(t, fargs);
 
     /* compute ocean tide variations on EOPs */
-    double xp, yp, dut1, dlod;
-    dso::deop_ocean_tide(fargs, gmst, xp, yp, dut1, dlod);
+    double dut1, dlod, domega;
+    dso::deop_zonal_tide(fargs, dut1, dlod, domega);
 
-    // printf("%20.5f %+.6f %+.6f %+.6f [microarcsec and microsec]\n", fdaysec,
-    //        std::abs(d[1] - xp), std::abs(d[2] - yp), std::abs(d[3] - dut1));
+    /* scale */
+    dut1 *= 1e+6;
+    dlod *= 1e+6;
+    domega *= 1e+14;
+
+    printf("%20.5f (%.3f %.3f) (%.3f %.3f) %+.6f %+.6f %+.15f\n", fdaysec, d[1],
+           dut1, d[2], dlod, std::abs(d[1] - dut1), std::abs(d[2] - dlod),
+           std::abs(d[3] - domega));
 
     /* note that results are in microarcsec/microsec */
-    if (!(std::abs(d[1] - xp) < MAX_MICROARCSEC))
+    if (!(std::abs(d[1] - dut1) * 1e6 < MAX_MICROSEC))
       std::exit(EXIT_FAILURE);
-    if (!(std::abs(d[2] - yp) < MAX_MICROARCSEC))
+    if (!(std::abs(d[2] - dlod) * 1e6 < MAX_MICROSECDAY))
       std::exit(EXIT_FAILURE);
-    if (!(std::abs(d[3] - dut1) < MAX_MICROSEC))
+    if (!(std::abs(d[3] - domega) < MAX_RADSEC))
       std::exit(EXIT_FAILURE);
   }
 

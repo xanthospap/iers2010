@@ -59,8 +59,8 @@ inline secularPole secular_pole(const MjdEpoch &tt) noexcept {
  * (https://hpiers.obspm.fr/iers/models/interp.f) and the subroutines
  * PMUT1_OCEANS therein.
  *
- * @param[in] fargs The fundamental arguments
- * @param[in] gmst  The GMST
+ * @param[in] fargs The fundamental arguments, (l, l', f, d, omega) in [rad]
+ * @param[in] gmst  The GMST [rad]
  * @param[out] xp   Δx due to ocean tide in x-pole [microarcseconds]
  * @param[out] yp   Δy due to ocean tide in y-pole [microarcseconds]
  * @param[out] dut1 Variation due to libration in UT1 [microseconds]
@@ -100,15 +100,15 @@ int deop_ocean_tide(const double *const fargs, double gmst, double &dxp,
 int deop_libration(const double *const fargs, double gmst, double &dxp,
                    double &dyp, double &dut1, double &dlod) noexcept;
 
-/** Compute periodic variations in UT1, LOD and Earth's rotation rate (ω),
- * due to tidal deformation (zonal tides) of the polar moment of inertia.
+/** @brief Compute periodic variations in UT1, LOD and Earth's rotation rate
+ * (ω), due to tidal deformation (zonal tides) of the polar moment of inertia.
  *
  * The model is described in IERS 2010, Ch. 8.1 "Effect of the tidal
  * deformation (zonal tides) on Earth’s rotation".
  * See also the RG_ZONT2 routine by IERS
  * (https://iers-conventions.obspm.fr/content/chapter8/software/RG_ZONT2.F).
  *
- * @param[in] fargs The fundamental arguments
+ * @param[in] fargs The fundamental arguments, (l, l', f, d, omega) in [rad]
  * @param[out] dut1 Variation in UT1 [microseconds]
  * @param[out] dlod Variation in LOD [microseconds/day]
  * @param[out] domega Variation in Earth's rotational speed (ω) in
