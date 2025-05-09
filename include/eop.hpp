@@ -70,7 +70,7 @@ inline secularPole secular_pole(const MjdEpoch &tt) noexcept {
 int deop_ocean_tide(const double *const fargs, double gmst, double &dxp,
                     double &dyp, double &dut1, double &dlod) noexcept;
 
-/** Compute libration effect, i.e. the diurnal lunisolar effect on polar
+/** @brief Compute libration effect, i.e. the diurnal lunisolar effect on polar
  *  motion, UT1 and LOD.
  *
  * The libration effect is described in IERS 2010, Ch. 5.5.1.3 "Variations
@@ -89,8 +89,8 @@ int deop_ocean_tide(const double *const fargs, double gmst, double &dxp,
  * (https://hpiers.obspm.fr/iers/models/interp.f) and the subroutines PM_GRAVI
  * therein.
  *
- * @param[in] fargs The fundamental arguments
- * @param[in] gmst  The GMST
+ * @param[in] fargs The fundamental arguments, (l, l', f, d, omega) in [rad]
+ * @param[in] gmst  The GMST [rad]
  * @param[out] xp   Δx due to ocean tide in x-pole [microarcseconds]
  * @param[out] yp   Δy due to ocean tide in y-pole [microarcseconds]
  * @param[out] dut1 Variation due to libration in UT1 [microseconds]

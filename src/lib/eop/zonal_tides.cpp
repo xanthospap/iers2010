@@ -7,6 +7,9 @@
 namespace {
 struct Table81Entry {
   int lm, lpm, fm, dm, om;
+  /* Units as in Table 8.1 of IERS 2010, i.e. 10^−4 [s] for UT1, 10^−5 [s] 
+   * for ∆, and 10^−14 [rad/s] for ω.
+   */
   double per, dut1B, dut1C, dlodB, dlodC, domegaB, domegaC;
   double ksi(const double *const f) const {
     return dso::anp<dso::detail::AngleUnit::Radians>(
@@ -100,8 +103,8 @@ int dso::deop_zonal_tide(const double *const fargs, double &dut1, double &dlod,
   }
 
   /* scale (see units of Table 8.1) */
-  dut1 *= 1e-2;
-  dlod *= 1e-1;
+  dut1 *= 1e+2;
+  dlod *= 1e+1;
 
   return 0;
 }

@@ -12,3 +12,9 @@ target_link_libraries(test_rgzont2 PRIVATE iers ${PROJECT_DEPENDENCIES})
 add_test(NAME test_rgzont2 COMMAND test_rgzont2 
   ${CMAKE_CURRENT_SOURCE_DIR}/data/rg_zont2.dat
 )
+
+add_executable(test_libration eop_libration.cpp)
+target_link_libraries(test_libration PRIVATE iers ${PROJECT_DEPENDENCIES})
+add_test(NAME test_libration COMMAND test_libration 
+  ${CMAKE_CURRENT_SOURCE_DIR}/data/libration.dat
+)

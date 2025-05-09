@@ -1,4 +1,3 @@
-
 #include "eop.hpp"
 #include "fundarg.hpp"
 #include "iau.hpp"
@@ -8,9 +7,9 @@
 #undef NDEBUG
 #endif
 
-constexpr const double MAX_MICROSEC = 1e4;
-constexpr const double MAX_MICROSECDAY = 1e+3;
-constexpr const double MAX_RADSEC = 1e+0;
+constexpr const double MAX_SEC = 1e-6;
+constexpr const double MAX_SECDAY = 1e-7;
+constexpr const double MAX_RADSEC = 1e-14;
 
 int main(int argc, char *argv[]) {
   if (argc != 2) {
@@ -61,19 +60,19 @@ int main(int argc, char *argv[]) {
     double dut1, dlod, domega;
     dso::deop_zonal_tide(fargs, dut1, dlod, domega);
 
-    /* scale */
-    dut1 *= 1e+6;
-    dlod *= 1e+6;
-    domega *= 1e+14;
+    /* scale to sec, sec/day, rad/sec */
+    dut1 *= 1e-6;
+    dlod *= 1e-6;
+    domega *= 1e-14;
 
-    printf("%20.5f (%.3f %.3f) (%.3f %.3f) %+.6f %+.6f %+.15f\n", fdaysec, d[1],
-           dut1, d[2], dlod, std::abs(d[1] - dut1), std::abs(d[2] - dlod),
-           std::abs(d[3] - domega));
+    //printf("%20.5f (%.3f %.3f) (%.3f %.3f) %+.6f %+.6f %+.15f\n", fdaysec, d[1],
+    //       dut1, d[2], dlod, std::abs(d[1] - dut1), std::abs(d[2] - dlod),
+    //       std::abs(d[3] - domega));
 
     /* note that results are in microarcsec/microsec */
-    if (!(std::abs(d[1] - dut1) * 1e6 < MAX_MICROSEC))
+    if (!(std::abs(d[1] - dut1) * 1e6 < MAX_SEC))
       std::exit(EXIT_FAILURE);
-    if (!(std::abs(d[2] - dlod) * 1e6 < MAX_MICROSECDAY))
+    if (!(std::abs(d[2] - dlod) * 1e6 < MAX_SECDAY))
       std::exit(EXIT_FAILURE);
     if (!(std::abs(d[3] - domega) < MAX_RADSEC))
       std::exit(EXIT_FAILURE);

@@ -75,14 +75,15 @@ series of \glspl{eop}:
         \href{https://iers-conventions.obspm.fr/content/chapter5/software/PMSDNUT2.F}{PMSDNUT2} 
         and \href{https://iers-conventions.obspm.fr/content/chapter5/software/UTLIBR.F}{UTLIBR.F} 
         software to model these effects, for polar motion and $UT1$, $LOD$ respectively. 
-        %in this library, these computations are performed by the \lstinline{dso::utlod_libration}.
+        Within this library, the same corrections (for all $(x_p, y_p)$, $UT1$ and $LOD$) 
+        can be evaluated by \index{deop\_libration}\texttt{dso::deop\_libration}.
 
       \item Variations $\Delta _{ocean tides}$ in polar motion $(x_p, y_p)$, $UT1$ and $LOD$ (see \cite{iers2010}, Ch. 8.2); 
         these are tidal variations in Earth orientation, including diurnal and semi-diurnal 
         variations in pole coordinates caused by ocean tides. \gls{iers} publishes the 
         \href{https://iers-conventions.obspm.fr/content/chapter8/software/ORTHO_EOP.F}{ORTHO\_EOP.F} 
         software to model these effects for polar motion. Within this library, the same 
-        corrections can be evaluated by \index{deop_ocean_tide}\texttt{dso::deop_ocean_tide}.
+        corrections can be evaluated by \index{deop\_ocean\_tide}\texttt{dso::deop\_ocean\_tide}.
         
       \item \gls{iers} also publishes the software 
        \href{https://hpiers.obspm.fr/iers/models/interp.f}{interp.f} 
@@ -97,7 +98,7 @@ series of \glspl{eop}:
       $\Delta UT1$, $LOD$ and Earth's rotation velocity $\omega$ and are 
       described in Chapter 8.1 of \cite{iers2010}. To model these effects, \gls{iers} 
       publishes the \href{https://iers-conventions.obspm.fr/content/chapter8/software/RG_ZONT2.F}{RG\_ZONT2.F} 
-      software.
+      software. Within this library, the same corrections can be evaluated by \index{deop\_zonal\_tide}\texttt{dso::deop\_zonal\_tide}.
 
     \item $\Delta UT1$ has the largest impact on the \gls{itrs}/\gls{gcrs} frame 
       transformation compared to all other \glspl{eop} (\cite{Bradley2016}).  The 
@@ -111,15 +112,16 @@ series of \glspl{eop}:
 
 \end{itemize}
 
-\begin{tabular}{}
- % \multicolumn{4}{|c|}{Country List} \\
- ORTHO_EOP & \\
- $x_p$, $y_p$, $\Delta UT1$ & \\
+\small{
+\begin{tabular}{p{1cm} p{3.3cm} p{3.3cm} p{3.3cm} p{3.3cm}}
+ IERS & ORTHO\_EOP & RG\_ZONT2 & PMSDNUT2 & UTLIBR \\
+ EOPs & $x_p$, $y_p$, $\Delta UT1$ & $\Delta UT1$, $LOD$, $\omega$ & $x_p$, $y_p$ & $\Delta UT1$, $LOD$ \\
  \hline
- $(x_p, y_p) < 5\mu arcsec$, $\Delta UT1 < 1\mu seconds$ & \\
- \texttt{dso::deop_ocean_tide} & \\
+ Diffs& $(x_p, y_p) < 5\mu arcsec$,\newline $\Delta UT1 < 1\mu seconds$ & $\Delta UT1 < 1\mu sec$,\newline $LOD<.1\mu sec / day$,\newline $\omega < 10^{-14} rad/sec$ & $(x_p, y_p) < 1\mu arcsec$ & $\Delta UT1 < .1\mu sec$,\newline $LOD<1\mu sec / day$\\
+ Name& \texttt{deop\_ocean\_tide} & \texttt{deop\_zonal\_tide} & \multicolumn{2}{c}{\texttt{deop\_libration}} \\
  \hline
 \end{tabular}
+}
 
 \autoref{lst:eop-interpolation} presents source code to parse, store and 
 interpolate \glspl{eop} following the above.

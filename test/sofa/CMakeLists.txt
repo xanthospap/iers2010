@@ -19,6 +19,7 @@ set(TEST_SOURCES
   xys06fargs.cpp
   c2i06a_v1.cpp
   c2i06a_v2.cpp
+  c2i06a_v3.cpp
 )
 
 # Process each source file and create an executable
