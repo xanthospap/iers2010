@@ -1,0 +1,64 @@
+\section{Reference Frames}
+
+\subsection{Celestial To Terrestrial Transformation}
+\label{sec:itrs-to-gcrs}
+
+\begin{figure}[ht]
+\centering
+  \begin{tikzpicture}[
+      node distance=1.5cm and 2cm,
+      every node/.style={font=\sffamily},
+      rect/.style={rectangle, minimum width=2.5cm, minimum height=1cm, text centered, draw=none, fill=#1!30}
+  ]
+
+  % Nodes
+  \node[rect=white] (gcrf) {\gls{gcrf}};
+  \node[rect=white, below right=of gcrf] (eopsq) {$(X,Y)_{CIP} + (\delta X,\delta Y)$};
+  \node[rect=red, below=of gcrf] (q) {$\boldsymbol{Q}^T(t) = f(X, Y, s)$};
+  \coordinate (mid_gcrf_q) at ($ (gcrf)!0.5!(q) + (-2cm,0) $);
+  \node[rectangle, draw=green, fill=none] (cmpq) at (mid_gcrf_q) {$s, (X,Y)_{CIP}$};
+
+  \node[rect=white, below right=of q] (eopsr) {$UT1 = UTC + \Delta UT1$};
+  \node[rect=orange, below=of q] (r) {$\boldsymbol{R}^T(t) = R_3(\theta_{ERA})$};
+  \coordinate (mid_q_r) at ($ (q)!0.5!(r) + (-2cm,0) $);
+  \node[rectangle, draw=green, fill=none] (cmpr) at (mid_q_r) {$\theta _{ERA}$};
+
+  \node[rect=purple, below=of r] (w) {$\boldsymbol{W}^T(t) = R_1(-y_p) R_2(-x_p) R_3(s')$};
+  \coordinate (mid_r_w) at ($ (r)!0.5!(w) + (-3cm,0) $);
+  \node[rectangle, draw=green, fill=none] (cmpw) at (mid_r_w) {$s', (\delta x,\delta y)_{ocean}, (\delta x,\delta y)_{libration}$};
+
+  \node[rect=white, below=of w] (itrf) {\gls{itrf}};
+  \coordinate (mid_w_itrf) at ($ (w)!0.5!(itrf) + (+4cm,0) $);
+  \node[rect=white] (eopsw) at (mid_w_itrf) {$(x_p, y_p)_{IERS} + (\delta x,\delta y)_{ocean} + (\delta x,\delta y)_{libration}$};
+
+  % Arrows
+  \draw[->, thick] (gcrf) -- (q);
+  \draw[->, thick, red] (eopsq) -- (q);
+  \draw[->, thick] (q) -- node[right]{\gls{cirs}} (r);
+  \draw[->, thick, red] (eopsr) -- (r);
+  \draw[->, thick] (r) -- node[right]{\gls{tirs}} (w);
+  \draw[->, thick, red] (eopsw) |- (w);
+  \draw[->, thick] (w) -- (itrf);
+
+\end{tikzpicture}
+\caption{Transformation flowchart from \gls{gcrf} to \gls{itrf}. On the left, inside the green boxes, are the computed quantities needed for each step.}
+\label{fig:gcrf_to_itrf}
+\end{figure}
+
+\small{
+\begin{tabular}{p{1cm} p{3.3cm} p{3.3cm} p{3.3cm} p{3.3cm}}
+ Transformation & \gls{tirs}-to-\gls{itrs} & \multicolumn{3}{c}{\gls{gcrs}-to-\gls{cirs}} \\
+ \hline
+ SOFA & iauPom00 & \multicolumn{3}{c}{iauPn} \\
+ Lib\footnote{Functions are in the \texttt{dso::detail} namespace.} 
+  & \index{tirs2i}{\texttt{tirs2i}} 
+  & \index{C}{\texttt{C}} 
+  & \index{C\_impl}{\texttt{C\_qimpl}} 
+  & \index{C\_rxyimpl}{\texttt{C\_rxyimpl}} \\
+ SOFA-Lib [m] & $10^{-7}$ at \gls{meo}\newline $10^{-8}$ at \gls{leo} 
+              & $10^{-7}$ at \gls{meo}\newline $10^{-8}$ at \gls{leo} 
+              & $10^{-7}$ at \gls{meo}\newline $10^{-8}$ at \gls{leo}
+              & $10^{-8}$ at \gls{meo}\newline $10^{-8}$ at \gls{leo} \\
+ \hline
+\end{tabular}
+}

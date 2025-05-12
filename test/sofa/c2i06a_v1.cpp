@@ -5792,7 +5792,7 @@ Eigen::Matrix<double, 3, 3> sofa(double tt1, double tt2, double ut1, double ut2,
 
 int main() {
   std::uniform_real_distribution<double> unifp(-M_PI / 6, M_PI / 6);
-  std::uniform_real_distribution<double> unifs(-60e0, 60e0);
+  std::uniform_real_distribution<double> unifs(4e0, 90e0);
   std::default_random_engine re;
 
   for (const auto &orb : orbv) {
@@ -5803,7 +5803,7 @@ int main() {
     const double jd1_tt = mjd.imjd() + dso::MJD0_JD;
     const double jd2_tt = mjd.fractional_days().days();
 
-    /* UT1 to assign gmst computation +- 1min from TT epoch */
+    /* UT1 */
     const double dut = unifs(re);
     const auto mjd_ut1 = mjd.tt2ut1(dut);
     const double dj1_ut1 = mjd_ut1.imjd() + dso::MJD0_JD;

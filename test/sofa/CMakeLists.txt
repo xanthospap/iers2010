@@ -7,8 +7,10 @@ macro(add_internal_includes target_name)
 endmacro()
 
 set(TEST_SOURCES
-  rot_pom.cpp
-  rot_pn.cpp
+  rot_pom_leo.cpp
+  rot_pom_meo.cpp
+  rot_pn_leo.cpp
+  rot_pn_meo.cpp
   era00.cpp
   fundarg.cpp
   s06.cpp

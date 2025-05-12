@@ -5791,7 +5791,7 @@ Eigen::Matrix<double, 3, 3> sofa(double tt1, double tt2, double ut1, double ut2,
 
 int main() {
   std::uniform_real_distribution<double> unifp(-M_PI / 6, M_PI / 6);
-  std::uniform_real_distribution<double> unifs(-60e0, 60e0);
+  std::uniform_real_distribution<double> unifs(-60e0, 90e0);
   std::default_random_engine re;
 
   for (const auto &orb : orbv) {
