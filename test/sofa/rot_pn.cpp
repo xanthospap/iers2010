@@ -5774,51 +5774,6 @@ constexpr const std::array<TestOrbit, 2880> orbv = {{
      -1.537736218408579705e+06, 6.576829252585867420e+06},
 }};
 
-/* SOFA GCRS to ITRS */
-// Eigen::Matrix<double, 3, 3> sofa(double jd1, double jd2, double xp, double
-// yp,
-//                                  double &s, double &sp, double &era, double
-//                                  &X, double &Y) {
-//
-//   /* CIP and CIO, IAU 2006/2000A. */
-//   double x, y;
-//   iauXy06(jd1, jd2, &x, &y);
-//   s = iauS06(jd1, jd2, x, y);
-//
-//   /* GCRS to CIRS matrix. */
-//   double rc2i[3][3];
-//   iauC2ixys(x, y, s, rc2i);
-//
-//   /* Earth rotation Angle. */
-//   era = iauEra00(jd1, jd2);
-//
-//   /* Form celestial-terrestrial matrix (no polar motion yet). */
-//   double rc2ti[3][3];
-//   iauCr(rc2i, rc2ti);
-//   iauRz(era, rc2ti);
-//
-//   /* Polar motion matrix (TIRS->ITRS, IERS 2003). */
-//   double rpom[3][3];
-//   sp = iauSp00(jd1, jd2);
-//   iauPom00(xp, yp, sp, rpom);
-//
-//   /* Form celestial-terrestrial matrix (including polar motion). */
-//   double rc2it[3][3];
-//   iauRxr(rpom, rc2ti, rc2it);
-//
-//   /* copy to output matrix */
-//   Eigen::Matrix<double, 3, 3> R;
-//   for (int i = 0; i < 3; i++) {
-//     for (int j = 0; j < 3; j++) {
-//       R(i, j) = rc2it[i][j];
-//     }
-//   }
-//
-//   X = x;
-//   Y = y;
-//   return R;
-// }
-
 /* SOFA  bias-precesion-nutation matrix */
 Eigen::Matrix<double, 3, 3> sofa(double jd1, double jd2, double &x, double &y,
                                  double &s) {

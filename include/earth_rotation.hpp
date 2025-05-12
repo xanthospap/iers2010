@@ -1,4 +1,5 @@
 /** @file
+ *
  * Class and functions to implement an easy-to-use API to describe Earth
  * rotation and the ties between ITRS and GCRS frames.
  */
@@ -19,53 +20,66 @@ namespace dso {
  *
  * @param[in] tt Epoch of request, in TT scale.
  * @param[in] eop An EopRecord instance, which will be used to extract: pole
- * motion, i.e. xp, yp, corrections to CIP, i.e. dX and dY and Delta UT1.
+ *            motion, i.e. xp, yp, corrections to CIP, i.e. dX and dY and 
+ *            Delta UT1.
  * @return The rotation quaternion to transform a vector in the sense:
- * [TRS] = q * [CRS]
+ *         [TRS] = q * [CRS]
  */
 Eigen::Quaterniond c2i06a(const MjdEpoch& tt, const EopRecord& eop) noexcept;
 
 namespace detail {
 
-  /** @brief Polar motion matrix W = [R3(-s') R2(xp) R1(yp)]^T
-   *
-   * The matrix operates in the sense: [ITRS] = W * r[TIRS]
-   *
-   * It is the transpose of the matrix described in Ch. 5.4.1 of the IERS 2010
-   * standards.
-   *
-   * Polar motion rotation matrix is computed by the formula:
-   *  W = [R3(-s') R2(xp) R1(yp)]^T
-   * xp and yp being the “polar coordinates” of the Celestial Intermediate Pole
-   * (CIP) in the ITRS and s′ being a quantity, named “TIO locator”, which
-   * provides the position of the TIO on the equator of the CIP corresponding to
-   * the kinematical deﬁnition of the “non-rotating” origin (NRO) in the ITRS when
-   * the CIP is moving with respect to the ITRS due to polar motion.
-   *
-   * @warning This matrix is the inverse/transpose of the matrix described in
-   * Ch. 5.4.1 of the IERS 2010 standards.
-   *
-   * @param[in] xp Polar coordinate x in [rad]
-   * @param[in] yp Polar coordinate y in [rad]
-   * @param[in] sp TIO locator (s') in [rad]
-   * @return A quaternion holding equivalent of the W rotation matrix.
-   *
-   * To transform the quaternion to a "conventional" 3x3 rotation matrix, you
-   * can just call the .toRotationMatrix() method. I.e.
-   * @code
-   * Eigen::Matrix<double,3,3> R = detail::W(xp, yp, sp).to_rotation_matrix();
-   * @endcode
-   *
-   * To get the inverse transformation (quaternion), i.e. ITRS-to-TIRS, you
-   * can just call the .conjugate() method on the returned quaternion.
-   */
-  inline auto W(double xp, double yp, double sp) noexcept
-  {
-    /* W = [R3(-s') R2(xp) R1(yp)]^T */
-    using namespace Eigen;
-    return (AngleAxisd(yp, Vector3d::UnitX()) * AngleAxisd(xp, Vector3d::UnitY()) * AngleAxisd(-sp, Vector3d::UnitZ()));
-  }
+  ///** @brief Polar motion matrix W = [R3(-s') R2(xp) R1(yp)]^T
+  // *
+  // * The matrix operates in the sense: [ITRS] = W * r[TIRS]
+  // *
+  // * It is the transpose of the matrix described in Ch. 5.4.1 of the IERS 2010
+  // * standards.
+  // *
+  // * Polar motion rotation matrix is computed by the formula:
+  // *  W = [R3(-s') R2(xp) R1(yp)]^T
+  // * xp and yp being the “polar coordinates” of the Celestial Intermediate Pole
+  // * (CIP) in the ITRS and s′ being a quantity, named “TIO locator”, which
+  // * provides the position of the TIO on the equator of the CIP corresponding to
+  // * the kinematical deﬁnition of the “non-rotating” origin (NRO) in the ITRS when
+  // * the CIP is moving with respect to the ITRS due to polar motion.
+  // *
+  // * @warning This matrix is the inverse/transpose of the matrix described in
+  // * Ch. 5.4.1 of the IERS 2010 standards.
+  // *
+  // * @param[in] xp Polar coordinate x in [rad]
+  // * @param[in] yp Polar coordinate y in [rad]
+  // * @param[in] sp TIO locator (s') in [rad]
+  // * @return A quaternion holding equivalent of the W rotation matrix.
+  // *
+  // * To transform the quaternion to a "conventional" 3x3 rotation matrix, you
+  // * can just call the .toRotationMatrix() method. I.e.
+  // * @code
+  // * Eigen::Matrix<double,3,3> R = detail::W(xp, yp, sp).to_rotation_matrix();
+  // * @endcode
+  // *
+  // * To get the inverse transformation (quaternion), i.e. ITRS-to-TIRS, you
+  // * can just call the .conjugate() method on the returned quaternion.
+  // */
+  //inline auto W(double xp, double yp, double sp) noexcept
+  //{
+  //  /* W = [R3(-s') R2(xp) R1(yp)]^T */
+  //  using namespace Eigen;
+  //  return (AngleAxisd(yp, Vector3d::UnitX()) * AngleAxisd(xp, Vector3d::UnitY()) * AngleAxisd(-sp, Vector3d::UnitZ()));
+  //}
 
+  /** @brief Trnaform (X,Y)_{CIP} coordinates to spherical angles E and d.
+   *
+   * X_cip, Y_cip are the the x, y coordinates of the CIP unit vector in the 
+   * GCRS. E and d are the coordinates of the CIP in the GCRS such that:
+   * X = sin d cos E, Y = sin d sin E, Z = cos d
+   * See IERS 2010, Eq. 5.7
+   *
+   * @param[in] xcip X coordinate of CIP, in [rad]
+   * @param[in] ycip Y coordinate of CIP, in [rad]
+   * @param[out] e Spherical angle E in [rad]
+   * @param[out] d Spherical angle d in [rad]
+   */
   inline void xycip2spherical(double Xcip, double Ycip, double& d,
       double& e) noexcept
   {
@@ -262,6 +276,31 @@ namespace detail {
     return AngleAxisd(yp, Vector3d::UnitX()) * AngleAxisd(xp, Vector3d::UnitY()) * AngleAxisd(-sp - era + e + s, Vector3d::UnitZ()) * AngleAxisd(-d, Vector3d::UnitY()) * AngleAxisd(-e, Vector3d::UnitZ());
   }
 
+  /** @brief Compute the GCRS to TIRS transformation (rotation) quaternion:
+   * [TIRS] = q * [CRS]
+   *
+   * This implementation is based on the IERS 2010 document, following the
+   * so called 'CIO-based' transformation.
+   *
+   * @param[in] era  Earth Rotation Angle [rad]
+   * @param[in] s    The CIO locator [rad]
+   * @param[in] sp   The TIO locator [rad] (i.e. s')
+   * @param[in] Xcip X-component of the CIP in the GCRS, [rad]. For precise
+   *                 applications, this value should be the one computed by the
+   *                 IAU 2006/2000A model and corrected via the IERS published
+   *                 values (i.e. EOP data). That is:
+   *                 Xcip = X(IAU 2006/2000A) + δX
+   * @param[in] Ycip Y-component of the CIP in the GCRS, [rad]. For precise
+   *                 applications, this value should be the one computed by the
+   *                 IAU 2006/2000A model and corrected via the IERS published
+   *                 values (i.e. EOP data). That is:
+   *                 Ycip = Y(IAU 2006/2000A) + δY
+   * @param[in] xp   X-coordinate of the "polar coordinates", i.e. of the
+   *                 Celestial Intermediate Pole (CIP) in the ITRS, [rad]
+   * @param[in] yp   Y-coordinate of the "polar coordinates", i.e. of the
+   *                 Celestial Intermediate Pole (CIP) in the ITRS, [rad]
+   * @return Rotation quaternion q, such that: [TRS] = q * [CRS]
+   */
   inline Eigen::Quaterniond c2tirs(double era, double s, double d,
       double e) noexcept
   {
@@ -316,58 +355,58 @@ inline Eigen::Vector3d earth_rotation_axis(double lod) noexcept
   return Eigen::Vector3d(0e0, 0e0, earth_rotation_rate(lod));
 }
 
-/** @brief Return the polar motion transformation W, in the sense: TIRS-to-ITRS.
- *
- * This matrix works as follows:
- * r_ITRS = W * r_TIRS
- *
- * @warning This matrix is the inverse/transpose of the matrix described in
- * Ch. 5.4.1 of the IERS 2010 standards.
- *
- * @see detail::W
- *
- * @param[in] xp Polar coordinate x in [rad]
- * @param[in] yp Polar coordinate y in [rad]
- * @param[in] sp TIO locator (s') in [rad]
- */
-inline auto polar_motion_matrix(double xp, double yp, double sp) noexcept
-{
-  return detail::W(xp, yp, sp);
-}
+///** @brief Return the polar motion transformation W, in the sense: TIRS-to-ITRS.
+// *
+// * This matrix works as follows:
+// * r_ITRS = W * r_TIRS
+// *
+// * @warning This matrix is the inverse/transpose of the matrix described in
+// * Ch. 5.4.1 of the IERS 2010 standards.
+// *
+// * @see detail::W
+// *
+// * @param[in] xp Polar coordinate x in [rad]
+// * @param[in] yp Polar coordinate y in [rad]
+// * @param[in] sp TIO locator (s') in [rad]
+// */
+//inline auto polar_motion_matrix(double xp, double yp, double sp) noexcept
+//{
+//  return detail::W(xp, yp, sp);
+//}
 
-/** @brief Transformation matrix for the celestial motion of the CIP ( relating
- * CIRS and GCRS).
- *
- * The expression for the transformation matrix for the celestial motion of the
- * CIP is taken from the IERS 2010 standards, as:
- * Q = R3 (−E) x R2 (−d) x R3 (E) x R3 (s)
- * Note that this function will return the rotation transformation C = Q^T
- *
- * The transformation arises from the motion of the CIP in the GCRS (i.e.
- * relating CIRS and GCRS), E and d being such that the coordinates of the CIP
- * in the GCRS are: x = sind cosE, y = sind sinE, z = cosd. x and y here, denote
- * the coordinates of the CIP in the GCRS to be used for the parameters (see
- * IERS 2010, Sec. 5.5.4) They can be computed from the function dso::xycip06a.
- *
- * s is a quantity, named “CIO locator”, which provides the position of the CIO
- * on the equator of the CIP corresponding to the kinematical deﬁnition of the
- * NRO in the GCRS when the CIP is moving with respect to the GCRS, between the
- * reference epoch and the date t due to precession and nutation. It can be
- * computed via a call to dso::s06
- *
- * The resulting quaternion gives the GCRS-to-CIRS transformation, i.e.
- * r[CIRS] = C * r[GCRS]
- *
- * @param[in] x X-CIP coordinate [rad]
- * @param[in] y Y-CIP coordinate [rad]
- * @param[in] s CIO in [rad]
- * @return Rotation quaternion q, to transform between CIRS and GCRS, in the
- * sense: r[CIRS] = q * r[GCRS]
- */
-inline auto gcrs_to_cirs(double x, double y, double s) noexcept
-{
-  return detail::C(x, y, s);
-}
+///** @brief Transformation matrix for the celestial motion of the CIP ( relating
+// * CIRS and GCRS).
+// *
+// * The expression for the transformation matrix for the celestial motion of the
+// * CIP is taken from the IERS 2010 standards, as:
+// * Q = R3 (−E) x R2 (−d) x R3 (E) x R3 (s)
+// * Note that this function will return the rotation transformation C = Q^T
+// *
+// * The transformation arises from the motion of the CIP in the GCRS (i.e.
+// * relating CIRS and GCRS), E and d being such that the coordinates of the CIP
+// * in the GCRS are: x = sind cosE, y = sind sinE, z = cosd. x and y here, denote
+// * the coordinates of the CIP in the GCRS to be used for the parameters (see
+// * IERS 2010, Sec. 5.5.4) They can be computed from the function dso::xycip06a.
+// *
+// * s is a quantity, named “CIO locator”, which provides the position of the CIO
+// * on the equator of the CIP corresponding to the kinematical deﬁnition of the
+// * NRO in the GCRS when the CIP is moving with respect to the GCRS, between the
+// * reference epoch and the date t due to precession and nutation. It can be
+// * computed via a call to dso::s06
+// *
+// * The resulting quaternion gives the GCRS-to-CIRS transformation, i.e.
+// * r[CIRS] = C * r[GCRS]
+// *
+// * @param[in] x X-CIP coordinate [rad]
+// * @param[in] y Y-CIP coordinate [rad]
+// * @param[in] s CIO in [rad]
+// * @return Rotation quaternion q, to transform between CIRS and GCRS, in the
+// * sense: r[CIRS] = q * r[GCRS]
+// */
+//inline auto gcrs_to_cirs(double x, double y, double s) noexcept
+//{
+//  return detail::C(x, y, s);
+//}
 
 } /* namespace dso */
 
