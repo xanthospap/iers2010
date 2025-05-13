@@ -26,6 +26,7 @@ namespace dso {
  *         [TRS] = q * [CRS]
  */
 Eigen::Quaterniond c2i06a(const MjdEpoch &tt, const EopRecord &eop) noexcept;
+Eigen::Quaterniond c2i06a(const MjdEpoch &tt, const EopRecord &eop, Eigen::Matrix3d &dRdt) noexcept;
 
 namespace detail {
 

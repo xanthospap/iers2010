@@ -3,6 +3,32 @@
 \subsection{Celestial To Terrestrial Transformation}
 \label{sec:itrs-to-gcrs}
 
+To transform a a state vector from \gls{gcrf} to \gls{itrf}, we can use: 
+\begin{align}\label{eq:vallado2201}
+  \vec{r}_{ITRF} &= \bm{W}^T \bm{R}^T \bm{Q}^T \vec{r}_{GCRF} \\
+  \vec{v}_{ITRF} &= \bm{W}^T \left[ \bm{R}^T \bm{Q}^T \vec{v}_{GCRF} - \vec{\omega _{\Earth}} \times \vec{r}_{TIRS} \right]
+\end{align}
+
+while the inverse transformation can be achieved via:
+\begin{align}\label{eq:vallado2202}
+  \vec{r}_{GCRF} &= \bm{Q} \bm{R} \bm{W} \vec{r}_{ITRF} \\
+  \vec{v}_{GCRF} &= \bm{Q} \bm{R} \left[ \bm{W} \vec{v}_{ITRF} + \vec{\omega _{\Earth}} \times \vec{r}_{TIRS} \right]
+\end{align}
+
+The same result (for the velocity components) can be obtained using:
+\begin{align}
+  \vec{v}_{ITRF} &= \bm{W}^T \dot{\bm{R}}^T \bm{Q}^T \vec{r}_{GCRF} + \bm{W}^T \bm{R}^T \bm{Q}^T \vec{v}_{GCRF} \\
+  \vec{v}_{GCRF} &= \bm{Q} \dot{\bm{R}} \bm{W} \vec{r}_{ITRF} + \bm{Q} \bm{R} \bm{W} \vec{v}_{ITRF}
+\end{align}
+
+where 
+\begin{equation}\label{eq:vallado2221}
+\dot{\bm{R}} = \begin{pmatrix} -\omega_{\Earth} \sin \theta _{ERA} & -\omega_{\Earth} \cos \theta _{ERA} & 0 \\
+  \omega_{\Earth} \cos \theta _{ERA} & -\omega_{\Earth} \sin \theta _{ERA} & 0 \\
+  0 & 0 & 0 \end{pmatrix}
+\end{equation}
+
+
 \begin{figure}[ht]
 \centering
   \begin{tikzpicture}[
@@ -45,20 +71,32 @@
 \label{fig:gcrf_to_itrf}
 \end{figure}
 
-\small{
-\begin{tabular}{p{1cm} p{3.3cm} p{3.3cm} p{3.3cm} p{3.3cm}}
- Transformation & \gls{tirs}-to-\gls{itrs} & \multicolumn{3}{c}{\gls{gcrs}-to-\gls{cirs}} \\
+\scriptsize{
+\begin{tabular}{p{1cm} | p{1.7cm} | p{1.7cm} p{1.7cm} p{1.7cm} | p{1.7cm} p{1.7cm} p{1.7cm}}
+ Transformation 
+  & \gls{tirs}-to-\gls{itrs} 
+  & \multicolumn{3}{c}{\gls{gcrs}-to-\gls{cirs}} 
+  & \multicolumn{3}{c}{\gls{gcrs}-to-\gls{itrs}} \\
  \hline
- SOFA & iauPom00 & \multicolumn{3}{c}{iauPn} \\
+ SOFA 
+  & iauPom00 
+  & \multicolumn{3}{c}{iauPn} 
+  & \multicolumn{3}{c}{iauC2t06a} \\
  Lib\footnote{Functions are in the \texttt{dso::detail} namespace.} 
   & \index{tirs2i}{\texttt{tirs2i}} 
   & \index{C}{\texttt{C}} 
   & \index{C\_impl}{\texttt{C\_qimpl}} 
-  & \index{C\_rxyimpl}{\texttt{C\_rxyimpl}} \\
- SOFA-Lib [m] & $10^{-7}$ at \gls{meo}\newline $10^{-8}$ at \gls{leo} 
-              & $10^{-7}$ at \gls{meo}\newline $10^{-8}$ at \gls{leo} 
-              & $10^{-7}$ at \gls{meo}\newline $10^{-8}$ at \gls{leo}
-              & $10^{-8}$ at \gls{meo}\newline $10^{-8}$ at \gls{leo} \\
+  & \index{C\_rxyimpl}{\texttt{C\_rxyimpl}} 
+  & \index{c2i06a}{\texttt{c2i06a}} 
+  & \index{c2i06a\_bz}{\texttt{c2i06a\_bz}}
+  & \index{c2tirs}{\texttt{c2tirs}} \& \index{tirs2i}{\texttt{tirs2i}} \\
+ SOFA-Lib [m] & $10^{-7}$ \gls{meo}\newline $10^{-8}$ \gls{leo} 
+              & $10^{-7}$ \gls{meo}\newline $10^{-8}$ \gls{leo} 
+              & $10^{-7}$ \gls{meo}\newline $10^{-8}$ \gls{leo}
+              & $10^{-8}$ \gls{meo}\newline $10^{-8}$ \gls{leo} 
+              & $10^{-3}$ \gls{meo}\newline $10^{-4}$ \gls{leo} 
+              & $10^{-3}$ \gls{meo}\newline $10^{-4}$ \gls{leo}
+              & $10^{-3}$ \gls{meo}\newline $10^{-4}$ \gls{leo} \\
  \hline
 \end{tabular}
 }
