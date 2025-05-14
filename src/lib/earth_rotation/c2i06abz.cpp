@@ -1,6 +1,6 @@
 #include "earth_rotation.hpp"
-#include "iau.hpp"
 #include "geodesy/units.hpp"
+#include "iau.hpp"
 
 Eigen::Quaterniond dso::detail::gcrs2itrs_quaternion(double era, double s,
                                                      double sp, double Xcip,
@@ -67,6 +67,6 @@ Eigen::Quaterniond dso::c2i06a_bz(const dso::MjdEpoch &tt,
   /* TIO locator s' [rad] */
   const double sp = dso::sp00(tt);
 
-  return dso::detail::gcrs2itrs_quaternion(era, s, sp, Xcip, Ycip, dso::sec2rad(eops.xp()),
-                                           dso::sec2rad(eops.yp()));
+  return dso::detail::gcrs2itrs_quaternion(
+      era, s, sp, Xcip, Ycip, dso::sec2rad(eops.xp()), dso::sec2rad(eops.yp()));
 }
