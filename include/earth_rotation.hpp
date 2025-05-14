@@ -210,6 +210,17 @@ inline auto R(double era) noexcept {
   return Eigen::AngleAxisd(-era, Eigen::Vector3d::UnitZ());
 }
 
+inline auto dRdt(double era, double omega) noexcept {
+  const double os = omega * std::sin(era);
+  const double oc = omega * std::cos(era);
+  Eigen::Matrix3d dRdt = Eigen::Matrix3d::Zero();
+  dRdt(0,0) = -os;
+  dRdt(1,0) = -oc;
+  dRdt(0,1) =  oc;
+  dRdt(1,1) = -os;
+  return dRdt;
+}
+
 /** @brief Compute the quaternion to describe the GCRS to ITRS transformation.
  *
  * This implementation is based on the Bizouard and Cheng (2023) model. It
