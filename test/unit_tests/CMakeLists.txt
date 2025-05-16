@@ -133,3 +133,38 @@ find_path(OCEAN_TIDES_DIR
   NO_DEFAULT_PATH
   REQUIRED)
 add_test(NAME make_ocean_tides COMMAND test_ocean_tides_1 ${OCEAN_TIDES_DIR})
+
+##
+## Terrestrial-to-Celestial Vs Astropy
+##  
+find_file(EOPN
+  NAMES eopc0420.b2000e2023
+  PATHS ${CMAKE_SOURCE_DIR}/data/test_data
+  NO_DEFAULT_PATH
+  REQUIRED)
+
+add_executable(i2c_astropy i2c_astropy.cpp)
+target_link_libraries(i2c_astropy PRIVATE iers ${PROJECT_DEPENDENCIES})
+target_include_directories(i2c_astropy PRIVATE ${CMAKE_SOURCE_DIR}/src)
+
+## sat::swot
+find_file(SWOT
+  NAMES swot_astropy_ref
+  PATHS ${CMAKE_SOURCE_DIR}/data/test_data
+  NO_DEFAULT_PATH
+  REQUIRED)
+add_test(NAME i2c_astropy_swot COMMAND i2c_astropy ${SWOT} ${EOPN})
+## sat::cryosat-2
+find_file(CS2
+  NAMES cs2_astropy_ref
+  PATHS ${CMAKE_SOURCE_DIR}/data/test_data
+  NO_DEFAULT_PATH
+  REQUIRED)
+add_test(NAME i2c_astropy_cs2 COMMAND i2c_astropy ${CS2} ${EOPN})
+## sat::jason-3
+find_file(JA3
+  NAMES ja3_astropy_ref
+  PATHS ${CMAKE_SOURCE_DIR}/data/test_data
+  NO_DEFAULT_PATH
+  REQUIRED)
+add_test(NAME i2c_astropy_ja3 COMMAND i2c_astropy ${JA3} ${EOPN})

@@ -76,6 +76,7 @@ Eigen::Quaterniond c2i06a(const MjdEpoch &tt, const EopRecord &eop,
  */
 Eigen::Quaterniond c2i06a_bz(const MjdEpoch &tt, const EopRecord &eops) noexcept;
 
+Eigen::Vector3d c2i06a(const MjdEpoch &tt, const EopRecord &eop, Eigen::Quaterniond &qc2tirs, Eigen::Quaterniond &qtirs2i) noexcept;
 
 namespace detail {
 
