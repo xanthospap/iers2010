@@ -191,6 +191,8 @@ int dso::OceanPoleTide::stokes_coeffs(const dso::MjdEpoch &t, double xp,
                                       double yp, int max_degree, int max_order,
                                       double OmegaEarth, double G,
                                       double ge) noexcept {
+  if (max_degree < 0) max_degree = this->max_degree();
+  if (max_order  < 0) max_order = this->max_order();
 
   if ((max_degree < max_order) || (max_degree > this->max_degree()) ||
       (max_order > this->max_order())) {

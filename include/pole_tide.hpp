@@ -277,9 +277,11 @@ public:
    * @param[in] xp Pole X-coordinates at t in [arcsec]
    * @param[in] yp Pole Y-coordinates at t in [arcsec]
    * @param[in] max_degree Max degree (n) of coefficients to be computed. Note
-   *            that it should be > 0 and <= mmaxdegree
-   * @param[in] max_degree Max degree (n) of coefficients to be computed. Note
-   *            that it should be > 0 and <= mmaxdegree
+   *            that it should be > 0 and <= mmaxdegree. If a negative int is 
+   *            given, then we assume max_degree = this->max_degree()
+   * @param[in] max_order Max order (n) of coefficients to be computed. Note
+   *            that it should be > 0 and <= mmaxorder. If a negative int is 
+   *            given, then we assume max_order = this->max_order()
    * @param[in] omega Nominal mean Earth's angular velocity [rad/sec]; default
    *            value taken from IERS 2010.
    * @param[in] G Constant of gravitation in [m^3/kg/s^2]; default value taken
@@ -291,7 +293,7 @@ public:
    * degree/order specified.
    */
   int stokes_coeffs(const dso::MjdEpoch &t, double xp, double yp,
-                    int max_degree, int max_order,
+                    int max_degree=-1, int max_order=-1,
                     double OmegaEarth = ::iers2010::OmegaEarth,
                     double G = ::iers2010::G,
                     double ge = ::iers2010::ge) noexcept;
