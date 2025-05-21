@@ -3,7 +3,6 @@
 #include <cassert>
 #include <cmath>
 #include <cstdio>
-#include <fenv.h>
 
 namespace {
 /* Max size for ALF factors; if degree is more than this (-2), then it must
@@ -86,11 +85,6 @@ int sh2gradient_cunningham_impl(
     assert(false);
   }
 
-  //printf("Stokes Coefficients size: %dx%d\n", cs.max_degree(), cs.max_order());
-  //printf("Computing dimensions    : %dx%d\n", max_degree, max_order);
-  //printf("Scratch Space size     W: %dx%d M: %dx%d\n", W.rows(), W.cols(),
-  //       M.rows(), M.cols());
-  //printf("Geometry              Re: %.3f GM: %.3f\n", Re, GM);
 #ifdef DEBUG
   assert(cs.max_degree() >= cs.max_order());
   assert(max_degree <= cs.max_degree());
@@ -160,14 +154,13 @@ int sh2gradient_cunningham_impl(
       W(m, m) = F.f1(m, m) * (y * M(m - 1, m - 1) + x * W(m - 1, m - 1));
     }
 
-    // M.multiply(1e-280);
-    // W.multiply(1e-280);
+    //M.multiply(1e-280);
+    //W.multiply(1e-280);
   } /* end computing ALF factors M and W */
 
   /* acceleration and gradient in cartesian components */
   acc = Eigen::Matrix<double, 3, 1>::Zero();
   gradient = Eigen::Matrix<double, 3, 3>::Zero();
-  // [[maybe_unused]] const int minDegree = 0;
 
   /* start from smaller terms. Note that for degrees m=0,1, we are using
    * seperate loops
@@ -190,26 +183,26 @@ int sh2gradient_cunningham_impl(
         const double Cp1 = wp1 * M(n + 1, m + 1);
         const double Sp1 = wp1 * W(n + 1, m + 1);
 
-        try {
-          const double ax = cs.C(n, m) * (Cm1 - Cp1) + cs.S(n, m) * (Sm1 - Sp1);
-          const double ay =
-              cs.C(n, m) * (-Sm1 - Sp1) + cs.S(n, m) * (Cm1 + Cp1);
-          const double az = cs.C(n, m) * (-2 * Cm0) + cs.S(n, m) * (-2 * Sm0);
-          acc += Eigen::Matrix<double, 3, 1>(ax, ay, az) *
-                 std::sqrt((2e0 * n + 1e0) / (2e0 * n + 3e0));
-        } catch (std::exception &e) {
-          fprintf(stderr, "FPE caught! Computation for (n,m)=(%d,%d)\n", n, m);
-          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m),
-                  (Cm1 - Cp1), cs.S(n, m), (Sm1 - Sp1));
-          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m),
-                  (-Sm1 - Sp1), cs.S(n, m), (Cm1 + Cp1));
-          fprintf(stderr, "%.15e * %.15e + %.15e * %.15e\n", cs.C(n, m),
-                  (-2 * Cm0), cs.S(n, m), (-2 * Sm0));
-          return 0;
-        }
+        const double ax = cs.C(n, m) * (Cm1 - Cp1) + cs.S(n, m) * (Sm1 - Sp1);
+        const double ay = cs.C(n, m) * (-Sm1 - Sp1) + cs.S(n, m) * (Cm1 + Cp1);
+        const double az = cs.C(n, m) * (-2 * Cm0) + cs.S(n, m) * (-2 * Sm0);
 
-        // acc += Eigen::Matrix<double, 3, 1>(ax, ay, az) *
-        //        std::sqrt((2e0 * n + 1e0) / (2e0 * n + 3e0));
+        //// printf("\t[N=%d] %.9e %.9e %.9e %.9e %.9e %.9e\n", n, Cm1, Sm1, Cm0, Sm0, Cp1, Sp1);
+        //if (n>=4 && n<=9) {
+        //  printf("\tprior a=%.9e, %.9e, %.9e\n", acc(0), acc(1), acc(2));
+        //  // printf("\t(%d,0): %.9e %.9e, %.9e, %.9e)\n", n, cs.C(n, 0), Cp1, Sp1, Cm0);
+        //  printf("\ta(%d,%d): %.9e, %.9e, %.9e\n", n, m, ax, ay, az);
+        //}
+        //if (n==8 && m==4) {
+        //  printf("\t[%d,%d] %.9e %.9e %.9e %.9e %.9e %.9e\n", n, m, Cm1, Sm1, Cm0, Sm0, Cp1, Sp1);
+        //  printf("\tax[%d,%d] %.3e * (%.3e -%.3e) + %.3e * (%.3e -%.3e)\n", n, m, cs.C(n, m), Cm1, Cp1, cs.S(n, m), Sm1, Sp1);
+        //  printf("\tay[%d,%d] %.3e * (-%.3e -%.3e) + %.3e * (%.3e +%.3e)\n", n, m, cs.C(n, m), Sm1, Sp1, cs.S(n, m), Cm1, Cp1);
+        //  printf("\taz[%d,%d] %.3e * (-2.0 * %.3e) + %.3e * (-2.0 * %.3e)\n", n, m, cs.C(n, m), Cm0, cs.S(n, m), Sm0);
+        //}
+
+        acc += Eigen::Matrix<double, 3, 1>(ax, ay, az) *
+               std::sqrt((2e0 * n + 1e0) / (2e0 * n + 3e0));
+
       }
       {
         /* gradient */
@@ -253,6 +246,7 @@ int sh2gradient_cunningham_impl(
                     std::sqrt((2e0 * n + 1e0) / (2e0 * n + 5e0));
       }
     } /* loop over n */
+    // printf("\t>> Acceleration (n,m)>(:,%d) is (%.9f, %.9f, %.9f)\n", m, acc(0), acc(1), acc(2));
   } /* loop over m */
 
   /* order m = 1 (begin summation from smaller terms) */
@@ -323,6 +317,7 @@ int sh2gradient_cunningham_impl(
                   std::sqrt((2e0 * n + 1e0) / (2e0 * n + 5e0));
     }
   } /* loop over all n's for m=1 */
+  // printf("\t>> Acceleration (n,m)>(:,1) is (%.9f, %.9f, %.9f)\n", acc(0), acc(1), acc(2));
 
   /* order m = 0 */
   for (int n = degree; n >= 0; --n) {
@@ -340,7 +335,7 @@ int sh2gradient_cunningham_impl(
       const double ax = cs.C(n, 0) * (-2e0 * Cp1);
       const double ay = cs.C(n, 0) * (-2e0 * Sp1);
       const double az = cs.C(n, 0) * (-2e0 * Cm0);
-
+      
       acc += Eigen::Matrix<double, 3, 1>(ax, ay, az) *
              std::sqrt((2e0 * n + 1.) / (2e0 * n + 3e0));
     }
@@ -374,6 +369,7 @@ int sh2gradient_cunningham_impl(
                   std::sqrt((2e0 * n + 1e0) / (2e0 * n + 5e0));
     }
   } /* loop over all n's for m=0 */
+  // printf("\t>> Acceleration (n,m)>(*,0) is (%.9f, %.9f, %.9f)\n", acc(0), acc(1), acc(2));
 
   /* scale ... */
   gradient *= GM / (4e0 * Re * Re * Re);

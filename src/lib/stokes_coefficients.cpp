@@ -23,16 +23,20 @@ dso::StokesCoeffs &dso::StokesCoeffs::operator+=(const dso::StokesCoeffs &sc) {
 
   for (int m = 0; m <= sc.max_order(); m++) {
     const double *colCnm2 = sc.Cnm().column(m);
-    double *colCnm = this->Cnm().column(m);
-    for (int n = m; n <= sc.max_degree(); n++) {
+    double *__restrict__ colCnm = this->Cnm().column(m);
+    const int cinr = sc.max_degree() - m;
+    for (int n = 0; n <= cinr; n++) {
+    // for (int n = m; n <= sc.max_degree(); n++) {
       colCnm[n] += colCnm2[n];
     }
   }
 
   for (int m = 0; m <= sc.max_order(); m++) {
     const double *colSnm2 = sc.Snm().column(m);
-    double *colSnm = this->Snm().column(m);
-    for (int n = m; n <= sc.max_degree(); n++) {
+    double *__restrict__ colSnm = this->Snm().column(m);
+    const int cinr = sc.max_degree() - m;
+    for (int n = 0; n <= cinr; n++) {
+    // for (int n = m; n <= sc.max_degree(); n++) {
       colSnm[n] += colSnm2[n];
     }
   }

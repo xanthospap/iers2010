@@ -323,7 +323,7 @@ public:
 
   /** set all elements of the matrix equal to some value */
   void fill_with(double val) noexcept {
-    std::fill(m_data, m_data + m_storage.num_elements(), val);
+    std::fill(m_data, m_data + _capacity/*m_storage.num_elements()*/, val);
   }
 
   /** multiply all elements of matrix with given value */
