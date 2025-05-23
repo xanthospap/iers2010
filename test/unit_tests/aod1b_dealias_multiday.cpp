@@ -38,7 +38,6 @@ int main(int argc, char *argv[]) {
     double advanced = 0;
     while (t < maxt) {
       if (dap->coefficients_at(t, s)) return 100;
-      t >= dap->
       // printf("got dealiasing for %s\n",dso::to_char<dso::YMDFormat::YYYYMMDD, dso::HMSFormat::HHMMSSF, dso::nanoseconds>(t, buf));
       double nsec = unif(re);
       if (advanced>3600.) {
