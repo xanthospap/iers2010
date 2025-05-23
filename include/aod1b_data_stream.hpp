@@ -378,11 +378,11 @@ public:
       }
     }
     /* linear interpolation */
+    const auto t1 = mhdrvec[index].mepoch;
+    const auto t2 = mhdrvec[index + 1].mepoch;
 #ifdef DEBUG
     assert(t1<= t && t2>t);
 #endif
-    const auto t1 = mhdrvec[index].mepoch;
-    const auto t2 = mhdrvec[index + 1].mepoch;
     const double t2ti =
         t2.diff<DateTimeDifferenceType::FractionalDays>(t).days();
     const double t2t1 =
