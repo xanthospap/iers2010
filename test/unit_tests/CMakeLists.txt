@@ -123,6 +123,13 @@ find_file(AOD1B
   NO_DEFAULT_PATH
   REQUIRED)
 add_test(NAME aod1b_01 COMMAND test_aod1bin_collect_coeffs_1 ${AOD1B})
+##
+## Tests with AOD1B non-tidal products, for multi-day parsing
+##
+add_executable(test_aod1bin_collect_coeffs_2 aod1b_dealias_multiday.cpp)
+target_link_libraries(test_aod1bin_collect_coeffs_2 PRIVATE iers ${PROJECT_DEPENDENCIES})
+target_include_directories(test_aod1bin_collect_coeffs_2 PRIVATE ${CMAKE_SOURCE_DIR}/src)
+add_test(NAME aod1b_02 COMMAND test_aod1bin_collect_coeffs_2 ${AOD1B} ${CMAKE_SOURCE_DIR}/data/test_data)
 
 ##
 ## Tests with ocean loading models

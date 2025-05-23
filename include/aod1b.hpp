@@ -189,7 +189,7 @@ private:
    *
    * @param[in] fin An Aod1b input stream, conviniently placed at the start of 
    *                a data block (i.e. just after the data block header).
-   * @param[in] max_degree Mac degree of (Stokes) coefficients that the 
+   * @param[in] max_degree Max degree of (Stokes) coefficients that the 
    *                function will read and store at the (passed in) cs 
    *                instance. Inclusive.
    * @param[in] max_order Max order of (Stokes) coefficients that the 

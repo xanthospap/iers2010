@@ -9,8 +9,10 @@
 
 #include "aod1b.hpp"
 #include "datetime/datetime_write.hpp"
-#include <datetime/date_integral_types.hpp>
 #include <filesystem>
+#ifdef DEBUG
+#include <cassert>
+#endif
 
 namespace dso {
 
@@ -108,6 +110,9 @@ private:
     if (t >= mhdrvec[1].mepoch && t < mhdrvec[2].mepoch) {
       return 1;
     }
+    
+    /* temp buffer */
+    char buf[64];
 
     /* shit, we don;t have the bounding coeffs!
      * (a) First, read in one more header/block, and see if we are there yet.
@@ -136,7 +141,6 @@ private:
           error += mit.advance();
         }
         if (error) {
-          char buf[64];
           fprintf(stderr,
                   "[ERROR] Failed collecting coeffs for epoch %s (TT) from "
                   "AOD1B file %s; at [1] (traceback: %s)\n",
@@ -146,7 +150,15 @@ private:
           return -2;
         }
         /* read next block so that we have the bounding interval */
-        error = mit.collect(mcsvec[1]);
+        if (mit.collect(mcsvec[1])) {
+          fprintf(stderr,
+                  "[ERROR] Failed collecting coeffs for epoch %s (TT) from "
+                  "AOD1B file %s; at [1A] (traceback: %s)\n",
+                  to_char<YMDFormat::YYYYMMDD, HMSFormat::HHMMSSF, nanoseconds>(
+                      t, buf),
+                  mit.aod1b().fn().c_str(), __func__);
+              return -3;
+          }
         mhdrvec[1] = mit.header();
         int j = mit.advance();
         /* since we are here, read also the next block */
@@ -154,7 +166,6 @@ private:
           mit.set_eof(); /* already set but nevertheless .. */
           mhdrvec[2] = mit.header();
         } else if (j > 0) {
-          char buf[64];
           fprintf(stderr,
                   "[ERROR] Failed collecting coeffs for epoch %s (TT) from "
                   "AOD1B file %s; at [2] (traceback: %s)\n",
@@ -163,7 +174,15 @@ private:
                   mit.aod1b().fn().c_str(), __func__);
           return -3;
         } else {
-          error = mit.collect(mcsvec[2]);
+          if (mit.collect(mcsvec[2])) {
+          fprintf(stderr,
+                  "[ERROR] Failed collecting coeffs for epoch %s (TT) from "
+                  "AOD1B file %s; at [3] (traceback: %s)\n",
+                  to_char<YMDFormat::YYYYMMDD, HMSFormat::HHMMSSF, nanoseconds>(
+                      t, buf),
+                  mit.aod1b().fn().c_str(), __func__);
+              return -3;
+          }
           mhdrvec[2] = mit.header();
           mit.advance();
         }
@@ -176,7 +195,6 @@ private:
        * the file, and re-start hunting.
        */
       if (t < mit.aod1b().first_epoch()) {
-        char buf[64];
         fprintf(stderr,
                 "[ERROR] Failed collecting coeffs for epoch %s (TT) from "
                 "AOD1B file %s; epoch not included in file (traceback: %s)\n",
@@ -198,7 +216,6 @@ private:
       return hunt_range(t);
     } else if (t >= mhdrvec[2].mepoch && mit.is_eof()) {
       /* reached end-of-file, cannot collect any more data sets! */
-      char buf[64];
       fprintf(
           stderr,
           "[WRNNG] Failed collecting coeffs for epoch %s (TT) from "
@@ -247,7 +264,7 @@ public:
       mhdrvec[i] = mit.header();
     }
     /* place iterator at next block */
-    mit.advance();
+    j += mit.advance();
 
     if (j) {
       fprintf(stderr,
@@ -290,6 +307,14 @@ public:
       return 1;
     }
     mhdrvec[index] = mit.header();
+    /* place iterator at next block */
+    if (mit.advance()) {
+      fprintf(stderr,
+              "[ERROR] Failed initializing Aod1bDataStream (traceback: %s)\n",
+              __func__);
+      return 1;
+    }
+    /* all done */
     return 0;
   }
 
@@ -332,6 +357,7 @@ public:
                   __func__);
           return 1;
         } else {
+          printf(">>>> Feed next file smoothly; calling hunt_range now\n");
           if ((index = hunt_range(t)) < 0) {
             fprintf(
                 stderr,
@@ -352,6 +378,9 @@ public:
       }
     }
     /* linear interpolation */
+#ifdef DEBUG
+    assert(t1<= t && t2>t);
+#endif
     const auto t1 = mhdrvec[index].mepoch;
     const auto t2 = mhdrvec[index + 1].mepoch;
     const double t2ti =

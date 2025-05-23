@@ -4,7 +4,7 @@
 
 namespace {
 inline const char *skipws(const char *line) noexcept {
-  while (*line && *line == ' ')
+  while (*line && (*line == ' ' || *line=='+'))
     ++line;
   return line;
 }
@@ -84,10 +84,10 @@ int dso::Aod1bIn::collect_coeffs(std::ifstream &fin, int max_degree,
   /* check for errors */
   if (error || !fin.good()) {
     fprintf(stderr,
-            "[ERROR] Failed parsing coefficients for AOD1B file %s "
+            "[ERROR] Failed parsing coefficients from AOD1B file %s "
             "(traceback: %s)\n",
             mfn.c_str(), __func__);
-    fprintf(stderr, "Parsing stopped at line [%s] i.e. %d/%d (traceback: %s)\n",
+    fprintf(stderr, "[ERROR] (Cont'd) Parsing stopped at line [%s] i.e. %d/%d (traceback: %s)\n",
             line, lines_parsed, max_lines, __func__);
     return 1;
   }

@@ -55,13 +55,14 @@ int dso::Aod1bIn::goto_next_block(
     /* assuming next line was a data block header */
     if (parse_data_block_header(line, rec)) {
       ++error;
-    }
+    } else {
     /* did we match the type ? */
-    if (!error && rec.mtype == type)
+    if (rec.mtype == type)
       return 0;
     /* skip lines untill next block */
     for (int l = 0; l < rec.mnum_lines; l++)
       fin.getline(line, MAXL);
+    }
   }
 
   if (error) {
