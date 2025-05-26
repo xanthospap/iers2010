@@ -201,7 +201,8 @@ private:
                 to_char<YMDFormat::YYYYMMDD, HMSFormat::HHMMSSF, nanoseconds>(
                     t, buf),
                 mit.aod1b().fn().c_str(), __func__);
-        fprintf(stderr, "[ERROR] Note: first epoch in file %.12f MJD, requested epoch %.12f MJD (traceback: %s)\n", mit.aod1b().first_epoch().fmjd(),  t.fmjd(), __func__);
+        fprintf(stderr, "[ERROR] (Cont'd) Note: first epoch in file %.12f MJD, requested epoch %.12f MJD (traceback: %s)\n", mit.aod1b().first_epoch().fmjd(),  t.fmjd(), __func__);
+        fprintf(stderr, "[ERROR] (Cont'd) Note: currently buffered epochs [%.9f, %.9f %.9f] [MJD](traceback: %s)\n", mhdrvec[0].mepoch.fmjd(), mhdrvec[1].mepoch.fmjd(),mhdrvec[2].mepoch.fmjd(), __func__);
         return -4;
       }
       /* shit, we need to go back in the file ! */
